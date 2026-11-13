@@ -40,17 +40,34 @@ The cost plan is not the headline by itself: it is the real-time feedback loop t
 
 This framing fits both the Business & Enterprise track (streamlining business planning and financial decisions) and the CoStar “Inside and Out” challenge. The sponsor challenge explicitly rewards combining at least two of CoStar, Matterport, and Vexcel; agentic reasoning and action; spatial/visual understanding; and a non-obvious use of the combined data. The strongest differentiation is therefore not “AI chat over listings” or “another 3D tour,” but an agent that turns linked market, building, and aerial evidence into a testable operating plan and quantified decision.
 
-#### Potential signature experience: a site-to-operations simulation
+#### Build independently first; unify deliberately
 
-Given an operator's concept and a candidate address, the agent could:
+The vision is deeply cross-layer, but implementation should not begin by blending every source into one opaque system. Establish separate, inspectable data and capability tracks first, each with clear inputs, outputs, provenance, and limitations. Then connect them through shared property identity, spatial references, and explicit interfaces. This makes each layer testable on its own and lets cross-layer behavior be added incrementally without hiding where an insight came from.
 
-1. Link CoStar property/availability context, Matterport interior spatial data, and Vexcel aerial context for that address (where coverage and permitted API access allow).
-2. Inspect complementary signals: for example, compare the interior's usable layout with aerially observed parking/access, then relate those constraints to the operator's required capacity, customer arrival pattern, or delivery workflow.
-3. Generate one or more feasible operating configurations—not just a ranked listing—including a proposed space plan, equipment/furniture needs, likely repairs, operational constraints, and questions requiring verification.
-4. Recalculate the business consequences as the user changes assumptions: estimated build-out investment, usable capacity, visibility/access trade-offs, and key unknowns. Show source evidence and confidence for every consequential claim.
-5. Take useful next actions: prepare a diligence or site-visit checklist, request missing information, and produce a shareable decision memo for the owner, broker, lender, contractor, or business partner.
+Suggested capability tracks:
 
-The “surprise” should come from a cross-layer inference or action that would be difficult from any one dataset alone. Illustrative hypotheses to test—not promises of available data or accuracy—include identifying a mismatch between apparent aerial access/parking and interior circulation; testing whether a target operating layout fits the scanned geometry; or showing how alternative layouts change capacity and estimated opening cost. The product must make clear when a signal is inferred, stale, incomplete, or needs on-site verification.
+- **Market/property intelligence (CoStar):** property identity, availability, leases/sales and market context, subject to actual dataset coverage and access terms.
+- **Interior/spatial intelligence (Matterport):** tour and scan-derived geometry, room dimensions/classifications, and spatial observations, with source/measurement confidence made explicit.
+- **Aerial/site intelligence (Vexcel):** aerial imagery and derived site context such as visible access, parking, and surrounding physical change, distinguishing observation from inference.
+- **Business model and operator profile:** concept requirements, prior location information, equipment, workflows, target capacity, and user priorities.
+- **Planning and decision layer:** consume the above through explicit interfaces to compare scenarios, produce visual plans, estimate costs, rank trade-offs, and generate diligence actions.
+
+Each capability should first provide a useful standalone result. The architecture should preserve original evidence and provenance, use a shared address/property key without assuming all datasets align perfectly, and represent missing or conflicting data instead of silently merging it. Cross-layer features can then be built as explicit compositions of these independently validated capabilities.
+
+#### Potential signature experience: business-specific spatial projection and site-to-operations simulation
+
+For Tony, the distinctive spatial idea is to take the kitchen setup from his first restaurant—equipment, dimensions, and operating arrangement—and project or reconstruct it inside a new candidate space using the new space's scan-derived dimensions. A visual “holographic”/3D overlay could show what fits, what does not, and where equipment or circulation conflicts arise. Treat this as a planning visualization, not a construction-ready architectural model; scan accuracy, utilities, code, and hidden conditions require verification.
+
+The broader site-to-operations simulation can then:
+
+1. Analyze each source independently first: market/property context, interior geometry, aerial/site context, and Tony's business requirements.
+2. Align relevant outputs for a candidate property, recording identity matches, coordinate/measurement assumptions, source, date, and confidence.
+3. Project the business-specific layout into the interior and identify fit constraints, equipment/furniture needs, and questions for an on-site professional.
+4. Compare alternative site and operating configurations using a Pareto-style view: expose trade-offs among recurring occupancy cost, one-time build-out investment, capacity, access/visibility, and operational fit. Avoid hiding these dimensions in one arbitrary “best” answer; show options that are not dominated across the user's chosen objectives.
+5. Provide real-time cost-and-impact feedback as Tony changes the layout or assumptions, with itemized ranges and a clear distinction between sourced prices, estimates, and unknowns.
+6. Take useful next actions: prepare a diligence/site-visit checklist, request missing information, and produce a shareable decision memo for the owner, broker, lender, contractor, or business partner.
+
+The “we didn't know the data could do that” moment should come from a validated cross-layer inference or action that is difficult with any one source alone. Candidate hypotheses—not promises of data availability or accuracy—include relating aerially observed access/parking to a proposed operating layout, or connecting market context with scan-informed capacity and build-out scenarios. Keep the analysis explainable: show which layer supports each finding and flag stale, incomplete, conflicting, or unverified evidence.
 
 #### Business and enterprise depth
 
