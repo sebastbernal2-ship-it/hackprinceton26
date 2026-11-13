@@ -29,12 +29,13 @@ The integration layer composes these results; it must not erase source distincti
 
 A possible interaction pattern has two roles, which may be implemented as modules rather than separate autonomous agents:
 
-- **Planner:** receives structured business requirements and spatial/property evidence; proposes a layout or set of bounded changes and returns a typed plan (geometry/quantities, furniture/equipment, assumptions, unresolved constraints).
+- **Source-specific research workers:** independently retrieve/normalize CoStar, Matterport, Vexcel, or relevant public-data evidence and return structured, provenance-bearing results. Keep each worker scoped to a data layer; do not make every per-property worker an opaque all-sources pipeline.
+- **Planner:** receives the operator's structured requirements and composed evidence; proposes a bounded layout/scenario and returns a typed plan (geometry/quantities, furniture/equipment, assumptions, unresolved constraints).
 - **User-facing guide:** gathers preferences, explains the selected property and proposed plan, and presents evidence and trade-offs in the interface.
 
-Cost estimation should be a separate deterministic calculation over planner outputs and a transparent price/quantity catalog—not free-form LLM-generated arithmetic. Use conventional geometry and data processing wherever possible; use language models for interpreting user intent, planning bounded actions, and explaining results.
+Cost estimation should be a separate deterministic calculation over planner outputs and a transparent price/quantity catalog—not free-form LLM-generated arithmetic. A benchmark such as occupancy cost as a share of sales is not break-even analysis. Any operating model needs explicit revenue and expense assumptions and must be presented as a scenario, not a forecast. Use conventional geometry and data processing wherever possible; use language models for interpreting user intent, planning bounded actions, and explaining results.
 
-If parallel research agents are used, give each a narrowly scoped data task and structured output. Run them with timeouts and caching; surface partial results and fall back to prepared data so the demo remains responsive. A ten-minute judged demo cannot depend on an unbounded live research chain.
+If parallel research workers are used, give each a narrowly scoped data task and structured output. Run them with timeouts and caching; surface partial results and fall back to prepared data so the demo remains responsive. A short judged demo cannot depend on an unbounded live research chain. Cache candidate-site evidence ahead of time and reserve live execution for one visible, bounded re-plan.
 
 ## Suggested development sequence
 

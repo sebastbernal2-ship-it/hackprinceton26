@@ -34,13 +34,25 @@ A single opaque risk score is not enough for a high-stakes property decision. Pr
 
 The product is decision support, not a substitute for a licensed inspection, legal advice, zoning determination, or revenue guarantee. Avoid asserting that an agent concealed a defect without verified evidence. Label potential issues as leads to investigate, keep an audit trail of sources and dates, and protect sensitive business and property information.
 
-### Hackathon focus: food-business site planning
+### Hackathon focus: restaurant site-to-opening planning
 
-For the initial prototype, focus on food businesses (potentially small shopping areas) and commercial properties with usable Matterport scans. The experience starts with a plain prompt such as “What are you looking for?” The user describes their business and priorities; the system returns matching scanned properties. Do not ask users to predict target revenue. Location context—such as nearby activity, traffic, or job sites—should be researched and presented as sourced evidence, not assumed from user-entered revenue goals.
+For the initial prototype, focus on independent food businesses—restaurants, cafes, and fast casual—and a small inventory of commercial properties with usable Matterport scans in Houston and Los Angeles. The primary user is an owner without a chain's data team, considering a first or next location. The experience starts with “What are you looking for?” and gathers concept, city, budget, seats or capacity, and must-haves. Do not ask users to predict target revenue. Research location context as sourced evidence rather than asking the owner to supply a revenue forecast.
 
-For a selected site, present its aerial context, Matterport interior, and an interactive before/after visualization. The central spatial demo is to project a restaurant's kitchen/equipment arrangement into the candidate space using its dimensions, then show proposed furniture and internal layout changes. Minor exterior changes such as a patio may be considered only where the imagery and surrounding constraints support it. Make clear that a visualization is conceptual, not a construction drawing or code approval.
+The core promise is: **understand what it would take for this specific space to become this owner's restaurant before committing.** The product should show a shortlist, then help the owner inspect a candidate's interior and exterior context, visualize a business-specific layout, estimate build-out and delay-related costs, and decide what to verify or negotiate.
 
-Prefer Matterport's existing scanned properties as the initial inventory; new phone scanning is secondary. Unscanned areas are a coverage limitation to communicate, not a reason to imply the catalog is comprehensive. Supplement sponsor data with public context only when it is relevant and available. Validate the exact identity and capabilities of every data provider before relying on team recollections (for example, confirm whether the mentioned aerial provider is Vexcel and what its API actually returns).
+For a selected site, present available CoStar property context, Matterport interior, and Vexcel aerial context. Show an interactive before/after view and floor plan where data permits. The central spatial demo projects a restaurant's kitchen/equipment arrangement into candidate-space dimensions, showing fit, circulation conflicts, and possible furniture/layout changes. This is a conceptual planning visualization, not a construction drawing, proof of hidden conditions, or code approval. Prefer existing sponsor scans; new phone scanning is secondary. Unscanned locations are a coverage limitation, not an implied comprehensive inventory.
+
+### Hidden-cost investigation and financial decision support
+
+Treat “Hidden-Cost X-Ray” as a guided, evidence-backed investigation—not a claim that the system can see hidden defects. Combine prior-use/property records with visible scan evidence to surface potential build-out items such as existing kitchen infrastructure, restroom count, or apparent equipment. Each finding should be pinned to its evidence and labeled as observed, inferred, estimated, or unknown. For example, “No hood visible in this scan—confirm with landlord/inspector” is appropriate; “No hood exists” is not. Use sourced, localized low/high cost ranges and show contingency and unresolved items separately.
+
+The financial view should distinguish recurring occupancy cost from one-time build-out and delay-related costs. Estimate dead rent/time-to-open only from explicit assumptions and ranges (lease start, likely scope, permit/construction duration); do not imply a permit outcome. A benchmark comparison such as occupancy cost as a share of sales is a benchmark check, not break-even analysis. Any operating scenario must state its assumptions for sales, food, labor, other costs, days open, and average check. Avoid revenue promises and unverified generic restaurant benchmarks.
+
+Turn findings into owner actions: a prioritized verification checklist, questions for the landlord, potential negotiation asks (such as tenant-improvement allowance or rent abatement), and—if useful—a broker email or concise lender/partner memo. These are drafts for owner review, not legal or financial advice.
+
+### Validated evidence, coverage, and claims
+
+Prefer actual sponsor data and verified source documentation. Confirm what CoStar fields are available; whether Matterport access includes room names, dimensions, floor-plan vectors, or defurnishing; Vexcel imagery resolution and permitted analysis; and the number/type of usable scanned sites. Do not assume “Vexel” vector embeddings, topology outputs, tenant history, or particular API capabilities based on informal recollection. Public-data supplements (permits, jobs, income, crime, etc.) should be included only when relevant, available, and traceable. Clearly state the Houston/Los Angeles and scanned-property coverage limits.
 
 ### Refined direction: from site selection to a business decision engine
 
@@ -79,7 +91,11 @@ The “we didn't know the data could do that” moment should come from a valida
 
 #### Business and enterprise depth
 
-Treat the property as an input to a business plan, not the whole customer problem. Help an operator reason about capital at risk before commitment: distinguish recurring occupancy costs from one-time build-out, itemize assumptions behind estimates, surface high-impact unknowns, and compare scenarios (for example, a lower-rent space with expensive renovation versus a more expensive space that is closer to ready). Where useful, turn the chosen scenario into structured tasks and a diligence packet that can be handed to relevant professionals.
+Treat the property as an input to a business plan, not the whole customer problem. Help an operator reason about capital at risk before commitment: distinguish recurring occupancy costs from one-time build-out and dead rent, itemize assumptions behind estimates, surface high-impact unknowns, and compare scenarios (for example, a lower-rent space with expensive renovation versus a more expensive space that is closer to ready). Where useful, turn the chosen scenario into structured tasks and a diligence packet that can be handed to relevant professionals.
+
+The first version should prioritize a grounded site decision over a speculative three-year revenue forecast. A transparent occupancy benchmark can help contextualize rent, but rent divided by a presumed occupancy percentage is not a break-even calculation. A genuine operating model needs explicit sales assumptions and operating costs (food, labor, other expenses, open days, average check, capacity/turns) and must be labeled as scenario analysis, not prediction. Use benchmarks only when sources, definitions, and applicability have been checked.
+
+For the Peri Forward Deployed track, interview a real local food-business owner and use their actual workflow and concerns to shape the prototype. Capture the required evidence (business, contact name/role, and a quote, screenshot, photo, or short video with permission). Treat the interview as product discovery, not just pitch material.
 
 A later extension could connect operators who have opened similar businesses and let them share opted-in, appropriately aggregated lessons about timelines, build-out costs, and operational choices. Such benchmarks need context and provenance; one business's result should not be presented as a prediction for another.
 
@@ -94,26 +110,36 @@ These are candidate differentiators, not a commitment to build every capability.
 
 ### Initial MVP direction
 
-Keep the first version focused on one food-business persona and a small inventory of scanned properties. A useful prototype could support:
+Keep the first version focused on one food-business persona and a small inventory of scanned properties. A credible end-to-end prototype could support:
 
-- A simple “What are you looking for?” intake and matching-property list, without asking for target revenue.
-- A selected property view with Matterport interior, aerial context, and relevant market/property data where available.
-- A restaurant-specific kitchen/equipment projection into the scanned space, with before/after and floor-plan views.
-- A planner that proposes feasible layout changes; deterministic geometry and costing logic should handle measurable constraints and estimates.
-- Immediate, itemized cost-and-impact feedback based on explicit quantities, assumptions, and price sources.
-- A concise, cached evidence brief and diligence checklist so the live demo does not depend on slow multi-agent research.
+- A simple “What are you looking for?” intake and ranked shortlist, with concept, city, budget, capacity, and must-haves—but no target-revenue prompt.
+- A selected-site view that combines at least two sponsor data layers substantively, while displaying source-specific evidence separately.
+- An interior tour with a few evidence-backed, confidence-labeled risk/fit pins; a potential missing feature is a verification lead, not a confirmed defect.
+- A business-specific kitchen/equipment layout projection into the scanned space, plus a before/after view or floor plan.
+- Transparent, itemized build-out cost ranges from explicit plan quantities, assumptions, and prices, including a separate contingency and unknowns.
+- A concise “what to verify / what to ask the landlord” action list.
+- At least one visible re-plan triggered by a finding—for example, a candidate becoming less attractive when a required upgrade pushes the estimated project beyond the owner's stated budget.
 
-For the demo, prepare data and analysis ahead of time where possible. Parallel data gathering may be useful, but must have bounded latency, visible progress, and a graceful fallback to prepared results. Optimize for a reliable end-to-end demonstration in a short judging window, not maximum agent count or exhaustive coverage.
+Treat dead rent, neighborhood trajectory, restaurant survival history, patio eligibility, and multi-year profit scenarios as stretch features until their inputs and assumptions are validated. Do not claim that an estimated break-even or revenue scenario predicts success. Use a genuine operating model only if the team can show its assumptions and credible source data.
+
+For the demo, prepare property research and analysis ahead of time where possible. The judged flow should be fast and reliable; only a bounded final plan adjustment needs to run live. Parallel data gathering may be useful, but source-specific tools/agents should produce inspectable outputs for a planner to compose. Cache results, use timeouts, show partial progress, and provide a prepared fallback. Optimize for a convincing end-to-end demonstration, not maximum agent count or exhaustive coverage.
+
+### Validation questions and success criteria
+
+Before implementation, confirm sponsor API/SDK capabilities, dataset coverage, data-use terms, sample schemas, and property matching across sources. In particular, ask whether Matterport access exposes room measurements/vectors and defurnishing; which CoStar fields cover availability, rent, and prior tenants; and what Vexcel imagery resolution/rate limits support. Select a small set of viable scanned food-business sites and document gaps.
+
+Validate the workflow with a real local restaurant or cafe owner. Learn what they actually check before committing, which decisions are costly or routinely missed, and whether a layout projection, cost range, dead-rent estimate, or landlord ask list would change their behavior. Capture the Peri track's required consultation evidence with permission.
+
+Prototype success should be measured by a reliable short demo: a user can state a food-business concept and constraints, get an explainable shortlist, inspect one candidate using multiple sponsor data layers, see a plausible business-specific spatial plan and sourced cost range, and receive a useful verification or negotiation action. Show at least one finding changing the plan or ranking. Be explicit about accuracy limits and coverage.
 
 ### Open questions
 
-- Should the product present a single risk score, a multi-dimensional risk profile, or both? What evidence and calibration would make either trustworthy?
-- Which city and data sources are in scope, and what can be licensed or accessed reliably?
-- Is Tony leasing or buying, and what property types and restaurant formats are supported?
-- What data exists from restaurant one (sales, customer patterns, layout, equipment, costs), and what can safely be reused?
-- How will rents, construction costs, equipment prices, and demand estimates be kept current and localized?
-- What tour formats are available, and how will the experience handle incomplete or misleading listing media?
-- Which outputs require a human inspector, architect, contractor, attorney, or permitting authority?
-- What is the first measurable success criterion: faster screening, fewer unsuitable visits, better cost estimates, or fewer post-commitment surprises?
+- Which exact sponsor data capabilities and sites are accessible under the hackathon keys and terms?
+- What is the smallest useful set of food-business requirements and plan outputs for a live demo?
+- Can the team validate scan-derived dimensions against published plans or physical measurements?
+- Which cost lines can be sourced credibly and localized, and which must remain unknown or user-supplied?
+- Can timeline/dead-rent estimates be grounded in trustworthy local data, or should they remain out of scope?
+- What does a local operator identify as the most valuable pre-lease action or avoided surprise?
+- Which findings require review by an inspector, architect, contractor, attorney, or permitting authority?
 
-This document captures the initial idea only. Treat product scope, terminology, data availability, and scoring as hypotheses to validate with Tony-like operators.
+This is a working product brief. Scope, data capabilities, estimates, and differentiation hypotheses must be validated against sponsor access and real operator feedback.
