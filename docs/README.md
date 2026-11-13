@@ -34,6 +34,14 @@ A single opaque risk score is not enough for a high-stakes property decision. Pr
 
 The product is decision support, not a substitute for a licensed inspection, legal advice, zoning determination, or revenue guarantee. Avoid asserting that an agent concealed a defect without verified evidence. Label potential issues as leads to investigate, keep an audit trail of sources and dates, and protect sensitive business and property information.
 
+### Hackathon focus: food-business site planning
+
+For the initial prototype, focus on food businesses (potentially small shopping areas) and commercial properties with usable Matterport scans. The experience starts with a plain prompt such as “What are you looking for?” The user describes their business and priorities; the system returns matching scanned properties. Do not ask users to predict target revenue. Location context—such as nearby activity, traffic, or job sites—should be researched and presented as sourced evidence, not assumed from user-entered revenue goals.
+
+For a selected site, present its aerial context, Matterport interior, and an interactive before/after visualization. The central spatial demo is to project a restaurant's kitchen/equipment arrangement into the candidate space using its dimensions, then show proposed furniture and internal layout changes. Minor exterior changes such as a patio may be considered only where the imagery and surrounding constraints support it. Make clear that a visualization is conceptual, not a construction drawing or code approval.
+
+Prefer Matterport's existing scanned properties as the initial inventory; new phone scanning is secondary. Unscanned areas are a coverage limitation to communicate, not a reason to imply the catalog is comprehensive. Supplement sponsor data with public context only when it is relevant and available. Validate the exact identity and capabilities of every data provider before relying on team recollections (for example, confirm whether the mentioned aerial provider is Vexcel and what its API actually returns).
+
 ### Refined direction: from site selection to a business decision engine
 
 The cost plan is not the headline by itself: it is the real-time feedback loop that makes spatial and market analysis economically legible. The larger opportunity is to help a business decide **where and how to operate**, using connected evidence about the building, its surroundings, and the business model. The product should quantify consequences—cost, capacity, access, operational fit, and uncertainty—rather than merely describe a property.
@@ -64,7 +72,7 @@ The broader site-to-operations simulation can then:
 2. Align relevant outputs for a candidate property, recording identity matches, coordinate/measurement assumptions, source, date, and confidence.
 3. Project the business-specific layout into the interior and identify fit constraints, equipment/furniture needs, and questions for an on-site professional.
 4. Compare alternative site and operating configurations using a Pareto-style view: expose trade-offs among recurring occupancy cost, one-time build-out investment, capacity, access/visibility, and operational fit. Avoid hiding these dimensions in one arbitrary “best” answer; show options that are not dominated across the user's chosen objectives.
-5. Provide real-time cost-and-impact feedback as Tony changes the layout or assumptions, with itemized ranges and a clear distinction between sourced prices, estimates, and unknowns.
+5. Provide real-time cost-and-impact feedback as Tony changes the layout or assumptions, with itemized ranges and a clear distinction between sourced prices, estimates, and unknowns. Calculate cost from structured plan outputs—such as area, equipment/furniture, bathrooms, and selected changes—rather than expecting an LLM to invent prices.
 6. Take useful next actions: prepare a diligence/site-visit checklist, request missing information, and produce a shareable decision memo for the owner, broker, lender, contractor, or business partner.
 
 The “we didn't know the data could do that” moment should come from a validated cross-layer inference or action that is difficult with any one source alone. Candidate hypotheses—not promises of data availability or accuracy—include relating aerially observed access/parking to a proposed operating layout, or connecting market context with scan-informed capacity and build-out scenarios. Keep the analysis explainable: show which layer supports each finding and flag stale, incomplete, conflicting, or unverified evidence.
@@ -86,14 +94,16 @@ These are candidate differentiators, not a commitment to build every capability.
 
 ### Initial MVP direction
 
-Keep the first version focused on one operator persona and one market. A useful prototype could support:
+Keep the first version focused on one food-business persona and a small inventory of scanned properties. A useful prototype could support:
 
-- A small set of candidate properties with structured facts and linked sources.
-- A restaurant-specific requirements profile and explainable comparison view.
-- A neighborhood context brief with dated, sourced indicators.
-- A tour question/observation log (the 3D character is an optional interface, not a prerequisite).
-- A basic kitchen/equipment fit plan and itemized, assumption-based build-out estimate.
-- A diligence checklist that clearly separates verified facts, estimates, and items needing professional review.
+- A simple “What are you looking for?” intake and matching-property list, without asking for target revenue.
+- A selected property view with Matterport interior, aerial context, and relevant market/property data where available.
+- A restaurant-specific kitchen/equipment projection into the scanned space, with before/after and floor-plan views.
+- A planner that proposes feasible layout changes; deterministic geometry and costing logic should handle measurable constraints and estimates.
+- Immediate, itemized cost-and-impact feedback based on explicit quantities, assumptions, and price sources.
+- A concise, cached evidence brief and diligence checklist so the live demo does not depend on slow multi-agent research.
+
+For the demo, prepare data and analysis ahead of time where possible. Parallel data gathering may be useful, but must have bounded latency, visible progress, and a graceful fallback to prepared results. Optimize for a reliable end-to-end demonstration in a short judging window, not maximum agent count or exhaustive coverage.
 
 ### Open questions
 

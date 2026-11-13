@@ -25,6 +25,17 @@ Each source capability should expose a standalone result with:
 
 The integration layer composes these results; it must not erase source distinctions. Cross-layer conclusions should cite the contributing inputs and explain the inference. Never imply that aerial imagery or a virtual scan proves hidden structural, environmental, or regulatory conditions.
 
+## Demo-oriented agent architecture
+
+A possible interaction pattern has two roles, which may be implemented as modules rather than separate autonomous agents:
+
+- **Planner:** receives structured business requirements and spatial/property evidence; proposes a layout or set of bounded changes and returns a typed plan (geometry/quantities, furniture/equipment, assumptions, unresolved constraints).
+- **User-facing guide:** gathers preferences, explains the selected property and proposed plan, and presents evidence and trade-offs in the interface.
+
+Cost estimation should be a separate deterministic calculation over planner outputs and a transparent price/quantity catalog—not free-form LLM-generated arithmetic. Use conventional geometry and data processing wherever possible; use language models for interpreting user intent, planning bounded actions, and explaining results.
+
+If parallel research agents are used, give each a narrowly scoped data task and structured output. Run them with timeouts and caching; surface partial results and fall back to prepared data so the demo remains responsive. A ten-minute judged demo cannot depend on an unbounded live research chain.
+
 ## Suggested development sequence
 
 1. Verify sponsor APIs, SDKs, sample formats, terms, and actual coverage for the selected property.
