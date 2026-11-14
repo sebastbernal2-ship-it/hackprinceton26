@@ -96,18 +96,23 @@ def write_glb(path, prims):
         if p.get("UV") is not None:
             iv = add_view(np.ascontiguousarray(p["UV"], np.float32).tobytes(), 34962)
             accs.append({"bufferView": iv, "componentType": 5126, "count": len(P), "type": "VEC2"}); attrs["TEXCOORD_0"] = len(accs) - 1
+        if p.get("COL") is not None:                         # linear RGB vertex colours (refine_objects.py)
+            iv = add_view(np.ascontiguousarray(p["COL"], np.float32).tobytes(), 34962)
+            accs.append({"bufferView": iv, "componentType": 5126, "count": len(P), "type": "VEC3"}); attrs["COLOR_0"] = len(accs) - 1
         Fi = np.ascontiguousarray(p["F"], np.uint32).ravel()
         iv = add_view(Fi.tobytes(), 34963)
         accs.append({"bufferView": iv, "componentType": 5125, "count": len(Fi), "type": "SCALAR"})
         ind = len(accs) - 1
         mat = {"pbrMetallicRoughness": {"metallicFactor": 0, "roughnessFactor": 1}, "doubleSided": True,
                "extensions": {"KHR_materials_unlit": {}}}
+        if p.get("name"):
+            mat["name"] = p["name"]
         if p.get("image") is not None:
             iv = add_view(p["image"])
             imgs.append({"bufferView": iv, "mimeType": "image/jpeg"}); texs.append({"source": len(imgs) - 1})
             mat["pbrMetallicRoughness"]["baseColorTexture"] = {"index": len(texs) - 1}
         else:
-            mat["pbrMetallicRoughness"]["baseColorFactor"] = list(p.get("color", (0.6, 0.6, 0.6))) + [1]
+            mat["pbrMetallicRoughness"]["baseColorFactor"] = list(p.get("color", (1, 1, 1) if p.get("COL") is not None else (0.6, 0.6, 0.6))) + [1]
         mats.append(mat)
         meshes_p.append({"attributes": attrs, "indices": ind, "material": len(mats) - 1})
     js = {"asset": {"version": "2.0", "generator": "hackprinceton tile_objects.py"},

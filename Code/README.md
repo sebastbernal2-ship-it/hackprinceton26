@@ -127,6 +127,28 @@ Writes `mesh_diff/objects.json` (source `mesh_segment`), `objects_tiles/seg_###.
 nightstands. Still merged: pieces welded in the scan with no neck, seat or bed top to split on (e.g. a bed-end bench).
 Tuning: `--neck`, `--voxel`, `--grow`, `--no-tables`, `--no-fill`.
 
+## Cleanup + predicting the unseen parts (`Code/refine_objects.py`, step `refine`)
+Runs after `tileobjects` (and again automatically whenever the cuts are newer). numpy + scipy + scikit-image
+(`pip install scikit-image`, for marching cubes), ~50 s for 120 objects.
+1. cleanup: degenerate/duplicate triangles, stretched "curtain" slivers; boundary loops < 40 cm are closed (textured when
+   the loop lies in one texture); light Taubin smoothing
+2. shape prior by `kind` as an occupancy volume: solids (sofa, bed, cabinet, wardrobe, dresser, nightstand, shelf …) =
+   footprint filled up to the scanned top, with free space the cameras saw under overhangs carved away; legged pieces
+   (tables, chairs, stools) = top/seat slab + legs (missing legs mirrored from scanned ones, or a pedestal / corner legs
+   guessed); scanner webbing between legs removed
+3. the volume is blurred and meshed (marching cubes) -> a smooth closed surface with rounded edges; only its unseen parts
+   are kept: a patch is dropped when real surface (this piece's or a neighbour's) lies along its normal within 10 cm (no
+   doubled surfaces) or when ≥ 2 of the 39 scan positions had a clear view of the spot and saw nothing (plan walls and the
+   pieces block views; the tripod blind cone below each camera never counts)
+4. `--mirror` (off by default) also copies the mirrored real surface into gaps; scans are only roughly symmetric, so the
+   copy lands a few cm beside the real surface and reads as a duplicate
+
+Writes `objects_refined/*.glb` (predicted surfaces in a primitive whose material is `predicted`, vertex-coloured from the
+nearby texture) and `scene_refined.json` (per object: what was cleaned/mirrored/predicted, scanned share, confidence).
+Studio: "Complete unseen parts" switches between refined and raw cuts, "Highlight predicted" tints predicted surfaces
+orange; the selection panel shows "N% scanned, M% predicted". Tuning: `--gap`, `--min-views`, `--nadir`, `--sym`,
+`--smooth`, `--vox`, `--sigma`, `--reach`, `--no-predict`, `--mirror`.
+
 ## MatterPak (best source of furniture models)
 `run_all.py` step `matterpak` (`Code/matterpak.py`, based on Model_download_test.py) downloads the MatterPak if it is unlocked
 (it never unlocks/buys it), or picks up a zip already in the repo root / `assets_<sid>/matterpak/`. Its textured OBJ

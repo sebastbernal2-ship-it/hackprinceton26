@@ -46,7 +46,7 @@
   <button data-mode="INSIDE">Walk</button><button data-mode="DOLLHOUSE">Dollhouse</button><button data-mode="FLOORPLAN">Floor plan</button><button id="tPlan" class="on" title="Floor plan view: draw our rooms and walls over Matterport's roof/drone image">Our plan</button>
 
   <h2>Furniture</h2>
-  <button id="tEdit">Edit furniture</button><button id="tFurn" class="on">Show</button><button id="tTent" class="on">Tentative</button><button id="tTiles" class="on">Matterport models</button><button id="tShapes">Carved shapes</button><button id="tDoll">Show in dollhouse</button>
+  <button id="tEdit">Edit furniture</button><button id="tFurn" class="on">Show</button><button id="tTent" class="on">Tentative</button><button id="tTiles" class="on">Matterport models</button><button id="tRefined" class="on" title="Cleaned models with the parts the scan never saw predicted (refine_objects.py)">Complete unseen parts</button><button id="tPred" title="Tint the predicted (not scanned) surfaces orange">Highlight predicted</button><button id="tShapes">Carved shapes</button><button id="tDoll">Show in dollhouse</button>
   <div class="muted" style="font-size:11px;margin:4px 0">"Edit furniture" ON: hover a piece to see its name, drag it to move (snaps to walls; hold <kbd>Alt</kbd> for free),
     click again to pick the piece behind / on top. Wheel or <kbd>Q</kbd>/<kbd>E</kbd> rotate, <kbd>R</kbd> 90°, arrows nudge 5 cm (<kbd>Shift</kbd> 1 cm),
     <kbd>Del</kbd> remove, <kbd>Ctrl+Z</kbd> undo. Away from furniture the mouse still walks around the house.</div>
@@ -87,7 +87,7 @@ if (!C) { status('Missing showcase/config.js - run: python run_all.py --only sdk
 if (!window.MP_SDK) { status('Could not load Matterport sdk.js (blocked by an ad-blocker or offline?)', true); throw new Error('no sdk'); }
 
 // Model API frame (x east, y north, z up) <-> Showcase frame (x east, y up, -z north)
-const S = { useTiles:true, dollhouse:false, sdk:null, plan:null, objData:null, objs:[], sel:null, history:[], showFurn:true, showTent:true, useShapes:false,
+const S = { useTiles:true, useRefined:true, showPred:false, dollhouse:false, sdk:null, plan:null, objData:null, objs:[], sel:null, history:[], showFurn:true, showTent:true, useShapes:false,
             empty:true, edit:false, pose:null, sweeps:{}, floorZ:0, planView:true, hover:null, find:'' };
 const COLORS = { 'pano+mesh':0x3ecf8e, 'mesh_segment':0x3ecf8e, 'mesh':0xf0b429, 'pano':0x6b8cff };
 
@@ -160,7 +160,7 @@ async function getOBJ(f) {
 
 // minimal loader for the GLBs written by tile_objects.py (positions, uv, indices, embedded jpeg, unlit)
 async function getGLB(f) {
-  const r = await fetch(C.dataDir + f); if (!r.ok) return null;
+  const r = await fetch(C.dataDir + f, { cache:'no-cache' }); if (!r.ok) return null;   // revalidate: models are regenerated
   const b = await r.arrayBuffer(), dv = new DataView(b);
   if (dv.getUint32(0, true) !== 0x46546C67) return null;
   let off = 12, js = null, bin = null;
@@ -176,12 +176,17 @@ async function getGLB(f) {
     g.setAttribute('position', new THREE.BufferAttribute(acc(p.attributes.POSITION), 3));
     if (p.attributes.TEXCOORD_0 !== undefined) g.setAttribute('uv', new THREE.BufferAttribute(acc(p.attributes.TEXCOORD_0), 2));
     g.setIndex(new THREE.BufferAttribute(acc(p.indices), 1));
-    const m = js.materials[p.material].pbrMetallicRoughness, mat = new THREE.MeshBasicMaterial({ side:THREE.DoubleSide });
+    const predicted = js.materials[p.material].name === 'predicted';     // parts refine_objects.py predicted (not scanned)
+    const mat = new THREE.MeshBasicMaterial({ side:THREE.DoubleSide });
+    if (p.attributes.COLOR_0 !== undefined) { g.setAttribute('color', new THREE.BufferAttribute(acc(p.attributes.COLOR_0), 3)); mat.vertexColors = true; }
+    const m = js.materials[p.material].pbrMetallicRoughness;
     if (m.baseColorTexture) { const img = js.images[js.textures[m.baseColorTexture.index].source], [o, n] = view(img.bufferView);
       const bmp = await createImageBitmap(new Blob([new Uint8Array(b, o, n)], { type:img.mimeType }));
       const tex = new THREE.Texture(bmp); tex.flipY = false; tex.colorSpace = THREE.SRGBColorSpace; tex.needsUpdate = true; mat.map = tex;
     } else if (m.baseColorFactor) mat.color.setRGB(...m.baseColorFactor.slice(0, 3));
-    grp.add(new THREE.Mesh(g, mat));
+    const mesh = new THREE.Mesh(g, mat); mesh.userData.predicted = predicted;
+    if (predicted && S.showPred) mat.color.setRGB(1, 0.55, 0.2);
+    grp.add(mesh);
   }
   return grp;
 }
@@ -264,7 +269,13 @@ async function buildObjects() {
   if (S.useShapes) { try { (await getJSON('scene_shapes.json')).objects.forEach(t => { if (t.result === 'carved') models[t.id] = t; }); } catch {} }
   // best source: objects cut from Matterport's own full-quality mesh (tile_objects.py), with Matterport's labels
   const tileModels = {};
-  if (S.useTiles) { try { (await getJSON('scene_tiles.json')).objects.forEach(t => { tileModels[t.id] = t; }); } catch {} }
+  // refine_objects.py output (cleaned + predicted unseen parts) when present, else the raw cuts
+  if (S.useTiles) {
+    let sc = null;
+    if (S.useRefined) { try { sc = await getJSON('scene_refined.json'); } catch {} }
+    if (!sc) { try { sc = await getJSON('scene_tiles.json'); } catch {} }
+    if (sc) sc.objects.forEach(t => { tileModels[t.id] = t; });
+  }
   const prev = Object.fromEntries(S.objs.map(o => [o.id, o]));
   S.objs = [];
   for (const o of S.objData) {
@@ -277,7 +288,8 @@ async function buildObjects() {
     if (tm && tm.label) ob.label = tm.label;
     const glb = tm && tm.file ? await getGLB(tm.file) : null;
     const g = glb ? null : (models[o.id] ? await getOBJ(models[o.id].file) : null);
-    if (glb) { grp.add(glb); ob.model = 'matterport mesh'; }
+    if (glb) { grp.add(glb); ob.model = 'matterport mesh';
+      if (tm.refine) { ob.model += ' + predicted parts'; ob.scanned = tm.scanned_share; ob.confidence = tm.confidence; ob.refine = tm.refine; } }
     else if (g) {
       grp.add(new THREE.Mesh(g, new THREE.MeshBasicMaterial({ vertexColors: !!g.attributes.color, side:THREE.DoubleSide })));
     } else {
@@ -556,6 +568,16 @@ function evaluate() {
 }
 
 // ------------------------------------------------------------------ side panel
+function predInfo(o) {          // tooltip: how the unseen parts were predicted
+  const r = o.refine || {}, sp = r.shape_prior || {}, out = [];
+  for (const [k, v] of Object.entries(r.symmetry || {})) if (v.result === 'applied') out.push(`mirrored ${k}`);
+  if (sp.type === 'solid') out.push('closed as a solid (back, sides, base)');
+  if (sp.type === 'legged') { out.push(`top ${sp.top_height_m} m high`);
+    if (sp.legs_predicted) out.push(`${sp.legs_predicted} leg(s) predicted (${sp.legs_basis || ''})`);
+    if (sp.webbing_removed_tris) out.push('scanner webbing removed'); }
+  if ((r.cleanup || {}).stretched_slivers) out.push(`${r.cleanup.stretched_slivers} stretched triangles removed`);
+  return out.join(' · ').replace(/"/g, '');
+}
 function showSel() {
   const o = S.sel;
   if (!o) { $('sel').innerHTML = '<span class="muted">Hover a piece in the view (Edit furniture ON) or pick one in the list above.</span>'; return; }
@@ -563,6 +585,7 @@ function showSel() {
   $('sel').innerHTML = `<b>${name(o)}</b> <span class="muted">#${o.id}${o.kind ? ' · ' + o.kind : ''}</span><br>
     ${o.size.map(v => v.toFixed(2)).join(' × ')} m · ${r ? r.label : '—'}${o.model ? ' · ' + o.model : ''}<br>
     <span class="muted">${d > 0.005 ? `moved ${d.toFixed(2)} m · ` : ''}${g < 0.02 ? 'against a wall' : g.toFixed(2) + ' m to the nearest wall'}</span>
+    ${o.scanned != null ? `<br><span class="muted" title="${predInfo(o)}">${Math.round(o.scanned * 100)}% scanned, ${Math.round((1 - o.scanned) * 100)}% predicted · ${o.confidence} confidence</span>` : ''}
     <div class="row">Angle <input id="iYaw" type="number" step="5" value="${Math.round(o.yaw)}">°
       <button id="bL">⟲ 90°</button><button id="bR">⟳ 90°</button></div>
     <button id="bDel">Remove</button><button id="bRes">Reset</button><button id="bGo">Go to it</button>`;
@@ -617,6 +640,9 @@ toggle('tFurn', 'showFurn', () => { S.objs.forEach(place); evaluate(); });
 toggle('tTent', 'showTent', () => { S.objs.forEach(place); evaluate(); });
 toggle('tShapes', 'useShapes', () => buildObjects());
 toggle('tTiles', 'useTiles', () => buildObjects());
+toggle('tRefined', 'useRefined', () => buildObjects());
+toggle('tPred', 'showPred', () => furn.traverse(m => { if (m.userData.predicted) {
+  m.material.color.setRGB(...(S.showPred ? [1, 0.55, 0.2] : [1, 1, 1])); } }));
 toggle('tDoll', 'dollhouse', () => {});
 toggle('tPlan', 'planView', () => {});
 $('mEmpty').onclick = () => { if (S.empty) return; S.empty = true; $('mEmpty').classList.add('on'); $('mFull').classList.remove('on'); loadShowcase(); };

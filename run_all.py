@@ -4,7 +4,7 @@ run_all.py - run the whole HackPrinceton pipeline, one step after another, with 
 
     python run_all.py                 # run every step that is not already done
     python run_all.py --force         # redo every step
-    python run_all.py --from bake     # start at a step (download, matterpak, fetch, tiles, pipeline, meshdiff, prepare, tileobjects, bake, carve, sdk, serve)
+    python run_all.py --from bake     # start at a step (download, matterpak, fetch, tiles, pipeline, meshdiff, prepare, tileobjects, refine, bake, carve, sdk, serve)
     python run_all.py --only meshdiff # run one step
     python run_all.py --list          # show the steps and whether each is done
     python run_all.py --only serve    # just start the local server and open the studio
@@ -47,6 +47,13 @@ SETTINGS = {
     "tileobj_pad": 0.12,             # m added around each object box
     "tileobj_tol": 0.06,             # m: closer than this to the empty house = house, not furniture
     "tileobj_tol_coarse": 0.10,      # ...used instead when the empty house is only the coarse 50k defurnished OBJ
+
+    # 4c. clean the furniture models + predict the parts the scan never saw (refine_objects.py)
+    "refine": True,
+    "refine_predict": True,          # False = cleanup only (no symmetry / shape-prior completion)
+    "refine_smooth": 2,              # Taubin smoothing iterations (0 = off)
+    "refine_gap": 0.045,             # m: a spot farther than this from the scan counts as missing
+    "refine_min_views": 2,           # scan positions that must see a spot empty to veto a prediction there
 
     # 5. texture bake (texture_bake.py)
     "bake_edge": 0.09,               # house mesh triangle size (m): smaller = sharper colours, bigger file
@@ -191,6 +198,23 @@ def step_tileobjects():
         run([PY, script("tile_objects.py"), "--model", SID, "--pad", S["tileobj_pad"], "--tol", tol])
 
 
+def step_refine():
+    if not S["refine"]:
+        print("   refine disabled in SETTINGS"); return
+    if not (MD / "scene_tiles.json").exists():
+        print("   no scene_tiles.json - skipping"); return
+    cmd = [PY, script("refine_objects.py"), "--model", SID, "--smooth", S["refine_smooth"], "--gap", S["refine_gap"],
+           "--min-views", S["refine_min_views"]]
+    if not S["refine_predict"]:
+        cmd.append("--no-predict")
+    run(cmd, fatal=False)
+
+
+def refine_done():
+    out, src = MD / "scene_refined.json", MD / "scene_tiles.json"
+    return out.exists() and (not src.exists() or out.stat().st_mtime >= src.stat().st_mtime)
+
+
 def step_bake():
     cmd = [PY, script("texture_bake.py"), "--pano-dir", PANO, "--edge", S["bake_edge"],
            "--obj-edge", S["bake_obj_edge"], "--pano-width", S["bake_pano_width"]]
@@ -266,6 +290,7 @@ STEPS = [  # name, function, "done" check
     ("meshdiff", step_meshdiff, lambda: (MD / "objects_fused.json").exists()),
     ("prepare",  step_prepare,  lambda: False),           # cheap: always runs
     ("tileobjects", step_tileobjects, lambda: (MD / "scene_tiles.json").exists()),
+    ("refine",   step_refine,   refine_done),             # redone whenever the cuts are newer
     ("bake",     step_bake,     lambda: (MD / "empty_room_textured.obj").exists() and (MD / "pano_poses.json").exists()),
     ("carve",    step_carve,    lambda: (MD / "scene_shapes.json").exists()),
     ("sdk",      step_sdk,      lambda: False),           # cheap: always refreshes config.js
