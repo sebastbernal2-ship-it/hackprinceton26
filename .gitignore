@@ -26,3 +26,6 @@ __pycache__/
 costar-hackathon-kit-hackPrinceton/
 reports/
 *.jsonl
+
+# Model training outputs (local only)
+forecasting/artifacts/
