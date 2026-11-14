@@ -1,8 +1,10 @@
 """Price catalog. Only entries with a public source URL carry prices; the rest stay unknown (None)."""
 from __future__ import annotations
 
+import json
 import math
 from dataclasses import dataclass
+from pathlib import Path
 
 
 @dataclass(frozen=True)
@@ -16,6 +18,7 @@ class CatalogItem:
     as_of: str = ""  # ISO date the price was observed
     geography: str = ""
     limitations: str = ""
+    status: str = "observed"  # "observed" | "estimated"; estimated items use source_url "estimate://..."
 
     def __post_init__(self):
         if (self.price_low is None) != (self.price_high is None):
@@ -89,3 +92,51 @@ ITEMS: dict[str, CatalogItem] = {i.item_id: i for i in [
 
 def get(item_id: str) -> CatalogItem:
     return ITEMS[item_id]
+
+
+FINANCIAL_CATALOG_PATH = Path(__file__).resolve().parent.parent / "data" / "financial" / "catalog.json"
+ESTIMATE_URL = "estimate://neutral-band-v1"
+
+
+def load_financial_json(path: Path | None = None) -> dict:
+    return json.loads((path or FINANCIAL_CATALOG_PATH).read_text(encoding="utf-8"))
+
+
+def band(reference: float, kind: str, data: dict) -> tuple[float, float, float]:
+    """Neutral estimate band (low, expected, high); same multipliers for every site."""
+    b = data["estimateMethod"][kind]
+    return reference * b["low"], reference * b["expected"], reference * b["high"]
+
+
+def equipment_subtotal(data: dict) -> float:
+    return sum(e["listPrice"] * e.get("defaultQuantity", 1) for e in data["equipment"])
+
+
+def load_financial_catalog(path: Path | None = None) -> dict[str, CatalogItem]:
+    """Equipment, install allowance and repair unit costs from data/financial/catalog.json as CatalogItems.
+
+    Separate from ITEMS so the core catalog keeps its 'only sourced prices' invariant. Observed items have
+    low == high == the page price; estimated items carry the neutral band. Unknown repair categories stay unpriced."""
+    d = load_financial_json(path)
+    out: dict[str, CatalogItem] = {}
+    for e in d["equipment"]:
+        if e["priceStatus"] == "observed":
+            lo = ex = hi = e["listPrice"]
+        else:
+            lo, ex, hi = band(e["listPrice"], "costBand", d)
+        out[e["id"]] = CatalogItem(e["id"], f'{e["label"]} ({e["manufacturer"]} {e["model"]})', "each", lo, hi,
+                                   e["vendorUrl"] if e["priceStatus"] == "observed" else ESTIMATE_URL, d["asOf"],
+                                   "US online list price", e["priceNote"], e["priceStatus"])
+    ia = d["installAllowance"]
+    lo, _, hi = band(ia["referenceFractionOfEquipment"] * equipment_subtotal(d), "costBand", d)
+    out[ia["id"]] = CatalogItem(ia["id"], ia["label"], "lump_sum", lo, hi, ESTIMATE_URL, d["asOf"], "", ia["rationale"], "estimated")
+    for r in d["repairUnitCosts"]:
+        iid = f'repair:{r["category"]}'
+        if r["status"] == "unknown":
+            out[iid] = CatalogItem(iid, r["label"], r["unit"], limitations=r["rationale"], status="estimated")
+        elif r["status"] == "observed":
+            out[iid] = CatalogItem(iid, r["label"], r["unit"], r["low"], r["high"], r["sourceUrl"], d["asOf"], "residential published range", r["rationale"], "observed")
+        else:
+            lo, _, hi = band(r["reference"], "costBand", d)
+            out[iid] = CatalogItem(iid, r["label"], r["unit"], lo, hi, ESTIMATE_URL, d["asOf"], "", r["rationale"], "estimated")
+    return out
