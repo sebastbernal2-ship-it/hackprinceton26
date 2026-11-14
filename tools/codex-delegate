@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# Delegate a bounded task to Codex CLI from Claude Code.
+# Usage: tools/codex-delegate <review|ask|work> "<prompt>"   (review: optional base branch as prompt)
+#   review : read-only code review of the current branch vs main (or given base)
+#   ask    : read-only second opinion / research; prompt required
+#   work   : workspace-write implementation; ONLY run on a task branch/worktree with owned paths
+# Final message is written to $CODEX_OUT (default: $TMPDIR/codex-last.md) and printed.
+set -euo pipefail
+mode="${1:-}"; shift || true
+prompt="${*:-}"
+out="${CODEX_OUT:-${TMPDIR:-/tmp}/codex-last.md}"
+cd "$(git rev-parse --show-toplevel)"
+preamble="Follow AGENTS.md. Do not read or print .env, data/raw, or credentials. Do not commit, push, or merge. Be concise; report changed paths and verification."
+case "$mode" in
+  review) codex exec review --base "${prompt:-main}" -o "$out" </dev/null >/dev/null 2>&1 || codex exec review --base "${prompt:-main}" </dev/null ;;
+  ask)    [ -n "$prompt" ] || { echo "prompt required" >&2; exit 2; }
+          codex exec -s read-only --ephemeral -o "$out" "$preamble
+$prompt" >/dev/null 2>&1 </dev/null ;;
+  work)   [ -n "$prompt" ] || { echo "prompt required" >&2; exit 2; }
+          [ "$(git branch --show-current)" != "main" ] || { echo "refusing to run on main" >&2; exit 2; }
+          codex exec -s workspace-write -o "$out" "$preamble
+$prompt" >/dev/null 2>&1 </dev/null ;;
+  *) echo "usage: $0 <review|ask|work> [prompt]" >&2; exit 2 ;;
+esac
+[ -f "$out" ] && cat "$out"
