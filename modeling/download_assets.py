@@ -10,9 +10,9 @@ Nothing is generated or processed: files are saved exactly as served.
   Vexcel (optional)       orthophoto of the lot (needs VEXCEL_API_KEY; Houston/LA only)
 
   $env:MATTERPORT_API_KEY="..."; $env:MATTERPORT_API_TOKEN="..."
-  python Code\\download_assets.py                         # model zvKHR9DHNjJ, safe defaults
-  python Code\\download_assets.py --everything            # + full splat, all drone photos, MatterPak, 4k panos
-  python Code\\download_assets.py --list                  # show what exists and how big, download nothing
+  python modeling/download_assets.py                         # model zvKHR9DHNjJ, safe defaults
+  python modeling/download_assets.py --everything            # + full splat, all drone photos, MatterPak, 4k panos
+  python modeling/download_assets.py --list                  # show what exists and how big, download nothing
 
 Big items are opt-in: --splat (~550 MB), --drone all (~20 MB per photo, hundreds of photos),
 --matterpak (zip, can be GBs). Signed links expire after about an hour, so each section re-queries.

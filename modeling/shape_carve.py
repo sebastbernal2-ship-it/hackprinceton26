@@ -15,8 +15,8 @@ Outputs in mesh_diff/:
   scene_shapes.json           list of shapes + quality numbers (editor3d.html prefers these over boxes)
   shape_debug/obj_###.jpg     per-view contact sheet: photo crop | mask | carved shape projected (for tuning)
 
-    python Code\shape_carve.py                          # all furniture
-    python Code\shape_carve.py --ids 13 21 9 --debug    # a few objects, with debug sheets
+    python modeling/shape_carve.py                          # all furniture
+    python modeling/shape_carve.py --ids 13 21 9 --debug    # a few objects, with debug sheets
 Needs numpy + Pillow only.
 """
 import argparse, json, math, os, sys, time

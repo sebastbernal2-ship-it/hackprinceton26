@@ -9,9 +9,9 @@ Matterport panoramas, using the pano poses calibrated by pano_pipeline.py.
                   in the object's local frame so the editor can move/rotate it.
 
 Run from the repo root (after pano_pipeline.py and mesh_furniture_v2.py):
-    python Code\texture_bake.py
+    python modeling/texture_bake.py
 Writes into pano_<sid>/mesh_diff/:  empty_room_textured.obj, objects_tex/obj_###.obj, scene_textured.json
-OBJ colour format: "v x y z r g b" (0..1) - read by Code/editor3d.html, Blender and MeshLab.
+OBJ colour format: "v x y z r g b" (0..1) - read by modeling/editor3d.html, Blender and MeshLab.
 Needs numpy + Pillow only.
 """
 import argparse, glob, json, math, os, sys, time
