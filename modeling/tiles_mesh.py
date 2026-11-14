@@ -13,8 +13,8 @@ For each of assets_<sid>/tiles/furnished and .../defurnished:
             tiles/<label>_tex/tex_###.jpg textures
             tiles/<label>_mesh.json       frame used, counts, warnings
 
-    python Code\tiles_mesh.py                      # both labels
-    python Code\tiles_mesh.py --labels furnished   # one
+    python modeling/tiles_mesh.py                      # both labels
+    python modeling/tiles_mesh.py --labels furnished   # one
 Needs numpy + Pillow (+ DracoPy only if the tiles are Draco-compressed).
 """
 import argparse, glob, io, json, math, os, struct, sys, time

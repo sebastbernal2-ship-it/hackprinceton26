@@ -8,8 +8,8 @@ the *defurnished* mesh. Anything that exists in the first but not in the second 
 furniture. It is clustered into objects, fused with the panorama boxes from
 pano_pipeline.py, and exported so each object can be moved around the empty mesh.
 
-    python Code\mesh_furniture.py          (run from the repo root; finds the meshes itself)
-    python Code\mesh_furniture.py --furnished <obj> --empty <obj> --pano-dir pano_<sid>   (explicit)
+    python modeling/mesh_furniture.py          (run from the repo root; finds the meshes itself)
+    python modeling/mesh_furniture.py --furnished <obj> --empty <obj> --pano-dir pano_<sid>   (explicit)
 
 Outputs (in <pano-dir>/mesh_diff/ unless --out):
     objects_fused.json    same schema as objects.json -> loads in planner.html / splat_remove.py
