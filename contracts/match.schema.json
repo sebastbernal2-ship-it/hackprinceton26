@@ -1,0 +1,195 @@
+{
+  "$defs": {
+    "Fact": {
+      "properties": {
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "value": {
+          "title": "Value",
+          "type": "string"
+        }
+      },
+      "required": [
+        "label",
+        "value"
+      ],
+      "title": "Fact",
+      "type": "object"
+    },
+    "FactorCard": {
+      "properties": {
+        "asOf": {
+          "title": "Asof",
+          "type": "string"
+        },
+        "factorId": {
+          "title": "Factorid",
+          "type": "string"
+        },
+        "geography": {
+          "title": "Geography",
+          "type": "string"
+        },
+        "limitations": {
+          "title": "Limitations",
+          "type": "string"
+        },
+        "recordId": {
+          "title": "Recordid",
+          "type": "string"
+        },
+        "source": {
+          "title": "Source",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "observed",
+            "derived",
+            "estimated",
+            "unknown"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "unit": {
+          "title": "Unit",
+          "type": "string"
+        },
+        "value": {
+          "title": "Value",
+          "type": "string"
+        }
+      },
+      "required": [
+        "factorId",
+        "status",
+        "value",
+        "unit",
+        "source",
+        "recordId",
+        "asOf",
+        "geography",
+        "limitations"
+      ],
+      "title": "FactorCard",
+      "type": "object"
+    },
+    "SpaceFacts": {
+      "properties": {
+        "location": {
+          "items": {
+            "$ref": "#/$defs/Fact"
+          },
+          "title": "Location",
+          "type": "array"
+        },
+        "photos": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Photos",
+          "type": "array"
+        },
+        "property": {
+          "items": {
+            "$ref": "#/$defs/Fact"
+          },
+          "title": "Property",
+          "type": "array"
+        }
+      },
+      "required": [
+        "photos",
+        "property",
+        "location"
+      ],
+      "title": "SpaceFacts",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "address": {
+      "title": "Address",
+      "type": "string"
+    },
+    "blurb": {
+      "title": "Blurb",
+      "type": "string"
+    },
+    "city": {
+      "title": "City",
+      "type": "string"
+    },
+    "detail": {
+      "title": "Detail",
+      "type": "string"
+    },
+    "evidenceReadiness": {
+      "title": "Evidencereadiness",
+      "type": "integer"
+    },
+    "factors": {
+      "items": {
+        "$ref": "#/$defs/FactorCard"
+      },
+      "title": "Factors",
+      "type": "array"
+    },
+    "facts": {
+      "$ref": "#/$defs/SpaceFacts"
+    },
+    "listingId": {
+      "title": "Listingid",
+      "type": "integer"
+    },
+    "photo": {
+      "title": "Photo",
+      "type": "string"
+    },
+    "rentPerSquareFootYear": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Rentpersquarefootyear"
+    },
+    "squareFeet": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Squarefeet"
+    },
+    "tourId": {
+      "title": "Tourid",
+      "type": "string"
+    }
+  },
+  "required": [
+    "listingId",
+    "address",
+    "detail",
+    "city",
+    "blurb",
+    "photo",
+    "tourId",
+    "evidenceReadiness",
+    "facts",
+    "factors"
+  ],
+  "title": "Match",
+  "type": "object"
+}

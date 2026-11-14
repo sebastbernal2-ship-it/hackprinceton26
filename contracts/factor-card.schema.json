@@ -1,0 +1,59 @@
+{
+  "properties": {
+    "asOf": {
+      "title": "Asof",
+      "type": "string"
+    },
+    "factorId": {
+      "title": "Factorid",
+      "type": "string"
+    },
+    "geography": {
+      "title": "Geography",
+      "type": "string"
+    },
+    "limitations": {
+      "title": "Limitations",
+      "type": "string"
+    },
+    "recordId": {
+      "title": "Recordid",
+      "type": "string"
+    },
+    "source": {
+      "title": "Source",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "observed",
+        "derived",
+        "estimated",
+        "unknown"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "unit": {
+      "title": "Unit",
+      "type": "string"
+    },
+    "value": {
+      "title": "Value",
+      "type": "string"
+    }
+  },
+  "required": [
+    "factorId",
+    "status",
+    "value",
+    "unit",
+    "source",
+    "recordId",
+    "asOf",
+    "geography",
+    "limitations"
+  ],
+  "title": "FactorCard",
+  "type": "object"
+}
