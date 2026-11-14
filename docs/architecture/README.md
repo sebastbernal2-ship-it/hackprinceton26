@@ -1,49 +1,55 @@
-# Project structure and integration approach
+# Integration architecture
 
-The product vision is cross-layer; the initial implementation should keep source domains independently understandable and testable. This structure is a starting proposal, not a commitment to a particular framework or API implementation.
+The product is cross-layer, but source capabilities should be built and validated independently before composition. This is a logical modularity plan, not a mandate to create microservices. Start in one application/repository unless implementation evidence justifies more infrastructure.
 
-## Capability areas
+## Capability boundaries
 
-- `market-property/` — CoStar property and market data ingestion, normalization, provenance, and standalone analysis.
-- `interior-spatial/` — Matterport tours/scans, geometry and measurements, spatial fit/projection, and standalone validation.
-- `aerial-site/` — Vexcel imagery and derived site observations, with observed facts separated from model inferences.
-- `business-profile/` — operator requirements, business-specific equipment/layout templates, workflows, and user preferences.
-- `planning/` — scenario comparison, Pareto-style trade-off analysis, cost-and-impact feedback, and diligence outputs.
-- `integration/` — shared property identity, spatial alignment, cross-layer evidence references, and composed workflows.
+- `market-property/` — CoStar property/market data retrieval, normalization, provenance, and standalone analysis.
+- `interior-spatial/` — Matterport tour/scan access, geometry, measurements, spatial observations, and layout projection.
+- `aerial-site/` — Vexcel imagery and derived site observations; distinguish visible evidence from inference.
+- `business-profile/` — operator requirements, prior business layout/equipment templates, workflows, and preferences.
+- `planning/` — proposal generation, scenario comparison, Pareto-style trade-offs, costing inputs, and diligence actions.
+- `integration/` — cross-source property matching, spatial alignment, evidence composition, and cross-layer workflows.
 
-These names describe logical ownership boundaries. They may initially live in one application/repository; do not create unnecessary services or infrastructure before the prototype needs them.
+These are ownership boundaries and can begin as folders/modules. Do not pull unrelated repositories, frameworks, or services into the project without a concrete need. Keep external SDKs and source adapters behind narrow interfaces so sponsor tooling can be changed without rewriting product logic.
 
-## Integration contract
+## Source result contract
 
-Each source capability should expose a standalone result with:
+Each source adapter should return a standalone, typed result that preserves:
 
-- stable property/site reference where available, plus matching confidence;
-- source, timestamp, geographic/spatial scope, and access/provenance metadata;
-- measurements or claims with units and an explicit observed / derived / estimated / unknown status;
-- confidence, limitations, and links to supporting evidence;
-- a clear representation of missing, stale, or conflicting data.
+- source/provider and source record identifiers;
+- matched property/site identity and match confidence (never assume address match is certain);
+- retrieval time, source timestamp, geographic/spatial scope, and applicable data-use constraints;
+- each observation with value, unit, and status: `observed`, `derived`, `estimated`, or `unknown`;
+- supporting evidence/reference, confidence, limitations, and error/missing/stale state.
 
-The integration layer composes these results; it must not erase source distinctions. Cross-layer conclusions should cite the contributing inputs and explain the inference. Never imply that aerial imagery or a virtual scan proves hidden structural, environmental, or regulatory conditions.
+Do not silently merge conflicting values or turn missing data into a negative finding. Keep raw/source evidence distinct from normalized facts and derived claims. Cross-layer conclusions must cite their input observations and explain the inference.
 
-## Demo-oriented agent architecture
+## Planning and cost boundaries
 
-A possible interaction pattern has two roles, which may be implemented as modules rather than separate autonomous agents:
+The planner accepts structured business requirements plus source results and returns a typed proposal: layout/equipment items, spatial quantities, fit constraints, assumptions, and unresolved questions. Use conventional geometry and deterministic rules where possible. The UI/guide gathers preferences and explains outputs; it should not invent evidence.
 
-- **Source-specific research workers:** independently retrieve/normalize CoStar, Matterport, Vexcel, or relevant public-data evidence and return structured, provenance-bearing results. Keep each worker scoped to a data layer; do not make every per-property worker an opaque all-sources pipeline.
-- **Planner:** receives the operator's structured requirements and composed evidence; proposes a bounded layout/scenario and returns a typed plan (geometry/quantities, furniture/equipment, assumptions, unresolved constraints).
-- **User-facing guide:** gathers preferences, explains the selected property and proposed plan, and presents evidence and trade-offs in the interface.
+Cost calculation is a separate deterministic module over the typed proposal and a transparent price catalog. Record quantities, units, source/date, low/high range, contingency, and unknowns. Model occupancy, one-time build-out, and delay-related costs separately. Never use free-form LLM arithmetic as the authoritative estimate. A benchmark occupancy ratio is not break-even analysis; any operating scenario needs explicit assumptions and must not be presented as a forecast.
 
-Cost estimation should be a separate deterministic calculation over planner outputs and a transparent price/quantity catalog—not free-form LLM-generated arithmetic. A benchmark such as occupancy cost as a share of sales is not break-even analysis. Any operating model needs explicit revenue and expense assumptions and must be presented as a scenario, not a forecast. Use conventional geometry and data processing wherever possible; use language models for interpreting user intent, planning bounded actions, and explaining results.
+## Agent orchestration
 
-If parallel research workers are used, give each a narrowly scoped data task and structured output. Run them with timeouts and caching; surface partial results and fall back to prepared data so the demo remains responsive. A short judged demo cannot depend on an unbounded live research chain. Cache candidate-site evidence ahead of time and reserve live execution for one visible, bounded re-plan.
+If agents are used, keep research workers source-specific and give them narrow tasks with structured outputs. A planner composes their results; avoid opaque per-property agents that independently fetch and blend every source. Use bounded timeouts, caching, partial-result handling, and prepared demo fallbacks. Reserve live execution for a small, visible re-plan.
 
-## Suggested development sequence
+## Suggested implementation sequence
 
-1. Verify sponsor APIs, SDKs, sample formats, terms, and actual coverage for the selected property.
-2. Build and validate one small standalone workflow per available data layer.
-3. Define shared property identity and spatial alignment using real sample records; document mismatches and uncertainty.
-4. Implement the business-specific kitchen projection as a focused spatial workflow, validating dimensions against a known floor plan or measured space.
-5. Add one cross-layer scenario that yields a measurable business consequence, such as layout feasibility plus a transparent cost range.
-6. Expand toward site-to-operations simulation, Pareto-style alternatives, and agentic diligence based on operator feedback.
+1. Verify sponsor API/SDK access, terms, sample schemas, and candidate-site coverage.
+2. Build a minimal adapter and standalone evidence view for each source actually used.
+3. Define property matching and provenance using real records; document ambiguity and missingness.
+4. Validate scan-derived dimensions against a published plan or measured space.
+5. Implement a focused business-specific kitchen projection and typed plan output.
+6. Add deterministic itemized cost ranges and one actionable verification/negotiation output.
+7. Compose at least two data layers into one explainable scenario and demonstrate one evidence-triggered re-plan.
+8. Expand to Pareto alternatives and wider site-to-operations workflows only after the narrow end-to-end slice works.
 
-For the hackathon, folders are organizational boundaries, not a mandate to implement all six areas. Prioritize a coherent, demonstrable slice and preserve the seams needed to add other layers later.
+## Repository integration rules
+
+- Keep feature work within its owned module/folder and expose stable interfaces.
+- Agree on shared types/contracts before parallel changes depend on them.
+- Avoid multiple contributors editing the same files concurrently; coordinate cross-boundary changes explicitly.
+- Integrate small, reviewable changes on `main` in this pre-development phase, as the team requested. When concurrent implementation begins, use the team's agreed GitHub workflow and keep `main` buildable.
+- Prefer project-owned code and documentation; vendor or copy external code only when licensed, necessary, and reviewed.
