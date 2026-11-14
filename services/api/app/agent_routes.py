@@ -19,6 +19,7 @@ from agent.tools import LiveEnv  # noqa: E402
 
 router = APIRouter()
 FIXTURE = ROOT / "agent" / "fixtures" / "replay.synthetic.json"
+SANITIZED = ROOT / "agent" / "fixtures" / "replay.local-qwen.sanitized.json"
 
 
 class RunRequest(BaseModel):
@@ -82,16 +83,24 @@ def agent_run(req: RunRequest):
 @router.get("/api/agent/replay")
 def agent_replay(delay: float = 0.0, source: str = "auto"):
     """Replays a recorded trace. 'local' = last recorded run on local data (not committed); 'fixture' = SYNTHETIC."""
+    # Three tiers: the unmasked local recording (gitignored, real), then the committed sanitized recording of the same
+    # run (addresses and ids masked), then the synthetic fixture.
     p = _local_replay_path()
-    use_local = source in ("auto", "local") and p.is_file()
-    path = p if use_local else FIXTURE
+    if source in ("auto", "local") and p.is_file():
+        path, kind = p, "local-recorded-run"
+    elif source in ("auto", "sanitized") and SANITIZED.is_file():
+        path, kind = SANITIZED, "recorded-run-sanitized"
+    else:
+        path, kind = FIXTURE, "SYNTHETIC-fixture"
     if not path.is_file():
         err = {"type": "error", "mode": "NONE", "message": "no recorded trace available"}
         return StreamingResponse(_sse([err]), media_type="text/event-stream")
     events = json.loads(path.read_text())
     first = events[0] if events and isinstance(events[0], dict) else {}
-    note = {"type": "replay_info", "mode": "REPLAY", "source": "local-recorded-run" if use_local else "SYNTHETIC-fixture",
-            "note": "Recorded trace replayed; not a live run." + ("" if use_local else " Values are synthetic."),
+    notes = {"local-recorded-run": "Recorded trace replayed; not a live run.",
+             "recorded-run-sanitized": "Recorded trace replayed; not a live run. Property addresses and ids are masked for public display.",
+             "SYNTHETIC-fixture": "Recorded trace replayed; not a live run. Values are synthetic."}
+    note = {"type": "replay_info", "mode": "REPLAY", "source": kind, "note": notes[kind],
             "recordedFrom": {"originalMode": first.get("mode"), "provider": first.get("provider"), "model": first.get("model"),
                              "date": first.get("date")}}
     return StreamingResponse(_sse(itertools.chain([note], runner.replay(events, min(max(delay, 0.0), 2.0)))), media_type="text/event-stream")
