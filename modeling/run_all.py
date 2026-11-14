@@ -4,7 +4,7 @@ run_all.py - run the whole HackPrinceton pipeline, one step after another, with 
 
     python run_all.py                 # run every step that is not already done
     python run_all.py --force         # redo every step
-    python run_all.py --from bake     # start at a step (download, matterpak, fetch, tiles, pipeline, meshdiff, prepare, tileobjects, refine, bake, carve, walk, sdk, serve)
+    python run_all.py --from bake     # start at a step (download, matterpak, fetch, tiles, pipeline, meshdiff, prepare, tileobjects, refine, bake, carve, walk, catalog, sdk, serve)
     python run_all.py --only meshdiff # run one step
     python run_all.py --list          # show the steps and whether each is done
     python run_all.py --only serve    # just start the local server and open the studio
@@ -235,8 +235,23 @@ def step_carve():
     run(cmd)
 
 
+def step_catalog():
+    """Download the CC0 furniture catalogue (Poly Haven) that walk.html can place into the scene. Once; ~130 MB."""
+    run([PY, script("fetch_catalog.py")], fatal=False)
+
+
+def walk_done():
+    """walk.html's pack is current when it is newer than everything it is built from."""
+    out = ASSETS / "walk" / "meta.json"
+    if not out.exists():
+        return False
+    srcs = [TILES / "furnished_mesh.npz", MD / "objects.json", MD / "scene_tiles.json", MD / "empty_room_textured.obj",
+            MD / "pano_poses.json", CODE / "walk_export.py"]
+    return all(out.stat().st_mtime >= s.stat().st_mtime for s in srcs if s.exists())
+
+
 def step_walk():
-    """Pack the furnished mesh for walk.html (first-person walk-through). Cheap, so it always refreshes."""
+    """Pack the furnished mesh + movable furniture pieces for walk.html (first-person walk-through)."""
     if not (TILES / "furnished_mesh.npz").exists():
         print("   no furnished mesh (matterpak / tiles step) - skipping the walk-through"); return
     run([PY, script("walk_export.py"), "--model", SID], fatal=False)
@@ -266,20 +281,43 @@ def step_sdk():
 
 def step_serve():
     """Serve the repo on localhost and open the studio. Runs until you press Ctrl+C."""
-    import http.server, functools, threading
-    port = S["serve_port"]
+    import http.server, functools, json, threading
+    port = int(os.environ.get("HP_SERVE_PORT") or S["serve_port"])
     class NoCache(http.server.SimpleHTTPRequestHandler):
         def end_headers(self):                       # never let the browser run a stale page/script
             self.send_header("Cache-Control", "no-store, max-age=0")
             super().end_headers()
         def log_message(self, *a):
             pass
+        def do_POST(self):
+            """POST /api/agent: one Gemini call for walk.html's AI scene editing (modeling/scene_agent.py holds the key)."""
+            origin = self.headers.get("Origin") or ""
+            # only our own pages: a custom header forces a CORS preflight, which this server never approves,
+            # so another website open in the browser cannot spend the API key
+            if (self.path != "/api/agent" or self.headers.get("X-Walk-Agent") != "1"
+                    or (origin and not origin.startswith(("http://localhost:", "http://127.0.0.1:")))):
+                self.send_error(403); return
+            try:
+                body = json.loads(self.rfile.read(int(self.headers.get("Content-Length") or 0)) or b"{}")
+                sys.path.insert(0, str(CODE)); import scene_agent        # noqa: E402
+                status, out = scene_agent.handle(body)
+            except Exception as e:                   # noqa: BLE001 - report, keep serving
+                status, out = 500, {"error": f"{type(e).__name__}: {e}"}
+            data = json.dumps(out).encode()
+            self.send_response(status); self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(data))); self.end_headers(); self.wfile.write(data)
     handler = functools.partial(NoCache, directory=str(ROOT))
     httpd = http.server.ThreadingHTTPServer(("127.0.0.1", port), handler)
     base = f"http://localhost:{port}"
     rel = Path(os.path.relpath(CODE, ROOT)).as_posix()   # URL prefix of this folder under the served root
     print(f"   studio : {base}/{rel}/studio.html   (the page title shows its version)")
     print(f"   editor : {base}/{rel}/editor3d.html  (choose the folder {MD})")
+    print(f"   walk   : {base}/{rel}/walk.html?model={SID}  (first-person walk-through)")
+    has_key = bool(os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY"))
+    print(f"   AI     : walk.html's prompt bar -> /api/agent "
+          f"({'ready' if has_key else 'needs GEMINI_API_KEY in .env'})")
+    if os.environ.get("HP_NO_BROWSER"):
+        S["open_studio"] = S["open_editor"] = False
     if S["open_studio"]:
         threading.Timer(1.0, lambda: webbrowser.open(base + f"/{rel}/studio.html")).start()
     if S["open_editor"]:
@@ -304,7 +342,8 @@ STEPS = [  # name, function, "done" check
     ("refine",   step_refine,   refine_done),             # redone whenever the cuts are newer
     ("bake",     step_bake,     lambda: (MD / "empty_room_textured.obj").exists() and (MD / "pano_poses.json").exists()),
     ("carve",    step_carve,    lambda: (MD / "scene_shapes.json").exists()),
-    ("walk",     step_walk,     lambda: False),           # cheap: always repacks the walk-through mesh
+    ("walk",     step_walk,     walk_done),               # repacks when the mesh / pieces / photos change
+    ("catalog",  step_catalog,  lambda: (ROOT / "assets_catalog" / "catalog.json").exists()),
     ("sdk",      step_sdk,      lambda: False),           # cheap: always refreshes config.js
     ("serve",    step_serve,    lambda: False),
 ]
