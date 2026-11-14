@@ -3,6 +3,7 @@ import re
 from fastapi import FastAPI, HTTPException
 
 from . import inspection_routes, projections, stubs
+from .costs_routes import router as costs_router
 from .loader import load_matches
 from .models import (
     AssessRequest, ProjectionsResponse, ScenarioAssessment,
@@ -12,6 +13,7 @@ from .models import (
 
 app = FastAPI(title="Site evidence API")
 app.include_router(inspection_routes.router)
+app.include_router(costs_router)
 LIMIT = 3
 
 
