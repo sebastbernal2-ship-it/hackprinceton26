@@ -1,0 +1,9 @@
+.env
+.env.*
+.cache/
+reports/
+__pycache__/
+
+# CoStar kit files over GitHub's size limits (100 MB hard limit, 50 MB warning)
+costar-hackathon-kit-hackPrinceton/data/commercial-property.jsonl
+costar-hackathon-kit-hackPrinceton/data/location-occupancy.jsonl
