@@ -4,14 +4,18 @@ The product is cross-layer, but source capabilities should be built and validate
 
 ## Capability boundaries
 
-- `market-property/` — CoStar property/market data retrieval, normalization, provenance, and standalone analysis.
-- `interior-spatial/` — Matterport tour/scan access, geometry, measurements, spatial observations, and layout projection.
-- `aerial-site/` — Vexcel imagery and derived site observations; distinguish visible evidence from inference.
-- `business-profile/` — operator requirements, prior business layout/equipment templates, workflows, and preferences.
-- `planning/` — proposal generation, scenario comparison, Pareto-style trade-offs, costing inputs, and diligence actions.
-- `integration/` — cross-source property matching, spatial alignment, evidence composition, and cross-layer workflows.
+The code is one repository with module folders, not microservices. Each folder owns one capability behind a narrow interface:
 
-These are ownership boundaries and can begin as folders/modules. Do not pull unrelated repositories, frameworks, or services into the project without a concrete need. Keep external SDKs and source adapters behind narrow interfaces so sponsor tooling can be changed without rewriting product logic.
+- `data/` (with `data/factors/*`) - CoStar property/market normalization, per-factor adapters, factor cards, provenance. Sponsor data stays local.
+- `modeling/`, `capture/`, `walkthrough/` - interior spatial evidence: Matterport pipeline, phone-video scene capture, and the viewer. Not wired to the API.
+- Aerial/Vexcel - no code; access returned 403, so aerial evidence is unknown for all sites.
+- `assets/` - the equipment/furniture catalog; `config/published_sources.json` - the list of published sources.
+- `planning/` - deterministic cost, timeline, Monte Carlo and sensitivity; `forecasting/` - gated time-series cards and an exploratory survival model.
+- `inspection/` - vision and geometry defect findings, anchored in 3D, linked to costs.
+- `integration/` - brief parsing and the three-valued constraint filter that composes evidence.
+- `services/api/` and `contracts/` - the HTTP surface and generated JSON Schemas; `foreground/` is the only UI client.
+
+Do not pull unrelated repositories, frameworks, or services into the project without a concrete need. Keep external SDKs and source adapters behind narrow interfaces so sponsor tooling can be changed without rewriting product logic.
 
 ## Source result contract
 
@@ -51,5 +55,5 @@ If agents are used, keep research workers source-specific and give them narrow t
 - Keep feature work within its owned module/folder and expose stable interfaces.
 - Agree on shared types/contracts before parallel changes depend on them.
 - Avoid multiple contributors editing the same files concurrently; coordinate cross-boundary changes explicitly.
-- Integrate small, reviewable changes on `main` in this pre-development phase, as the team requested. When concurrent implementation begins, use the team's agreed GitHub workflow and keep `main` buildable.
+- Integrate through short-lived branches and pull requests; keep `main` buildable and CI green (see [development workflow](../development/workflow.md)).
 - Prefer project-owned code and documentation; vendor or copy external code only when licensed, necessary, and reviewed.
