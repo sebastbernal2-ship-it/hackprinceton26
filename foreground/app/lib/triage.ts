@@ -60,6 +60,14 @@ async function get<T>(path: string): Promise<T | null> {
     return null;
   }
 }
+export type DemoSite = {
+  listingId: number; address: string; city: string; tourId: string; hasScan: boolean; hasAerial: boolean;
+  fieldsWithEvidence: number; fieldsTotal: number; completeness: number; evidenceReadiness: number;
+};
+export type DemoSitesResponse = { notice: string; sites: DemoSite[] };
+export const fetchDemoSites = (limit = 6) => get<DemoSitesResponse>(`/triage/demo-sites?limit=${limit}`);
+/** One candidate as the Discover list shows it; used to open a demo site directly. */
+export const fetchProperty = (id: number) => get<import("./matches").Match>(`/property/${id}`);
 export const fetchTriage = (id: number) => get<TriageResult>(`/triage/property/${id}`);
 export const fetchQueue = (limit = 12) => get<QueueResponse>(`/triage/queue?limit=${limit}`);
 export const fetchAerial = (id: number) => get<AerialResult>(`/aerial/${id}`);

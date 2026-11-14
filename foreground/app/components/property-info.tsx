@@ -151,6 +151,8 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
 
         <FactorCards factors={match.factors ?? []} demo={match.demo} />
 
+        {!match.demo && <TriagePanel listingId={match.listingId} />}
+
         {!match.demo && <Projections listingId={match.listingId} />}
 
         {!match.demo && <InspectionPanel listingId={match.listingId} onData={setFindings} />}
@@ -160,7 +162,6 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
         {!match.demo && <StructurePanel listingId={match.listingId} />}
 
         {!match.demo && <CostPanel listingId={match.listingId} onData={setLines} />}
-        {!match.demo && <TriagePanel listingId={match.listingId} />}
         {!match.demo && <FinancePanel listingId={match.listingId} />}
         {!match.demo && <ActChecklist findings={findings} factors={match.factors ?? []} lines={lines} />}
 

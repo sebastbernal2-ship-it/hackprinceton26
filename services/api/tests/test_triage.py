@@ -129,3 +129,32 @@ def test_reconcile_reads_aerial_from_the_builders_properties_directory(tmp_path)
     (tmp_path / "aerial" / "properties" / "7.json").write_text(json.dumps({"listingId": "7", "vehicles": {"expected": 12}}))
     assert load_aerial(tmp_path, "7")["vehicles"]["expected"] == 12
     assert load_aerial(tmp_path, "8") is None
+
+
+def _res(lid, statuses, scan=True, aerial=False):
+    return {"listingId": lid, "hasScan": scan, "hasAerial": aerial,
+            "fields": [{"field": f"f{i}", "status": s} for i, s in enumerate(statuses)]}
+
+
+def test_demo_sites_sorted_by_evidence_completeness_not_fit(tmp_path, monkeypatch):
+    FIX = Path(__file__).parent / "fixtures"
+    monkeypatch.setenv("COSTAR_NORMALIZED_DIR", str(FIX))
+    monkeypatch.setenv("TRIAGE_DERIVED_DIR", str(tmp_path))
+    (tmp_path / "results.json").write_text(json.dumps([
+        _res("900001", ["unverified", "unverified", "blank-unfillable", "unverified"]),
+        _res("900002", ["confirmed", "filled", "conflicting", "unverified"]),
+        _res("555555", ["confirmed", "confirmed", "confirmed", "confirmed"]),  # not in the candidate registry: cannot open, so not offered
+    ]))
+    r = client.get("/api/triage/demo-sites?limit=5")
+    assert r.status_code == 200
+    body = r.json()
+    assert [s["listingId"] for s in body["sites"]] == [900002, 900001]
+    top = body["sites"][0]
+    assert top["fieldsWithEvidence"] == 3 and top["fieldsTotal"] == 4 and top["completeness"] == 0.75
+    assert "not a fit ranking" in body["notice"].lower()
+    assert "address" in top and "tourId" in top
+
+
+def test_demo_sites_503_when_triage_not_built(tmp_path, monkeypatch):
+    monkeypatch.setenv("TRIAGE_DERIVED_DIR", str(tmp_path))
+    assert client.get("/api/triage/demo-sites").status_code == 503

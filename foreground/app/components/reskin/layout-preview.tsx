@@ -41,12 +41,12 @@ export default function LayoutPreview({ result, dims }: { result: ReskinResult; 
       <svg viewBox={`${b.x0 - pad} ${b.y0 - pad} ${W} ${H}`} role="img" aria-label={`Top-down layout preview, ${side === "to" ? result.toConcept : result.fromConcept} materials`}
         className="mt-3 w-full max-w-2xl rounded-xl" style={{ background: pal.ceiling.hex }}>
         <rect x={b.x0 - pad * 0.5} y={b.y0 - pad * 0.5} width={W - pad} height={H - pad} fill={pal.floor.hex} stroke={pal.wall.hex} strokeWidth={0.18} />
-        {boxes.map((x) => {
+        {boxes.map((x, i) => {
           const rotated = x.rot % 180 !== 0;
           const w = rotated ? x.d : x.w;
           const d = rotated ? x.w : x.d;
           return (
-            <g key={x.id}>
+            <g key={`${x.id}-${i}`}>
               <rect x={x.x} y={x.y} width={w} height={d} rx={0.05}
                 fill={x.kind === "added" ? pal.accent.hex : "#f4f1ea"} fillOpacity={x.kind === "added" ? 0.95 : 0.8}
                 stroke="#1b1a17" strokeWidth={0.03} strokeDasharray={x.dimsKnown ? undefined : "0.1 0.07"} />

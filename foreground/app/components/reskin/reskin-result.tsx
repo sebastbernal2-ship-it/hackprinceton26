@@ -1,7 +1,7 @@
 "use client";
 
 import { BASIS_LABEL, money } from "../../lib/costs";
-import { costSummary, type ReskinResult } from "../../lib/reskin";
+import { costSummary, groupEquipment, type ReskinResult } from "../../lib/reskin";
 import Badge from "./badge";
 import LayoutPreview from "./layout-preview";
 
@@ -20,9 +20,9 @@ export default function ReskinResultView({ result, dims }: { result: ReskinResul
         <section aria-labelledby="removed-h">
           <h3 id="removed-h" className="text-sm font-medium">Removed ({result.removed.length})</h3>
           <ul className="mt-2 space-y-1.5 text-sm">
-            {result.removed.map((e, i) => (
-              <li key={`${e.assetId}-${i}`} className="flex items-start justify-between gap-3">
-                <span>{e.name}</span><Badge kind={e.dimsStatus}>dims {e.dimsStatus}</Badge>
+            {groupEquipment(result.removed).map((e) => (
+              <li key={e.assetId} className="flex items-start justify-between gap-3">
+                <span>{e.name}{e.count > 1 ? <span className="text-foreground/50"> x {e.count}</span> : null}</span><Badge kind={e.dimsStatus}>dims {e.dimsStatus}</Badge>
               </li>
             ))}
             {result.removed.length === 0 && <li className="text-foreground/50">Nothing removed.</li>}
@@ -31,9 +31,9 @@ export default function ReskinResultView({ result, dims }: { result: ReskinResul
         <section aria-labelledby="added-h">
           <h3 id="added-h" className="text-sm font-medium">Added ({result.added.length})</h3>
           <ul className="mt-2 space-y-1.5 text-sm">
-            {result.added.map((e, i) => (
-              <li key={`${e.assetId}-${i}`} className="flex items-start justify-between gap-3">
-                <span>{e.name}</span><Badge kind={e.dimsStatus}>dims {e.dimsStatus}</Badge>
+            {groupEquipment(result.added).map((e) => (
+              <li key={e.assetId} className="flex items-start justify-between gap-3">
+                <span>{e.name}{e.count > 1 ? <span className="text-foreground/50"> x {e.count}</span> : null}</span><Badge kind={e.dimsStatus}>dims {e.dimsStatus}</Badge>
               </li>
             ))}
             {result.unplaced.length > 0 && <li className="text-accent">{result.unplaced.length} item(s) could not be placed in the space.</li>}
@@ -50,8 +50,8 @@ export default function ReskinResultView({ result, dims }: { result: ReskinResul
           <table className="w-full text-left text-sm">
             <thead className="text-xs text-foreground/50"><tr><th className="py-1 pr-3 font-normal">Line</th><th className="pr-3 font-normal">Status</th><th className="pr-3 font-normal">Range</th><th className="font-normal">Basis</th></tr></thead>
             <tbody>
-              {result.costDelta.lines.map((l) => (
-                <tr key={l.itemId} className="border-t border-foreground/10 align-top" title={l.rationale}>
+              {result.costDelta.lines.map((l, li) => (
+                <tr key={`${l.itemId}-${li}`} className="border-t border-foreground/10 align-top" title={l.rationale}>
                   <td className="py-1.5 pr-3">{l.label}</td>
                   <td className="pr-3"><Badge kind={l.status} /></td>
                   <td className="pr-3 tabular-nums">{range(l)}</td>
