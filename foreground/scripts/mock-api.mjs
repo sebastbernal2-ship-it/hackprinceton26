@@ -58,6 +58,19 @@ function assess(assumptions, listingId) {
   };
 }
 
+
+// Inspection and cost mocks: FIXTURE data for UI testing, not from any property.
+const FINDINGS = [
+  { id: "f1", roomId: "r1", category: "ceiling_water_damage", title: "Possible ceiling stain", description: "Discoloured patch near the ceiling in the panorama (mock).", severity: "high", modelConfidence: 0.6, evidence: { source: "panorama", ref: "mock-pano-1", region: { x: 0.2, y: 0.1, w: 0.2, h: 0.1 } }, canConfirmFromImagery: false, verificationStep: "Inspect roof and plumbing above; moisture-meter the area.", costLineItemIds: ["c1"] },
+  { id: "f2", roomId: null, category: "layout_inefficiency", title: "Long corridor with little usable area", description: "Floorplan geometry suggests circulation space (mock).", severity: "low", modelConfidence: 0.4, evidence: { source: "floorplan_geometry", ref: "mock-plan", region: null }, canConfirmFromImagery: true, verificationStep: "Measure usable area against the plan.", costLineItemIds: [] },
+];
+const LINES = [
+  { itemId: "c1", label: "Ceiling repair and repaint", category: "repair", quantity: 40, unit: "sq ft", low: 800, expected: 1600, high: 3200, currency: "USD", basis: "one_time", status: "estimated", source: "mock method", asOf: "2026-01-01", rationale: "Mock: area times a neutral per-sq-ft range." },
+  { itemId: "c2", label: "Electricity", category: "utility", quantity: null, unit: "", low: 300, expected: 450, high: 700, currency: "USD", basis: "monthly", status: "estimated", source: "mock method", asOf: "2026-01-01", rationale: "Mock: area times a regional rate range." },
+  { itemId: "c3", label: "Commercial HVAC unit", category: "equipment", quantity: 1, unit: "unit", low: null, expected: null, high: null, currency: "USD", basis: "one_time", status: "unknown", source: "none", asOf: "2026-01-01", rationale: "No price basis found." },
+];
+const sum = (basis, k) => LINES.filter((l) => l.basis === basis && l.expected !== null).reduce((a, l) => a + l[k], 0);
+
 const send = (res, code, body) => {
   res.writeHead(code, { "content-type": "application/json" });
   res.end(JSON.stringify(body));
@@ -85,6 +98,15 @@ createServer(async (req, res) => {
   if (req.method === "GET" && proj) {
     const none = process.env.MOCK_PROJ === "none";
     return send(res, 200, { listingId: Number(proj[1]), modelsAvailable: !none, projections: none ? [] : PROJECTIONS, note: none ? "Models are not available." : "" });
+  }
+  const insp = url.pathname.match(/^\/api\/property\/(\d+)\/inspection$/);
+  if (req.method === "GET" && insp) {
+    if (process.env.MOCK_INSPECTION === "none") return send(res, 200, { findings: [], mode: "none", notice: "No panorama was available." });
+    return send(res, 200, { findings: FINDINGS, mode: "fixture", notice: "Fixture findings for UI testing." });
+  }
+  const cost = url.pathname.match(/^\/api\/property\/(\d+)\/costs$/);
+  if (req.method === "GET" && cost) {
+    return send(res, 200, { lines: LINES, totals: { oneTime: { low: sum("one_time", "low"), expected: sum("one_time", "expected"), high: sum("one_time", "high") }, monthly: { low: sum("monthly", "low"), expected: sum("monthly", "expected"), high: sum("monthly", "high") } }, notice: "Fixture estimates for UI testing." });
   }
   if (req.method === "POST" && url.pathname === "/api/assess") {
     const { listingId = null, assumptions = [] } = await readJson(req);
