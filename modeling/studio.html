@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Renovation Studio v8</title>
+<!-- Served by run_all.py at http://localhost:8000/Code/studio.html (the SDK key only works on localhost) -->
+<script src="showcase/config.js"></script>
+<script src="https://static.matterport.com/showcase-sdk/bootstrap/3.1.0-0-g1cd7e0997a/sdk.js"></script>
+<style>
+  :root { --bg:#14161a; --panel:#1d2026; --line:#2c3038; --text:#e6e8eb; --dim:#9aa0a8; --acc:#4fa3ff; --bad:#ff5d5d; }
+  * { box-sizing:border-box; }
+  body { margin:0; font:13px/1.4 system-ui, sans-serif; background:var(--bg); color:var(--text); display:flex; height:100vh; overflow:hidden; }
+  #side { width:330px; background:var(--panel); border-right:1px solid var(--line); overflow:auto; padding:12px; }
+  #main { flex:1; position:relative; }
+  iframe { width:100%; height:100%; border:0; display:block; }
+  #overlay { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+  #overlay.edit { pointer-events:auto; cursor:crosshair; }
+  h1 { font-size:15px; margin:0 0 4px; }
+  h2 { font-size:12px; text-transform:uppercase; letter-spacing:.05em; color:var(--dim); margin:16px 0 6px; }
+  button { background:#2a2f37; color:var(--text); border:1px solid var(--line); border-radius:6px; padding:5px 9px; cursor:pointer; font:inherit; margin:2px 2px 2px 0; }
+  button:hover { border-color:var(--acc); } button.on { background:var(--acc); color:#000; }
+  .muted { color:var(--dim); } .warn { color:var(--bad); }
+  .list { max-height:260px; overflow:auto; font-size:12px; border:1px solid var(--line); border-radius:6px; }
+  .item { padding:3px 6px; border-bottom:1px solid var(--line); cursor:pointer; display:flex; justify-content:space-between; }
+  .item:hover { background:#262a31; } .item.sel { background:#23405f; } .item.del { opacity:.45; text-decoration:line-through; }
+  .chip { display:inline-block; width:9px; height:9px; border-radius:2px; margin-right:5px; }
+  #status { font-size:12px; margin-top:6px; }
+  #tip { position:absolute; display:none; pointer-events:none; background:#000d; color:#fff; padding:5px 9px; border-radius:6px;
+         font-size:12px; line-height:1.35; white-space:nowrap; transform:translate(14px, 14px); z-index:5; }
+  #tip b { color:#9fd0ff; } #tip .warn { color:#ff8a8a; }
+  #find { width:100%; background:#14161a; color:var(--text); border:1px solid var(--line); border-radius:6px; padding:5px 8px; margin:4px 0; font:inherit; }
+  .grp { padding:3px 6px; background:#191c21; color:var(--dim); font-size:11px; text-transform:uppercase; letter-spacing:.04em; position:sticky; top:0; }
+  .row { display:flex; gap:4px; align-items:center; margin:4px 0; } .row input { width:64px; background:#14161a; color:var(--text); border:1px solid var(--line); border-radius:5px; padding:3px 5px; font:inherit; }
+  kbd { background:#2a2f37; border:1px solid var(--line); border-radius:3px; padding:0 4px; font-size:11px; }
+  #modeBadge { position:absolute; left:10px; top:10px; background:#000b; padding:5px 9px; border-radius:6px; font-size:12px; pointer-events:none; }
+</style>
+</head>
+<body>
+<div id="side">
+  <h1>Renovation Studio <span class="muted" style="font-size:11px">v8</span></h1>
+  <div class="muted">Matterport's own viewer + our furniture drawn on top (camera-synced, hidden by walls).</div>
+  <div id="status" class="muted">Loading…</div>
+
+  <h2>House</h2>
+  <button id="mEmpty" class="on">Empty (defurnished)</button><button id="mFull">As scanned</button><br>
+  <button data-mode="INSIDE">Walk</button><button data-mode="DOLLHOUSE">Dollhouse</button><button data-mode="FLOORPLAN">Floor plan</button><button id="tPlan" class="on" title="Floor plan view: draw our rooms and walls over Matterport's roof/drone image">Our plan</button>
+
+  <h2>Furniture</h2>
+  <button id="tEdit">Edit furniture</button><button id="tFurn" class="on">Show</button><button id="tTent" class="on">Tentative</button><button id="tTiles" class="on">Matterport models</button><button id="tShapes">Carved shapes</button><button id="tDoll">Show in dollhouse</button>
+  <div class="muted" style="font-size:11px;margin:4px 0">"Edit furniture" ON: hover a piece to see its name, drag it to move (snaps to walls; hold <kbd>Alt</kbd> for free),
+    click again to pick the piece behind / on top. Wheel or <kbd>Q</kbd>/<kbd>E</kbd> rotate, <kbd>R</kbd> 90°, arrows nudge 5 cm (<kbd>Shift</kbd> 1 cm),
+    <kbd>Del</kbd> remove, <kbd>Ctrl+Z</kbd> undo. Away from furniture the mouse still walks around the house.</div>
+  <div class="muted" style="font-size:11px;margin:4px 0">
+    <span><span class="chip" style="background:#3ecf8e"></span>mesh-verified</span>
+    <span><span class="chip" style="background:#f0b429"></span>mesh-only</span>
+    <span><span class="chip" style="background:#6b8cff"></span>panorama guess</span></div>
+  <input id="find" placeholder="Find: chair, bed, kitchen, #12 …" autocomplete="off">
+  <div id="objs" class="list"></div>
+
+  <h2>Selection</h2>
+  <div id="sel" class="muted">Turn on "Edit furniture" and click a piece.</div>
+
+  <h2>Impact</h2>
+  <div id="impact" class="muted">No edits yet.</div>
+
+  <h2>Scan spots</h2>
+  <div id="sweeps" class="list"></div>
+
+  <h2>Export</h2>
+  <button id="exp">edits.json</button><button id="expSweeps">sdk_sweeps.json</button>
+</div>
+<div id="main">
+  <iframe id="showcase" allow="xr-spatial-tracking; fullscreen"></iframe>
+  <canvas id="overlay"></canvas>
+  <div id="modeBadge"></div>
+  <div id="tip"></div>
+</div>
+
+<script type="module">
+import * as THREE from './vendor/three.module.min.js';
+const C = window.HP_CONFIG;
+const $ = id => document.getElementById(id);
+const status = (t, bad) => { $('status').textContent = t; $('status').className = bad ? 'warn' : 'muted'; };
+const fmt = e => (e && (e.message || e.error)) ? String(e.message || e.error) : (() => { try { return JSON.stringify(e); } catch { return String(e); } })();
+addEventListener('unhandledrejection', ev => { console.error(ev.reason); status('Error: ' + fmt(ev.reason), true); });
+if (!C) { status('Missing showcase/config.js - run: python run_all.py --only sdk', true); throw new Error('no config'); }
+if (!window.MP_SDK) { status('Could not load Matterport sdk.js (blocked by an ad-blocker or offline?)', true); throw new Error('no sdk'); }
+
+// Model API frame (x east, y north, z up) <-> Showcase frame (x east, y up, -z north)
+const S = { useTiles:true, dollhouse:false, sdk:null, plan:null, objData:null, objs:[], sel:null, history:[], showFurn:true, showTent:true, useShapes:false,
+            empty:true, edit:false, pose:null, sweeps:{}, floorZ:0, planView:true, hover:null, find:'' };
+const COLORS = { 'pano+mesh':0x3ecf8e, 'mesh_segment':0x3ecf8e, 'mesh':0xf0b429, 'pano':0x6b8cff };
+
+// ------------------------------------------------------------------ overlay renderer (Showcase frame)
+const canvas = $('overlay');
+const renderer = new THREE.WebGLRenderer({ canvas, alpha:true, antialias:true });
+renderer.setPixelRatio(devicePixelRatio);
+renderer.setClearColor(0x000000, 0);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(70, 1, 0.05, 200);
+camera.matrixAutoUpdate = false;
+const world = new THREE.Group();            // model frame -> showcase frame
+world.rotation.x = -Math.PI / 2;            // (x, y, z) -> (x, z, -y)
+scene.add(world);
+const furn = new THREE.Group(); world.add(furn);
+const planGroup = new THREE.Group(); planGroup.visible = false; world.add(planGroup);   // our 2D plan, floor plan mode only
+let occluder = null, floorMesh = null;
+
+function resize() { const r = $('main').getBoundingClientRect(); renderer.setSize(r.width, r.height, false); }
+addEventListener('resize', resize); resize();
+
+function syncCamera() {
+  const p = S.pose; if (!p) return false;
+  const pitch = THREE.MathUtils.degToRad(p.rotation.x), yaw = THREE.MathUtils.degToRad(p.rotation.y);
+  const q = new THREE.Quaternion().setFromEuler(new THREE.Euler(pitch, yaw, 0, 'YXZ'));
+  camera.matrix.compose(new THREE.Vector3(p.position.x, p.position.y, p.position.z), q, new THREE.Vector3(1, 1, 1));
+  camera.matrixWorld.copy(camera.matrix);
+  camera.matrixWorldInverse.copy(camera.matrix).invert();
+  if (p.projection && p.projection.length === 16) {
+    camera.projectionMatrix.fromArray(p.projection).transpose();   // the SDK gives it row-major
+    camera.projectionMatrixInverse.copy(camera.projectionMatrix).invert();
+  } else {
+    const r = $('main').getBoundingClientRect(); camera.aspect = r.width / r.height; camera.updateProjectionMatrix();
+  }
+  return true;
+}
+// draw only where Matterport shows the 3D model: dollhouse/floor plan, or standing on an aligned 3D scan spot
+// (outdoor/drone 360s are flat photos, and during fly-throughs the reported pose lags the picture)
+function overlayAllowed() {
+  const p = S.pose; if (!p) return false;
+  if (p.mode === 'mode.floorplan') return true;
+  if (p.mode === 'mode.dollhouse') return S.dollhouse;            // Matterport draws the exterior around the house there
+  if (p.mode !== 'mode.inside' || !p.sweep) return false;
+  const sw = S.sweeps[p.sweep];
+  return !sw || sw.alignmentType === 'aligned';
+}
+(function loop() {
+  const ok = syncCamera();
+  planGroup.visible = !!S.pose && S.pose.mode === 'mode.floorplan' && S.planView;
+  canvas.style.visibility = ok && overlayAllowed() ? 'visible' : 'hidden';
+  if (ok) renderer.render(scene, camera);
+  requestAnimationFrame(loop);
+})();
+
+// ------------------------------------------------------------------ data
+async function getJSON(f) { const r = await fetch(C.dataDir + f, { cache:'no-store' }); if (!r.ok) throw new Error(f + ' ' + r.status); return r.json(); }
+async function getOBJ(f) {
+  const r = await fetch(C.dataDir + f); if (!r.ok) return null;
+  const V = [], Cc = [], F = [];
+  for (const line of (await r.text()).split('\n')) {
+    if (line.startsWith('v ')) { const p = line.trim().split(/\s+/); V.push(+p[1], +p[2], +p[3]); if (p.length >= 7) Cc.push(+p[4], +p[5], +p[6]); }
+    else if (line.startsWith('f ')) { const ix = line.trim().split(/\s+/).slice(1).map(t => parseInt(t) - 1); for (let k = 1; k < ix.length - 1; k++) F.push(ix[0], ix[k], ix[k + 1]); }
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(V, 3));
+  if (Cc.length === V.length) g.setAttribute('color', new THREE.Float32BufferAttribute(Cc, 3));
+  g.setIndex(F); g.computeVertexNormals();
+  return g;
+}
+
+// minimal loader for the GLBs written by tile_objects.py (positions, uv, indices, embedded jpeg, unlit)
+async function getGLB(f) {
+  const r = await fetch(C.dataDir + f); if (!r.ok) return null;
+  const b = await r.arrayBuffer(), dv = new DataView(b);
+  if (dv.getUint32(0, true) !== 0x46546C67) return null;
+  let off = 12, js = null, bin = null;
+  while (off < b.byteLength) { const n = dv.getUint32(off, true), t = dv.getUint32(off + 4, true);
+    if (t === 0x4E4F534A) js = JSON.parse(new TextDecoder().decode(new Uint8Array(b, off + 8, n))); else if (t === 0x004E4942) bin = off + 8;
+    off += 8 + n + ((4 - n % 4) % 4); }
+  const view = i => { const v = js.bufferViews[i]; return [bin + (v.byteOffset || 0), v.byteLength]; };
+  const acc = i => { const a = js.accessors[i], [o] = view(a.bufferView), n = { SCALAR:1, VEC2:2, VEC3:3 }[a.type] * a.count;
+    return a.componentType === 5126 ? new Float32Array(b, o, n) : new Uint32Array(b, o, n); };
+  const grp = new THREE.Group();
+  for (const p of js.meshes[0].primitives) {
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(acc(p.attributes.POSITION), 3));
+    if (p.attributes.TEXCOORD_0 !== undefined) g.setAttribute('uv', new THREE.BufferAttribute(acc(p.attributes.TEXCOORD_0), 2));
+    g.setIndex(new THREE.BufferAttribute(acc(p.indices), 1));
+    const m = js.materials[p.material].pbrMetallicRoughness, mat = new THREE.MeshBasicMaterial({ side:THREE.DoubleSide });
+    if (m.baseColorTexture) { const img = js.images[js.textures[m.baseColorTexture.index].source], [o, n] = view(img.bufferView);
+      const bmp = await createImageBitmap(new Blob([new Uint8Array(b, o, n)], { type:img.mimeType }));
+      const tex = new THREE.Texture(bmp); tex.flipY = false; tex.colorSpace = THREE.SRGBColorSpace; tex.needsUpdate = true; mat.map = tex;
+    } else if (m.baseColorFactor) mat.color.setRGB(...m.baseColorFactor.slice(0, 3));
+    grp.add(new THREE.Mesh(g, mat));
+  }
+  return grp;
+}
+
+async function loadData() {
+  S.plan = await getJSON('plan.json');
+  S.objData = (await getJSON('objects.json')).objects
+    .filter(o => ['furniture', 'surface', 'floor_covering'].includes(o.layer) && !(o.flags || []).some(f => f.startsWith('duplicate_of_')));
+  S.floorZ = S.objData.length ? S.objData[0].floor_z : 0;
+  // the empty-room mesh as an invisible depth layer: Matterport's walls hide our furniture correctly
+  const g = await getOBJ('empty_room.obj');
+  if (g) {
+    const pos = g.attributes.position, idx = g.index.array, keep = [], floorIdx = [];
+    const a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3(), n = new THREE.Vector3();
+    for (let t = 0; t < idx.length; t += 3) {
+      a.fromBufferAttribute(pos, idx[t]); b.fromBufferAttribute(pos, idx[t + 1]); c.fromBufferAttribute(pos, idx[t + 2]);
+      n.subVectors(b, a).cross(c.clone().sub(a)).normalize();
+      const cz = (a.z + b.z + c.z) / 3;
+      if (cz > S.floorZ + 2.2 && n.z < -0.5) continue;                       // drop the ceiling (dollhouse view)
+      keep.push(idx[t], idx[t + 1], idx[t + 2]);
+      if (Math.abs(n.z) > 0.8 && cz < S.floorZ + 0.25) floorIdx.push(idx[t], idx[t + 1], idx[t + 2]);
+    }
+    const og = g.clone(); og.setIndex(keep);
+    occluder = new THREE.Mesh(og, new THREE.MeshBasicMaterial({ colorWrite:false, side:THREE.DoubleSide, polygonOffset:true, polygonOffsetFactor:2, polygonOffsetUnits:2 }));
+    occluder.renderOrder = -1; world.add(occluder);
+    const fg = g.clone(); fg.setIndex(floorIdx);
+    floorMesh = new THREE.Mesh(fg, new THREE.MeshBasicMaterial({ visible:false, side:THREE.DoubleSide })); world.add(floorMesh);
+    // the same floor triangles, opaque, as the base of our plan (covers hallways/closets that have no room polygon);
+    // only inside the outer walls (the empty mesh also has porch / yard floor)
+    const W = S.plan.walls.flatMap(w => [w.a, w.b]), m = 0.15;
+    const x0 = Math.min(...W.map(p => p[0])) - m, x1 = Math.max(...W.map(p => p[0])) + m;
+    const y0 = Math.min(...W.map(p => p[1])) - m, y1 = Math.max(...W.map(p => p[1])) + m;
+    const baseIdx = [];
+    for (let t = 0; t < floorIdx.length; t += 3) {
+      let cx = 0, cy = 0; for (let k = 0; k < 3; k++) { cx += pos.getX(floorIdx[t + k]) / 3; cy += pos.getY(floorIdx[t + k]) / 3; }
+      if (cx > x0 && cx < x1 && cy > y0 && cy < y1) baseIdx.push(floorIdx[t], floorIdx[t + 1], floorIdx[t + 2]);
+    }
+    const bg = g.clone(); bg.setIndex(baseIdx);
+    const base = new THREE.Mesh(bg,new THREE.MeshBasicMaterial({ color:0xd9d4cb, side:THREE.DoubleSide }));
+    base.renderOrder = -2; planGroup.add(base);
+  }
+  buildPlan();
+  await buildObjects();
+}
+
+// Matterport's floor plan view shows the drone roof for this model; draw our own plan over it (floor plan mode only)
+function buildPlan() {
+  const z = S.floorZ, P = S.plan; if (!P) return;
+  const fills = [0xf3eee4, 0xe9f0ea, 0xeae9f3, 0xf3e9e9, 0xf1f0e1, 0xe6eef2];
+  P.rooms.forEach((r, i) => {
+    if (!r.polygon || r.polygon.length < 3) return;
+    const sh = new THREE.Shape(r.polygon.map(([x, y]) => new THREE.Vector2(x, y)));
+    const m = new THREE.Mesh(new THREE.ShapeGeometry(sh), new THREE.MeshBasicMaterial({ color:fills[i % fills.length], side:THREE.DoubleSide,
+      polygonOffset:true, polygonOffsetFactor:-1, polygonOffsetUnits:-1 }));
+    m.position.z = z + 0.02; m.renderOrder = -2; planGroup.add(m);
+    // room name + area, always on top
+    const c = r.polygon.reduce((s, p) => [s[0] + p[0] / r.polygon.length, s[1] + p[1] / r.polygon.length], [0, 0]);
+    const cv = document.createElement('canvas'); cv.width = 512; cv.height = 128; const g = cv.getContext('2d');
+    g.fillStyle = 'rgba(255,255,255,0.78)'; g.beginPath(); g.roundRect(16, 6, 480, 116, 26); g.fill();
+    g.font = '600 46px system-ui, sans-serif'; g.textAlign = 'center'; g.fillStyle = '#2b2b2b';
+    g.fillText(r.label || 'Room', 256, 56);
+    g.font = '36px system-ui, sans-serif'; g.fillStyle = '#555';
+    g.fillText(`${(r.area_m2 ?? polyArea(r.polygon)).toFixed(1)} m²`, 256, 106);
+    const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace;
+    const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map:tex, depthTest:false, transparent:true }));
+    sp.scale.set(2.4, 0.6, 1); sp.position.set(c[0], c[1], z + 2.9); sp.renderOrder = 10; planGroup.add(sp);
+  });
+  const wallMat = new THREE.MeshBasicMaterial({ color:0x3a3a3a });
+  for (const w of P.walls) {
+    const dx = w.b[0] - w.a[0], dy = w.b[1] - w.a[1], L = Math.hypot(dx, dy); if (L < 0.02) continue;
+    const t = w.thickness || 0.15, m = new THREE.Mesh(new THREE.BoxGeometry(L + t, t, 2.5), wallMat);
+    m.position.set((w.a[0] + w.b[0]) / 2, (w.a[1] + w.b[1]) / 2, z + 1.25); m.rotation.z = Math.atan2(dy, dx); planGroup.add(m);
+  }
+}
+
+async function buildObjects() {
+  furn.clear();
+  let models = {};
+  try { (await getJSON('scene_textured.json')).objects.forEach(t => models[t.id] = t); } catch {}
+  if (S.useShapes) { try { (await getJSON('scene_shapes.json')).objects.forEach(t => { if (t.result === 'carved') models[t.id] = t; }); } catch {} }
+  // best source: objects cut from Matterport's own full-quality mesh (tile_objects.py), with Matterport's labels
+  const tileModels = {};
+  if (S.useTiles) { try { (await getJSON('scene_tiles.json')).objects.forEach(t => { tileModels[t.id] = t; }); } catch {} }
+  const prev = Object.fromEntries(S.objs.map(o => [o.id, o]));
+  S.objs = [];
+  for (const o of S.objData) {
+    const b = o.box, p = prev[o.id];
+    const ob = { id:o.id, label:o.label, kind:o.kind, room:(o.room || {}).label, layer:o.layer, source:o.source || 'pano', size:b.size_lwh_m.slice(), zb:b.z_bottom || 0,
+      floorZ:o.floor_z, x0:b.centre[0], y0:b.centre[1], yaw0:b.yaw_deg,
+      x:p ? p.x : b.centre[0], y:p ? p.y : b.centre[1], yaw:p ? p.yaw : b.yaw_deg, deleted:p ? p.deleted : false };
+    const grp = new THREE.Group(); grp.userData.obj = ob;
+    const tm = tileModels[o.id];
+    if (tm && tm.label) ob.label = tm.label;
+    const glb = tm && tm.file ? await getGLB(tm.file) : null;
+    const g = glb ? null : (models[o.id] ? await getOBJ(models[o.id].file) : null);
+    if (glb) { grp.add(glb); ob.model = 'matterport mesh'; }
+    else if (g) {
+      grp.add(new THREE.Mesh(g, new THREE.MeshBasicMaterial({ vertexColors: !!g.attributes.color, side:THREE.DoubleSide })));
+    } else {
+      const h = ob.size[2] || 0.5;
+      const m = new THREE.Mesh(new THREE.BoxGeometry(ob.size[0], ob.size[1], h),
+        new THREE.MeshBasicMaterial({ color:COLORS[ob.source] || 0x999999, transparent:true, opacity:0.5 }));
+      m.position.z = ob.zb + h / 2; grp.add(m);
+    }
+    const bh = ob.size[2] || 0.5;
+    const outline = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(ob.size[0], ob.size[1], bh)),
+      new THREE.LineBasicMaterial({ color:0x4fa3ff, depthTest:false }));
+    outline.position.z = ob.zb + bh / 2; outline.renderOrder = 5; outline.visible = false;
+    outline.raycast = () => {};                         // only the real model surfaces are clickable
+    grp.add(outline); ob.outline = outline; ob.grp = grp;
+    furn.add(grp); S.objs.push(ob);
+  }
+  S.objs.forEach(place); drawList(); evaluate();
+}
+
+function place(o) {
+  o.grp.position.set(o.x, o.y, o.floorZ);
+  o.grp.rotation.z = o.yaw * Math.PI / 180;
+  o.grp.visible = S.showFurn && !o.deleted && (S.showTent || o.source !== 'pano');
+  o.outline.visible = o.grp.visible && (S.sel === o || S.hover === o || !!o.bad);
+  o.outline.material.color.setHex(o.bad ? 0xff3333 : S.sel === o ? 0x4fa3ff : 0xffffff);
+}
+
+// ------------------------------------------------------------------ Matterport embed
+let loadToken = 0;
+function loadShowcase() {
+  const token = ++loadToken;
+  const m = S.empty && C.defurnished ? C.defurnished : C.model;
+  const iframe = $('showcase');
+  status(`Loading Matterport (${S.empty ? 'empty' : 'as scanned'})…`);
+  iframe.onload = async () => {
+    try { S.sdk = await window.MP_SDK.connect(iframe, C.sdkKey, ''); }
+    catch (e) {
+      if (token !== loadToken) return;
+      if (S.empty && m !== C.model) { status(`The empty view did not load (${fmt(e)}); showing the scanned model.`, true);
+        S.empty = false; $('mFull').classList.add('on'); $('mEmpty').classList.remove('on'); return loadShowcase(); }
+      status('SDK connect failed: ' + fmt(e) + ' (is localhost allowed for this SDK key?)', true); return;
+    }
+    try { S.sdk.Pointer.intersection.subscribe(sdkPointer); } catch (e) { console.warn('no Pointer.intersection', e); }
+    S.sdk.Camera.pose.subscribe(p => { S.pose = p; $('modeBadge').textContent = (S.edit ? 'EDITING furniture · ' : '') + p.mode.replace('mode.', ''); });
+    S.sweeps = {};
+    let redraw = null;
+    const keep = (k, v) => { S.sweeps[k] = v; clearTimeout(redraw); redraw = setTimeout(drawSweeps, 200); };
+    S.sdk.Sweep.data.subscribe({ onAdded: keep, onUpdated: keep,
+      onRemoved(k) { delete S.sweeps[k]; }, onCollectionUpdated(c) { for (const k in c) keep(k, c[k]); } });
+    // Ready as soon as the model plays; moving inside happens in the background (never blocks the UI)
+    try { await S.sdk.App.state.waitUntil(st => st.phase === S.sdk.App.Phase.PLAYING); } catch (e) { console.warn('phase', e); }
+    goInsideWhenIdle(token);
+    status(`Ready · ${S.empty ? 'empty house' : 'as scanned'} · ${S.objs.length} objects`);
+  };
+  iframe.src = `https://my.matterport.com/show?m=${encodeURIComponent(m)}&play=1&qs=1&hr=0&tour=0&applicationKey=${encodeURIComponent(C.sdkKey)}`;
+}
+
+// Matterport plays an intro orbit; a move started during it is rejected ("another transition was active").
+// Retry until the camera is idle, for up to ~40 s, and stop as soon as the user has moved by themselves.
+async function goInsideWhenIdle(token) {
+  const t0 = Date.now();
+  const firstSweep = () => Object.keys(S.sweeps)[0];
+  while (Date.now() - t0 < 40000 && token === loadToken) {
+    await new Promise(r => setTimeout(r, 1500));
+    if (S.pose && S.pose.mode === 'mode.inside' && S.pose.sweep) return;          // already inside
+    if (!S.pose || S.pose.mode === 'mode.transitioning' || !firstSweep()) continue;
+    try {
+      await Promise.race([S.sdk.Sweep.moveTo(firstSweep(), { transition: S.sdk.Sweep.Transition.FADEOUT }),
+                          new Promise((_, rej) => setTimeout(() => rej('timeout'), 8000))]);
+      return;
+    } catch (e) { console.info('go inside: retrying after', fmt(e)); }
+  }
+}
+
+// ------------------------------------------------------------------ editing
+// The overlay only takes the mouse while it is over a piece of furniture (edit mode); everywhere else the mouse goes to
+// Matterport, so you can still walk around. Matterport's pointer position tells us when the mouse is back over a piece.
+const ray = new THREE.Raycaster(), mouse = new THREE.Vector2(), tip = $('tip');
+const name = o => o.label || (o.kind ? o.kind[0].toUpperCase() + o.kind.slice(1) : 'object') + ' #' + o.id;
+function ndcXY(cx, cy) { const r = canvas.getBoundingClientRect(); mouse.set(((cx - r.left) / r.width) * 2 - 1, -((cy - r.top) / r.height) * 2 + 1); ray.setFromCamera(mouse, camera); }
+function floorPointXY(cx, cy) {
+  ndcXY(cx, cy);
+  if (floorMesh) { const h = ray.intersectObject(floorMesh, false)[0]; if (h) return world.worldToLocal(h.point.clone()); }
+  const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -S.floorZ), p = new THREE.Vector3();
+  return ray.ray.intersectPlane(plane, p) ? world.worldToLocal(p) : null;
+}
+const floorPoint = e => floorPointXY(e.clientX, e.clientY);
+function inBox(o, x, y, pad = 0) { const a = -o.yaw * Math.PI / 180, dx = x - o.x, dy = y - o.y;
+  const u = dx * Math.cos(a) - dy * Math.sin(a), v = dx * Math.sin(a) + dy * Math.cos(a);
+  return Math.abs(u) <= o.size[0] / 2 + pad && Math.abs(v) <= o.size[1] / 2 + pad; }
+// every piece under the cursor, nearest first; pieces behind a wall don't count
+function piecesAt(cx, cy) {
+  ndcXY(cx, cy);
+  const wall = occluder ? ray.intersectObject(occluder, false)[0] : null, maxD = wall ? wall.distance + 0.1 : Infinity;
+  const out = [];
+  for (const h of ray.intersectObjects(furn.children.filter(g => g.visible), true)) {
+    if (h.distance > maxD) break;
+    let g = h.object; while (g && !g.userData.obj) g = g.parent;
+    if (g && !out.includes(g.userData.obj)) out.push(g.userData.obj);
+  }
+  // scans are sparse in places: the floor under the cursor inside a piece's footprint also counts (smallest first)
+  const p = floorPointXY(cx, cy);
+  if (p) S.objs.filter(o => o.grp.visible && !out.includes(o) && inBox(o, p.x, p.y))
+    .sort((a, b) => a.size[0] * a.size[1] - b.size[0] * b.size[1]).forEach(o => out.push(o));
+  return out;
+}
+let passthrough = false;
+function setPass(v) { passthrough = v; canvas.style.pointerEvents = S.edit && !v ? 'auto' : 'none'; if (v) setHover(null); }
+function setHover(o, cx, cy, extra) {
+  if (S.hover !== o) { const old = S.hover; S.hover = o; if (old) place(old); if (o) place(o); }
+  canvas.style.cursor = drag ? 'grabbing' : o ? 'grab' : 'default';
+  if (!o || cx === undefined) { tip.style.display = 'none'; return; }
+  const r = $('main').getBoundingClientRect();
+  tip.style.left = (cx - r.left) + 'px'; tip.style.top = (cy - r.top) + 'px'; tip.style.display = 'block';
+  tip.innerHTML = `<b>${name(o)}</b> · ${o.room || (roomAt(o.x, o.y) || {}).label || ''}<br>` + (extra || `${o.size[0].toFixed(2)} × ${o.size[1].toFixed(2)} m` +
+    (S.sel === o ? ' · drag to move' : ' · click to select'));
+}
+// Matterport still has the mouse: when it is over one of our pieces, take the mouse back
+function sdkPointer(hit) {
+  if (!S.edit || drag || !passthrough || !hit || !hit.position) return;
+  const v = new THREE.Vector3(hit.position.x, hit.position.y, hit.position.z).project(camera);
+  const r = canvas.getBoundingClientRect(), cx = r.left + (v.x + 1) / 2 * r.width, cy = r.top + (1 - v.y) / 2 * r.height;
+  const list = piecesAt(cx, cy);
+  if (list.length) { setPass(false); setHover(list[0], cx, cy); }
+}
+
+// snapping: flush + parallel to walls the piece is near, and back onto its original spot
+function wallSnap(o, x, y) {
+  const notes = [];
+  if (Math.hypot(x - o.x0, y - o.y0) < 0.12 && o.yaw === o.yaw0) return { x:o.x0, y:o.y0, notes:['original spot'] };
+  const ya = o.yaw * Math.PI / 180, ax = [Math.cos(ya), Math.sin(ya)], ay = [-Math.sin(ya), Math.cos(ya)];
+  const cands = [];
+  for (const w of S.plan.walls) {
+    const dx = w.b[0] - w.a[0], dy = w.b[1] - w.a[1], L = Math.hypot(dx, dy); if (L < 0.3) continue;
+    const d = [dx / L, dy / L], n = [-d[1], d[0]];
+    let ang = Math.abs(((Math.atan2(dy, dx) - ya) * 180 / Math.PI) % 90); ang = Math.min(ang, 90 - ang);
+    if (ang > 8) continue;
+    const mx = (w.a[0] + w.b[0]) / 2, my = (w.a[1] + w.b[1]) / 2;
+    const t = (x - mx) * d[0] + (y - my) * d[1];
+    const half = Math.abs(o.size[0] / 2 * (ax[0] * n[0] + ax[1] * n[1])) + Math.abs(o.size[1] / 2 * (ay[0] * n[0] + ay[1] * n[1]));
+    const along = Math.abs(o.size[0] / 2 * (ax[0] * d[0] + ax[1] * d[1])) + Math.abs(o.size[1] / 2 * (ay[0] * d[0] + ay[1] * d[1]));
+    if (Math.abs(t) > L / 2 + along - 0.05) continue;
+    const sd = (x - mx) * n[0] + (y - my) * n[1], gap = Math.abs(sd) - half - (w.thickness || 0.15) / 2;
+    if (gap > -0.08 && gap < 0.18) cands.push({ gap, n, sgn:Math.sign(sd) || 1 });
+  }
+  cands.sort((a, b) => Math.abs(a.gap) - Math.abs(b.gap));
+  const used = [];
+  for (const c of cands) {
+    if (used.some(u => Math.abs(u.n[0] * c.n[0] + u.n[1] * c.n[1]) > 0.7)) continue;      // one wall per direction
+    const k = c.gap - 0.005; x -= c.n[0] * c.sgn * k; y -= c.n[1] * c.sgn * k; used.push(c);
+    if (used.length === 2) break;
+  }
+  if (used.length) notes.push(used.length === 2 ? 'snapped into the corner' : 'snapped against the wall');
+  return { x, y, notes };
+}
+function wallGap(o) {           // distance from the piece's outline to the nearest wall face
+  if (!S.plan) return Infinity;
+  let best = Infinity;
+  for (const w of S.plan.walls) {
+    const ax = w.a[0], ay = w.a[1], dx = w.b[0] - ax, dy = w.b[1] - ay, L2 = dx * dx + dy * dy || 1e-9;
+    for (const [px, py] of corners(o)) {
+      const t = Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / L2));
+      best = Math.min(best, Math.hypot(px - ax - t * dx, py - ay - t * dy) - (w.thickness || 0.15) / 2);
+    }
+  }
+  return Math.max(0, best);
+}
+function moveInfo(o, notes) {
+  const d = Math.hypot(o.x - o.x0, o.y - o.y0), g = wallGap(o);
+  return `${notes && notes.length ? notes.join(' · ') + '<br>' : ''}moved ${d.toFixed(2)} m · ${g < 0.02 ? 'against a wall' : g.toFixed(2) + ' m to the nearest wall'}` +
+    (o.bad ? '<br><span class="warn">collides — red outline</span>' : '');
+}
+
+let drag = null;
+canvas.addEventListener('pointerdown', e => {
+  if (!S.edit || e.button !== 0) return;
+  const list = piecesAt(e.clientX, e.clientY);
+  if (!list.length) { select(null); setPass(true); return; }
+  const wasSel = S.sel;
+  const o = list.includes(wasSel) ? wasSel : list[0];      // the selected piece stays grabbable even if something is in front
+  select(o); push();
+  const p = floorPoint(e);
+  drag = { o, dx:p ? o.x - p.x : 0, dy:p ? o.y - p.y : 0, moved:false, x0:e.clientX, y0:e.clientY, list, wasSel };
+  canvas.setPointerCapture(e.pointerId); setHover(o, e.clientX, e.clientY);
+});
+canvas.addEventListener('pointermove', e => {
+  if (!drag) {
+    const list = piecesAt(e.clientX, e.clientY);
+    if (!list.length) { setPass(true); return; }                     // hand the mouse back to Matterport
+    const o = list.includes(S.sel) ? S.sel : list[0];
+    setHover(o, e.clientX, e.clientY, list.length > 1 ? `${o.size[0].toFixed(2)} × ${o.size[1].toFixed(2)} m · ${list.length} pieces here, click again for the next` : null);
+    return;
+  }
+  if (!drag.moved && Math.hypot(e.clientX - drag.x0, e.clientY - drag.y0) < 4) return;
+  const p = floorPoint(e); if (!p) return;
+  let x = p.x + drag.dx, y = p.y + drag.dy, notes = [];
+  if (!e.altKey) ({ x, y, notes } = wallSnap(drag.o, x, y));
+  drag.o.x = x; drag.o.y = y; drag.moved = true; place(drag.o); evaluate();
+  setHover(drag.o, e.clientX, e.clientY, moveInfo(drag.o, notes)); showSel();
+});
+canvas.addEventListener('pointerup', e => {
+  if (!drag) return;
+  const d = drag; drag = null;
+  if (!d.moved) {
+    S.history.pop();
+    // a click (no drag) on the piece that was already selected: go to the next piece under the cursor
+    if (d.wasSel === d.o && d.list.length > 1) select(d.list[(d.list.indexOf(d.o) + 1) % d.list.length]);
+  }
+  setHover(S.sel, e.clientX, e.clientY, d.moved ? moveInfo(S.sel) : null);
+});
+canvas.addEventListener('pointerleave', () => { if (!drag) setHover(null); });
+canvas.addEventListener('wheel', e => {
+  e.preventDefault();
+  const o = S.hover || S.sel; if (!o) return;
+  if (S.sel !== o) select(o);
+  rotate(o, (e.deltaY > 0 ? -1 : 1) * (e.shiftKey ? 5 : 15));
+  setHover(o, e.clientX, e.clientY, `rotated to ${Math.round(o.yaw)}°`);
+}, { passive:false });
+function rotate(o, deg) { push(); o.yaw = Math.round(((o.yaw + deg) % 360 + 360) % 360 * 10) / 10; place(o); evaluate(); showSel(); }
+// arrow keys move along the screen directions, projected onto the floor
+function screenAxes() {
+  const m = camera.matrixWorld.elements, toModel = v => new THREE.Vector2(v[0], -v[2]);
+  const right = toModel([m[0], m[1], m[2]]), fwd = toModel([-m[8], -m[9], -m[10]]), up = toModel([m[4], m[5], m[6]]);
+  const f = fwd.length() > 0.3 ? fwd : up;
+  return [right.normalize(), f.normalize()];
+}
+addEventListener('keydown', e => {
+  if (e.target && e.target.tagName === 'INPUT') return;
+  if ((e.ctrlKey || e.metaKey) && e.key === 'z') { undo(); e.preventDefault(); return; }
+  const o = S.sel; if (!o) return;
+  if (e.key === 'q' || e.key === 'e') rotate(o, e.key === 'q' ? 15 : -15);
+  else if (e.key === 'r') rotate(o, 90);
+  else if (e.key === 'Delete' || e.key === 'Backspace') { push(); o.deleted = true; select(null); evaluate(); }
+  else if (e.key === 'Escape') select(null);
+  else if (e.key.startsWith('Arrow')) {
+    e.preventDefault();
+    const [r, f] = screenAxes(), st = e.shiftKey ? 0.01 : 0.05;
+    const v = { ArrowRight:r, ArrowLeft:r.clone().negate(), ArrowUp:f, ArrowDown:f.clone().negate() }[e.key];
+    push(); o.x += v.x * st; o.y += v.y * st; place(o); evaluate(); showSel();
+  }
+});
+function select(o) { const old = S.sel; S.sel = o; if (old) place(old); if (o) place(o); showSel(); drawList(); }
+function push() { S.history.push(S.objs.map(o => [o.x, o.y, o.yaw, o.deleted])); if (S.history.length > 200) S.history.shift(); }
+function undo() { const h = S.history.pop(); if (!h) return; h.forEach((v, i) => { [S.objs[i].x, S.objs[i].y, S.objs[i].yaw, S.objs[i].deleted] = v; });
+  S.objs.forEach(place); evaluate(); showSel(); drawList(); }
+
+// ------------------------------------------------------------------ evaluation
+function corners(o) { const a = o.yaw * Math.PI / 180, c = Math.cos(a), s = Math.sin(a), l = o.size[0] / 2, w = o.size[1] / 2;
+  return [[-l, -w], [l, -w], [l, w], [-l, w]].map(([x, y]) => [o.x + x * c - y * s, o.y + x * s + y * c]); }
+function obbOverlap(A, B) { const pa = corners(A), pb = corners(B);
+  for (const P of [pa, pb]) for (let i = 0; i < 4; i++) { const [x1, y1] = P[i], [x2, y2] = P[(i + 1) % 4]; const nx = y1 - y2, ny = x2 - x1;
+    const a = pa.map(([x, y]) => x * nx + y * ny), b = pb.map(([x, y]) => x * nx + y * ny);
+    if (Math.max(...a) <= Math.min(...b) + 1e-3 || Math.max(...b) <= Math.min(...a) + 1e-3) return false; } return true; }
+function wallBox(w) { const dx = w.b[0] - w.a[0], dy = w.b[1] - w.a[1];
+  return { x:(w.a[0] + w.b[0]) / 2, y:(w.a[1] + w.b[1]) / 2, size:[Math.hypot(dx, dy), w.thickness || 0.15], yaw:Math.atan2(dy, dx) * 180 / Math.PI }; }
+function roomAt(x, y) { if (!S.plan) return null; for (const r of S.plan.rooms) { const p = r.polygon; let ins = false;
+  for (let i = 0, j = p.length - 1; i < p.length; j = i++) { const [xi, yi] = p[i], [xj, yj] = p[j];
+    if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi + 1e-12) + xi) ins = !ins; } if (ins) return r; } return null; }
+function polyArea(p) { let a = 0; for (let i = 0; i < p.length; i++) { const [x1, y1] = p[i], [x2, y2] = p[(i + 1) % p.length]; a += x1 * y2 - x2 * y1; } return Math.abs(a) / 2; }
+function evaluate() {
+  if (!S.plan || !S.objs.length) return;
+  const live = S.objs.filter(o => !o.deleted && o.layer === 'furniture' && (S.showTent || o.source !== 'pano'));
+  const walls = S.plan.walls.map(wallBox); let nBad = 0;
+  S.objs.forEach(o => o.bad = false);
+  for (const o of live) { if (o.x === o.x0 && o.y === o.y0 && o.yaw === o.yaw0) continue;
+    o.bad = walls.some(w => obbOverlap(o, w)) || live.some(q => q !== o && obbOverlap(o, q)); if (o.bad) nBad++; }
+  S.objs.forEach(place);
+  const moved = S.objs.filter(o => !o.deleted && (o.x !== o.x0 || o.y !== o.y0 || o.yaw !== o.yaw0)).length, del = S.objs.filter(o => o.deleted).length;
+  const imp = [];
+  if (moved || del) imp.push(`${moved} moved, ${del} removed.`);
+  if (nBad) imp.push(`<span class="warn">${nBad} moved object(s) collide with a wall or furniture (red outline).</span>`);
+  for (const r of S.plan.rooms) { const inR = live.filter(o => roomAt(o.x, o.y) === r), area = polyArea(r.polygon);
+    const free = Math.max(0, 1 - inR.reduce((s, o) => s + o.size[0] * o.size[1], 0) / area);
+    if (inR.length && free < 0.45) imp.push(`<span class="muted">${r.label}: only ${(free * 100) | 0}% floor free.</span>`); }
+  $('impact').innerHTML = imp.length ? imp.join('<br>') : '<span class="muted">No edits yet.</span>';
+}
+
+// ------------------------------------------------------------------ side panel
+function showSel() {
+  const o = S.sel;
+  if (!o) { $('sel').innerHTML = '<span class="muted">Hover a piece in the view (Edit furniture ON) or pick one in the list above.</span>'; return; }
+  const r = roomAt(o.x, o.y), d = Math.hypot(o.x - o.x0, o.y - o.y0), g = wallGap(o);
+  $('sel').innerHTML = `<b>${name(o)}</b> <span class="muted">#${o.id}${o.kind ? ' · ' + o.kind : ''}</span><br>
+    ${o.size.map(v => v.toFixed(2)).join(' × ')} m · ${r ? r.label : '—'}${o.model ? ' · ' + o.model : ''}<br>
+    <span class="muted">${d > 0.005 ? `moved ${d.toFixed(2)} m · ` : ''}${g < 0.02 ? 'against a wall' : g.toFixed(2) + ' m to the nearest wall'}</span>
+    <div class="row">Angle <input id="iYaw" type="number" step="5" value="${Math.round(o.yaw)}">°
+      <button id="bL">⟲ 90°</button><button id="bR">⟳ 90°</button></div>
+    <button id="bDel">Remove</button><button id="bRes">Reset</button><button id="bGo">Go to it</button>`;
+  $('iYaw').onchange = ev => { const v = parseFloat(ev.target.value); if (isFinite(v)) rotate(o, v - o.yaw); };
+  $('bL').onclick = () => rotate(o, 90); $('bR').onclick = () => rotate(o, -90);
+  $('bDel').onclick = () => { push(); o.deleted = true; select(null); evaluate(); };
+  $('bRes').onclick = () => { push(); Object.assign(o, { x:o.x0, y:o.y0, yaw:o.yaw0, deleted:false }); place(o); evaluate(); showSel(); };
+  $('bGo').onclick = () => goNear(o);
+}
+function drawList() {
+  const L = $('objs'), q = S.find.trim().toLowerCase(), keepScroll = L.scrollTop; L.innerHTML = '';
+  const items = S.objs.filter(o => o.layer === 'furniture' || o.layer === 'surface').map(o => ({ o, room:(roomAt(o.x, o.y) || {}).label || o.room || 'Other' }))
+    .filter(({ o, room }) => !q || `${name(o)} ${o.kind || ''} ${room} #${o.id}`.toLowerCase().includes(q))
+    .sort((a, b) => a.room.localeCompare(b.room) || name(a.o).localeCompare(name(b.o), undefined, { numeric:true }));
+  let cur = null;
+  for (const { o, room } of items) {
+    if (room !== cur) { cur = room; const g = document.createElement('div'); g.className = 'grp'; g.textContent = room; L.appendChild(g); }
+    const d = document.createElement('div'); d.className = 'item' + (S.sel === o ? ' sel' : '') + (o.deleted ? ' del' : '');
+    d.innerHTML = `<span><span class="chip" style="background:#${(COLORS[o.source] || 0x999999).toString(16).padStart(6, '0')}"></span>${name(o)}</span><span class="muted">${o.size[0].toFixed(1)}×${o.size[1].toFixed(1)} m</span>`;
+    d.onmouseenter = () => { S.hover = o; place(o); };
+    d.onmouseleave = () => { if (S.hover === o) { S.hover = null; place(o); } };
+    d.onclick = () => { if (!S.edit) $('tEdit').click(); if (o.deleted) { push(); o.deleted = false; place(o); evaluate(); } select(o); };
+    d.ondblclick = () => goNear(o);
+    d.title = 'Click: select · double-click: go to it';
+    L.appendChild(d);
+  }
+  if (!items.length) L.innerHTML = '<div class="item muted">Nothing matches.</div>';
+  L.scrollTop = keepScroll;
+}
+const fromSc = p => [p.x, -p.z, p.y];
+function drawSweeps() {
+  const L = $('sweeps'); L.innerHTML = '';
+  Object.entries(S.sweeps).forEach(([id, s], i) => { const p = fromSc(s.position), r = roomAt(p[0], p[1]);
+    const d = document.createElement('div'); d.className = 'item';
+    d.innerHTML = `<span>${r ? r.label : 'spot'} ${i + 1}</span><span class="muted">${id.slice(0, 6)}</span>`;
+    d.onclick = () => S.sdk.Sweep.moveTo(id, { transition:S.sdk.Sweep.Transition.FLY }).catch(e => status(fmt(e), true));
+    L.appendChild(d); });
+}
+function goNear(o) {
+  let best = null;
+  for (const [id, s] of Object.entries(S.sweeps)) { const p = fromSc(s.position), d = Math.hypot(p[0] - o.x, p[1] - o.y);
+    if (d > 0.6 && (!best || d < best.d)) best = { id, d }; }
+  if (best) S.sdk.Sweep.moveTo(best.id, { transition:S.sdk.Sweep.Transition.FLY }).catch(e => status(fmt(e), true));
+}
+
+// ------------------------------------------------------------------ buttons
+document.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => S.sdk && S.sdk.Mode.moveTo(S.sdk.Mode.Mode[b.dataset.mode]).catch(e => status(fmt(e), true)));
+function toggle(id, key, after) { $(id).onclick = () => { S[key] = !S[key]; $(id).classList.toggle('on', S[key]); after(); }; }
+toggle('tEdit', 'edit', () => { setPass(false); if (!S.edit) { select(null); setHover(null); } });
+$('find').oninput = e => { S.find = e.target.value; drawList(); };
+toggle('tFurn', 'showFurn', () => { S.objs.forEach(place); evaluate(); });
+toggle('tTent', 'showTent', () => { S.objs.forEach(place); evaluate(); });
+toggle('tShapes', 'useShapes', () => buildObjects());
+toggle('tTiles', 'useTiles', () => buildObjects());
+toggle('tDoll', 'dollhouse', () => {});
+toggle('tPlan', 'planView', () => {});
+$('mEmpty').onclick = () => { if (S.empty) return; S.empty = true; $('mEmpty').classList.add('on'); $('mFull').classList.remove('on'); loadShowcase(); };
+$('mFull').onclick = () => { if (!S.empty) return; S.empty = false; $('mFull').classList.add('on'); $('mEmpty').classList.remove('on'); loadShowcase(); };
+function download(name, obj) { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(obj, null, 1)], { type:'application/json' })); a.download = name; a.click(); }
+$('exp').onclick = () => download('edits.json', { model:C.model, units:'metres', source:'studio.html',
+  objects:S.objs.filter(o => o.deleted || o.x !== o.x0 || o.y !== o.y0 || o.yaw !== o.yaw0).map(o => ({ id:o.id, label:o.label, source:o.source,
+    deleted:!!o.deleted, original:{ x:o.x0, y:o.y0, yaw_deg:o.yaw0 }, now:{ x:+o.x.toFixed(3), y:+o.y.toFixed(3), yaw_deg:o.yaw } })) });
+$('expSweeps').onclick = () => download('sdk_sweeps.json', { model:S.empty ? C.defurnished : C.model, frame:'Model API (x east, y north, z up)',
+  sweeps:Object.entries(S.sweeps).map(([id, s]) => ({ id, position:fromSc(s.position), rotation_sdk:s.rotation })) });
+
+window.__studio = { S, camera, THREE, wallSnap, piecesAt, wallGap };   // for debugging in the console
+loadData().then(() => loadShowcase()).catch(e => status(`Could not load our data from ${C.dataDir}: ${fmt(e)}`, true));
+</script>
+</body>
+</html>

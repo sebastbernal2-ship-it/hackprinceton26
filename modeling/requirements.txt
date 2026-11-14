@@ -1,0 +1,11 @@
+# Python dependencies for modeling/ (imports verified with grep over modeling/*.py).
+numpy
+scipy
+pillow
+requests
+python-dotenv      # MatterportTest.py only
+matplotlib         # debug/topdown plots (mesh_furniture.py has --no-plot)
+pandas             # MatterportTest.py only
+DracoPy            # only needed when 3D Tiles are Draco-compressed (tiles_mesh.py)
+# ipython is imported lazily in MatterportTest.py notebook cells; install it only if you run that notebook.
+pytest             # tests under modeling/tests
