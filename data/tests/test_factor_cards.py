@@ -75,3 +75,55 @@ def test_helpers():
     assert bfc.evidence_as_of({"evidence_as_of": "2026-05-01", "source_as_of_date": "2026-06-01"}) == "2026-05-01"
     assert bfc.evidence_as_of({"source_as_of_date": "2026-06-01"}) == ""
     assert bfc.crime_time_window({"crime_source_date_start": "2026-01-01"}) == ""
+
+
+def adapter_card(pid, status="derived", value="12", **kw):
+    c = {"propertyId": pid, "factorId": "schools_education", "status": status, "value": value, "unit": "schools",
+         "source": "synthetic", "recordId": "r1", "asOf": "2026-01-01", "geography": "1 mi", "limitations": "synthetic limits"}
+    c.update(kw)
+    return c
+
+
+def build_with(obs):
+    with (FIXTURES / "factors.csv").open(newline="") as f:
+        factors = list(csv.DictReader(f))
+    sites = [{"property_id": "S1", "city": "Houston"}, {"property_id": "S2", "city": "Los Angeles"}]
+    return bfc.build_cards(factors, sites, {}, {}, {}, obs)
+
+
+def test_adapter_observations_replace_unknown_only_for_their_site():
+    rows = build_with({("S1", "schools_education"): [adapter_card("S1"), adapter_card("S1", value="0.4", recordId="r2")]})
+    s1 = [r for r in rows if r["property_id"] == "S1" and r["factor_id"] == "schools_education"]
+    assert [r["value"] for r in s1] == ["12", "0.4"] and all(r["status"] == "derived" and r["source"] == "synthetic" for r in s1)
+    assert s1[0]["interpretation"] == "synthetic limits"
+    s2 = pick(rows, "S2", "schools_education")
+    assert s2["status"] == "unknown" and s2["value"] == "" and s2["unknown_reason"]
+
+
+def test_adapter_unknown_stays_blank_and_has_reason():
+    rows = build_with({("S1", "schools_education"): [adapter_card("S1", status="unknown", value="")]})
+    r = pick(rows, "S1", "schools_education")
+    assert r["status"] == "unknown" and r["value"] == "" and r["unknown_reason"]
+
+
+def test_loader_ignores_missing_file_and_invalid_cards(tmp_path):
+    import json
+    with (FIXTURES / "factors.csv").open(newline="") as f:
+        factors = list(csv.DictReader(f))
+    assert bfc.load_adapter_observations(factors, tmp_path) == {}
+    d = tmp_path / "schools_education"
+    d.mkdir()
+    good = adapter_card("S1")
+    bad = [adapter_card("S1", status="maybe"), adapter_card("S1", status="unknown", value="0"),
+           {k: v for k, v in adapter_card("S1").items() if k != "source"}, {**adapter_card("S1"), "propertyId": ""}]
+    (d / "observations.json").write_text(json.dumps([good] + bad))
+    assert bfc.load_adapter_observations(factors, tmp_path) == {("S1", "schools_education"): [good]}
+    (d / "observations.json").write_text("not json")
+    assert bfc.load_adapter_observations(factors, tmp_path) == {}
+
+
+def test_crime_adapter_fills_only_when_no_houston_aggregate():
+    c = adapter_card("S2", factorId="crime_safety_la")
+    rows = build_with({("S2", "crime_safety"): [c]})
+    assert pick(rows, "S2", "crime_safety")["value"] == "12"
+    assert pick(rows, "S1", "crime_safety")["status"] == "unknown"
