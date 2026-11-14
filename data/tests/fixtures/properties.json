@@ -1,0 +1,41 @@
+[
+ {
+  "id": 9001,
+  "propertyType": 6,
+  "propertySubtype": 61,
+  "primaryAddress": {
+   "streetNumber": "100",
+   "streetName": "Example",
+   "streetType": "St",
+   "city": "Houston",
+   "state": "TX",
+   "postcode": "77000",
+   "latitude": 29.76,
+   "longitude": -95.37
+  },
+  "grossBuildingAreaSquareFeet": 5000,
+  "propertyRetail": {
+   "grossLeasableAreaSquareFeet": 4000
+  },
+  "hasSprinklers": true
+ },
+ {
+  "id": 9002,
+  "propertyType": 7,
+  "primaryAddress": {
+   "city": "Los Angeles",
+   "state": "CA"
+  }
+ },
+ {
+  "id": 9003,
+  "propertyType": 9,
+  "primaryAddress": {
+   "city": "Houston"
+  }
+ },
+ {
+  "id": 9004,
+  "propertyType": 99
+ }
+]

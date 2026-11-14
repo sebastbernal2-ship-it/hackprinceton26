@@ -1,0 +1,4 @@
+{"model_id": "mA", "http_status": 200, "result": {"id": "mA"}}
+{"model_id": "mB", "http_status": 200, "result": null}
+{"model_id": "mC", "http_status": 404, "result": null}
+not json
