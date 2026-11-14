@@ -8,8 +8,8 @@ Based on Model_download_test.py:
 If the bundle is not unlocked, nothing is bought: unlocking (unlockModelBundle) charges the Matterport account, so do
 that yourself in Matterport Cloud if you want it.
 
-    python Code\matterpak.py                 # download (if needed), extract, convert
-    python Code\matterpak.py --no-download   # use a zip that is already there
+    python modeling/matterpak.py                 # download (if needed), extract, convert
+    python modeling/matterpak.py --no-download   # use a zip that is already there
 Looks for the zip in assets_<sid>/matterpak/ and, for convenience, in the repo root (it is moved into assets_<sid>/).
 
 Outputs (same format as tiles_mesh.py, so tile_objects.py and mesh_furniture.py use it automatically):

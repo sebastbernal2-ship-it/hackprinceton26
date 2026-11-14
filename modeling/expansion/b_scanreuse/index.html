@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>b_scanreuse – room addition from real scan pieces</title>
+<style>
+  html,body{margin:0;height:100%;overflow:hidden;background:#cfd8e0;font:13px system-ui,Segoe UI,sans-serif}
+  canvas{display:block}
+  #ui{position:absolute;left:10px;top:10px;background:rgba(20,24,28,.82);color:#eee;padding:10px 12px;border-radius:8px;
+      max-width:300px;line-height:1.5}
+  #ui button{margin:2px 2px 2px 0;background:#3a4450;color:#eee;border:1px solid #556;border-radius:4px;padding:3px 7px;cursor:pointer}
+  #ui button.on{background:#4f7fae}
+  #ui label{display:block;margin-top:4px}
+  #ui input[type=range]{width:150px;vertical-align:middle}
+  #ui .h{font-weight:600;margin-top:6px}
+  #msg{position:absolute;right:10px;bottom:10px;color:#223;background:rgba(255,255,255,.7);padding:4px 8px;border-radius:4px}
+</style>
+</head>
+<body>
+<div id="ui" style="display:none">
+  <div class="h">Room addition – b_scanreuse</div>
+  <div>case: <span id="cases"></span></div>
+  <div>view: <span id="views"></span></div>
+  <div class="h">addition rectangle (m)</div>
+  <label>depth <input id="depth" type="range" min="2" max="6" step="0.1"> <span id="depthv"></span></label>
+  <label>width <input id="width" type="range" min="2" max="6" step="0.1"> <span id="widthv"></span></label>
+  <label>shift <input id="shift" type="range" min="-3" max="3" step="0.1"> <span id="shiftv"></span></label>
+  <label><input id="roofchk" type="checkbox" checked> roofs</label>
+  <div style="opacity:.75;margin-top:6px">drag: orbit · right-drag: pan · wheel: zoom</div>
+</div>
+<div id="msg">loading scan…</div>
+<script type="module" src="./app.js"></script>
+</body>
+</html>

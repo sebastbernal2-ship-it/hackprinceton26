@@ -18,8 +18,8 @@ Outputs (pano_<sid>/mesh_diff/):
     objects_tiles/seg_###.glb, scene_tiles.json    textured models (same format as tile_objects.py; studio reads them)
     segments_topdown.png    every piece in its own colour, with id + label (for checking)
 
-    python Code\segment_furniture.py
-    python Code\segment_furniture.py --neck 0.5 --voxel 0.03
+    python modeling/segment_furniture.py
+    python modeling/segment_furniture.py --neck 0.5 --voxel 0.03
 """
 import argparse, json, math, os, sys
 import numpy as np
