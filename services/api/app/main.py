@@ -5,6 +5,7 @@ from .assets_routes import router as assets_router
 from .assets_ingest_routes import router as assets_ingest_router
 from .costs_routes import router as costs_router
 from .loader import load_matches
+from .structure_routes import router as structure_router
 from .models import (
     AssessRequest, ProjectionsResponse, ReplanRequest, ReplanResponse, ScenarioAssessment,
     Match, MatchesRequest, MatchesResponse, NextQuestionRequest, NextQuestionResponse,
@@ -16,6 +17,7 @@ app.include_router(inspection_routes.router)
 app.include_router(costs_router)
 app.include_router(assets_router)
 app.include_router(assets_ingest_router)
+app.include_router(structure_router)
 
 
 @app.get("/api/health")
