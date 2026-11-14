@@ -1,6 +1,7 @@
 """Mission Control runner: planner loop, parallel tool calls, parallel site-inspector subagents, actions, guarded brief.
 Emits events: plan, tool_call, tool_result, subagent_start, subagent_finish, finding, action, final, error."""
 import json
+import os
 import queue
 import re
 import threading
@@ -24,6 +25,9 @@ results and take actions. Rules (non-negotiable):
 - Batch independent tool calls in one message. Start with write_plan and shortlist.
 - Then call inspect_sites once with the shortlisted listingIds (parallel subagents), then take actions: rerun_plan with a
   changed assumption, make_checklist for the best candidate, then save_brief.
+- Figures the owner typed in the goal (seats, budget) are their requirements, not facts about a listing: never write that a
+  listing "is 40-seat" unless a result says so. Quote ranges as low/expected/high, never a single bound as if it were the value.
+  Name a number's meaning exactly as the tool does (e.g. monthly operating cost, build-out p50). Say what is unknown.
 - Every claim in save_brief is {{"text","cites":[resultId,...]}}; every number in text must appear in a cited result."""
 
 INSPECTOR_SYSTEM = """You inspect ONE listing. Call property_facts, inspection_findings, costs and assess together in one message,
@@ -97,14 +101,15 @@ class Run:
         self.q: queue.Queue = queue.Queue()
         self.lock = threading.Lock()
         self.n = 0
-        self.derived = Path(derived_dir or "data/derived") / "agent" / "briefs"
+        self.derived = Path(derived_dir or os.environ.get("DERIVED_DIR", "data/derived")) / "agent" / "briefs"
         self.tokens = {"input": 0, "output": 0, "calls": 0}
         self.verdicts: dict = {}
         self.trace: list = []
 
     # events ---------------------------------------------------------------
     def emit(self, type_, **kw):
-        e = {"type": type_, "mode": self.mode, "provider": getattr(self.planner, "name", "?"), "runId": self.run_id,
+        e = {"type": type_, "mode": self.mode, "provider": getattr(self.planner, "name", "?"),
+             "model": getattr(self.planner, "model", None) or self.mode.lower(), "date": time.strftime("%Y-%m-%d", time.gmtime()), "runId": self.run_id,
              "t": round(time.time(), 3), **kw}
         self.trace.append(e)
         self.q.put(e)
@@ -205,12 +210,31 @@ class Run:
              "headline": str(raw.get("headline", "")), "topRisk": str(raw.get("topRisk", "")),
              "risks": [str(x) for x in raw.get("risks", [])][:5], "unknowns": [str(x) for x in raw.get("unknowns", [])][:5],
              "cites": [c for c in raw.get("cites", mine) if c in self.results] or mine}
-        ok, why = guard.check_claim({"text": v["headline"], "cites": v["cites"]}, self.results)
+        auto = self._auto_unknowns(mine)
+        v["unknowns"] = v["unknowns"] + [u for u in auto if u not in v["unknowns"]]
+        if auto and v["verdict"] == "strong":
+            v["verdict"], v["verdictCapped"] = "workable", "strong needs an inspection and no unpriced/unknown inputs; capped"
+        ok, why = guard.check_claim({"text": v["headline"], "cites": v["cites"]}, self.results, self.goal)
         v["verified"] = ok
         if not ok:
             v["headline"] = f"[claim removed: {why}]"
             v["verdict"] = "unknown"
         return v
+
+    def _auto_unknowns(self, rids):
+        """Unknowns derived from the tool results themselves, so a model cannot omit them from its verdict."""
+        out = []
+        for rid in rids:
+            r = self.results.get(rid)
+            if not isinstance(r, dict):
+                continue
+            if r.get("mode") == "none" and "findings" in r:
+                out.append(f"no inspection has been run ({rid})")
+            if r.get("excludedLineIds"):
+                out.append(f"{len(r['excludedLineIds'])} cost line(s) unpriced, excluded from totals ({rid})")
+            if isinstance(r.get("unknownInputs"), dict) and r["unknownInputs"]:
+                out.append(f"assess inputs unknown: {', '.join(sorted(r['unknownInputs']))} ({rid})")
+        return out
 
     def _meta(self, name, a):
         if name == "write_plan":
@@ -246,6 +270,12 @@ class Run:
             except Exception as e:  # noqa: BLE001
                 r = {"error": f"{type(e).__name__}: {e}"}
             rid, clean = self._store(name, r)
+            if name == "inspect_sites":
+                # verdict prose is model-written: the citable record keeps only structure + the cited evidence itself
+                vs = clean.get("verdicts", [])
+                with self.lock:
+                    self.results[rid] = {"verdicts": [{k: v.get(k) for k in ("listingId", "verdict", "verified", "cites")} for v in vs],
+                                         "evidence": {c: self.results[c] for v in vs for c in v.get("cites", []) if c in self.results}}
             self.emit("tool_result", agent="planner", tool=name, resultId=rid, ok="error" not in clean,
                       summary=guard.dumps(clean)[:240])
             if name in self.ACTIONS:
@@ -262,13 +292,14 @@ class Run:
     def save_brief(self, a) -> dict:
         ok, rejected = [], []
         for cl in a.get("claims", []) if isinstance(a.get("claims"), list) else []:
-            good, why = guard.check_claim(cl if isinstance(cl, dict) else {}, self.results)
+            good, why = guard.check_claim(cl if isinstance(cl, dict) else {}, self.results, self.goal)
             (ok if good else rejected).append({**(cl if isinstance(cl, dict) else {"text": str(cl)}), **({} if good else {"rejected": why})})
         unknowns = [{"listingId": lid, "unknowns": v["unknowns"], "cites": v["cites"]} for lid, v in self.verdicts.items() if v["unknowns"]]
         brief = {"runId": self.run_id, "mode": self.mode, "goal": self.goal, "label": LABEL,
                  "recommendation": guard.sanitize(str(a.get("recommendation", ""))), "claims": ok, "rejectedClaims": rejected,
                  "verdicts": list(self.verdicts.values()), "unknowns": unknowns,
-                 "note": "Screening evidence, not an engineering assessment or a forecast. Unknown means unknown, not zero."}
+                 "note": "Screening evidence, not an engineering assessment or a forecast. Unknown means unknown, not zero. "
+                         "Numbers in claims were checked against cited tool results; the surrounding prose is model-written and is not."}
         try:
             self.derived.mkdir(parents=True, exist_ok=True)
             (self.derived / f"{self.run_id}.json").write_text(json.dumps(brief, indent=1, default=str))
