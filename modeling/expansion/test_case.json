@@ -1,0 +1,30 @@
+{
+  "model": "zvKHR9DHNjJ",
+  "frame": "model frame: x east, y north, z up, metres (same as plan.json / MatterPak OBJ). Front porch/street is -y (south); back yard is +y (north).",
+  "plan": "pano_zvKHR9DHNjJ/mesh_diff/plan.json",
+  "additions": [
+    {
+      "id": "main",
+      "note": "PRIMARY test case. New room behind the bedroom spanning x -5.81..-2.31 (its back wall is y~4.9).",
+      "polygon": [[-5.81, 4.90], [-2.31, 4.90], [-2.31, 8.90], [-5.81, 8.90]],
+      "connect_to_room_label": "Bedroom",
+      "connect_wall": {"a": [-5.81, 4.90], "b": [-2.31, 4.90]},
+      "opening": "interior doorway in the shared wall; size/position/trim inferred from the house's existing doors"
+    },
+    {
+      "id": "side",
+      "note": "SECONDARY test case (generality): west side addition next to the north-west bedroom (its west wall is x~-12.99).",
+      "polygon": [[-16.5, 0.80], [-12.99, 0.80], [-12.99, 4.88], [-16.5, 4.88]],
+      "connect_to_room_label": "Bedroom",
+      "connect_wall": {"a": [-12.99, 0.80], "b": [-12.99, 4.88]}
+    }
+  ],
+  "views": {
+    "size": [1600, 900],
+    "aerial":   {"type": "perspective", "fov_v": 50, "pos": [-17, 19, 12], "target": [-5, 2, 1]},
+    "backyard": {"type": "perspective", "fov_v": 60, "pos": [0.5, 15, 1.7], "target": [-4.5, 6.5, 2.2]},
+    "interior": {"type": "perspective", "fov_v": 75, "pos": [-4.06, 8.4, 1.6], "target": [-4.06, 3.0, 1.2]},
+    "front":    {"type": "perspective", "fov_v": 55, "pos": [-5, -20, 3], "target": [-5, 0, 2]},
+    "plan":     {"type": "orthographic_topdown", "center": [-5, 1.5], "width_m": 26}
+  }
+}
