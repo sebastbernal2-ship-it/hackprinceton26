@@ -3,3 +3,5 @@ pandas
 lifelines
 pydantic
 pytest
+scikit-learn
+scipy
