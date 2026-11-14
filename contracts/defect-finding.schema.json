@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DefectFinding",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["id", "roomId", "category", "title", "description", "severity", "modelConfidence", "evidence", "canConfirmFromImagery", "verificationStep", "costLineItemIds"],
+  "properties": {
+    "id": {"type": "string"},
+    "roomId": {"type": ["string", "null"]},
+    "category": {"enum": ["plumbing", "electrical", "hvac", "flooring", "ceiling_water_damage", "walls_finishes", "structural", "kitchen_infrastructure", "egress_accessibility", "layout_inefficiency", "other"]},
+    "title": {"type": "string"},
+    "description": {"type": "string"},
+    "severity": {"enum": ["low", "medium", "high", "unknown"]},
+    "modelConfidence": {"type": "number", "minimum": 0, "maximum": 1, "description": "The model's own stated confidence, NOT a calibrated probability."},
+    "evidence": {
+      "type": "object",
+      "required": ["source", "ref", "region"],
+      "properties": {
+        "source": {"enum": ["panorama", "floorplan_geometry", "listing_text"]},
+        "ref": {"type": "string"},
+        "region": {"oneOf": [{"type": "null"}, {"type": "object", "required": ["x", "y", "w", "h"], "properties": {"x": {"type": "number"}, "y": {"type": "number"}, "w": {"type": "number"}, "h": {"type": "number"}}}], "description": "Normalized 0-1 image box, origin top-left."}
+      }
+    },
+    "canConfirmFromImagery": {"type": "boolean"},
+    "verificationStep": {"type": "string", "minLength": 1},
+    "costLineItemIds": {"type": "array", "items": {"type": "string"}}
+  }
+}

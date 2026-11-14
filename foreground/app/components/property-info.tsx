@@ -1,6 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import type { CostLineItem } from "../lib/costs";
+import type { DefectFinding } from "../lib/inspection";
+import ActChecklist from "./act-checklist";
+import CostPanel from "./cost-panel";
+import InspectionPanel from "./inspection-panel";
+import Stepper from "./stepper";
 import { monthlyRent, type Match } from "../lib/matches";
 import EvidenceReadiness from "./evidence-readiness";
 import FactorCards from "./factor-cards";
@@ -28,6 +34,8 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
   const photos = facts.photos.length > 0 ? facts.photos : [match.photo];
   const [index, setIndex] = useState(0);
   const [askOpen, setAskOpen] = useState(false);
+  const [findings, setFindings] = useState<DefectFinding[]>([]);
+  const [lines, setLines] = useState<CostLineItem[]>([]);
   const hero = photos[index % photos.length];
   const thumbs = photos.filter((_, photoIndex) => photoIndex !== index % photos.length).slice(0, 3);
 
@@ -59,6 +67,7 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
         Back to Discover
       </button>
       <div className="mx-auto max-w-[68rem] px-6 pb-16 pt-8 sm:px-12">
+        <div className="mb-5"><Stepper active={2} /></div>
         <div className="grid items-stretch gap-4 lg:grid-cols-[1.65fr_0.72fr]">
           <div className="relative aspect-[16/10] self-start overflow-hidden rounded-[1.35rem] bg-foreground/5">
             {/* CoStar CDN blocks the Next optimizer. */}
@@ -139,6 +148,10 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
         <FactorCards factors={match.factors ?? []} demo={match.demo} />
 
         {!match.demo && <Projections listingId={match.listingId} />}
+
+        {!match.demo && <InspectionPanel listingId={match.listingId} onData={setFindings} />}
+        {!match.demo && <CostPanel listingId={match.listingId} onData={setLines} />}
+        {!match.demo && <ActChecklist findings={findings} factors={match.factors ?? []} lines={lines} />}
 
         <p className="mt-5 text-xs text-foreground/40">
           From the CoStar listing and the Matterport model on file.

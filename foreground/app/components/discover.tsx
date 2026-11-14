@@ -5,6 +5,7 @@ import { useState } from "react";
 import { monthlyRent, type Match } from "../lib/matches";
 import { useMatches, type MatchesState } from "../lib/discover";
 import EvidenceReadiness from "./evidence-readiness";
+import Stepper from "./stepper";
 import PropertyInfo from "./property-info";
 import TourOverlay from "./tour-overlay";
 
@@ -19,6 +20,7 @@ export default function Discover() {
   return (
     <>
       <header className="animate-rise">
+        <div className="mb-4"><Stepper active={1} /></div>
         <h1 className="text-[clamp(1.6rem,4vw,2.5rem)] font-medium leading-tight tracking-tight">Discover</h1>
         <p className="mt-2 text-foreground/50">{subtitle(state)}</p>
       </header>

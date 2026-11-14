@@ -1,0 +1,4 @@
+{"_note": "finding category -> cost catalog itemIds owned by the financial slice. Missing ids stay empty; fill in once the catalog ids are final.",
+ "plumbing": [], "electrical": [], "hvac": [], "flooring": [], "ceiling_water_damage": [],
+ "walls_finishes": [], "structural": [], "kitchen_infrastructure": [], "egress_accessibility": [],
+ "layout_inefficiency": [], "other": []}
