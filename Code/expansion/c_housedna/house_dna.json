@@ -1,0 +1,2300 @@
+{
+ "model": "zvKHR9DHNjJ",
+ "frame": "model frame: x east, y north, z up, metres; finished floor z=0",
+ "generated_by": "Code/expansion/c_housedna/analyse_house.py",
+ "levels": {
+  "floor_z": 0.0,
+  "ground_z": -0.431,
+  "ceiling": 2.703,
+  "ceiling_support": 12,
+  "ceiling_n": 14
+ },
+ "walls": {
+  "exterior_thickness": 0.16,
+  "exterior_n": 24,
+  "interior_thickness": 0.1,
+  "interior_n": 40
+ },
+ "footprint": [
+  [
+   -11.17,
+   -5.771
+  ],
+  [
+   -11.17,
+   -5.591
+  ],
+  [
+   -10.59,
+   -5.591
+  ],
+  [
+   -10.59,
+   -5.761
+  ],
+  [
+   -6.93,
+   -5.761
+  ],
+  [
+   -6.93,
+   -4.201
+  ],
+  [
+   -2.31,
+   -4.201
+  ],
+  [
+   -2.31,
+   -4.751
+  ],
+  [
+   2.81,
+   -4.751
+  ],
+  [
+   2.81,
+   4.899
+  ],
+  [
+   -12.98,
+   4.899
+  ],
+  [
+   -12.98,
+   0.809
+  ],
+  [
+   -8.57,
+   0.809
+  ],
+  [
+   -8.57,
+   0.409
+  ],
+  [
+   -10.61,
+   0.409
+  ],
+  [
+   -10.61,
+   -0.211
+  ],
+  [
+   -12.99,
+   -0.211
+  ],
+  [
+   -12.99,
+   -5.771
+  ]
+ ],
+ "envelope": [
+  [
+   -6.93,
+   -5.761
+  ],
+  [
+   -6.93,
+   -4.201
+  ],
+  [
+   -2.31,
+   -4.201
+  ],
+  [
+   -2.31,
+   -4.751
+  ],
+  [
+   2.81,
+   -4.751
+  ],
+  [
+   2.81,
+   4.899
+  ],
+  [
+   -12.98,
+   4.899
+  ],
+  [
+   -12.98,
+   -5.761
+  ]
+ ],
+ "envelope_outer": [
+  [
+   -6.85,
+   -5.841
+  ],
+  [
+   -6.85,
+   -4.281
+  ],
+  [
+   -2.39,
+   -4.281
+  ],
+  [
+   -2.39,
+   -4.831
+  ],
+  [
+   2.89,
+   -4.831
+  ],
+  [
+   2.89,
+   4.979
+  ],
+  [
+   -13.06,
+   4.979
+  ],
+  [
+   -13.06,
+   -5.841
+  ]
+ ],
+ "doors": [
+  {
+   "wall": 1,
+   "kind": "door",
+   "width": 1.2,
+   "head": 2.05,
+   "sill": 0.0,
+   "centre": [
+    -2.305,
+    -1.125
+   ],
+   "dir": [
+    0.0021,
+    -1.0
+   ],
+   "wall_len": 5.023,
+   "offset_from_wall_end": 1.35,
+   "end_side": "start",
+   "wall_thickness": 0.28,
+   "rooms": [
+    "Living Room",
+    "Dining Room"
+   ],
+   "room_ids": [
+    "cdz3fkt38kae7tapstpt0eaeb",
+    "613htqkzf66zz7hf7n8kzszed"
+   ],
+   "casing_width": 0.3,
+   "casing_colour": "#d7d1cf",
+   "head_casing": null
+  },
+  {
+   "wall": 3,
+   "kind": "door",
+   "width": 0.65,
+   "head": 2.2,
+   "sill": 0.0,
+   "centre": [
+    -6.677,
+    3.051
+   ],
+   "dir": [
+    -0.0021,
+    1.0
+   ],
+   "wall_len": 1.78,
+   "offset_from_wall_end": 0.28,
+   "end_side": "end",
+   "wall_thickness": 0.1,
+   "rooms": [
+    "Bathroom",
+    "Bathroom"
+   ],
+   "room_ids": [
+    "19ab05tns5h6y4qm42esqqpea",
+    "3ygfq6yfyyw3hi9x7u5rm2iqa"
+   ],
+   "casing_width": null,
+   "casing_colour": null,
+   "head_casing": null
+  },
+  {
+   "wall": 9,
+   "kind": "door",
+   "width": 0.65,
+   "head": 2.0,
+   "sill": 0.0,
+   "centre": [
+    -9.235,
+    -2.76
+   ],
+   "dir": [
+    -1.0,
+    -0.0021
+   ],
+   "wall_len": 2.466,
+   "offset_from_wall_end": 0.8,
+   "end_side": "start",
+   "wall_thickness": 0.1,
+   "rooms": [
+    "Dining Room",
+    "Kitchen"
+   ],
+   "room_ids": [
+    "2qdmc5i9byxi79ry1pxdkqzea",
+    "3m54yff1z7crxaywd8if9rb0d"
+   ],
+   "casing_width": 0.08,
+   "casing_colour": "#d4cfcc",
+   "head_casing": 0.06
+  },
+  {
+   "wall": 19,
+   "kind": "door",
+   "width": 0.7,
+   "head": 2.0,
+   "sill": 0.0,
+   "centre": [
+    0.024,
+    1.057
+   ],
+   "dir": [
+    1.0,
+    0.0021
+   ],
+   "wall_len": 3.937,
+   "offset_from_wall_end": 0.8,
+   "end_side": "start",
+   "wall_thickness": 0.1,
+   "rooms": [
+    "Living Room",
+    "Living Room"
+   ],
+   "room_ids": [
+    "xy2x8mpaaqknp7q2c3nnbw1ma",
+    "cdz3fkt38kae7tapstpt0eaeb"
+   ],
+   "casing_width": 0.27,
+   "casing_colour": "#c7c1ba",
+   "head_casing": 0.04
+  },
+  {
+   "wall": 20,
+   "kind": "door",
+   "width": 1.05,
+   "head": 1.95,
+   "sill": 0.0,
+   "centre": [
+    -8.111,
+    -2.233
+   ],
+   "dir": [
+    -0.0021,
+    1.0
+   ],
+   "wall_len": 2.107,
+   "offset_from_wall_end": 0.0,
+   "end_side": "start",
+   "wall_thickness": 0.1,
+   "rooms": [
+    "Kitchen"
+   ],
+   "room_ids": [
+    "3m54yff1z7crxaywd8if9rb0d"
+   ],
+   "casing_width": null,
+   "casing_colour": null,
+   "head_casing": null
+  },
+  {
+   "wall": 23,
+   "kind": "door",
+   "width": 0.7,
+   "head": 2.0,
+   "sill": 0.0,
+   "centre": [
+    -6.947,
+    -0.034
+   ],
+   "dir": [
+    0.0021,
+    -1.0
+   ],
+   "wall_len": 1.464,
+   "offset_from_wall_end": 0.264,
+   "end_side": "end",
+   "wall_thickness": 0.1,
+   "rooms": [
+    "Dining Room",
+    "Hallway"
+   ],
+   "room_ids": [
+    "613htqkzf66zz7hf7n8kzszed",
+    "n81qfe51azs8iexnbqwspye6c"
+   ],
+   "casing_width": 0.15,
+   "casing_colour": "#c7c1bd",
+   "head_casing": 0.2
+  },
+  {
+   "wall": 26,
+   "kind": "door",
+   "width": 0.65,
+   "head": 2.0,
+   "sill": 0.0,
+   "centre": [
+    -5.803,
+    1.343
+   ],
+   "dir": [
+    -0.0021,
+    1.0
+   ],
+   "wall_len": 1.06,
+   "offset_from_wall_end": 0.2,
+   "end_side": "start",
+   "wall_thickness": 0.1,
+   "rooms": [
+    "Hallway",
+    "Bedroom"
+   ],
+   "room_ids": [
+    "wbpb7dkfuwnikd1kq2a9hz70a",
+    "h26t7ky77ew74yb0pg8qqf5rd"
+   ],
+   "casing_width": 0.075,
+   "casing_colour": "#c8c8c8",
+   "head_casing": null
+  },
+  {
+   "wall": 29,
+   "kind": "door",
+   "width": 0.7,
+   "head": 1.95,
+   "sill": 0.0,
+   "centre": [
+    -11.805,
+    -2.766
+   ],
+   "dir": [
+    -1.0,
+    -0.0021
+   ],
+   "wall_len": 1.839,
+   "offset_from_wall_end": 0.3,
+   "end_side": "start",
+   "wall_thickness": 0.1,
+   "rooms": [
+    "Hallway",
+    "Kitchen"
+   ],
+   "room_ids": [
+    "kuc0fpmsgqxff63egrxrycfud",
+    "3m54yff1z7crxaywd8if9rb0d"
+   ],
+   "casing_width": 0.3,
+   "casing_colour": "#cbc4bd",
+   "head_casing": 0.09
+  },
+  {
+   "wall": 30,
+   "kind": "door",
+   "width": 1.25,
+   "head": 2.6,
+   "sill": 0.0,
+   "centre": [
+    -6.942,
+    -2.03
+   ],
+   "dir": [
+    -0.0021,
+    1.0
+   ],
+   "wall_len": 2.107,
+   "offset_from_wall_end": 0.1,
+   "end_side": "start",
+   "wall_thickness": 0.1,
+   "rooms": [
+    "Dining Room"
+   ],
+   "room_ids": [
+    "613htqkzf66zz7hf7n8kzszed"
+   ],
+   "casing_width": 0.06,
+   "casing_colour": "#c9bdaf",
+   "head_casing": null
+  },
+  {
+   "wall": 34,
+   "kind": "door",
+   "width": 0.7,
+   "head": 2.0,
+   "sill": 0.0,
+   "centre": [
+    -7.548,
+    0.814
+   ],
+   "dir": [
+    -1.0,
+    -0.0021
+   ],
+   "wall_len": 1.617,
+   "offset_from_wall_end": 0.25,
+   "end_side": "start",
+   "wall_thickness": 0.12,
+   "rooms": [
+    "Hallway",
+    "Hallway"
+   ],
+   "room_ids": [
+    "n81qfe51azs8iexnbqwspye6c",
+    "wbpb7dkfuwnikd1kq2a9hz70a"
+   ],
+   "casing_width": 0.155,
+   "casing_colour": "#beb8b3",
+   "head_casing": null
+  },
+  {
+   "wall": 37,
+   "kind": "door",
+   "width": 0.65,
+   "head": 2.0,
+   "sill": 0.0,
+   "centre": [
+    -6.939,
+    -3.33
+   ],
+   "dir": [
+    0.0021,
+    -1.0
+   ],
+   "wall_len": 1.137,
+   "offset_from_wall_end": 0.237,
+   "end_side": "end",
+   "wall_thickness": 0.1,
+   "rooms": [
+    "Dining Room",
+    "Dining Room"
+   ],
+   "room_ids": [
+    "613htqkzf66zz7hf7n8kzszed",
+    "2qdmc5i9byxi79ry1pxdkqzea"
+   ],
+   "casing_width": 0.19,
+   "casing_colour": "#dbdad4",
+   "head_casing": 0.19
+  },
+  {
+   "wall": 41,
+   "kind": "door",
+   "width": 0.7,
+   "head": 1.95,
+   "sill": 0.0,
+   "centre": [
+    -8.822,
+    1.362
+   ],
+   "dir": [
+    -0.0021,
+    1.0
+   ],
+   "wall_len": 1.06,
+   "offset_from_wall_end": 0.16,
+   "end_side": "end",
+   "wall_thickness": 0.09,
+   "rooms": [
+    "Bedroom",
+    "Hallway"
+   ],
+   "room_ids": [
+    "tt6gm2a0463x9wmnx7rn6gugc",
+    "wbpb7dkfuwnikd1kq2a9hz70a"
+   ],
+   "casing_width": 0.045,
+   "casing_colour": "#bfb6ae",
+   "head_casing": 0.04
+  },
+  {
+   "wall": 43,
+   "kind": "door",
+   "width": 0.65,
+   "head": 2.0,
+   "sill": 0.0,
+   "centre": [
+    -1.128,
+    2.08
+   ],
+   "dir": [
+    -0.0021,
+    1.0
+   ],
+   "wall_len": 3.849,
+   "offset_from_wall_end": 0.7,
+   "end_side": "start",
+   "wall_thickness": 0.1,
+   "rooms": [
+    "Closet",
+    "Living Room"
+   ],
+   "room_ids": [
+    "b4qtykzcazp4iumkamm7y7h2b",
+    "xy2x8mpaaqknp7q2c3nnbw1ma"
+   ],
+   "casing_width": 0.1,
+   "casing_colour": "#c0bbb6",
+   "head_casing": null
+  },
+  {
+   "wall": 47,
+   "kind": "door",
+   "width": 0.65,
+   "head": 2.0,
+   "sill": 0.0,
+   "centre": [
+    -2.312,
+    2.077
+   ],
+   "dir": [
+    -0.0021,
+    1.0
+   ],
+   "wall_len": 3.85,
+   "offset_from_wall_end": 0.7,
+   "end_side": "start",
+   "wall_thickness": 0.1,
+   "rooms": [
+    "Bedroom",
+    "Closet"
+   ],
+   "room_ids": [
+    "h26t7ky77ew74yb0pg8qqf5rd",
+    "b4qtykzcazp4iumkamm7y7h2b"
+   ],
+   "casing_width": 0.14,
+   "casing_colour": "#c8c8c8",
+   "head_casing": 0.04
+  },
+  {
+   "wall": 47,
+   "kind": "door",
+   "width": 0.95,
+   "head": 1.8,
+   "sill": 0.0,
+   "centre": [
+    -2.315,
+    3.927
+   ],
+   "dir": [
+    -0.0021,
+    1.0
+   ],
+   "wall_len": 3.85,
+   "offset_from_wall_end": 0.5,
+   "end_side": "end",
+   "wall_thickness": 0.1,
+   "rooms": [
+    "Bedroom",
+    "Closet"
+   ],
+   "room_ids": [
+    "h26t7ky77ew74yb0pg8qqf5rd",
+    "b4qtykzcazp4iumkamm7y7h2b"
+   ],
+   "casing_width": 0.035,
+   "casing_colour": "#c8c8c8",
+   "head_casing": null
+  },
+  {
+   "wall": 52,
+   "kind": "door",
+   "width": 0.65,
+   "head": 2.0,
+   "sill": 0.0,
+   "centre": [
+    -7.499,
+    1.874
+   ],
+   "dir": [
+    -1.0,
+    -0.0021
+   ],
+   "wall_len": 2.149,
+   "offset_from_wall_end": 0.5,
+   "end_side": "start",
+   "wall_thickness": 0.11,
+   "rooms": [
+    "Hallway",
+    "Bathroom"
+   ],
+   "room_ids": [
+    "wbpb7dkfuwnikd1kq2a9hz70a",
+    "19ab05tns5h6y4qm42esqqpea"
+   ],
+   "casing_width": 0.185,
+   "casing_colour": "#c3bcb3",
+   "head_casing": null
+  },
+  {
+   "wall": 56,
+   "kind": "door",
+   "width": 0.7,
+   "head": 2.0,
+   "sill": 0.0,
+   "centre": [
+    -12.268,
+    -3.942
+   ],
+   "dir": [
+    -1.0,
+    -0.0021
+   ],
+   "wall_len": 1.424,
+   "offset_from_wall_end": 0.35,
+   "end_side": "start",
+   "wall_thickness": 0.11,
+   "rooms": [
+    "Bathroom",
+    "Hallway"
+   ],
+   "room_ids": [
+    "ediidma5zg15dufx3n0qyq21a",
+    "kuc0fpmsgqxff63egrxrycfud"
+   ],
+   "casing_width": 0.3,
+   "casing_colour": "#cbc2ba",
+   "head_casing": null
+  },
+  {
+   "wall": 62,
+   "kind": "door",
+   "width": 0.85,
+   "head": 2.25,
+   "sill": 0.0,
+   "centre": [
+    -11.305,
+    -4.274
+   ],
+   "dir": [
+    0.6201,
+    -0.7846
+   ],
+   "wall_len": 1.171,
+   "offset_from_wall_end": 0.0,
+   "end_side": "start",
+   "wall_thickness": 0.11,
+   "rooms": [
+    "Bathroom"
+   ],
+   "room_ids": [
+    "ediidma5zg15dufx3n0qyq21a"
+   ],
+   "casing_width": 0.09,
+   "casing_colour": "#c8c4bf",
+   "head_casing": 0.35000000000000003
+  }
+ ],
+ "door_stats": {
+  "n_doors": 18,
+  "n_cased_openings": 0,
+  "width": 0.65,
+  "width_support": 13,
+  "head": 2.0,
+  "head_support": 14,
+  "casing_width": 0.145,
+  "casing_support": 16,
+  "head_casing_height": 0.075,
+  "casing_colour": "#c8c3bd",
+  "corner_offset": 0.237,
+  "n_near_corner": 11,
+  "note": "clear opening between jambs, measured from gaps in the scanned wall band (open doors only; closed doors are invisible to the gap test). Head = underside of the header."
+ },
+ "windows": [
+  {
+   "wall": 8,
+   "kind": "window",
+   "width": 0.8,
+   "head": 1.975,
+   "sill": 0.85,
+   "centre": [
+    -9.87,
+    -5.765
+   ],
+   "dir": [
+    1.0,
+    0.0021
+   ],
+   "wall_len": 3.635,
+   "offset_from_wall_end": 0.3,
+   "end_side": "start",
+   "wall_thickness": 0.16,
+   "rooms": [
+    "Dining Room"
+   ],
+   "room_ids": [
+    "2qdmc5i9byxi79ry1pxdkqzea"
+   ],
+   "outward": [
+    0.002,
+    -1.0
+   ],
+   "room": "Dining Room",
+   "room_id": "2qdmc5i9byxi79ry1pxdkqzea"
+  },
+  {
+   "wall": 8,
+   "kind": "window",
+   "width": 1.0,
+   "head": 2.05,
+   "sill": 0.875,
+   "centre": [
+    -8.77,
+    -5.763
+   ],
+   "dir": [
+    1.0,
+    0.0021
+   ],
+   "wall_len": 3.635,
+   "offset_from_wall_end": 1.3,
+   "end_side": "start",
+   "wall_thickness": 0.16,
+   "rooms": [
+    "Dining Room"
+   ],
+   "room_ids": [
+    "2qdmc5i9byxi79ry1pxdkqzea"
+   ],
+   "outward": [
+    0.002,
+    -1.0
+   ],
+   "room": "Dining Room",
+   "room_id": "2qdmc5i9byxi79ry1pxdkqzea"
+  },
+  {
+   "wall": 8,
+   "kind": "window",
+   "width": 0.55,
+   "head": 1.95,
+   "sill": 0.9,
+   "centre": [
+    -7.845,
+    -5.761
+   ],
+   "dir": [
+    1.0,
+    0.0021
+   ],
+   "wall_len": 3.635,
+   "offset_from_wall_end": 0.635,
+   "end_side": "end",
+   "wall_thickness": 0.16,
+   "rooms": [
+    "Dining Room"
+   ],
+   "room_ids": [
+    "2qdmc5i9byxi79ry1pxdkqzea"
+   ],
+   "outward": [
+    0.002,
+    -1.0
+   ],
+   "room": "Dining Room",
+   "room_id": "2qdmc5i9byxi79ry1pxdkqzea"
+  },
+  {
+   "wall": 13,
+   "kind": "window",
+   "width": 0.8,
+   "head": 2.075,
+   "sill": 0.8,
+   "centre": [
+    2.822,
+    -4.345
+   ],
+   "dir": [
+    -0.0021,
+    1.0
+   ],
+   "wall_len": 5.808,
+   "offset_from_wall_end": 0.0,
+   "end_side": "start",
+   "wall_thickness": 0.16,
+   "rooms": [
+    "Living Room"
+   ],
+   "room_ids": [
+    "cdz3fkt38kae7tapstpt0eaeb"
+   ],
+   "outward": [
+    1.0,
+    0.002
+   ],
+   "room": "Living Room",
+   "room_id": "cdz3fkt38kae7tapstpt0eaeb"
+  },
+  {
+   "wall": 16,
+   "kind": "window",
+   "width": 0.7,
+   "head": 2.0,
+   "sill": 0.7,
+   "centre": [
+    -9.436,
+    4.887
+   ],
+   "dir": [
+    1.0,
+    0.0021
+   ],
+   "wall_len": 4.156,
+   "offset_from_wall_end": 0.256,
+   "end_side": "end",
+   "wall_thickness": 0.16,
+   "rooms": [
+    "Bedroom"
+   ],
+   "room_ids": [
+    "tt6gm2a0463x9wmnx7rn6gugc"
+   ],
+   "outward": [
+    -0.002,
+    1.0
+   ],
+   "room": "Bedroom",
+   "room_id": "tt6gm2a0463x9wmnx7rn6gugc"
+  },
+  {
+   "wall": 24,
+   "kind": "window",
+   "width": 0.75,
+   "head": 2.2,
+   "sill": 0.75,
+   "centre": [
+    2.448,
+    -4.746
+   ],
+   "dir": [
+    -1.0,
+    -0.0021
+   ],
+   "wall_len": 5.12,
+   "offset_from_wall_end": 0.0,
+   "end_side": "start",
+   "wall_thickness": 0.16,
+   "rooms": [
+    "Living Room"
+   ],
+   "room_ids": [
+    "cdz3fkt38kae7tapstpt0eaeb"
+   ],
+   "outward": [
+    0.002,
+    -1.0
+   ],
+   "room": "Living Room",
+   "room_id": "cdz3fkt38kae7tapstpt0eaeb"
+  },
+  {
+   "wall": 24,
+   "kind": "window",
+   "width": 0.55,
+   "head": 2.25,
+   "sill": 0.45,
+   "centre": [
+    -1.402,
+    -4.754
+   ],
+   "dir": [
+    -1.0,
+    -0.0021
+   ],
+   "wall_len": 5.12,
+   "offset_from_wall_end": 0.62,
+   "end_side": "end",
+   "wall_thickness": 0.16,
+   "rooms": [
+    "Living Room"
+   ],
+   "room_ids": [
+    "cdz3fkt38kae7tapstpt0eaeb"
+   ],
+   "outward": [
+    0.002,
+    -1.0
+   ],
+   "room": "Living Room",
+   "room_id": "cdz3fkt38kae7tapstpt0eaeb"
+  },
+  {
+   "wall": 31,
+   "kind": "window",
+   "width": 2.45,
+   "head": 2.3,
+   "sill": 0.6,
+   "centre": [
+    2.806,
+    3.287
+   ],
+   "dir": [
+    0.0021,
+    -1.0
+   ],
+   "wall_len": 3.849,
+   "offset_from_wall_end": 0.4,
+   "end_side": "start",
+   "wall_thickness": 0.16,
+   "rooms": [
+    "Living Room"
+   ],
+   "room_ids": [
+    "xy2x8mpaaqknp7q2c3nnbw1ma"
+   ],
+   "outward": [
+    1.0,
+    0.002
+   ],
+   "room": "Living Room",
+   "room_id": "xy2x8mpaaqknp7q2c3nnbw1ma"
+  },
+  {
+   "wall": 33,
+   "kind": "window",
+   "width": 0.6,
+   "head": 2.1,
+   "sill": 1.175,
+   "centre": [
+    -6.56,
+    4.893
+   ],
+   "dir": [
+    -1.0,
+    -0.0021
+   ],
+   "wall_len": 3.019,
+   "offset_from_wall_end": 0.45,
+   "end_side": "start",
+   "wall_thickness": 0.16,
+   "rooms": [
+    "Bathroom"
+   ],
+   "room_ids": [
+    "19ab05tns5h6y4qm42esqqpea"
+   ],
+   "outward": [
+    -0.002,
+    1.0
+   ],
+   "room": "Bathroom",
+   "room_id": "19ab05tns5h6y4qm42esqqpea"
+  },
+  {
+   "wall": 33,
+   "kind": "window",
+   "width": 0.6,
+   "head": 2.05,
+   "sill": 1.1,
+   "centre": [
+    -8.01,
+    4.89
+   ],
+   "dir": [
+    -1.0,
+    -0.0021
+   ],
+   "wall_len": 3.019,
+   "offset_from_wall_end": 0.519,
+   "end_side": "end",
+   "wall_thickness": 0.16,
+   "rooms": [
+    "Bathroom"
+   ],
+   "room_ids": [
+    "19ab05tns5h6y4qm42esqqpea"
+   ],
+   "outward": [
+    -0.002,
+    1.0
+   ],
+   "room": "Bathroom",
+   "room_id": "19ab05tns5h6y4qm42esqqpea"
+  },
+  {
+   "wall": 35,
+   "kind": "window",
+   "width": 1.6,
+   "head": 2.25,
+   "sill": 1.075,
+   "centre": [
+    -12.038,
+    -5.769
+   ],
+   "dir": [
+    1.0,
+    0.0021
+   ],
+   "wall_len": 1.8,
+   "offset_from_wall_end": 0.05,
+   "end_side": "end",
+   "wall_thickness": 0.16,
+   "rooms": [
+    "Bathroom"
+   ],
+   "room_ids": [
+    "ediidma5zg15dufx3n0qyq21a"
+   ],
+   "outward": [
+    0.002,
+    -1.0
+   ],
+   "room": "Bathroom",
+   "room_id": "ediidma5zg15dufx3n0qyq21a"
+  },
+  {
+   "wall": 39,
+   "kind": "window",
+   "width": 0.6,
+   "head": 1.95,
+   "sill": 0.85,
+   "centre": [
+    -12.979,
+    1.43
+   ],
+   "dir": [
+    0.0021,
+    -1.0
+   ],
+   "wall_len": 4.077,
+   "offset_from_wall_end": 0.327,
+   "end_side": "end",
+   "wall_thickness": 0.16,
+   "rooms": [
+    "Bedroom"
+   ],
+   "room_ids": [
+    "tt6gm2a0463x9wmnx7rn6gugc"
+   ],
+   "outward": [
+    -1.0,
+    -0.002
+   ],
+   "room": "Bedroom",
+   "room_id": "tt6gm2a0463x9wmnx7rn6gugc"
+  },
+  {
+   "wall": 44,
+   "kind": "window",
+   "width": 1.0,
+   "head": 2.25,
+   "sill": 0.75,
+   "centre": [
+    2.103,
+    4.911
+   ],
+   "dir": [
+    -1.0,
+    -0.0021
+   ],
+   "wall_len": 3.937,
+   "offset_from_wall_end": 0.2,
+   "end_side": "start",
+   "wall_thickness": 0.16,
+   "rooms": [
+    "Living Room"
+   ],
+   "room_ids": [
+    "xy2x8mpaaqknp7q2c3nnbw1ma"
+   ],
+   "outward": [
+    -0.002,
+    1.0
+   ],
+   "room": "Living Room",
+   "room_id": "xy2x8mpaaqknp7q2c3nnbw1ma"
+  },
+  {
+   "wall": 44,
+   "kind": "window",
+   "width": 1.1,
+   "head": 2.1,
+   "sill": 0.8,
+   "centre": [
+    -0.397,
+    4.906
+   ],
+   "dir": [
+    -1.0,
+    -0.0021
+   ],
+   "wall_len": 3.937,
+   "offset_from_wall_end": 0.187,
+   "end_side": "end",
+   "wall_thickness": 0.16,
+   "rooms": [
+    "Living Room"
+   ],
+   "room_ids": [
+    "xy2x8mpaaqknp7q2c3nnbw1ma"
+   ],
+   "outward": [
+    -0.002,
+    1.0
+   ],
+   "room": "Living Room",
+   "room_id": "xy2x8mpaaqknp7q2c3nnbw1ma"
+  },
+  {
+   "wall": 45,
+   "kind": "window",
+   "width": 2.3,
+   "head": 2.2,
+   "sill": 0.85,
+   "centre": [
+    -12.997,
+    -1.617
+   ],
+   "dir": [
+    0.0021,
+    -1.0
+   ],
+   "wall_len": 2.551,
+   "offset_from_wall_end": 0.001,
+   "end_side": "end",
+   "wall_thickness": 0.16,
+   "rooms": [
+    "Kitchen"
+   ],
+   "room_ids": [
+    "3m54yff1z7crxaywd8if9rb0d"
+   ],
+   "outward": [
+    -1.0,
+    -0.002
+   ],
+   "room": "Kitchen",
+   "room_id": "3m54yff1z7crxaywd8if9rb0d"
+  },
+  {
+   "wall": 59,
+   "kind": "window",
+   "width": 1.45,
+   "head": 2.05,
+   "sill": 0.9,
+   "centre": [
+    -3.042,
+    4.9
+   ],
+   "dir": [
+    -1.0,
+    -0.0021
+   ],
+   "wall_len": 3.493,
+   "offset_from_wall_end": 0.0,
+   "end_side": "start",
+   "wall_thickness": 0.16,
+   "rooms": [
+    "Bedroom"
+   ],
+   "room_ids": [
+    "h26t7ky77ew74yb0pg8qqf5rd"
+   ],
+   "outward": [
+    -0.002,
+    1.0
+   ],
+   "room": "Bedroom",
+   "room_id": "h26t7ky77ew74yb0pg8qqf5rd"
+  },
+  {
+   "wall": 59,
+   "kind": "window",
+   "width": 0.8,
+   "head": 2.25,
+   "sill": 0.75,
+   "centre": [
+    -4.917,
+    4.897
+   ],
+   "dir": [
+    -1.0,
+    -0.0021
+   ],
+   "wall_len": 3.493,
+   "offset_from_wall_end": 0.493,
+   "end_side": "end",
+   "wall_thickness": 0.16,
+   "rooms": [
+    "Bedroom"
+   ],
+   "room_ids": [
+    "h26t7ky77ew74yb0pg8qqf5rd"
+   ],
+   "outward": [
+    -0.002,
+    1.0
+   ],
+   "room": "Bedroom",
+   "room_id": "h26t7ky77ew74yb0pg8qqf5rd"
+  },
+  {
+   "wall": 60,
+   "kind": "window",
+   "width": 0.8,
+   "head": 2.25,
+   "sill": 0.55,
+   "centre": [
+    -12.371,
+    0.804
+   ],
+   "dir": [
+    -1.0,
+    -0.0021
+   ],
+   "wall_len": 4.156,
+   "offset_from_wall_end": 0.206,
+   "end_side": "end",
+   "wall_thickness": 0.16,
+   "rooms": [
+    "Bedroom"
+   ],
+   "room_ids": [
+    "tt6gm2a0463x9wmnx7rn6gugc"
+   ],
+   "outward": [
+    0.002,
+    -1.0
+   ],
+   "room": "Bedroom",
+   "room_id": "tt6gm2a0463x9wmnx7rn6gugc"
+  }
+ ],
+ "window_stats": {
+  "n": 18,
+  "sill": 0.8,
+  "sill_support": 9,
+  "head": 2.05,
+  "head_support": 8,
+  "unit_width": 0.75,
+  "unit_support": 9,
+  "max_width": 2.45,
+  "glazing_to_floor_area_median": 0.221,
+  "per_room": {
+   "cdz3fkt38kae7tapstpt0eaeb": {
+    "label": "Living Room",
+    "n": 3,
+    "glazing_m2": 3.1,
+    "per_floor_area": 0.107
+   },
+   "xy2x8mpaaqknp7q2c3nnbw1ma": {
+    "label": "Living Room",
+    "n": 3,
+    "glazing_m2": 7.1,
+    "per_floor_area": 0.48
+   },
+   "tt6gm2a0463x9wmnx7rn6gugc": {
+    "label": "Bedroom",
+    "n": 3,
+    "glazing_m2": 2.93,
+    "per_floor_area": 0.171
+   },
+   "h26t7ky77ew74yb0pg8qqf5rd": {
+    "label": "Bedroom",
+    "n": 2,
+    "glazing_m2": 2.87,
+    "per_floor_area": 0.207
+   },
+   "3m54yff1z7crxaywd8if9rb0d": {
+    "label": "Kitchen",
+    "n": 1,
+    "glazing_m2": 3.1,
+    "per_floor_area": 0.234
+   },
+   "2qdmc5i9byxi79ry1pxdkqzea": {
+    "label": "Dining Room",
+    "n": 3,
+    "glazing_m2": 2.65,
+    "per_floor_area": 0.239
+   },
+   "19ab05tns5h6y4qm42esqqpea": {
+    "label": "Bathroom",
+    "n": 2,
+    "glazing_m2": 1.12,
+    "per_floor_area": 0.143
+   },
+   "ediidma5zg15dufx3n0qyq21a": {
+    "label": "Bathroom",
+    "n": 1,
+    "glazing_m2": 1.88,
+    "per_floor_area": 0.525
+   }
+  },
+  "style": "double-hung, white painted flat casing (craftsman), upper sash with vertical muntins (seen in bedroom elevations, debug/openings*.png)",
+  "note": "detected from wall elevations rendered from the textured scan: daylight-bright, non-paint vertical runs with a sill at 0.35-1.3 m and head at 1.75-2.4 m; widened over the white casing. Partial detections (curtains) make widths noisy, so the generator uses the modal unit width."
+ },
+ "rooms": [
+  {
+   "id": "613htqkzf66zz7hf7n8kzszed",
+   "label": "Dining Room",
+   "polygon": [
+    [
+     -2.309,
+     0.825
+    ],
+    [
+     -2.298,
+     -4.197
+    ],
+    [
+     -6.938,
+     -4.207
+    ],
+    [
+     -6.938,
+     -3.892
+    ],
+    [
+     -6.941,
+     -2.755
+    ],
+    [
+     -6.945,
+     -0.648
+    ],
+    [
+     -6.948,
+     0.816
+    ],
+    [
+     -5.802,
+     0.818
+    ],
+    [
+     -2.309,
+     0.825
+    ]
+   ],
+   "area_m2": 22.71,
+   "ceiling_m": 2.692,
+   "plan_height_m": 2.679999828338623,
+   "floor": {
+    "colour": "#ba7938",
+    "material": "hardwood (oak strip, warm finish)",
+    "evidence": "118082 texture samples on z~0 surfaces, score 0.95",
+    "colour_balanced": "#dd8f42"
+   },
+   "wall_paint": {
+    "colour": "#484b4d",
+    "share": 0.13,
+    "colour_balanced": "#55595b"
+   },
+   "baseboard": {
+    "height_m": null,
+    "colour": "#bb7831"
+   },
+   "crown": {
+    "depth_m": 0.21,
+    "colour": "#d8d4c9"
+   },
+   "ceiling_colour": "#cbc9c5",
+   "white_balance_gain": [
+    1.192,
+    1.189,
+    1.183
+   ]
+  },
+  {
+   "id": "cdz3fkt38kae7tapstpt0eaeb",
+   "label": "Living Room",
+   "polygon": [
+    [
+     -2.309,
+     0.825
+    ],
+    [
+     -2.298,
+     -4.197
+    ],
+    [
+     -2.297,
+     -4.756
+    ],
+    [
+     2.823,
+     -4.745
+    ],
+    [
+     2.811,
+     1.063
+    ],
+    [
+     -1.126,
+     1.055
+    ],
+    [
+     -2.309,
+     1.052
+    ],
+    [
+     -2.309,
+     0.825
+    ]
+   ],
+   "area_m2": 28.87,
+   "ceiling_m": 2.704,
+   "plan_height_m": 2.669999837875366,
+   "floor": {
+    "colour": "#b97c46",
+    "material": "hardwood (oak strip, warm finish)",
+    "evidence": "142106 texture samples on z~0 surfaces, score 0.70",
+    "colour_balanced": "#f3a85e"
+   },
+   "wall_paint": {
+    "colour": "#b8c3c8",
+    "share": 0.45,
+    "colour_balanced": "#f2ffff"
+   },
+   "baseboard": {
+    "height_m": null,
+    "colour": "#bcaa93"
+   },
+   "crown": {
+    "depth_m": 0.21,
+    "colour": "#cbc0ad"
+   },
+   "ceiling_colour": "#b8b0ac",
+   "white_balance_gain": [
+    1.315,
+    1.358,
+    1.355
+   ]
+  },
+  {
+   "id": "xy2x8mpaaqknp7q2c3nnbw1ma",
+   "label": "Living Room",
+   "polygon": [
+    [
+     -1.126,
+     1.055
+    ],
+    [
+     2.811,
+     1.063
+    ],
+    [
+     2.803,
+     4.912
+    ],
+    [
+     -1.134,
+     4.904
+    ],
+    [
+     -1.126,
+     1.055
+    ]
+   ],
+   "area_m2": 14.78,
+   "ceiling_m": 2.74,
+   "plan_height_m": 2.7200000286102295,
+   "floor": {
+    "colour": "#762807",
+    "material": "hardwood (oak strip, warm finish)",
+    "evidence": "57553 texture samples on z~0 surfaces, score 0.92",
+    "colour_balanced": "#983509"
+   },
+   "wall_paint": {
+    "colour": "#b8a58f",
+    "share": 0.22,
+    "colour_balanced": "#eeddbb"
+   },
+   "baseboard": {
+    "height_m": null,
+    "colour": "#76502c"
+   },
+   "crown": {
+    "depth_m": null,
+    "colour": "#b39763"
+   },
+   "ceiling_colour": "#bbb2b2",
+   "white_balance_gain": [
+    1.294,
+    1.343,
+    1.309
+   ]
+  },
+  {
+   "id": "tt6gm2a0463x9wmnx7rn6gugc",
+   "label": "Bedroom",
+   "polygon": [
+    [
+     -12.986,
+     4.88
+    ],
+    [
+     -8.83,
+     4.888
+    ],
+    [
+     -8.823,
+     1.872
+    ],
+    [
+     -8.821,
+     0.812
+    ],
+    [
+     -12.977,
+     0.803
+    ],
+    [
+     -12.986,
+     4.88
+    ]
+   ],
+   "area_m2": 17.18,
+   "ceiling_m": 2.701,
+   "plan_height_m": null,
+   "floor": {
+    "colour": "#b77547",
+    "material": "hardwood (oak strip, warm finish)",
+    "evidence": "68997 texture samples on z~0 surfaces, score 0.54",
+    "colour_balanced": "#da8b4e"
+   },
+   "wall_paint": {
+    "colour": "#a7a891",
+    "share": 0.35,
+    "colour_balanced": "#c7c79f"
+   },
+   "baseboard": {
+    "height_m": 0.15,
+    "colour": "#ab886a"
+   },
+   "ceiling_colour": "#cbc9d4",
+   "white_balance_gain": [
+    1.192,
+    1.189,
+    1.099
+   ]
+  },
+  {
+   "id": "h26t7ky77ew74yb0pg8qqf5rd",
+   "label": "Bedroom",
+   "polygon": [
+    [
+     -2.309,
+     0.825
+    ],
+    [
+     -5.802,
+     0.818
+    ],
+    [
+     -5.804,
+     1.878
+    ],
+    [
+     -5.808,
+     3.658
+    ],
+    [
+     -5.81,
+     4.895
+    ],
+    [
+     -2.317,
+     4.902
+    ],
+    [
+     -2.309,
+     1.052
+    ],
+    [
+     -2.309,
+     0.825
+    ]
+   ],
+   "area_m2": 13.82,
+   "ceiling_m": 2.736,
+   "plan_height_m": null,
+   "floor": {
+    "colour": "#a3663a",
+    "material": "hardwood (oak strip, warm finish)",
+    "evidence": "49587 texture samples on z~0 surfaces, score 0.86",
+    "colour_balanced": "#ea9d5a"
+   },
+   "wall_paint": {
+    "colour": "#997848",
+    "share": 0.3,
+    "colour_balanced": "#dcb970"
+   },
+   "baseboard": {
+    "height_m": 0.22,
+    "colour": "#a18f72"
+   },
+   "crown": {
+    "depth_m": 0.05,
+    "colour": "#b39677"
+   },
+   "ceiling_colour": "#a89b95",
+   "white_balance_gain": [
+    1.44,
+    1.542,
+    1.564
+   ]
+  },
+  {
+   "id": "3m54yff1z7crxaywd8if9rb0d",
+   "label": "Kitchen",
+   "polygon": [
+    [
+     -10.592,
+     -0.212
+    ],
+    [
+     -10.593,
+     0.396
+    ],
+    [
+     -8.564,
+     0.4
+    ],
+    [
+     -8.562,
+     -0.651
+    ],
+    [
+     -8.114,
+     -0.65
+    ],
+    [
+     -8.11,
+     -2.758
+    ],
+    [
+     -10.576,
+     -2.763
+    ],
+    [
+     -11.155,
+     -2.764
+    ],
+    [
+     -12.994,
+     -2.768
+    ],
+    [
+     -13.0,
+     -0.217
+    ],
+    [
+     -10.592,
+     -0.212
+    ]
+   ],
+   "area_m2": 13.28,
+   "ceiling_m": 2.684,
+   "plan_height_m": 2.7200000286102295,
+   "floor": {
+    "colour": "#a8c5c8",
+    "material": "tile (two-tone checker / patterned)",
+    "evidence": "46872 texture samples on z~0 surfaces, score 0.60",
+    "colour_balanced": "#f0ffff"
+   },
+   "wall_paint": {
+    "colour": "#9aa675",
+    "share": 0.15,
+    "colour_balanced": "#dcedb3"
+   },
+   "baseboard": {
+    "height_m": 0.17,
+    "colour": "#c2bcba"
+   },
+   "crown": {
+    "depth_m": 0.02,
+    "colour": "#bac8ab"
+   },
+   "ceiling_colour": "#a9a798",
+   "white_balance_gain": [
+    1.432,
+    1.431,
+    1.533
+   ]
+  },
+  {
+   "id": "2qdmc5i9byxi79ry1pxdkqzea",
+   "label": "Dining Room",
+   "polygon": [
+    [
+     -6.938,
+     -4.207
+    ],
+    [
+     -6.938,
+     -3.892
+    ],
+    [
+     -6.941,
+     -2.755
+    ],
+    [
+     -8.11,
+     -2.758
+    ],
+    [
+     -10.576,
+     -2.763
+    ],
+    [
+     -10.572,
+     -4.859
+    ],
+    [
+     -10.57,
+     -5.584
+    ],
+    [
+     -10.57,
+     -5.766
+    ],
+    [
+     -6.934,
+     -5.759
+    ],
+    [
+     -6.938,
+     -4.207
+    ]
+   ],
+   "area_m2": 11.08,
+   "ceiling_m": 2.709,
+   "plan_height_m": 2.7200000286102295,
+   "floor": {
+    "colour": "#b97637",
+    "material": "hardwood (oak strip, warm finish)",
+    "evidence": "52813 texture samples on z~0 surfaces, score 0.95",
+    "colour_balanced": "#d2833b"
+   },
+   "wall_paint": {
+    "colour": "#b8a68c",
+    "share": 0.23,
+    "colour_balanced": "#d1b996"
+   },
+   "baseboard": {
+    "height_m": 0.03,
+    "colour": "#dddad6"
+   },
+   "crown": {
+    "depth_m": 0.04,
+    "colour": "#ccc5b6"
+   },
+   "ceiling_colour": "#d5d6d9",
+   "white_balance_gain": [
+    1.136,
+    1.117,
+    1.074
+   ]
+  },
+  {
+   "id": "19ab05tns5h6y4qm42esqqpea",
+   "label": "Bathroom",
+   "polygon": [
+    [
+     -6.674,
+     1.876
+    ],
+    [
+     -6.678,
+     3.656
+    ],
+    [
+     -5.808,
+     3.658
+    ],
+    [
+     -5.81,
+     4.895
+    ],
+    [
+     -8.83,
+     4.888
+    ],
+    [
+     -8.823,
+     1.872
+    ],
+    [
+     -6.674,
+     1.876
+    ]
+   ],
+   "area_m2": 7.88,
+   "ceiling_m": 2.721,
+   "plan_height_m": 2.7300000190734863,
+   "floor": {
+    "colour": "#b7b7cc",
+    "material": "tile / other",
+    "evidence": "26841 texture samples on z~0 surfaces, score 0.31",
+    "colour_balanced": "#ffffff"
+   },
+   "wall_paint": {
+    "colour": "#d3c6b8",
+    "share": 0.22,
+    "colour_balanced": "#ffffff"
+   },
+   "baseboard": {
+    "height_m": 0.03,
+    "colour": "#59601c"
+   },
+   "crown": {
+    "depth_m": null,
+    "colour": "#b8a392"
+   },
+   "ceiling_colour": "#ada7a5",
+   "white_balance_gain": [
+    1.399,
+    1.431,
+    1.412
+   ]
+  },
+  {
+   "id": "b4qtykzcazp4iumkamm7y7h2b",
+   "label": "Closet",
+   "polygon": [
+    [
+     -2.309,
+     1.052
+    ],
+    [
+     -1.126,
+     1.055
+    ],
+    [
+     -1.134,
+     4.904
+    ],
+    [
+     -2.317,
+     4.902
+    ],
+    [
+     -2.309,
+     1.052
+    ]
+   ],
+   "area_m2": 4.21,
+   "ceiling_m": 2.754,
+   "plan_height_m": null,
+   "floor": {
+    "colour": "#471709",
+    "material": "hardwood (oak strip, warm finish)",
+    "evidence": "12486 texture samples on z~0 surfaces, score 0.86",
+    "colour_balanced": "#9c3213"
+   },
+   "wall_paint": {
+    "colour": "#8d5c1e",
+    "share": 0.1,
+    "colour_balanced": "#ffca42"
+   },
+   "baseboard": {
+    "height_m": 0.23,
+    "colour": "#88664a"
+   },
+   "crown": {
+    "depth_m": 0.02,
+    "colour": "#c9862b"
+   },
+   "ceiling_colour": "#6d3904",
+   "white_balance_gain": [
+    2.2,
+    2.2,
+    2.2
+   ]
+  },
+  {
+   "id": "ediidma5zg15dufx3n0qyq21a",
+   "label": "Bathroom",
+   "polygon": [
+    [
+     -10.572,
+     -4.859
+    ],
+    [
+     -10.57,
+     -5.584
+    ],
+    [
+     -11.188,
+     -5.585
+    ],
+    [
+     -11.188,
+     -5.768
+    ],
+    [
+     -12.988,
+     -5.771
+    ],
+    [
+     -12.992,
+     -3.944
+    ],
+    [
+     -11.568,
+     -3.941
+    ],
+    [
+     -10.842,
+     -4.86
+    ],
+    [
+     -10.572,
+     -4.859
+    ]
+   ],
+   "area_m2": 3.58,
+   "ceiling_m": 2.698,
+   "plan_height_m": null,
+   "floor": {
+    "colour": "#0b0d18",
+    "material": "tile (two-tone checker / patterned)",
+    "evidence": "13868 texture samples on z~0 surfaces, score 0.62",
+    "colour_balanced": "#0e1229"
+   },
+   "wall_paint": {
+    "colour": "#c9baa1",
+    "share": 0.42,
+    "colour_balanced": "#ffffff"
+   },
+   "ceiling_colour": "#baa788",
+   "white_balance_gain": [
+    1.301,
+    1.431,
+    1.713
+   ]
+  },
+  {
+   "id": "wbpb7dkfuwnikd1kq2a9hz70a",
+   "label": "Hallway",
+   "polygon": [
+    [
+     -8.565,
+     0.812
+    ],
+    [
+     -8.821,
+     0.812
+    ],
+    [
+     -8.823,
+     1.872
+    ],
+    [
+     -6.674,
+     1.876
+    ],
+    [
+     -5.804,
+     1.878
+    ],
+    [
+     -5.802,
+     0.818
+    ],
+    [
+     -6.948,
+     0.816
+    ],
+    [
+     -8.565,
+     0.812
+    ]
+   ],
+   "area_m2": 3.03,
+   "ceiling_m": 2.71,
+   "plan_height_m": 2.7200000286102295,
+   "floor": {
+    "colour": "#975936",
+    "material": "hardwood (oak strip, warm finish)",
+    "evidence": "16798 texture samples on z~0 surfaces, score 0.99",
+    "colour_balanced": "#ffc376"
+   },
+   "wall_paint": {
+    "colour": "#252d3a",
+    "share": 0.27,
+    "colour_balanced": "#51637f"
+   },
+   "baseboard": {
+    "height_m": null,
+    "colour": "#a49079"
+   },
+   "crown": {
+    "depth_m": 0.15,
+    "colour": "#131b26"
+   },
+   "ceiling_colour": "#1c1e25",
+   "white_balance_gain": [
+    2.2,
+    2.2,
+    2.2
+   ]
+  },
+  {
+   "id": "n81qfe51azs8iexnbqwspye6c",
+   "label": "Hallway",
+   "polygon": [
+    [
+     -6.948,
+     0.816
+    ],
+    [
+     -6.945,
+     -0.648
+    ],
+    [
+     -8.114,
+     -0.65
+    ],
+    [
+     -8.562,
+     -0.651
+    ],
+    [
+     -8.564,
+     0.4
+    ],
+    [
+     -8.565,
+     0.812
+    ],
+    [
+     -6.948,
+     0.816
+    ]
+   ],
+   "area_m2": 2.29,
+   "ceiling_m": 2.718,
+   "plan_height_m": 2.7300000190734863,
+   "floor": {
+    "colour": "#353536",
+    "material": "tile (two-tone checker / patterned)",
+    "evidence": "10528 texture samples on z~0 surfaces, score 0.51",
+    "colour_balanced": "#515059"
+   },
+   "wall_paint": {
+    "colour": "#7d8959",
+    "share": 0.18,
+    "colour_balanced": "#c0d094"
+   },
+   "baseboard": {
+    "height_m": null,
+    "colour": "#c6c3c9"
+   },
+   "ceiling_colour": "#9d9d8c",
+   "white_balance_gain": [
+    1.541,
+    1.522,
+    1.664
+   ]
+  },
+  {
+   "id": "kuc0fpmsgqxff63egrxrycfud",
+   "label": "Hallway",
+   "polygon": [
+    [
+     -12.992,
+     -3.944
+    ],
+    [
+     -12.994,
+     -2.768
+    ],
+    [
+     -11.155,
+     -2.764
+    ],
+    [
+     -11.153,
+     -3.94
+    ],
+    [
+     -11.568,
+     -3.941
+    ],
+    [
+     -12.992,
+     -3.944
+    ]
+   ],
+   "area_m2": 2.09,
+   "ceiling_m": 2.694,
+   "plan_height_m": 2.7200000286102295,
+   "floor": {
+    "colour": "#9ca59c",
+    "material": "tile (two-tone checker / patterned)",
+    "evidence": "9584 texture samples on z~0 surfaces, score 0.63",
+    "colour_balanced": "#d2ffff"
+   },
+   "wall_paint": {
+    "colour": "#d4b9a2",
+    "share": 0.31,
+    "colour_balanced": "#ffffff"
+   },
+   "baseboard": {
+    "height_m": 0.17,
+    "colour": "#c8cac3"
+   },
+   "ceiling_colour": "#b39986",
+   "white_balance_gain": [
+    1.352,
+    1.562,
+    1.739
+   ]
+  },
+  {
+   "id": "3ygfq6yfyyw3hi9x7u5rm2iqa",
+   "label": "Bathroom",
+   "polygon": [
+    [
+     -6.674,
+     1.876
+    ],
+    [
+     -6.678,
+     3.656
+    ],
+    [
+     -5.808,
+     3.658
+    ],
+    [
+     -5.804,
+     1.878
+    ],
+    [
+     -6.674,
+     1.876
+    ]
+   ],
+   "area_m2": 1.16,
+   "ceiling_m": 2.696,
+   "plan_height_m": null,
+   "wall_paint": {
+    "colour": "#4c5b53",
+    "share": 0.24,
+    "colour_balanced": "#a7c8b6"
+   },
+   "crown": {
+    "depth_m": 0.08,
+    "colour": "#323431"
+   },
+   "ceiling_colour": "#29231f",
+   "white_balance_gain": [
+    2.2,
+    2.2,
+    2.2
+   ]
+  }
+ ],
+ "floor_textures": {
+  "tt6gm2a0463x9wmnx7rn6gugc": {
+   "file": "assets/floor_tt6gm2.jpg",
+   "size_m": 1.2,
+   "board_axis_world": "x",
+   "sampled_at": [
+    -9.43,
+    1.65
+   ],
+   "clean_fraction": 0.803
+  },
+  "h26t7ky77ew74yb0pg8qqf5rd": {
+   "file": "assets/floor_h26t7k.jpg",
+   "size_m": 1.2,
+   "board_axis_world": "x",
+   "sampled_at": [
+    -3.01,
+    2.18
+   ],
+   "clean_fraction": 0.963
+  }
+ },
+ "style": {
+  "baseboard_height": 0.17,
+  "baseboard_support": 5,
+  "baseboard_colour": "#c8c3bd",
+  "baseboard_note": "baseboard colour taken from the trim (door casing) colour: scanned baseboard bands mix with floor colour",
+  "crown_depth": 0.065,
+  "crown_support": 8
+ },
+ "exterior": {
+  "roof": {
+   "type": "hip",
+   "pitch_ratio": "5:12",
+   "pitch_deg": 22.62,
+   "overhang_m": 0.45,
+   "eave_z": 2.923,
+   "fascia_depth_m": 0.18,
+   "gutter": true,
+   "material": "asphalt composition shingle",
+   "colour": "#7b7e7e",
+   "texture": "assets/roof_shingles.jpg",
+   "rects": [
+    [
+     -13.06,
+     -4.291,
+     2.89,
+     4.959
+    ],
+    [
+     -13.06,
+     -5.841,
+     -6.81,
+     -4.291
+    ],
+    [
+     -2.41,
+     -4.841,
+     2.89,
+     -3.641
+    ]
+   ],
+   "evidence": [
+    "drone DJI_..._0830 / _0070 (evidence/drone_house_top.jpg): dark grey composition-shingle roof with hipped ends and a cross-hip toward the street; no gable walls visible -> hip roof.",
+    "evidence/drone_eave_siding.jpg: continuous white fascia with gutter, rafter tails hidden, shallow boxed eave; gutter line sits ~0.4-0.5 m outside the siding -> 0.45 m overhang.",
+    "pitch is not measurable from the (near-vertical) drone photos; ridge/hip shading and the typical 1920s LA bungalow (5:12 to 6:12) -> 5:12 assumed (documented assumption).",
+    "eave height = measured ceiling 2.70 m + 0.22 m (joists/top plate) above the finished floor.",
+    "evidence/drone_chimney_hips.jpg: painted chimney on the street side by the driveway, hips meeting at a short ridge."
+   ]
+  },
+  "cladding": {
+   "type": "horizontal lap siding (clapboard), ~0.12 m exposure",
+   "colour": "#b2b29d",
+   "trim_colour": "#f2f0ea",
+   "evidence": "evidence/drone_eave_siding.jpg: pale blue-grey lap siding with white window casings and white decorative window grilles on the back wall."
+  },
+  "foundation": {
+   "type": "raised floor on perimeter foundation (crawlspace)",
+   "floor_above_grade": 0.431,
+   "colour": "#8d8a84",
+   "evidence": "scan fragments outside the walls (driveway/porch) are flat at z=-0.43 m while the finished floor is at z=0."
+  },
+  "fireplace_chimney": {
+   "wall": 24,
+   "centre": [
+    0.248,
+    -4.83
+   ],
+   "firebox_width": 0.95,
+   "score": 17.286,
+   "outward": [
+    0.002,
+    -1.0
+   ]
+  },
+  "ground": {
+   "z": -0.431,
+   "lawn": "#6f8f45",
+   "paving": "#bdb6aa",
+   "evidence": "drone photos: lawn/planting beds behind the house, concrete driveway on one side"
+  }
+ }
+}

@@ -26,3 +26,10 @@ _to_delete/
 
 # Matterport bundle (installed by run_all.py) and generated SDK config with the key
 Code/showcase/
+
+# Room-extension prototypes: generated data derived from the scan/drone assets (regenerate with each variant's build script)
+Code/expansion/*/assets/
+Code/expansion/*/debug/
+Code/expansion/*/work/
+Code/expansion/*/evidence/
+Code/expansion/*/*.bin

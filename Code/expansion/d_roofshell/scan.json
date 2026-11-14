@@ -1,0 +1,232 @@
+{
+ "vertices": 335453,
+ "triangles": 309937,
+ "groups": [
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_000.jpg",
+   "start": 0,
+   "count": 9684
+  },
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_001.jpg",
+   "start": 9684,
+   "count": 14679
+  },
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_002.jpg",
+   "start": 24363,
+   "count": 20532
+  },
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_003.jpg",
+   "start": 44895,
+   "count": 16320
+  },
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_004.jpg",
+   "start": 61215,
+   "count": 15387
+  },
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_005.jpg",
+   "start": 76602,
+   "count": 25308
+  },
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_006.jpg",
+   "start": 101910,
+   "count": 33198
+  },
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_007.jpg",
+   "start": 135108,
+   "count": 28461
+  },
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_008.jpg",
+   "start": 163569,
+   "count": 13593
+  },
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_009.jpg",
+   "start": 177162,
+   "count": 11133
+  },
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_010.jpg",
+   "start": 188295,
+   "count": 33297
+  },
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_011.jpg",
+   "start": 221592,
+   "count": 22911
+  },
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_012.jpg",
+   "start": 244503,
+   "count": 14577
+  },
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_013.jpg",
+   "start": 259080,
+   "count": 15327
+  },
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_015.jpg",
+   "start": 274407,
+   "count": 11397
+  },
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_016.jpg",
+   "start": 285804,
+   "count": 27927
+  },
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_017.jpg",
+   "start": 313731,
+   "count": 60024
+  },
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_018.jpg",
+   "start": 373755,
+   "count": 16827
+  },
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_019.jpg",
+   "start": 390582,
+   "count": 45147
+  },
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_020.jpg",
+   "start": 435729,
+   "count": 9609
+  },
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_021.jpg",
+   "start": 445338,
+   "count": 13542
+  },
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_022.jpg",
+   "start": 458880,
+   "count": 17763
+  },
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_023.jpg",
+   "start": 476643,
+   "count": 27300
+  },
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_024.jpg",
+   "start": 503943,
+   "count": 32217
+  },
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_025.jpg",
+   "start": 536160,
+   "count": 32172
+  },
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_026.jpg",
+   "start": 568332,
+   "count": 3048
+  },
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_027.jpg",
+   "start": 571380,
+   "count": 7350
+  },
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_028.jpg",
+   "start": 578730,
+   "count": 15717
+  },
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_029.jpg",
+   "start": 594447,
+   "count": 23640
+  },
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_030.jpg",
+   "start": 618087,
+   "count": 5028
+  },
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_031.jpg",
+   "start": 623115,
+   "count": 25968
+  },
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_032.jpg",
+   "start": 649083,
+   "count": 30588
+  },
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_033.jpg",
+   "start": 679671,
+   "count": 22215
+  },
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_034.jpg",
+   "start": 701886,
+   "count": 22539
+  },
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_035.jpg",
+   "start": 724425,
+   "count": 13377
+  },
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_036.jpg",
+   "start": 737802,
+   "count": 36837
+  },
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_037.jpg",
+   "start": 774639,
+   "count": 13623
+  },
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_038.jpg",
+   "start": 788262,
+   "count": 24255
+  },
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_039.jpg",
+   "start": 812517,
+   "count": 34104
+  },
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_040.jpg",
+   "start": 846621,
+   "count": 13725
+  },
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_041.jpg",
+   "start": 860346,
+   "count": 48
+  },
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_042.jpg",
+   "start": 860394,
+   "count": 12996
+  },
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_043.jpg",
+   "start": 873390,
+   "count": 14205
+  },
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_044.jpg",
+   "start": 887595,
+   "count": 20799
+  },
+  {
+   "tex": "c4210c3617d648aab3191a5dc5560f8b_045.jpg",
+   "start": 908394,
+   "count": 21417
+  }
+ ],
+ "texdir": "../../../assets_zvKHR9DHNjJ/tiles/furnished_tex/"
+}
