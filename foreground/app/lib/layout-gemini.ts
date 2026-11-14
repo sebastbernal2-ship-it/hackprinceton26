@@ -160,8 +160,9 @@ function namedRoom(rooms: RoomMeasure[], message: string) {
   );
 }
 
-function finishReply(reply: string, total: number) {
-  return `${reply} Running total ${money(total)}.`;
+// The layout catalog prices were never sourced, so replies carry no running total.
+function finishReply(reply: string, _total: number) {
+  return reply;
 }
 
 function largestRoom(rooms: RoomMeasure[]) {
