@@ -2,9 +2,10 @@ import re
 
 from fastapi import FastAPI, HTTPException
 
-from . import stubs
+from . import projections, stubs
 from .loader import load_matches
 from .models import (
+    AssessRequest, ProjectionsResponse, ScenarioAssessment,
     Match, MatchesRequest, MatchesResponse, NextQuestionRequest, NextQuestionResponse,
     TourAgentRequest, TourAgentResponse,
 )
@@ -15,7 +16,8 @@ LIMIT = 3
 
 @app.get("/api/health")
 def health():
-    return {"status": "ok", "dataAvailable": load_matches() is not None}
+    return {"status": "ok", "dataAvailable": load_matches() is not None,
+            "modelsAvailable": projections.models_available()}
 
 
 @app.post("/api/matches", response_model=MatchesResponse)
@@ -36,6 +38,18 @@ def property_(listing_id: int):
         if m.listingId == listing_id:
             return m
     raise HTTPException(status_code=404, detail="listing not found or data unavailable")
+
+
+@app.get("/api/property/{listing_id}/projections", response_model=ProjectionsResponse)
+def property_projections(listing_id: int):
+    if not any(m.listingId == listing_id for m in load_matches() or []):
+        raise HTTPException(status_code=404, detail="listing not found or data unavailable")
+    return projections.projections_for(listing_id)
+
+
+@app.post("/api/assess", response_model=ScenarioAssessment)
+def assess(req: AssessRequest):
+    return projections.assess(req)
 
 
 @app.post("/api/next-question", response_model=NextQuestionResponse)
