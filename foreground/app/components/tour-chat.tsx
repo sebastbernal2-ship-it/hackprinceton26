@@ -8,6 +8,7 @@ import { moveInTour, nudge, placeInTour, placeOnSurface, pointInFront, readPose,
 type Message = { role: "agent" | "user"; text: string };
 
 type TourChatProps = {
+  tourId: string;
   sdk: MpSdk | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -25,7 +26,7 @@ const SLOTS = [
   { x: 26, y: 78 },
 ];
 
-export default function TourChat({ sdk, open, onOpenChange, pieces, onPiecesChange }: TourChatProps) {
+export default function TourChat({ tourId, sdk, open, onOpenChange, pieces, onPiecesChange }: TourChatProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [value, setValue] = useState("");
   const listRef = useRef<HTMLDivElement>(null);
@@ -82,14 +83,14 @@ export default function TourChat({ sdk, open, onOpenChange, pieces, onPiecesChan
     if (sdk && current.tagId) void moveInTour(sdk, current.tagId, position, current.stem);
   }
 
-  function send(text: string) {
+  async function send(text: string) {
     const trimmed = text.trim();
     if (!trimmed) return;
     setValue("");
-    const result = tourAgentReply(trimmed, pieces.length);
+    const result = await tourAgentReply(trimmed, pieces.length, tourId);
     if (result.action.type === "move") slide(result.action.direction, result.action.meters);
     else if (result.action.type === "add") stage(result.action.kind, result.action.label);
-    setMessages((current) => [...current, { role: "user", text: trimmed }, { role: "agent", text: result.reply }]);
+    setMessages((current) => [...current, { role: "user", text: trimmed }, { role: "agent", text: result.stub ? `${result.reply} (placeholder agent)` : result.reply }]);
   }
 
   function submit(event?: FormEvent) {

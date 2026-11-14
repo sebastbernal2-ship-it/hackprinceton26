@@ -1,9 +1,19 @@
 import { useEffect, useState } from "react";
+import { readBrief } from "./brief";
+import { fetchMatches } from "./api";
+import { DEMO_FALLBACK } from "./demo-flag";
+import { rankMatches } from "./demo-matches";
 import type { Exchange } from "./next-question";
-import { MATCH_POOL, rankMatches, type Match } from "./matches";
+import type { Match } from "./matches";
 
-const KEY = "foreground.matches";
+const KEY = "foreground.matches.v2";
 const CHANGE = "foreground-matches";
+
+export type MatchesState =
+  | { status: "loading" }
+  /** `dataAvailable: false` means the API has no candidate registry loaded; it is not "no matches". */
+  | { status: "ready"; matches: Match[]; dataAvailable: boolean; demo: boolean }
+  | { status: "error"; message: string };
 
 function read(): string | null {
   try {
@@ -13,28 +23,47 @@ function read(): string | null {
   }
 }
 
-function notify() {
+let memory: MatchesState | null = null;
+
+function save(state: MatchesState) {
+  memory = state;
+  try {
+    sessionStorage.setItem(KEY, JSON.stringify(state));
+  } catch {
+    // Storage unavailable: the next mount will refetch.
+  }
   window.dispatchEvent(new Event(CHANGE));
 }
 
-export function saveMatches(matches: Match[]) {
-  sessionStorage.setItem(KEY, JSON.stringify(matches));
-  notify();
-}
-
-export function seedMatches(brief: Exchange[]) {
-  saveMatches(rankMatches(brief));
-}
-
 export function clearMatches() {
-  sessionStorage.removeItem(KEY);
-  notify();
+  memory = null;
+  try {
+    sessionStorage.removeItem(KEY);
+  } catch {
+    // Nothing stored to clear.
+  }
+  window.dispatchEvent(new Event(CHANGE));
 }
 
-/** Re-rank from the current brief plus any refine answers, then persist. */
-export function refreshMatches(brief: Exchange[]) {
-  saveMatches(rankMatches(brief));
+/** Ask the API for matches for this brief and persist the outcome for this tab. */
+export async function refreshMatches(brief: Exchange[]): Promise<void> {
+  try {
+    const { matches, dataAvailable } = await fetchMatches(brief);
+    if (!dataAvailable && DEMO_FALLBACK) {
+      save({ status: "ready", matches: rankMatches(brief), dataAvailable: false, demo: true });
+      return;
+    }
+    save({ status: "ready", matches, dataAvailable, demo: false });
+  } catch (error) {
+    if (DEMO_FALLBACK) {
+      save({ status: "ready", matches: rankMatches(brief), dataAvailable: false, demo: true });
+      return;
+    }
+    save({ status: "error", message: error instanceof Error ? error.message : "Could not load matches." });
+  }
 }
+
+export const seedMatches = refreshMatches;
 
 function subscribe(onChange: () => void) {
   window.addEventListener(CHANGE, onChange);
@@ -45,32 +74,33 @@ function subscribe(onChange: () => void) {
   };
 }
 
-function loadMatches(): Match[] {
+function load(): MatchesState | null {
   const stored = read();
-  if (!stored) return rankMatches([]);
+  if (!stored) return memory;
   try {
-    const parsed = JSON.parse(stored) as Match[];
-    if (!Array.isArray(parsed)) return rankMatches([]);
-    return parsed.map((match) => {
-      if (match.facts) return match;
-      const source = MATCH_POOL.find((space) => space.address === match.address && space.detail === match.detail);
-      return source ? { ...match, facts: source.facts } : match;
-    });
+    return JSON.parse(stored) as MatchesState;
   } catch {
-    return rankMatches([]);
+    return null;
   }
 }
 
-/** Current Discover results for this tab. Falls back to an unbriefed ranking until intake seeds one. */
-export function useMatches(): Match[] {
+/** Current Discover results for this tab. Fetches from the API when nothing is stored yet. */
+export function useMatches(): MatchesState {
   // Session storage is read after mount so the first paint matches the server.
-  const [matches, setMatches] = useState<Match[]>(() => rankMatches([]));
+  const [state, setState] = useState<MatchesState>({ status: "loading" });
 
   useEffect(() => {
-    const apply = () => setMatches(loadMatches());
+    const apply = () => {
+      const stored = load();
+      if (stored) setState(stored);
+      else {
+        setState({ status: "loading" });
+        void refreshMatches(readBrief());
+      }
+    };
     apply();
     return subscribe(apply);
   }, []);
 
-  return matches;
+  return state;
 }
