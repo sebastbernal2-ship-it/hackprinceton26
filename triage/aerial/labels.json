@@ -1,0 +1,20 @@
+{
+  "_note": "Counts only, hand-labelled by the model (Claude) by reading each 100 m x 100 m ortho crop; single annotator, no second pass, so labels carry roughly +/-10% error on dense scenes. vehicles = every vehicle (parked or moving) visible in the crop incl. neighbouring lots and street; rooftop_units = discrete HVAC/mechanical units on any roof in the crop, null where too dense to count by eye. Loading docks are facade features and not observable from nadir imagery, so no dock labels.",
+  "labels": {
+    "1018657": {"vehicles": 13, "rooftop_units": null},
+    "10531559": {"vehicles": 1, "rooftop_units": 18},
+    "11165863": {"vehicles": 23, "rooftop_units": 17},
+    "12394202": {"vehicles": 13, "rooftop_units": 3},
+    "1533483": {"vehicles": 8, "rooftop_units": 4},
+    "238322": {"vehicles": 1, "rooftop_units": 0},
+    "4145028": {"vehicles": 11, "rooftop_units": null},
+    "5697296": {"vehicles": 40, "rooftop_units": 24},
+    "667579": {"vehicles": 23, "rooftop_units": 20},
+    "7527806": {"vehicles": 27, "rooftop_units": 35},
+    "253066": {"vehicles": 27, "rooftop_units": null},
+    "6067080": {"vehicles": 38, "rooftop_units": null},
+    "8121704": {"vehicles": 40, "rooftop_units": 12},
+    "4388138": {"vehicles": 14, "rooftop_units": null},
+    "861863": {"vehicles": 52, "rooftop_units": null}
+  }
+}
