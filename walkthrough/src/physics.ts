@@ -23,13 +23,6 @@ export const DEFAULT_BODY: Body = { radius: 0.22, step: 0.3, height: 1.75 };
 
 export const GRAVITY = 9.81;
 
-/** A world with nothing in it: used before the collider is ready and in tests. */
-export const EMPTY_WORLD: CollisionWorld = {
-  groundAt: () => null,
-  penetration: () => false,
-  solidAt: () => false,
-};
-
 const scratch: Penetration = { x: 0, z: 0, depth: 0 };
 
 /** Current penetration depth of the body at (x, z) with feet at y. */
@@ -127,12 +120,6 @@ export function softBoundary(pos: P3, vel: P3, inner: Bounds, margin: number): v
   }
 }
 
-/** Limits a horizontal move so the result stays within the box plus margin. */
-export function clampToBoundary(pos: P3, inner: Bounds, margin: number): void {
-  pos.x = Math.min(inner.max[0] + margin, Math.max(inner.min[0] - margin, pos.x));
-  pos.z = Math.min(inner.max[2] + margin, Math.max(inner.min[2] - margin, pos.z));
-}
-
 /**
  * Searches outward from (x, z) for a spot where the body is free and returns it (feet on the
  * ground there), with `found` false when nothing within maxRadius is free. Used to make sure the
@@ -182,20 +169,6 @@ export function findFreeSpot(
   }
   if (best) return { ...best, found: true };
   return { x, y: groundHeight(world, x, z, feetY, probe, g), z, found: false };
-}
-
-/**
- * True when the segment a-b crosses no solid cells, ignoring the last `skipEnd` metres before b
- * (the target itself may be solid, e.g. a person standing at a counter).
- */
-export function lineOfSight(world: CollisionWorld, a: P3, b: P3, skipEnd = 0.3, step = 0.05): boolean {
-  const len = Math.hypot(b.x - a.x, b.y - a.y, b.z - a.z);
-  const n = Math.floor(Math.max(0, len - skipEnd) / step);
-  for (let i = 1; i <= n; i++) {
-    const t = (i * step) / len;
-    if (world.solidAt(a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t, a.z + (b.z - a.z) * t)) return false;
-  }
-  return true;
 }
 
 /** Exponential smoothing factor for rate `k` (1/s) over `dt` seconds. */
