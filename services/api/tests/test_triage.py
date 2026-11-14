@@ -121,3 +121,40 @@ def test_routes(derived):
 def test_routes_503_when_unbuilt(tmp_path, monkeypatch):
     monkeypatch.setenv("TRIAGE_DERIVED_DIR", str(tmp_path / "none"))
     assert client.get("/api/triage/summary").status_code == 503
+
+
+def _res(lid, statuses, scan=True, aerial=False):
+    return {"listingId": lid, "hasScan": scan, "hasAerial": aerial,
+            "fields": [{"field": f"f{i}", "status": s} for i, s in enumerate(statuses)]}
+
+
+def test_demo_sites_sorted_by_evidence_completeness_not_fit(tmp_path, monkeypatch):
+    FIX = Path(__file__).parent / "fixtures"
+    monkeypatch.setenv("COSTAR_NORMALIZED_DIR", str(FIX))
+    monkeypatch.setenv("TRIAGE_DERIVED_DIR", str(tmp_path))
+    (tmp_path / "results.json").write_text(json.dumps([
+        _res("900001", ["unverified", "unverified", "blank-unfillable", "unverified"]),
+        _res("900002", ["confirmed", "filled", "conflicting", "unverified"]),
+        _res("555555", ["confirmed", "confirmed", "confirmed", "confirmed"]),  # not in the candidate registry: cannot open, so not offered
+    ]))
+    r = client.get("/api/triage/demo-sites?limit=5")
+    assert r.status_code == 200
+    body = r.json()
+    assert [s["listingId"] for s in body["sites"]] == [900002, 900001]
+    top = body["sites"][0]
+    assert top["fieldsWithEvidence"] == 3 and top["fieldsTotal"] == 4 and top["completeness"] == 0.75
+    assert "not a fit ranking" in body["notice"].lower()
+    assert "address" in top and "tourId" in top
+
+
+def test_demo_sites_503_when_triage_not_built(tmp_path, monkeypatch):
+    monkeypatch.setenv("TRIAGE_DERIVED_DIR", str(tmp_path))
+    assert client.get("/api/triage/demo-sites").status_code == 503
+
+
+def test_reconcile_finds_aerial_where_the_aerial_builder_writes_it(tmp_path):
+    from triage.reconcile.run import load_aerial
+    (tmp_path / "aerial" / "properties").mkdir(parents=True)
+    (tmp_path / "aerial" / "properties" / "42.json").write_text('{"vehicles": {}}')
+    assert load_aerial(tmp_path, "42") == {"vehicles": {}}
+    assert load_aerial(tmp_path, "43") is None

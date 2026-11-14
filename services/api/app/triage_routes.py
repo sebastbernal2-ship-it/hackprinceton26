@@ -55,3 +55,31 @@ def queue(limit: int = Query(25, ge=1, le=500), field: str | None = None, status
     if status:
         q = [x for x in q if x["status"] == status]
     return {"notice": NOTICE, "total": len(q), "items": q[:limit]}
+
+
+DEMO_NOTICE = ("Sorted by triage evidence completeness (share of reconciled fields backed by a scan or aerial value), "
+               "then listing id. This is an evidence-completeness sort, not a fit ranking, and says nothing about suitability.")
+
+
+@router.get("/api/triage/demo-sites")
+def demo_sites(limit: int = Query(6, ge=1, le=50)):
+    """Candidate-registry properties with the richest triage evidence, so a demo does not land on a page of 'unverified'."""
+    from . import loader
+    results = _need("results.json")
+    pool = {m.listingId: m for m in (loader.load_matches() or [])}
+    rows = []
+    for r in results:
+        try:
+            lid = int(r["listingId"])
+        except (TypeError, ValueError):
+            continue
+        m = pool.get(lid)
+        if m is None or not r.get("fields"):
+            continue
+        n = sum(1 for f in r["fields"] if f["status"] in ("confirmed", "filled", "conflicting"))
+        total = len(r["fields"])
+        rows.append({"listingId": lid, "address": m.address, "city": m.city, "tourId": m.tourId, "hasScan": bool(r.get("hasScan")),
+                     "hasAerial": bool(r.get("hasAerial")), "fieldsWithEvidence": n, "fieldsTotal": total,
+                     "completeness": round(n / total, 3), "evidenceReadiness": m.evidenceReadiness})
+    rows.sort(key=lambda x: (-x["completeness"], -x["fieldsWithEvidence"], -x["evidenceReadiness"], x["listingId"]))
+    return {"notice": DEMO_NOTICE, "sites": rows[:limit]}

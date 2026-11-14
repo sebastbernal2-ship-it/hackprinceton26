@@ -61,6 +61,14 @@ def build_queue(results: list[dict]) -> list[dict]:
     return q
 
 
+def load_aerial(d: Path, pid: str):
+    """Aerial slice output lives in aerial/properties/<id>.json (triage/aerial/build.py); the flat aerial/<id>.json path is legacy."""
+    for p in (d / "aerial" / "properties" / f"{pid}.json", d / "aerial" / f"{pid}.json"):
+        if p.exists():
+            return json.loads(p.read_text())
+    return None
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--data-root", default=".")
@@ -73,8 +81,7 @@ def main():
     for pid in sorted(set(cands) | set(scans)):
         if pid not in props:
             continue
-        ap_ = d / "aerial" / f"{pid}.json"
-        aerial = json.loads(ap_.read_text()) if ap_.exists() else None
+        aerial = load_aerial(d, pid)
         results.append(triage_property(pid, props[pid], listings.get(pid), scans.get(pid), aerial))
     ids = {r["listingId"] for r in results}
     summary = summarize(results, {"candidates65": set(cands) & ids, "allScanned": {r["listingId"] for r in results if r["hasScan"]}, "everything": ids})
