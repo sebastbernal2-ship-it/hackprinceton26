@@ -35,7 +35,7 @@ def test_readiness_counts_only_observed():
 
 
 def test_health_and_missing_data(nodata):
-    assert client.get("/api/health").json() == {"status": "ok", "dataAvailable": False}
+    assert client.get("/api/health").json() == {"status": "ok", "dataAvailable": False, "modelsAvailable": False}
     r = client.post("/api/matches", json={"brief": []}).json()
     assert r == {"dataAvailable": False, "matches": []}
     assert client.get("/api/property/900001").status_code == 404

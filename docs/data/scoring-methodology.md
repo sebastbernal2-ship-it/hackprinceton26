@@ -10,6 +10,10 @@ A future product may need comparison across candidates, but current evidence doe
 
 This is not a claim that only categorical models are possible. Depending on the decision, useful future approaches could include continuous utility scoring, Pareto/multi-objective ranking, interval/range estimates, constraint optimization, or supervised ML. The method should follow the decision and available labels. We currently lack validated outcomes (operator-confirmed fit, build-out cost, permits, lease decisions), and the candidate set is selected. Thus a trained outcome-prediction model is not currently defensible. Keep evidence and assumptions explicit; use ML later if representative, consented labels and evaluation data support it.
 
+## Exploratory descriptive survival analysis (allowed, labelled)
+
+The statement above that a trained outcome-prediction model is not defensible applies to per-site success, fit or opportunity prediction. It does not bar exploratory descriptive survival analysis of recorded tenancy spells (`docs/models/survival.md`) if all of these hold: outputs are labelled "exploratory descriptive market prior" and "not a per-site success prediction"; they are segment-level (market, property type), never attached to a candidate as a score or rank; they carry bootstrap intervals, a method statement, training window, citation and limitations; they are emitted only if held-out validation beats a naive baseline (otherwise nothing is emitted); the kit's office/multifamily dominance is stated; and they are not combined into any weighted index. Crime and safety context remain unscored.
+
 ## Current score components
 
 Historical experimental evidence-readiness formula (not a current candidate ranking; do not interpret as validated):

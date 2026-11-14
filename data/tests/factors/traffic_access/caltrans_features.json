@@ -1,0 +1,4 @@
+[
+ {"attributes":{"CNTY":"LA","RTE":"010","RTE_SFX":"","PM_PFX":"R","PM":"11.391","PM_SFX":"","DESCRIPTION":"SYNTHETIC JCT","BACK_AADT":"286000","AHEAD_AADT":"","BACK_PEAK_HOUR":""},"geometry":{"x":-118.30,"y":34.04}},
+ {"attributes":{"CNTY":"LA","RTE":"110","BACK_AADT":"","AHEAD_AADT":"","PM":"1"},"geometry":{"x":-118.3,"y":34.0401}}
+]
