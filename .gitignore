@@ -23,3 +23,6 @@ __pycache__/
 .DS_Store
 Thumbs.db
 _to_delete/
+
+# Matterport bundle (installed by run_all.py) and generated SDK config with the key
+Code/showcase/

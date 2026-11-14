@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""
+r"""
 mesh_furniture.py - separate furniture from the empty room by comparing meshes.
 
 Compares Matterport's *furnished-side* mesh (default: the simple-planes mesh, which
@@ -8,10 +8,8 @@ the *defurnished* mesh. Anything that exists in the first but not in the second 
 furniture. It is clustered into objects, fused with the panorama boxes from
 pano_pipeline.py, and exported so each object can be moved around the empty mesh.
 
-    python Code/mesh_furniture.py ^
-        --furnished assets_zvKHR9DHNjJ/matterport/meshes/000_obj_500k_simple_planes.obj ^
-        --empty     assets_zvKHR9DHNjJ/matterport/meshes/001_obj_50k_defurnished_50k.obj ^
-        --pano-dir  pano_zvKHR9DHNjJ
+    python Code\mesh_furniture.py          (run from the repo root; finds the meshes itself)
+    python Code\mesh_furniture.py --furnished <obj> --empty <obj> --pano-dir pano_<sid>   (explicit)
 
 Outputs (in <pano-dir>/mesh_diff/ unless --out):
     objects_fused.json    same schema as objects.json -> loads in planner.html / splat_remove.py
@@ -254,6 +252,28 @@ def raster_overlap(b1, b2, step=0.04):
     return inter / min(a1, a2), inter / max(a1 + a2 - inter, 1)
 
 
+def in_box(b, E, floor_z, pad=0.05):
+    ang = math.radians(b["yaw_deg"]); d = E[:, :2] - np.array(b["centre"][:2])
+    u = d[:, 0] * math.cos(ang) + d[:, 1] * math.sin(ang); v = -d[:, 0] * math.sin(ang) + d[:, 1] * math.cos(ang)
+    h = E[:, 2] - floor_z
+    return ((np.abs(u) <= b["size_lwh_m"][0] / 2 + pad) & (np.abs(v) <= b["size_lwh_m"][1] / 2 + pad)
+            & (h >= b["z_bottom"] - 0.05) & (h <= b["z_top"] + 0.10))
+
+
+def box_support(b, E, floor_z, cell=0.10, pad=0.05):
+    """Share of the box footprint (cell x cell grid) with mesh-difference evidence inside the box height; + point count."""
+    ang = math.radians(b["yaw_deg"]); L, W = b["size_lwh_m"][0] + 2 * pad, b["size_lwh_m"][1] + 2 * pad
+    d = E[:, :2] - np.array(b["centre"][:2])
+    u = d[:, 0] * math.cos(ang) + d[:, 1] * math.sin(ang); v = -d[:, 0] * math.sin(ang) + d[:, 1] * math.cos(ang)
+    h = E[:, 2] - floor_z
+    m = (np.abs(u) <= L / 2) & (np.abs(v) <= W / 2) & (h >= b["z_bottom"] - 0.05) & (h <= b["z_top"] + 0.10)
+    nu, nv = max(1, int(math.ceil(L / cell))), max(1, int(math.ceil(W / cell)))
+    if not m.any():
+        return 0.0, 0
+    iu = np.clip(((u[m] + L / 2) / cell).astype(int), 0, nu - 1); iv = np.clip(((v[m] + W / 2) / cell).astype(int), 0, nv - 1)
+    return len(np.unique(iu * nv + iv)) / (nu * nv), int(m.sum())
+
+
 def point_in_room(pt, rooms):
     from matplotlib.path import Path  # only used if matplotlib exists
     for r in rooms:
@@ -281,9 +301,9 @@ def room_of(pt, rooms):
 # ----------------------------------------------------------------------------- main
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--furnished", required=True, help="OBJ with the furniture still in it (planes mesh or full furnished mesh)")
-    ap.add_argument("--empty", required=True, help="defurnished OBJ")
-    ap.add_argument("--pano-dir", required=True, help="pano_<sid>/ folder (plan.json, objects.json)")
+    ap.add_argument("--furnished", default=None, help="OBJ with the furniture still in it (default: the simple-planes OBJ found in assets_<sid>/)")
+    ap.add_argument("--empty", default=None, help="defurnished OBJ (default: found in assets_<sid>/)")
+    ap.add_argument("--pano-dir", default=None, help="pano_<sid>/ folder (default: the only pano_*/ folder here)")
     ap.add_argument("--out", default=None)
     ap.add_argument("--tol", type=float, default=0.12, help="metres: farther than this from the empty mesh = furniture")
     ap.add_argument("--spacing", type=float, default=0.05)
@@ -292,8 +312,29 @@ def main():
     ap.add_argument("--min-height", type=float, default=0.15)
     ap.add_argument("--wall-margin", type=float, default=0.10, help="ignore vertical evidence this close to a plan wall (m) beyond wall half-thickness")
     ap.add_argument("--match-overlap", type=float, default=0.25, help="footprint overlap needed to fuse mesh+pano")
+    ap.add_argument("--min-support", type=float, default=0.12,
+                    help="reject pano-only furniture/surface boxes whose footprint has mesh evidence in less than this share "
+                         "of 10 cm cells AND fewer than --min-support-points evidence points (0 = keep all)")
+    ap.add_argument("--min-support-points", type=int, default=30,
+                    help="...a box with at least this many evidence points is kept anyway (thin lamps/plants in oversized boxes)")
     ap.add_argument("--no-plot", action="store_true")
     a = ap.parse_args()
+
+    import glob
+    if not a.pano_dir:
+        c = [d for d in glob.glob("pano_*") if os.path.isdir(d)]
+        if len(c) != 1:
+            sys.exit("pass --pano-dir pano_<modelid> (found: %s)" % c)
+        a.pano_dir = c[0]
+    sid = os.path.basename(os.path.normpath(a.pano_dir)).replace("pano_", "")
+    def find(pat):
+        f = sorted(glob.glob(os.path.join("assets_%s" % sid, "matterport", "meshes", pat)))
+        return f[0] if f else None
+    a.furnished = a.furnished or find("*simple_planes*.obj")
+    a.empty = a.empty or find("*defurnished*.obj")
+    if not (a.furnished and a.empty):
+        sys.exit("could not find the OBJ files; pass --furnished and --empty")
+    print("furnished:", a.furnished, "\nempty    :", a.empty)
 
     rng = np.random.default_rng(7)
     out = a.out or os.path.join(a.pano_dir, "mesh_diff")
@@ -438,6 +479,39 @@ def main():
             "mesh_match": {"mesh_points": m["n"]}})
         nid += 1
 
+    # ---- mesh support for panorama-only boxes: how much of the footprint has furniture evidence under it that no
+    # confirmed box (pano+mesh / mesh-only) already explains? Rugs / floor coverings are too thin for the mesh
+    # difference, so they are scored but never rejected.
+    conf = [o for o in fused if o["source"] in ("pano+mesh", "mesh") and o.get("layer") in ("furniture", "surface")]
+    explained = np.zeros(len(E), bool)
+    for o in conf:
+        explained |= in_box(o["box"], E, floor_z)
+    rejected, dups = [], []
+    for o in fused:
+        if o["source"] != "pano" or o.get("layer") not in ("furniture", "surface", "floor_covering"):
+            continue
+        if any(f.startswith("duplicate_of_") for f in o.get("flags") or []):
+            continue
+        cov, npts = box_support(o["box"], E, floor_z)
+        cov_own, npts_own = box_support(o["box"], E[~explained], floor_z)
+        o["mesh_support"] = {"coverage": round(cov, 3), "points": npts, "coverage_unexplained": round(cov_own, 3),
+                             "points_unexplained": npts_own}
+        if o["layer"] == "floor_covering":
+            continue
+        if cov < a.min_support and npts < a.min_support_points:
+            o.setdefault("flags", []).append("no_mesh_support"); rejected.append(o)
+        elif cov_own < a.min_support and npts_own < a.min_support_points:
+            # its geometry is already inside a confirmed object's cut -> same convention as the fusion duplicates
+            mine = in_box(o["box"], E, floor_z)
+            best = max(conf, key=lambda c: int((mine & in_box(c["box"], E, floor_z)).sum()))
+            o.setdefault("flags", []).append(f"duplicate_of_{best['id']}"); dups.append((o["id"], best["id"]))
+    if rejected:
+        ids = {id(o) for o in rejected}
+        fused = [o for o in fused if id(o) not in ids]
+    print(f"  pano-only boxes rejected (mesh support < {a.min_support:.0%} of footprint and < {a.min_support_points} points): "
+          f"{len(rejected)}  ids {[o['id'] for o in rejected]}")
+    print(f"  pano-only boxes whose evidence is all inside a confirmed object (marked duplicate_of_): {dups}")
+
     if pano:
         pano = dict(pano)
         pano["method"] = (pano.get("method", "") + " | fused with mesh difference "
@@ -445,6 +519,7 @@ def main():
     else:
         pano = {"model": plan.get("model"), "units": "metres", "layers": {}, "box_heights": {}}
     pano["objects"] = fused
+    pano["objects_rejected"] = rejected      # kept for inspection; viewers/cutters only read "objects"
     json.dump(pano, open(os.path.join(out, "objects_fused.json"), "w"), indent=1)
     json.dump([{k: v for k, v in m.items()} for m in mesh_objs],
               open(os.path.join(out, "objects_mesh.json"), "w"), indent=1)
@@ -452,6 +527,7 @@ def main():
     # ---- per-object movable meshes + scene file
     shutil.copyfile(a.empty, os.path.join(out, "empty_room.obj"))
     cent_tri = (Vf[Ff[:, 0]] + Vf[Ff[:, 1]] + Vf[Ff[:, 2]]) / 3
+    house_tri = NearSet(Pe, a.tol).near(cent_tri)          # computed once (was rebuilt per object)
     scene_objs = []
     for o in fused:
         if o.get("layer") not in ("furniture", "surface", "floor_covering"):
@@ -466,7 +542,7 @@ def main():
         sel = ((np.abs(u) <= size[0] / 2 + 0.04) & (np.abs(v) <= size[1] / 2 + 0.04)
                & (cent_tri[:, 2] >= zb - 0.04) & (cent_tri[:, 2] <= zt + 0.04))
         # keep only patches that are not part of the empty room
-        sel &= ~NearSet(Pe, a.tol).near(cent_tri) if sel.any() else sel
+        sel &= ~house_tri
         name = f"obj_{o['id']:03d}"
         fn = os.path.join("objects", name + ".obj")
         kind = "box"

@@ -45,7 +45,7 @@
   <div class="row"><select id="views" style="background:#2a2f37;color:#e6e8eb;border:1px solid #2c3038;border-radius:6px;padding:5px"><option value="">Stand in a room…</option></select><button id="vOut">Overview</button></div>
   <div class="row"><button id="vPrev">◀ spot</button><button id="vNext">spot ▶</button><button id="tPhoto" class="on">Photo projection</button></div>
   <div class="muted" style="font-size:11px">At a spot: drag to look around, wheel to zoom. Delete furniture to see the real empty room behind it.</div>
-  <div class="row"><button id="tReal" class="on">Photo colours</button><button id="tWallEdit">Wall edit mode</button><button id="tTop">Top view</button></div>
+  <div class="row"><button id="tReal" class="on">Photo colours</button><button id="tShapes">Carved shapes</button><button id="tWallEdit">Wall edit mode</button><button id="tTop">Top view</button></div>
   <div class="row muted" style="font-size:11px">
     <span><span class="chip" style="background:#3ecf8e"></span>mesh-verified</span>
     <span><span class="chip" style="background:#f0b429"></span>mesh-only</span>
@@ -83,7 +83,7 @@ const src = document.getElementById('three-src').textContent;
 const THREE = await import(URL.createObjectURL(new Blob([src], {type:'text/javascript'})));
 
 // ---------------------------------------------------------------- state
-const S = { photo:true, byFile:{}, realistic:true, lastFiles:null, plan:null, scene:null, floorZ:0, emptyV:null, emptyF:null, emptyG:null,
+const S = { useShapes:false, photo:true, byFile:{}, realistic:true, lastFiles:null, plan:null, scene:null, floorZ:0, emptyV:null, emptyF:null, emptyG:null,
             objs:[], removedWalls:new Set(), history:[], showCeil:false, showWalls:true,
             showFurn:true, showTent:true, wallEdit:false, sel:null, baseAreas:null };
 
@@ -423,6 +423,8 @@ async function loadFrom(files){
   const m=parseOBJ(await txt(useTex ? 'empty_room_textured.obj' : 'empty_room.obj')); S.emptyV=m.V; S.emptyF=m.F; S.emptyG=m.G; S.emptyC=m.C;
   const texScene = (S.realistic && by['scene_textured.json']) ? JSON.parse(await txt('scene_textured.json')) : {objects:[]};
   const texById={}; texScene.objects.forEach(t=>texById[t.id]=t);
+  if (S.useShapes && by['scene_shapes.json']){ // carved shapes (shape_carve.py) replace boxes where carving was trusted
+    JSON.parse(await txt('scene_shapes.json')).objects.forEach(t=>{ if (t.result==='carved') texById[t.id]=t; }); }
   S.floorZ = S.scene.floor_z ?? (fused&&fused.objects[0] ? fused.objects[0].floor_z : 0);
   // wall height from mesh
   let zmax=-1e9; for (let i=2;i<S.emptyV.length;i+=3) zmax=Math.max(zmax,S.emptyV[i]); S.wallH=Math.min(3.2, Math.max(2.2, zmax-S.floorZ-0.05));
@@ -457,6 +459,7 @@ async function loadFrom(files){
   document.getElementById('loadinfo').innerHTML=`${(S.emptyF.length/3)|0} triangles · ${S.plan.walls.length} walls · ${S.plan.rooms.length} rooms<br>objects: ${cnt('pano+mesh')} verified, ${cnt('mesh')} mesh-only, ${cnt('pano')} panorama guesses`;
 }
 document.getElementById('folder').onchange=e=>{ S.lastFiles=[...e.target.files]; loadFrom(S.lastFiles); };
+document.getElementById('tShapes').onclick=()=>{ S.useShapes=!S.useShapes; document.getElementById('tShapes').classList.toggle('on',S.useShapes); if (S.lastFiles) loadFrom(S.lastFiles); };
 document.getElementById('tReal').onclick=()=>{ S.realistic=!S.realistic; document.getElementById('tReal').classList.toggle('on',S.realistic); if (S.lastFiles) loadFrom(S.lastFiles); };
 window.__loadFiles = loadFrom; window.__S = S; window.__orb = orb; window.__placeCam = placeCam; window.__standAt = standAt; window.__goSpot = goSpot; window.__showSel = showSel; window.__cam = camera; window.__THREE = THREE;   // used by tests
 window.__render=()=>renderer.render(scene,camera);

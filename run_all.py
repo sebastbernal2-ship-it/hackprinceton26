@@ -4,9 +4,10 @@ run_all.py - run the whole HackPrinceton pipeline, one step after another, with 
 
     python run_all.py                 # run every step that is not already done
     python run_all.py --force         # redo every step
-    python run_all.py --from bake     # start at a step (download, pipeline, meshdiff, prepare, bake, open)
+    python run_all.py --from bake     # start at a step (download, matterpak, fetch, tiles, pipeline, meshdiff, prepare, tileobjects, bake, carve, sdk, serve)
     python run_all.py --only meshdiff # run one step
     python run_all.py --list          # show the steps and whether each is done
+    python run_all.py --only serve    # just start the local server and open the studio
 
 Edit SETTINGS below. API keys are read from .env (never put them in this file).
 Run from the repo root (the folder that contains Code/).
@@ -19,9 +20,16 @@ SETTINGS = {
     "model": "zvKHR9DHNjJ",          # Matterport model id
 
     # 1. download every Matterport / hackathon visual (download_assets.py)
-    "download_res": "4k",            # panorama face resolution: low | high | 2k | 4k  (4k = sharpest textures)
+    "download_res": "2k",            # panorama face resolution: low | high | 2k | 4k  (4k = sharpest textures)
     "download_splat": False,         # exterior splat.ply (~550 MB)
     "download_drone": "12",          # drone photos: none | all | N
+
+    # 1a. MatterPak: textured OBJ of the furnished house (matterpak.py). Never buys/unlocks anything.
+    "matterpak": True,
+
+    # 1b. Matterport's full-quality 3D Tiles + AI object annotations (fetch_tiles.py, tiles_mesh.py)
+    "tiles": True,                   # download + convert the tiles (the mesh Matterport itself renders)
+    "tiles_max": 0,                  # 0 = all tiles; e.g. 50 for a quick test
 
     # 2. panorama furniture detection (pano_pipeline.py)
     "pipeline_res": "high",          # skybox resolution used for detection: low | high | 2k | 4k
@@ -33,14 +41,29 @@ SETTINGS = {
     "meshdiff_tol": 0.12,            # metres from the empty mesh that counts as furniture
     "meshdiff_cluster_radius": 0.20,
 
+    # 4b. furniture models from Matterport's full-quality mesh
+    "furniture_split": "segment",    # segment = split the mesh by its own geometry (segment_furniture.py, recommended)
+                                     # boxes   = cut the mesh with the object boxes (tile_objects.py, older)
+    "tileobj_pad": 0.12,             # m added around each object box
+    "tileobj_tol": 0.06,             # m: closer than this to the empty house = house, not furniture
+    "tileobj_tol_coarse": 0.10,      # ...used instead when the empty house is only the coarse 50k defurnished OBJ
+
     # 5. texture bake (texture_bake.py)
     "bake_edge": 0.09,               # house mesh triangle size (m): smaller = sharper colours, bigger file
     "bake_obj_edge": 0.06,           # furniture model triangle size (m)
-    "bake_pano_width": 8192,         # exported panorama width for photo projection (4096, 8192 if you downloaded 4k)
+    "bake_pano_width": 4096,         # exported panorama width for photo projection (8192 if you downloaded 4k)
     "bake_refine_poses": True,       # re-fit pano headings against the mesh
 
-    # 6. open the editor in your browser at the end
-    "open_editor": True,
+    # 6. silhouette carving (shape_carve.py) - real object shapes; experimental
+    "carve": True,
+    "carve_mask_mode": "both",       # diff | consistency | both
+    "carve_voxel": 0.03,             # m
+    "carve_debug": True,             # write shape_debug/ contact sheets for tuning
+
+    # 7. Matterport SDK studio (studio.html): Matterport's own render + our movable furniture
+    "serve_port": 8000,              # local web server (the SDK key only works on localhost)
+    "open_studio": True,             # open studio.html in the browser
+    "open_editor": False,            # also open editor3d.html (offline editor with wall editing)
 }
 # ========================================================================================
 
@@ -71,9 +94,12 @@ def script(*names):
     sys.exit(f"missing script: Code/{names[0]}")
 
 
-def run(cmd):
+def run(cmd, fatal=True):
     print("   $ " + " ".join(str(c) for c in cmd), flush=True)
     r = subprocess.run([str(c) for c in cmd], cwd=ROOT)
+    if r.returncode != 0 and not fatal:
+        print(f"   (step failed with exit {r.returncode}; continuing without it)")
+        return False
     if r.returncode != 0:
         sys.exit(f"\nstep failed (exit {r.returncode}). Fix the error above, then rerun with --from <this step>.")
 
@@ -83,6 +109,7 @@ SID = S["model"]
 ASSETS = ROOT / f"assets_{SID}"
 PANO = ROOT / f"pano_{SID}"
 MD = PANO / "mesh_diff"
+TILES = ASSETS / "tiles"
 
 
 # ------------------------------------------------------------------------------- steps
@@ -91,6 +118,29 @@ def step_download():
     if S["download_splat"]:
         cmd.append("--splat")
     run(cmd)
+
+
+def step_matterpak():
+    if not S["matterpak"]:
+        print("   MatterPak disabled in SETTINGS"); return
+    run([PY, script("matterpak.py"), "--model", SID], fatal=False)
+
+
+def step_fetch():
+    if not S["tiles"]:
+        print("   tiles disabled in SETTINGS"); return
+    cmd = [PY, script("fetch_tiles.py"), "--model", SID]
+    if S["tiles_max"]:
+        cmd += ["--max-tiles", S["tiles_max"]]
+    run(cmd, fatal=False)
+
+
+def step_tiles():
+    if not S["tiles"]:
+        print("   tiles disabled in SETTINGS"); return
+    if not (TILES / "furnished" / "tileset.json").exists():
+        print("   no tiles were downloaded (see the fetch step / tiles/report.txt) - continuing without them"); return
+    run([PY, script("tiles_mesh.py"), "--model", SID], fatal=False)
 
 
 def step_pipeline():
@@ -105,11 +155,16 @@ def step_pipeline():
 
 def step_meshdiff():
     meshes = ASSETS / "matterport" / "meshes"
-    furn = sorted(meshes.glob("*simple_planes*.obj"))
-    empty = sorted(meshes.glob("*defurnished*.obj"))
+    if (TILES / "furnished_mesh.obj").exists():
+        furn = [TILES / "furnished_mesh.obj"]
+        empty = [TILES / "defurnished_mesh.obj"] if (TILES / "defurnished_mesh.obj").exists() else sorted(meshes.glob("*defurnished*.obj"))
+        print(f"   furnished: full-quality mesh ({furn[0].name}); empty: {empty[0].name if empty else '?'}")
+    else:
+        furn = sorted(meshes.glob("*simple_planes*.obj"))
+        empty = sorted(meshes.glob("*defurnished*.obj"))
     if not (furn and empty):
         sys.exit(f"no meshes in {meshes} - run the download step first")
-    run([PY, script("mesh_furniture_v2.py", "mesh_furniture.py"), "--furnished", furn[0], "--empty", empty[0],
+    run([PY, script("mesh_furniture.py"), "--furnished", furn[0], "--empty", empty[0],
          "--pano-dir", PANO, "--tol", S["meshdiff_tol"], "--cluster-radius", S["meshdiff_cluster_radius"]])
 
 
@@ -125,6 +180,17 @@ def step_prepare():
     print(f"   prepared {MD}")
 
 
+def step_tileobjects():
+    if not (TILES / "furnished_mesh.npz").exists():
+        print("   no tiles mesh - skipping (objects keep their baked/carved models)"); return
+    tol = S["tileobj_tol"] if (TILES / "defurnished_mesh.npz").exists() else S["tileobj_tol_coarse"]
+    if S.get("furniture_split", "segment") == "segment":
+        # rewrites mesh_diff/objects.json with one object per real piece of furniture (+ scene_tiles.json, GLBs)
+        run([PY, script("segment_furniture.py"), "--model", SID, "--tol", tol])
+    else:
+        run([PY, script("tile_objects.py"), "--model", SID, "--pad", S["tileobj_pad"], "--tol", tol])
+
+
 def step_bake():
     cmd = [PY, script("texture_bake.py"), "--pano-dir", PANO, "--edge", S["bake_edge"],
            "--obj-edge", S["bake_obj_edge"], "--pano-width", S["bake_pano_width"]]
@@ -133,22 +199,77 @@ def step_bake():
     run(cmd)
 
 
-def step_open():
-    if not S["open_editor"]:
-        return
-    ed = CODE / "editor3d.html"
-    webbrowser.open(ed.as_uri())
-    print(f"   opened {ed.name} - click 'Choose mesh_diff folder' and pick:\n   {MD}")
+def step_carve():
+    if not S["carve"]:
+        print("   carving disabled in SETTINGS"); return
+    cmd = [PY, script("shape_carve.py"), "--pano-dir", PANO, "--mask-mode", S["carve_mask_mode"], "--voxel", S["carve_voxel"]]
+    if S["carve_debug"]:
+        cmd.append("--debug")
+    run(cmd)
+
+
+SHOWCASE = CODE / "showcase"
+
+
+def step_sdk():
+    """Write Code/showcase/config.js (SDK key from .env, model ids, data folder) for studio.html."""
+    import json, tempfile
+    # The house is shown with Matterport's embedded viewer (my.matterport.com) + our three.js overlay.
+    # (The self-hosted Bundle SDK hangs on this model's exterior splat, so it is no longer used.)
+    if not (CODE / "vendor" / "three.module.min.js").exists():
+        sys.exit("Code/vendor/three.module.min.js is missing (needed by studio.html)")
+    key = os.environ.get("MATTERPORT_SDK_KEY")
+    if not key:
+        sys.exit("MATTERPORT_SDK_KEY is not in .env")
+    plan = json.loads((PANO / "plan.json").read_text()) if (PANO / "plan.json").exists() else {}
+    cfg = {"sdkKey": key, "model": SID, "defurnished": plan.get("defurnished_view") or "",
+           "dataDir": f"/pano_{SID}/mesh_diff/"}
+    SHOWCASE.mkdir(exist_ok=True)
+    (SHOWCASE / "config.js").write_text("// written by run_all.py from .env - gitignored, do not commit\n"
+                                        "window.HP_CONFIG = " + json.dumps(cfg, indent=1) + ";\n")
+    print(f"   wrote {SHOWCASE / 'config.js'} (defurnished view: {cfg['defurnished'] or 'none'})")
+
+
+def step_serve():
+    """Serve the repo on localhost and open the studio. Runs until you press Ctrl+C."""
+    import http.server, functools, threading
+    port = S["serve_port"]
+    class NoCache(http.server.SimpleHTTPRequestHandler):
+        def end_headers(self):                       # never let the browser run a stale page/script
+            self.send_header("Cache-Control", "no-store, max-age=0")
+            super().end_headers()
+        def log_message(self, *a):
+            pass
+    handler = functools.partial(NoCache, directory=str(ROOT))
+    httpd = http.server.ThreadingHTTPServer(("127.0.0.1", port), handler)
+    base = f"http://localhost:{port}"
+    print(f"   studio : {base}/Code/studio.html   (the page title shows its version)")
+    print(f"   editor : {base}/Code/editor3d.html  (choose the folder {MD})")
+    if S["open_studio"]:
+        threading.Timer(1.0, lambda: webbrowser.open(base + "/Code/studio.html")).start()
+    if S["open_editor"]:
+        threading.Timer(1.5, lambda: webbrowser.open(base + "/Code/editor3d.html")).start()
+    print("   serving - press Ctrl+C to stop")
+    try:
+        httpd.serve_forever()
+    except KeyboardInterrupt:
+        print("\n   stopped")
 
 
 STEPS = [  # name, function, "done" check
     ("download", step_download, lambda: (ASSETS / "matterport" / "meshes").exists()
                                         and any((ASSETS / "matterport" / "meshes").glob("*.obj"))),
+    ("matterpak", step_matterpak, lambda: (TILES / "furnished_mesh.npz").exists()),
+    ("fetch",    step_fetch,    lambda: (TILES / "furnished" / "tileset.json").exists()),
+    ("tiles",    step_tiles,    lambda: (TILES / "furnished_mesh.npz").exists()),   # skipped when the MatterPak supplied it
     ("pipeline", step_pipeline, lambda: (PANO / "objects.json").exists() and (PANO / "panos.json").exists()),
     ("meshdiff", step_meshdiff, lambda: (MD / "objects_fused.json").exists()),
     ("prepare",  step_prepare,  lambda: False),           # cheap: always runs
+    ("tileobjects", step_tileobjects, lambda: (MD / "scene_tiles.json").exists()),
     ("bake",     step_bake,     lambda: (MD / "empty_room_textured.obj").exists() and (MD / "pano_poses.json").exists()),
-    ("open",     step_open,     lambda: False),
+    ("carve",    step_carve,    lambda: (MD / "scene_shapes.json").exists()),
+    ("sdk",      step_sdk,      lambda: False),           # cheap: always refreshes config.js
+    ("serve",    step_serve,    lambda: False),
 ]
 
 
@@ -165,7 +286,7 @@ def main():
 
     if a.list:
         for n, _, done in STEPS:
-            print(f"  {n:9s} {'done' if done() else '-'}")
+            print(f"  {n:12s} {'done' if done() else '-'}")
         return
 
     t_all = time.time()
