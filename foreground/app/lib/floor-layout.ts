@@ -1,5 +1,3 @@
-import clip from "polygon-clipping";
-import type { MultiPolygon, Polygon, Ring } from "polygon-clipping";
 
 export type RoomKind = "dining" | "kitchen" | "freezer" | "other";
 
@@ -76,13 +74,6 @@ export type WallSegment = {
   z2: number;
   role: WallRole;
 };
-
-export type StructureEdit =
-  | { kind: "remove-freezer" }
-  | { kind: "restore-freezer" }
-  | { kind: "shift-wall"; meters: number }
-  | { kind: "remove-room"; room: string }
-  | { kind: "extend"; room: string; into: string; meters: number };
 
 export type MeasuredRoom = {
   id: string;
@@ -171,136 +162,8 @@ export function buildLayoutFromScan(measured: MeasuredRoom[], sweeps: { x: numbe
   });
 }
 
-export function buildLayoutFromMatterport(measured: MeasuredRoom[]): FloorLayout {
-  return buildLayoutFromScan(measured, []);
-}
-
-export function room(layout: FloorLayout, id: string): RoomRect | null {
-  return layout.rooms.find((entry) => entry.id === id) ?? null;
-}
-
-export function findDining(layout: FloorLayout): RoomRect | null {
-  return largest(layout.rooms.filter((entry) => entry.kind === "dining"));
-}
-
 export function findKitchen(layout: FloorLayout): RoomRect | null {
   return largest(layout.rooms.filter((entry) => entry.kind === "kitchen"));
-}
-
-export function findFreezer(layout: FloorLayout): RoomRect | null {
-  return largest(layout.rooms.filter((entry) => entry.kind === "freezer"));
-}
-
-export function removeFreezer(layout: FloorLayout): FloorLayout {
-  if (layout.polygons?.length) return removeFreezerPolygons(layout);
-  const freezer = findFreezer(layout);
-  if (!freezer || freezer.absorbed) return layout;
-  return finish({
-    ...layout,
-    freezerRemoved: true,
-    rooms: layout.rooms.map((entry) => (entry.id === freezer.id ? { ...entry, absorbed: true } : entry)),
-  });
-}
-
-export function restoreFreezer(layout: FloorLayout): FloorLayout {
-  if (layout.polygons?.length) return restoreFreezerPolygons(layout);
-  const freezer = findFreezer(layout);
-  if (!freezer || !freezer.absorbed) return layout;
-  return finish({
-    ...layout,
-    freezerRemoved: false,
-    rooms: layout.rooms.map((entry) => (entry.id === freezer.id ? { ...entry, absorbed: false } : entry)),
-  });
-}
-
-/** Positive meters give that width to the dining room and take it from the rooms across the shared wall. */
-export function shiftServiceWall(layout: FloorLayout, meters: number): FloorLayout {
-  if (layout.polygons?.length) return shiftPolygonWall(layout, meters);
-  const dining = findDining(layout);
-  const kitchen = findKitchen(layout);
-  if (!dining || !kitchen || Math.abs(meters) < 0.05) return layout;
-
-  const diningMid = dining.x + dining.w / 2;
-  const kitchenMid = kitchen.x + kitchen.w / 2;
-  const toTheRight = kitchenMid >= diningMid;
-  const boundary = toTheRight ? dining.x + dining.w : dining.x;
-  let delta = toTheRight ? meters : -meters;
-
-  const attached = layout.rooms.filter((entry) => entry.id !== dining.id && sharesBoundary(entry, boundary, toTheRight));
-  if (attached.length === 0) return layout;
-  if (toTheRight) {
-    const maxGrow = Math.min(dining.w + 8, ...attached.map((entry) => entry.w - 1.3));
-    delta = Math.max(-dining.w + 2, Math.min(delta, maxGrow));
-  } else {
-    const maxGrow = Math.min(dining.w + 8, ...attached.map((entry) => entry.w - 1.3));
-    delta = Math.max(-maxGrow, Math.min(delta, dining.w - 2));
-  }
-  if (Math.abs(delta) < 0.05) return layout;
-
-  return finish({
-    ...layout,
-    rooms: layout.rooms.map((entry) => {
-      if (entry.id === dining.id) {
-        return toTheRight ? { ...entry, w: entry.w + delta } : { ...entry, x: entry.x + delta, w: entry.w - delta };
-      }
-      if (!attached.some((item) => item.id === entry.id)) return entry;
-      return toTheRight
-        ? { ...entry, x: entry.x + delta, w: entry.w - delta }
-        : { ...entry, w: entry.w + delta };
-    }),
-  });
-}
-
-export function applyStructure(layout: FloorLayout, edit: StructureEdit): FloorLayout {
-  if (edit.kind === "remove-freezer") return removeFreezer(layout);
-  if (edit.kind === "restore-freezer") return restoreFreezer(layout);
-  if (edit.kind === "remove-room") return removeNamedRoom(layout, edit.room);
-  if (edit.kind === "extend") return extendNamedRoom(layout, edit.room, edit.into, edit.meters);
-  return shiftServiceWall(layout, edit.meters);
-}
-
-function removeNamedRoom(layout: FloorLayout, name: string): FloorLayout {
-  if (layout.polygons?.length) return removeNamedPolygons(layout, name);
-  const target = layout.rooms.find((entry) => !entry.absorbed && roomNamesMatch(entry.label, name));
-  if (!target) return layout;
-  return finish({
-    ...layout,
-    rooms: layout.rooms.map((entry) => (entry.id === target.id ? { ...entry, absorbed: true } : entry)),
-  });
-}
-
-function removeNamedPolygons(layout: FloorLayout, name: string): FloorLayout {
-  const polygons = (layout.polygons ?? []).map(clonePoly);
-  const target = largestPolygon(polygons.filter((entry) => !entry.absorbed && roomNamesMatch(entry.label, name)));
-  if (!target) return layout;
-  const neighbor = largestPolygon(
-    polygons.filter((entry) => entry.id !== target.id && !entry.absorbed && abuttingEdge(entry.points, target.points)),
-  );
-  if (neighbor) neighbor.points = unionRings(neighbor.points, target.points);
-  target.absorbed = true;
-  return commitPlan({ ...layout, polygons });
-}
-
-function extendNamedRoom(layout: FloorLayout, roomName: string, intoName: string, meters: number): FloorLayout {
-  if (!layout.polygons?.length || Math.abs(meters) < 0.05) return layout;
-  const polygons = layout.polygons.map(clonePoly);
-  const room = largestPolygon(polygons.filter((entry) => !entry.absorbed && roomNamesMatch(entry.label, roomName)));
-  const into = largestPolygon(
-    polygons.filter((entry) => entry.id !== room?.id && !entry.absorbed && roomNamesMatch(entry.label, intoName)),
-  );
-  if (!room || !into) return layout;
-  const moved = shiftBetween(polygons, room.id, into.id, meters);
-  if (Math.abs(moved.applied) < 0.05) return layout;
-  return commitPlan({ ...layout, polygons: moved.polygons, wallShift: (layout.wallShift ?? 0) + moved.applied });
-}
-
-function roomNamesMatch(label: string, query: string) {
-  const left = label.toLowerCase();
-  const right = query.toLowerCase();
-  if (left.includes(right) || right.includes(left)) return true;
-  if (/bath|restroom/.test(left) && /bath|restroom/.test(right)) return true;
-  if (/dining|living/.test(left) && /dining|living/.test(right)) return true;
-  return false;
 }
 
 export function layoutWalls(layout: FloorLayout): WallRect[] {
@@ -346,6 +209,14 @@ export function hitsWall(layout: FloorLayout, x: number, z: number, radius: numb
     if (dx * dx + dz * dz < radius * radius) return true;
   }
   return false;
+}
+
+function room(layout: FloorLayout, id: string): RoomRect | null {
+  return layout.rooms.find((entry) => entry.id === id) ?? null;
+}
+
+function findDining(layout: FloorLayout): RoomRect | null {
+  return largest(layout.rooms.filter((entry) => entry.kind === "dining"));
 }
 
 export function diningCenter(layout: FloorLayout): { x: number; z: number } {
@@ -408,11 +279,6 @@ function largest(rooms: RoomRect[]): RoomRect | null {
     if (!best || entry.w * entry.d > best.w * best.d) return entry;
     return best;
   }, null);
-}
-
-function sharesBoundary(entry: RoomRect, boundary: number, kitchenOnRight: boolean): boolean {
-  const edge = kitchenOnRight ? entry.x : entry.x + entry.w;
-  return Math.abs(edge - boundary) < NEIGHBOR;
 }
 
 function insideAny(layout: FloorLayout, x: number, z: number): boolean {
@@ -766,75 +632,6 @@ export function wallSegments(layout: FloorLayout): WallSegment[] {
   return segments;
 }
 
-function removeFreezerPolygons(layout: FloorLayout): FloorLayout {
-  const polygons = (layout.polygons ?? []).map(clonePoly);
-  const freezer = polygons.find((entry) => entry.kind === "freezer" && !entry.absorbed);
-  const kitchen = largestPolygon(polygons.filter((entry) => entry.kind === "kitchen"));
-  if (freezer && kitchen) {
-    kitchen.points = unionRings(kitchen.points, freezer.points);
-    freezer.absorbed = true;
-    return commitPlan({ ...layout, polygons, freezerRemoved: true });
-  }
-  const dining = largestPolygon(polygons.filter((entry) => entry.kind === "dining" && !entry.absorbed));
-  if (!dining || !kitchen || layout.openedWall) return layout;
-  return commitPlan({ ...layout, openedWall: true, freezerRemoved: true });
-}
-
-function restoreFreezerPolygons(layout: FloorLayout): FloorLayout {
-  if (layout.openedWall) return commitPlan({ ...layout, openedWall: false, freezerRemoved: false });
-  if (!layout.freezerRemoved || !layout.basePolygons?.length) return layout;
-  let polygons = layout.basePolygons.map(clonePoly);
-  if (layout.wallShift) polygons = moveDiningWall(polygons, layout.wallShift).polygons;
-  return commitPlan({ ...layout, polygons, freezerRemoved: false });
-}
-
-function shiftPolygonWall(layout: FloorLayout, meters: number): FloorLayout {
-  if (!layout.polygons?.length || Math.abs(meters) < 0.05) return layout;
-  const moved = moveDiningWall(layout.polygons, meters);
-  if (Math.abs(moved.applied) < 0.05) return layout;
-  return commitPlan({
-    ...layout,
-    polygons: moved.polygons,
-    wallShift: (layout.wallShift ?? 0) + moved.applied,
-  });
-}
-
-function moveDiningWall(source: RoomPolygon[], meters: number): { polygons: RoomPolygon[]; applied: number } {
-  const polygons = source.map(clonePoly);
-  const dining = largestPolygon(polygons.filter((entry) => entry.kind === "dining" && !entry.absorbed));
-  const kitchen = largestPolygon(polygons.filter((entry) => entry.kind === "kitchen" && !entry.absorbed));
-  if (!dining || !kitchen) return { polygons, applied: 0 };
-  const grow = meters >= 0 ? dining.id : kitchen.id;
-  const shrink = meters >= 0 ? kitchen.id : dining.id;
-  return shiftBetween(polygons, grow, shrink, Math.abs(meters));
-}
-
-function shiftBetween(polygons: RoomPolygon[], growId: string, shrinkId: string, meters: number): { polygons: RoomPolygon[]; applied: number } {
-  const grow = polygons.find((entry) => entry.id === growId);
-  const shrink = polygons.find((entry) => entry.id === shrinkId);
-  if (!grow || !shrink) return { polygons, applied: 0 };
-  const edge = abuttingEdge(grow.points, shrink.points) ?? facingEdge(grow.points, shrink.points);
-  if (!edge) return { polygons, applied: 0 };
-  const shrinkEdge = abuttingEdge(shrink.points, grow.points) ?? facingEdge(shrink.points, grow.points);
-  const mid = midpoint(edge.start, edge.end);
-  let nx = -(edge.end.z - edge.start.z);
-  let nz = edge.end.x - edge.start.x;
-  const span = Math.hypot(nx, nz) || 1;
-  nx /= span;
-  nz /= span;
-  const shrinkCenter = interiorPoint(shrink.points);
-  if ((shrinkCenter.x - mid.x) * nx + (shrinkCenter.z - mid.z) * nz < 0) {
-    nx = -nx;
-    nz = -nz;
-  }
-  const limit = Math.min(projectedSpan(grow.points, nx, nz), projectedSpan(shrink.points, nx, nz)) * 0.35;
-  const applied = Math.max(-limit, Math.min(limit, Math.abs(meters)));
-  if (Math.abs(applied) < 0.05) return { polygons, applied: 0 };
-  moveEdge(grow.points, edge, nx * applied, nz * applied);
-  if (shrinkEdge) moveEdge(shrink.points, shrinkEdge, nx * applied, nz * applied);
-  return { polygons, applied };
-}
-
 function commitPlan(layout: FloorLayout): FloorLayout {
   const rooms = layout.polygons ? rectsFromPolygons(layout.polygons) : layout.rooms;
   const finished = finish({ ...layout, rooms });
@@ -871,127 +668,6 @@ function pixelsToMeters(pixels: [number, number][], image: PlanImage, normalized
   }));
 }
 
-function unionRings(a: Point2[], b: Point2[]): Point2[] {
-  let parts = fromMulti(clip.union(asPolygon(a), asPolygon(b)));
-  if (parts.length <= 1) return parts[0] ?? a;
-  parts = fromMulti(clip.union(asPolygon(a), asPolygon(b), asPolygon(bridgeQuad(a, b))));
-  parts.sort((left, right) => Math.abs(shoelace(right)) - Math.abs(shoelace(left)));
-  return parts[0] ?? a;
-}
-
-function asPolygon(points: Point2[]): Polygon {
-  const ring: Ring = points.map((point) => [point.x, point.z]);
-  const first = ring[0];
-  const last = ring[ring.length - 1];
-  if (first && (!last || first[0] !== last[0] || first[1] !== last[1])) ring.push([first[0], first[1]]);
-  return [ring];
-}
-
-function fromMulti(multi: MultiPolygon): Point2[][] {
-  return multi
-    .map((poly) => {
-      const ring = poly[0] ?? [];
-      const points = ring.map(([x, z]) => ({ x, z }));
-      if (points.length > 1) {
-        const first = points[0];
-        const last = points[points.length - 1];
-        if (first.x === last.x && first.z === last.z) points.pop();
-      }
-      return points;
-    })
-    .filter((points) => points.length >= 3);
-}
-
-function bridgeQuad(a: Point2[], b: Point2[]): Point2[] {
-  let best = Infinity;
-  let left = a[0];
-  let right = b[0];
-  for (const start of a) {
-    for (const end of b) {
-      const distance = (start.x - end.x) ** 2 + (start.z - end.z) ** 2;
-      if (distance < best) {
-        best = distance;
-        left = start;
-        right = end;
-      }
-    }
-  }
-  const dx = right.x - left.x;
-  const dz = right.z - left.z;
-  const span = Math.hypot(dx, dz) || 1;
-  const ox = (-dz / span) * 0.2;
-  const oz = (dx / span) * 0.2;
-  return [
-    { x: left.x + ox, z: left.z + oz },
-    { x: right.x + ox, z: right.z + oz },
-    { x: right.x - ox, z: right.z - oz },
-    { x: left.x - ox, z: left.z - oz },
-  ];
-}
-
-function abuttingEdge(source: Point2[], other: Point2[]): { index: number; start: Point2; end: Point2 } | null {
-  let best: { index: number; start: Point2; end: Point2; overlap: number } | null = null;
-  for (let index = 0; index < source.length; index += 1) {
-    const start = source[index];
-    const end = source[(index + 1) % source.length];
-    const length = Math.hypot(end.x - start.x, end.z - start.z);
-    if (length < 0.4) continue;
-    for (let edge = 0; edge < other.length; edge += 1) {
-      const otherStart = other[edge];
-      const otherEnd = other[(edge + 1) % other.length];
-      const overlap = collinearOverlap(start, end, otherStart, otherEnd);
-      if (overlap > (best?.overlap ?? 0.4)) best = { index, start, end, overlap };
-    }
-  }
-  return best;
-}
-
-function collinearOverlap(a1: Point2, a2: Point2, b1: Point2, b2: Point2) {
-  const ax = a2.x - a1.x;
-  const az = a2.z - a1.z;
-  const length = Math.hypot(ax, az) || 1;
-  const bx = b2.x - b1.x;
-  const bz = b2.z - b1.z;
-  const otherLength = Math.hypot(bx, bz) || 1;
-  if (Math.abs((ax * bx + az * bz) / (length * otherLength)) < 0.92) return 0;
-  const ux = ax / length;
-  const uz = az / length;
-  const gap = Math.abs((b1.x - a1.x) * -uz + (b1.z - a1.z) * ux);
-  if (gap > 0.35) return 0;
-  const project = (point: Point2) => (point.x - a1.x) * ux + (point.z - a1.z) * uz;
-  const start = Math.max(0, Math.min(project(b1), project(b2)));
-  const end = Math.min(length, Math.max(project(b1), project(b2)));
-  return Math.max(0, end - start);
-}
-
-function facingEdge(source: Point2[], other: Point2[]): { index: number; start: Point2; end: Point2 } | null {
-  const center = interiorPoint(other);
-  let best: { index: number; start: Point2; end: Point2; distance: number } | null = null;
-  for (let index = 0; index < source.length; index += 1) {
-    const start = source[index];
-    const end = source[(index + 1) % source.length];
-    const length = Math.hypot(end.x - start.x, end.z - start.z);
-    if (length < 0.6) continue;
-    const mid = midpoint(start, end);
-    const distance = Math.hypot(mid.x - center.x, mid.z - center.z);
-    if (!best || distance < best.distance) best = { index, start, end, distance };
-  }
-  if (!best || best.distance > 8) return null;
-  return best;
-}
-
-function moveEdge(points: Point2[], edge: { index: number }, dx: number, dz: number) {
-  const start = points[edge.index];
-  const end = points[(edge.index + 1) % points.length];
-  const before = { start: { ...start }, end: { ...end } };
-  for (const point of points) {
-    if (pointSegDist(point, before.start, before.end) < 0.45) {
-      point.x += dx;
-      point.z += dz;
-    }
-  }
-}
-
 function edgesOverlap(a1: Point2, a2: Point2, b1: Point2, b2: Point2): boolean {
   const distances = [pointSegDist(a1, b1, b2), pointSegDist(a2, b1, b2), pointSegDist(b1, a1, a2), pointSegDist(b2, a1, a2)];
   return distances.filter((distance) => distance < 0.55).length >= 2;
@@ -1026,15 +702,6 @@ function doorParams(length: number): [number, number][] {
     [0, 0.5 - gap / 2],
     [0.5 + gap / 2, 1],
   ].filter(([start, end]) => (end - start) * length > 0.08) as [number, number][];
-}
-
-function projectedSpan(points: Point2[], nx: number, nz: number): number {
-  const values = points.map((point) => point.x * nx + point.z * nz);
-  return Math.max(...values) - Math.min(...values);
-}
-
-function midpoint(start: Point2, end: Point2): Point2 {
-  return { x: (start.x + end.x) / 2, z: (start.z + end.z) / 2 };
 }
 
 function scaleAbout(point: Point2, center: Point2, scale: number): Point2 {

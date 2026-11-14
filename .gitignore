@@ -32,3 +32,25 @@ forecasting/artifacts/
 
 # Profile-specific assets and generated models (local only)
 assets/profiles/
+
+# Other caches and OS noise
+.mypy_cache/
+.ruff_cache/
+.DS_Store
+*.log
+**/.cache/
+**/.uploads/
+
+# Weights, videos and splats stay local (see capture/, modeling/)
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.onnx
+*.mp4
+*.mov
+*.webm
+*.ply
+*.spz
+*.splat
+modeling/assets_catalog/
