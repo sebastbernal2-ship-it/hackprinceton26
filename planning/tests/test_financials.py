@@ -131,3 +131,13 @@ def test_estimated_inputs_appear_in_flip_analysis():
     knobs = {fl.knob: fl for fl in res.flips}
     assert "quantity:equipment_install_allowance" in knobs and "quantity:repair:plumbing" in knobs
     assert knobs["budget"].flips
+
+
+def test_assessment_buildout_bounds_and_override():
+    from planning import assessment as a
+    lo, hi = a.buildout_bounds()
+    assert 0 < lo < hi
+    r = a.assess(budget=1.0, equipment=["hand_sink"], price_overrides={"hand_sink": 1000.0}, n=300, seed=1)
+    assert r["pOverBudgetBuildout"] == 1.0 and r["analysisBasis"] == "buildout_only"
+    assert a.assess(budget=None, n=300)["pOverBudgetBuildout"] is None
+    assert a.assess(budget=5.0, equipment=[], n=300)["buildout"] is None  # nothing selected: unknown, not zero

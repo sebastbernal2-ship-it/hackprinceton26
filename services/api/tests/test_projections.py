@@ -61,7 +61,9 @@ def test_method_required():
 def test_assess_stub_unknown_and_labelled():
     r = client.post("/api/assess", json={"assumptions": [{"key": "occupancy", "value": 0.8}]}).json()
     assert r["label"] == "scenario analysis, not a forecast"
-    assert r["status"] == "unknown" and r["projections"] == [] and r["modelsAvailable"] is False
+    assert r["status"] == "unknown" and r["modelsAvailable"] is False  # no budget -> no P(over budget)
+    assert r["pOverBudget"] is None and r["pOverBudgetBuildout"] is None
+    assert [c["metric"] for c in r["projections"]] == ["build-out cost (p5/p50/p95)"]
     assert r["assumptions"][0]["key"] == "occupancy"
 
 
