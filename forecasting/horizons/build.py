@@ -33,8 +33,10 @@ NOTICE = ("Fitted cells are scenario/estimate cards that passed a pre-declared h
           "scenarios, not our forecasts. 'cannot_say' means no gated or cited source exists; unknown is never zero.")
 # row -> (artifact source, metric regex)
 SERIES_ROWS = {"crime_context": r"reported crime", "labor_wage": r"average hourly earnings", "climate_seasonality": r"air temperature",
-               "traffic_trend": r"\baadt\b"}
-RENT_ROWS = {"rent_expectation": r"rent", "leasing_volume": r"leasing|absorption|volume"}
+               "traffic_trend": r"\baadt\b",
+               # CoStar-kit quarterly series (metro level, kit sample, not market statistics); the card metric says so
+               "rent_level": r"median contract rent", "leasing_volume": r"lease commencements|leased (?:square|sq)"}
+RENT_ROWS = {"rent_expectation": r"rent"}  # leasing volume comes from the series artifact (SERIES_ROWS), not the rent model
 
 
 def _env(name, default):
@@ -80,6 +82,9 @@ def months(horizon: str) -> int | None:
     m = re.search(r"(\d+)\s*month", horizon or "", re.I)
     if m:
         return int(m.group(1))
+    m = re.search(r"(\d+)\s*quarter", horizon or "", re.I)
+    if m:
+        return int(m.group(1)) * 3
     m = re.search(r"(\d+)\s*year", horizon or "", re.I)
     return int(m.group(1)) * 12 if m else None
 

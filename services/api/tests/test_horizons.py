@@ -133,3 +133,18 @@ def test_rent_artifacts_are_read_from_report_and_predictions(tmp_path):
     assert a["present"] and a["gate_failed"] and "gate" in a["gate_failed"]
     x = cellof(build.build_table(HOU, arts={"rent": a}), "rent_expectation", "now")
     assert x["state"] == "cannot_say" and "gate" in x["reason"]
+
+
+def kit_card(city, metric, horizon):
+    c = fitted(f"{city}, TX" if city == "Houston" else f"{city}, CA", metric=f"{metric} in kit sample ({city}); kit sample, not a market statistic", horizon=horizon)
+    return c
+
+
+def test_kit_series_quarterly_horizons_fill_rent_and_leasing_rows_for_their_own_city_only():
+    cards = [kit_card("Houston", "Median contract rent", "4 quarters ahead (2027Q3)"),
+             kit_card("Houston", "Lease commencements (count)", "12 quarters ahead (2029Q3)")]
+    t = build.build_table(HOU, arts={"series": art(cards)})
+    assert cellof(t, "rent_level", "12m")["state"] == "fitted"
+    assert cellof(t, "leasing_volume", "3_5y")["state"] == "fitted"
+    la = build.build_table(LA, arts={"series": art(cards)})
+    assert cellof(la, "rent_level", "12m")["state"] == "cannot_say"  # never a cross-city fill
