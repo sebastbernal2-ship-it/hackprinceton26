@@ -1,0 +1,28 @@
+# Capture pipeline env (uv, Python 3.11). Install torch from the cu128 index first (RTX 5080 / Blackwell needs CUDA 12.8+):
+#   uv venv --python 3.11 capture/.cache/venv
+#   uv pip install -p capture/.cache/venv --index-url https://download.pytorch.org/whl/cu128 torch==2.8.0 torchvision==0.23.0
+#   uv pip install -p capture/.cache/venv -r capture/requirements.txt
+numpy>=1.26,<2
+einops
+jaxtyping
+beartype
+omegaconf
+hydra-core
+dacite
+huggingface_hub>=0.34,<1.0
+safetensors
+scipy
+matplotlib
+colorspacious
+e3nn
+imageio
+gsplat  # imported by AnySplat's decoder; only its Python side is used (no CUDA rasteriser is compiled)
+opencv-python-headless>=4.9,<4.12
+tqdm
+pillow
+plyfile
+timm
+lpips
+transformers>=4.49,<6
+accelerate>=1.2
+pytest>=8.3
