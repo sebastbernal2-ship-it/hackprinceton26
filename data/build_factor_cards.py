@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Build a non-ranking, one-row-per-site/factor evidence card inventory."""
-import csv, json, pathlib
+import csv, json, pathlib, sys
 ROOT=pathlib.Path(__file__).resolve().parent.parent
 
 
@@ -14,6 +14,7 @@ def crime_time_window(context):
     return f'{start} to {end}' if start and end else ''
 REG=ROOT/'data/registry'
 QUEUE=ROOT/'data/normalized/costar/human-review-queue.csv'
+CANDIDATES=ROOT/'data/normalized/costar/restaurant-site-candidates.csv'
 EVIDENCE=ROOT/'data/normalized/costar/restaurant-site-evidence.csv'
 OPERATOR=ROOT/'data/normalized/costar/operator-review-detail.csv'
 CONTEXT=ROOT/'data/normalized/costar/local-context.csv'
@@ -72,12 +73,13 @@ def build_cards(factors,sites,evidence,operator,context,adapter_obs=None):
             factor=next(f for f in factors if f['factor_id']==fid)
             add(fid,reason=factor.get('notes') or factor.get('preliminary_status') or 'No verified site-level evidence.')
     return out
-def main():
+def main(argv=()):
+    """Default sites = human review queue; `--all-candidates` builds cards for every candidate site."""
     factors=rows(REG/'factors.csv')
-    sites=rows(QUEUE); evidence={r['property_id']:r for r in rows(EVIDENCE)}
+    sites=rows(CANDIDATES if '--all-candidates' in argv else QUEUE); evidence={r['property_id']:r for r in rows(EVIDENCE)}
     operator={r['property_id']:r for r in rows(OPERATOR)}; context={r['property_id']:r for r in rows(CONTEXT)}
     out=build_cards(factors,sites,evidence,operator,context,load_adapter_observations(factors))
     with OUT.open('w',newline='',encoding='utf-8') as f:
         w=csv.DictWriter(f,fieldnames=FIELDS);w.writeheader();w.writerows(out)
     print(f'Wrote {len(out)} factor cards for {len(sites)} sites; unknown values remain blank.')
-if __name__=='__main__':main()
+if __name__=='__main__':main(sys.argv[1:])
