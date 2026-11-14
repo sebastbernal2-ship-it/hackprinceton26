@@ -81,10 +81,14 @@ def _catalog() -> dict:
     return json.loads(FIN_CATALOG.read_text())
 
 
+def _price_index(cat: dict) -> dict:
+    return {e["id"]: e for k in ("equipment", "reskinEquipment") for e in cat.get(k, [])}
+
+
 def _price_line(a: Asset, qty: int, cat: dict) -> dict:
     base = dict(itemId=f"reskin:add:{a.assetId}", label=f"Add: {a.name}", category="equipment", quantity=qty, unit="each",
                 currency="USD", basis="one_time", asOf=AS_OF)
-    eq = {e["id"]: e for e in cat["equipment"]}.get(a.priceRef or "")
+    eq = _price_index(cat).get(a.priceRef or "")
     if eq is None:
         return {**base, "low": None, "expected": None, "high": None, "status": "unknown", "source": "none",
                 "rationale": "No sourced price for this asset in data/financial/catalog.json; unknown, not zero."}
@@ -201,8 +205,9 @@ def reskin(layout: dict, from_concept: str, to_concept: str, store: Store | None
     lines = [_price_line(get(aid), q, cat) for aid, q in qty_added.items()]
     priced = [l for l in lines if l["status"] != "unknown"]
     if priced:
-        ref = sum({e["id"]: e for e in cat["equipment"]}[get(aid).priceRef]["listPrice"] * q
-                  for aid, q in qty_added.items() if get(aid).priceRef)
+        # the allowance applies only to priced added lines; its base is each line's reference price
+        idx = _price_index(cat)
+        ref = sum(idx[get(aid).priceRef]["listPrice"] * q for aid, q in qty_added.items() if get(aid).priceRef)
         lo, ex, hi = (round(v, 2) for v in band(0.2 * ref, "costBand", cat))
         ia = cat["installAllowance"]
         lines.append(dict(itemId="reskin:install_allowance", label="Delivery/install allowance for priced added equipment (20%)",

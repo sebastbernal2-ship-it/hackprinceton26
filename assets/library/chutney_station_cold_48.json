@@ -53,7 +53,7 @@
     "indian",
     "chutney"
   ],
-  "priceRef": null,
+  "priceRef": "chutney_station_cold_48",
   "provenance": {
     "origin": "standard published/typical dimensions for this equipment class (not read from a specific spec sheet)",
     "retrievedAt": null,

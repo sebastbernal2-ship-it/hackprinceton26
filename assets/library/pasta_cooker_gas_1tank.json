@@ -52,7 +52,7 @@
     "cooking",
     "italian"
   ],
-  "priceRef": null,
+  "priceRef": "pasta_cooker_gas_1tank",
   "provenance": {
     "origin": "standard published/typical dimensions for this equipment class (not read from a specific spec sheet)",
     "retrievedAt": null,

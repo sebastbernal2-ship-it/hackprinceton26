@@ -52,7 +52,7 @@
     "indian",
     "hot_hold"
   ],
-  "priceRef": null,
+  "priceRef": "naan_warmer_cabinet",
   "provenance": {
     "origin": "standard published/typical dimensions for this equipment class (not read from a specific spec sheet)",
     "retrievedAt": null,
