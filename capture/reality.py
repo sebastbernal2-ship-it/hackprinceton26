@@ -132,20 +132,24 @@ def classify_views(means: np.ndarray, views: list[View], depths: list[np.ndarray
     return RealityResult(count > 0, count, per_view)
 
 
-def surface_support(points: np.ndarray, seen_means: np.ndarray, radius: float = 0.25) -> np.ndarray:
-    """Distance (metres) from each 3D point to the nearest SEEN splat; inf when there are none."""
+def surface_support(points: np.ndarray, seen_means: np.ndarray, radius: float = 0.25, tree=None) -> np.ndarray:
+    """Distance (metres) from each 3D point to the nearest SEEN splat; inf when there are none.
+
+    Pass a prebuilt cKDTree over `seen_means` as `tree` when checking many batches against the same splats."""
     pts = np.asarray(points, np.float64).reshape(-1, 3)
     if len(seen_means) == 0:
         return np.full(len(pts), np.inf)
-    from scipy.spatial import cKDTree
+    if tree is None:
+        from scipy.spatial import cKDTree
 
-    d, _ = cKDTree(np.asarray(seen_means, np.float64)).query(pts, k=1, distance_upper_bound=max(radius, 1e-6) * 50)
+        tree = cKDTree(np.asarray(seen_means, np.float64))
+    d, _ = tree.query(pts, k=1, distance_upper_bound=max(radius, 1e-6) * 50)
     return d
 
 
-def pin_is_supported(points: np.ndarray, seen_means: np.ndarray, radius: float = 0.25) -> np.ndarray:
+def pin_is_supported(points: np.ndarray, seen_means: np.ndarray, radius: float = 0.25, tree=None) -> np.ndarray:
     """True where a pin position lies within `radius` metres of a captured (seen) surface."""
-    return surface_support(points, seen_means, radius) <= radius
+    return surface_support(points, seen_means, radius, tree) <= radius
 
 
 def reality_report(world_file: str, seen_file: str, imagined_file: str, result: RealityResult, views: list[View],
