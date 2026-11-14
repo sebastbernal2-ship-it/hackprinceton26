@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>d_roofshell - room extension</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #d9dfe4; font: 13px/1.35 system-ui, sans-serif; }
+  canvas { display: block; }
+  #ui { position: absolute; left: 12px; top: 12px; background: rgba(255,255,255,0.92); border-radius: 8px; padding: 10px 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.15); max-width: 300px; color: #222; }
+  #ui h1 { font-size: 14px; margin: 0 0 6px; }
+  #ui .row { margin: 6px 0; display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+  #ui button { border: 1px solid #bbb; background: #f6f6f6; border-radius: 5px; padding: 3px 8px; cursor: pointer; font: inherit; }
+  #ui button.on { background: #2d5a88; color: #fff; border-color: #2d5a88; }
+  #ui input { width: 54px; font: inherit; }
+  #ui .info { color: #555; font-size: 12px; }
+</style>
+</head>
+<body>
+<div id="ui" hidden>
+  <h1>Room extension &mdash; roof-first</h1>
+  <div class="row">Case: <span id="cases"></span></div>
+  <div class="row">View: <span id="views"></span></div>
+  <div class="row">Addition (x0 y0 x1 y1):</div>
+  <div class="row"><input id="ex0" type="number" step="0.1"><input id="ey0" type="number" step="0.1"><input id="ex1" type="number" step="0.1"><input id="ey1" type="number" step="0.1"><button id="regen">Rebuild</button></div>
+  <div class="row"><label><input type="checkbox" id="cut" style="width:auto"> horizontal section (2.3 m)</label></div>
+  <div class="info" id="info"></div>
+  <div class="info">Drag: orbit &middot; right-drag: pan &middot; wheel: zoom</div>
+</div>
+<script type="module">
+import * as THREE from '../../vendor/three.module.min.js';
+import { shingleTex, stuccoTex, woodTex } from './tex.js';
+import { buildHouse, H } from './house.js';
+import { buildSite, neighbours } from './site.js';
+
+THREE.Object3D.DEFAULT_UP.set(0, 0, 1);
+const Q = new URLSearchParams(location.search);
+let CASE = Q.get('case') || 'main';
+const VIEW = Q.get('view');
+const W = VIEW ? 1600 : innerWidth, HH = VIEW ? 900 : innerHeight;
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(VIEW ? 1 : Math.min(devicePixelRatio, 2));
+renderer.setSize(W, HH);
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.0;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+document.body.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+
+const [tc, style, plan, scanMeta] = await Promise.all([
+  fetch('../test_case.json').then(r => r.json()), fetch('style.json').then(r => r.json()),
+  fetch('../../../pano_zvKHR9DHNjJ/mesh_diff/plan.json').then(r => r.json()), fetch('scan.json').then(r => r.json())]);
+
+// ---------------------------------------------------------------- sky (colours sampled from hackathon_site/envmap) + IBL
+const HORIZON = new THREE.Color('#e6eaec'), ZENITH = new THREE.Color('#a7bbd2'), GROUNDC = new THREE.Color('#a9a99d');
+const skyMat = new THREE.ShaderMaterial({
+  side: THREE.BackSide, depthWrite: false, fog: false,
+  uniforms: { h: { value: HORIZON }, z: { value: ZENITH }, g: { value: GROUNDC }, sun: { value: new THREE.Vector3() } },
+  vertexShader: 'varying vec3 vD; void main(){ vD = normalize(position); gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.0); gl_Position.z = gl_Position.w; }',
+  fragmentShader: `uniform vec3 h; uniform vec3 z; uniform vec3 g; uniform vec3 sun; varying vec3 vD;
+    void main(){ float e = vD.z; vec3 c = e > 0.0 ? mix(h, z, pow(clamp(e,0.0,1.0), 0.55)) : mix(h, g, clamp(-e*6.0,0.0,1.0));
+      float s = max(dot(normalize(vD), sun), 0.0); c += vec3(1.0,0.95,0.85) * (pow(s, 600.0)*4.0 + pow(s, 12.0)*0.12);
+      gl_FragColor = vec4(c, 1.0); }`
+});
+const sky = new THREE.Mesh(new THREE.SphereGeometry(900, 32, 16), skyMat); sky.frustumCulled = false; scene.add(sky);
+scene.fog = new THREE.Fog(HORIZON.clone().multiplyScalar(0.97), 90, 650);
+
+// late-afternoon sun from the west-north-west (model frame north = +y), ~40 deg elevation
+const SUN_DIR = new THREE.Vector3(-0.64, 0.40, 0.66).normalize();
+skyMat.uniforms.sun.value.copy(SUN_DIR);
+const pmrem = new THREE.PMREMGenerator(renderer);
+{ const es = new THREE.Scene(); es.add(new THREE.Mesh(new THREE.SphereGeometry(50, 32, 16), skyMat)); scene.environment = pmrem.fromScene(es, 0.02).texture; }
+scene.environmentIntensity = 0.75;
+const sun = new THREE.DirectionalLight(0xfff1dc, 3.1);
+sun.position.copy(SUN_DIR).multiplyScalar(60).add(new THREE.Vector3(-5, 2, 0)); sun.target.position.set(-5, 2, 0);
+sun.castShadow = true; sun.shadow.mapSize.set(4096, 4096);
+Object.assign(sun.shadow.camera, { left: -30, right: 30, top: 30, bottom: -30, near: 10, far: 140 });
+sun.shadow.bias = -0.0003; sun.shadow.normalBias = 0.025; sun.shadow.radius = 2;
+scene.add(sun, sun.target);
+scene.add(new THREE.HemisphereLight(0xdfe8f2, 0x7c7a62, 0.55));
+
+// ---------------------------------------------------------------- materials
+const hex = s => new THREE.Color(s);
+const sh = shingleTex([160, 163, 163]), st = stuccoTex([238, 236, 229]);
+const std = (o) => new THREE.MeshStandardMaterial(Object.assign({ roughness: 0.85, metalness: 0 }, o));
+const cs = s => hex(s).convertSRGBToLinear ? hex(s) : hex(s);
+const rgb = s => { const c = hex(s); return [c.r * 255, c.g * 255, c.b * 255]; };
+// interior: mostly self-lit like the photogrammetric scan it sits next to (its textures carry baked light)
+const lit = (color, k = 0.8, map = null, f = 1) => { const c = hex(color).multiplyScalar(f); return new THREE.MeshLambertMaterial({ color: c.clone().multiplyScalar(1 - k), emissive: c.clone().multiplyScalar(k), map, emissiveMap: map, toneMapped: false }); };
+const floorT = woodTex(rgb(style.bedroom_floor_dark), rgb(style.bedroom_floor), rgb(style.bedroom_floor_light));
+const M = {
+  stucco: std({ map: st.map, bumpMap: st.bump, bumpScale: 0.6, roughness: 0.93 }),
+  trim: std({ color: 0xf3f1ea, roughness: 0.55 }),
+  soffit: std({ color: 0xeeece5, roughness: 0.8 }),
+  roof: std({ map: sh.map, bumpMap: sh.bump, bumpScale: 1.2, roughness: 0.96 }),
+  ridge: std({ map: sh.map, color: 0xd8d8d8, roughness: 0.96 }),
+  gutter: std({ color: 0xe9e9e4, roughness: 0.45, metalness: 0.1 }),
+  flashing: std({ color: 0x8f9396, roughness: 0.5, metalness: 0.5 }),
+  glass: new THREE.MeshPhysicalMaterial({ color: 0x3a464e, roughness: 0.05, metalness: 0.0, envMapIntensity: 1.8, transparent: true, opacity: 0.74, depthWrite: false }),
+  glassN: std({ color: 0x55626b, roughness: 0.15, metalness: 0.2, envMapIntensity: 1.4 }),
+  roofN3: std({ color: 0xb06a4c, roughness: 0.9 }),
+  glassClear: new THREE.MeshPhysicalMaterial({ color: 0x5d6b73, roughness: 0.05, transmission: 0, transparent: true, opacity: 0.45, envMapIntensity: 1.5, depthWrite: false }),
+  sash: std({ color: 0xf5f4ee, roughness: 0.5 }),
+  door: std({ color: 0x6a3f24, roughness: 0.55 }), doorDark: std({ color: 0x55321d, roughness: 0.6 }),
+  metal: std({ color: 0x2b2b2b, roughness: 0.4, metalness: 0.7 }),
+  foundation: std({ color: 0xa8a59d, roughness: 0.95 }),
+  porchFloor: std({ color: 0x7d3f2f, roughness: 0.7 }), step: std({ color: 0x8a4b36, roughness: 0.75 }),
+  capstone: std({ color: 0x9a968f, roughness: 0.9 }), flue: std({ color: 0x8c4a32, roughness: 0.9 }),
+  vent: std({ color: 0x3c3d3d, roughness: 0.6 }), post: std({ color: 0x6e5841, roughness: 0.9 }),
+  intWall: lit(style.bedroom_wall, 0.8, null, 1.2), intWallSide: lit(style.bedroom_wall, 0.8, null, 1.08), intCeil: lit(style.bedroom_ceiling, 0.85, null, 1.25), intTrim: lit(style.baseboard, 0.8, null, 1.3),
+  floor: lit('#ffffff', 0.85, floorT, 1.3),
+  roofN1: std({ color: 0x9fa3a5, roughness: 0.95, map: sh.map }), roofN2: std({ color: 0x6d7175, roughness: 0.95, map: sh.map }),
+  wallN1: std({ color: 0xe9e7e0, map: st.map, roughness: 0.95 }), wallN2: std({ color: 0xa9b6bd, map: st.map, roughness: 0.95 }), wallN3: std({ color: 0xe4d8c0, map: st.map, roughness: 0.95 }),
+};
+// weathering: low-frequency mottling on the shingles (the drone photos show a blotchy, sun-bleached roof) and
+// splash/grime at the base of the stucco walls
+const mottle = (() => { const c = document.createElement('canvas'); c.width = c.height = 256; const g = c.getContext('2d'); const im = g.createImageData(256, 256);
+  let sd = 3; const r = () => ((sd = (sd * 1664525 + 1013904223) >>> 0) / 4294967296); const G = new Float32Array(16 * 16).map(r);
+  const sm = t => t * t * (3 - 2 * t), at = (x, y) => G[(y & 15) * 16 + (x & 15)];
+  for (let j = 0; j < 256; j++) for (let i = 0; i < 256; i++) { const x = i / 16, y = j / 16, xi = Math.floor(x), yi = Math.floor(y), fx = sm(x - xi), fy = sm(y - yi);
+    const v = (at(xi, yi) * (1 - fx) + at(xi + 1, yi) * fx) * (1 - fy) + (at(xi, yi + 1) * (1 - fx) + at(xi + 1, yi + 1) * fx) * fy; const k = (j * 256 + i) * 4; im.data[k] = im.data[k + 1] = im.data[k + 2] = v * 255; im.data[k + 3] = 255; }
+  g.putImageData(im, 0, 0); const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; return t; })();
+function weather(mat, body) {
+  mat.onBeforeCompile = sh => {
+    sh.uniforms.tMottle = { value: mottle };
+    sh.vertexShader = 'varying vec3 vWPos;\n' + sh.vertexShader.replace('#include <worldpos_vertex>', '#include <worldpos_vertex>\n vWPos = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+    sh.fragmentShader = 'varying vec3 vWPos; uniform sampler2D tMottle;\n' + sh.fragmentShader.replace('#include <map_fragment>', '#include <map_fragment>\n' + body);
+  };
+}
+weather(M.roof, `{ float m1 = texture2D(tMottle, vWPos.xy * 0.045).r, m2 = texture2D(tMottle, vWPos.xy * 0.19 + 0.37).r;
+  diffuseColor.rgb *= 0.86 + 0.2 * m1 + 0.1 * m2; }`);
+weather(M.stucco, `{ float m = texture2D(tMottle, vec2(vWPos.x + vWPos.y, vWPos.z) * 0.15).r;
+  diffuseColor.rgb *= mix(0.80, 1.0, smoothstep(${H.GRADE.toFixed(2)}, ${H.GRADE.toFixed(2)} + 0.7, vWPos.z)) * (0.96 + 0.06 * m); }`);
+M.glassClear.userData.noCast = true; M.glass.userData.noCast = true;
+
+// ---------------------------------------------------------------- scan (MatterPak textured mesh, unlit: baked photo light)
+const [pos, uvb, idx] = await Promise.all(['scan_pos.bin', 'scan_uv.bin', 'scan_idx.bin'].map(f => fetch(f).then(r => r.arrayBuffer())));
+const P = new Float32Array(pos), IDX = new Uint32Array(idx);
+const scanGeo = new THREE.BufferGeometry();
+scanGeo.setAttribute('position', new THREE.BufferAttribute(P, 3));
+scanGeo.setAttribute('uv', new THREE.BufferAttribute(new Float32Array(uvb), 2));
+const loader = new THREE.TextureLoader();
+const scanMats = await Promise.all(scanMeta.groups.map(g => new Promise(res => loader.load(scanMeta.texdir + g.tex, t => {
+  t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; res(new THREE.MeshBasicMaterial({ map: t, side: THREE.DoubleSide, toneMapped: false, fog: false }));
+}, undefined, () => res(new THREE.MeshBasicMaterial({ color: 0x999999 }))))));
+const scan = new THREE.Mesh(scanGeo, scanMats); scan.frustumCulled = false; scene.add(scan);
+function cutScan(A, door, doorH) {
+  // remove the scanned wall surface inside the new doorway (shared wall), keep everything else
+  const out = new Uint32Array(IDX.length); let n = 0; scanGeo.clearGroups();
+  for (let gi = 0; gi < scanMeta.groups.length; gi++) {
+    const g = scanMeta.groups[gi], start = n;
+    for (let i = g.start; i < g.start + g.count; i += 3) {
+      const a = IDX[i] * 3, b = IDX[i + 1] * 3, c = IDX[i + 2] * 3;
+      if (A) {
+        const cx = (P[a] + P[b] + P[c]) / 3, cy = (P[a + 1] + P[b + 1] + P[c + 1]) / 3, cz = (P[a + 2] + P[b + 2] + P[c + 2]) / 3;
+        const s = cx * A.n.x + cy * A.n.y, t = cx * A.t.x + cy * A.t.y;
+        if (s > A.sAttach - 0.4 && s < A.sAttach + 0.1 && t > door.c0 - 0.005 && t < door.c1 + 0.005 && cz > 0.02 && cz < doorH + 0.005) continue;
+      }
+      out[n++] = IDX[i]; out[n++] = IDX[i + 1]; out[n++] = IDX[i + 2];
+    }
+    scanGeo.addGroup(start, n - start, gi);
+  }
+  scanGeo.setIndex(new THREE.BufferAttribute(out.slice(0, n), 1));
+}
+
+// ---------------------------------------------------------------- build
+scene.add(neighbours(M));
+let houseObj = null, siteObj = null, current = null;
+function build(add) {
+  if (houseObj) { scene.remove(houseObj.group); houseObj.group.traverse(o => o.geometry && o.geometry.dispose()); }
+  if (siteObj) { scene.remove(siteObj); siteObj.traverse(o => { o.geometry && o.geometry.dispose(); }); }
+  houseObj = buildHouse(M, style, plan, add);
+  scene.add(houseObj.group);
+  const A = houseObj.A;
+  siteObj = buildSite(M, A ? A.rect : null); scene.add(siteObj);
+  cutScan(A, houseObj.door, houseObj.doorH);
+  current = add;
+  try { if (poche !== undefined) { buildPoche(); setCut(cutOn); } } catch (e) { /* first build runs before the section helpers exist */ }
+  const inf = document.getElementById('info');
+  if (A && inf) inf.textContent = `Addition ${(A.rect.x1 - A.rect.x0).toFixed(2)} x ${(A.rect.y1 - A.rect.y0).toFixed(2)} m, ${A.eaveSide ? 'cross-gable tied into the eave side with valleys' : 'gable wing abutting the gable wall'}; wing pitch ${(houseObj.info.p * 12).toFixed(1)}:12, ridge ${houseObj.info.zrw.toFixed(2)} m (main ridge ${(H.ZW + (H.Y1 - H.Y0) / 2 * H.PITCH).toFixed(2)} m).`;
+}
+const caseDef = id => tc.additions.find(a => a.id === id);
+build(caseDef(CASE));
+
+// ---------------------------------------------------------------- cameras
+const aspect = W / HH;
+const persp = new THREE.PerspectiveCamera(50, aspect, 0.05, 2000);
+const ortho = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 500);
+let camera = persp;
+function setView(v) {
+  const d = tc.views[v];
+  if (!d) return;
+  setCut(d.type === 'orthographic_topdown' || (document.getElementById('cut') || {}).checked);
+  if (d.type === 'orthographic_topdown') {
+    const w = d.width_m, h = w / aspect;
+    Object.assign(ortho, { left: -w / 2, right: w / 2, top: h / 2, bottom: -h / 2 });
+    ortho.position.set(d.center[0], d.center[1], 80); ortho.up.set(0, 1, 0); ortho.lookAt(d.center[0], d.center[1], 0);
+    ortho.updateProjectionMatrix(); camera = ortho;
+    controls.target.set(d.center[0], d.center[1], 0);
+  } else {
+    persp.fov = d.fov_v; persp.near = v === 'interior' ? 0.05 : 0.2; persp.updateProjectionMatrix();
+    persp.up.set(0, 0, 1); persp.position.set(...d.pos); persp.lookAt(...d.target); camera = persp;
+    controls.target.set(...d.target);
+  }
+  controls.sync();
+}
+
+// plan view = horizontal section at 2.3 m through the house (above door heads, below the 2.72 m ceilings);
+// the site, trees and neighbours are not cut.
+renderer.localClippingEnabled = true;
+const CUT = [new THREE.Plane(new THREE.Vector3(0, 0, -1), 2.3)];
+let cutOn = false;
+const cutMats = () => Object.entries(M).filter(([k]) => !/N\d$/.test(k)).map(([, m]) => m).concat(scanMats);
+// section poche: plan.json walls (+ the addition's walls) as solid dark bands at the cut height, door gap in the shared wall
+const pocheMat = new THREE.MeshBasicMaterial({ color: 0x34383b });
+let poche = null;
+function buildPoche() {
+  if (poche) { scene.remove(poche); poche.traverse(o => o.geometry && o.geometry.dispose()); }
+  poche = new THREE.Group(); poche.visible = false;
+  const A = houseObj.A, door = houseObj.door;
+  const add = (a, b, t) => {
+    const dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy); if (L < 0.02) return;
+    const m = new THREE.Mesh(new THREE.BoxGeometry(L + t, t, 0.04), pocheMat);
+    m.position.set((a[0] + b[0]) / 2, (a[1] + b[1]) / 2, 2.29); m.rotation.z = Math.atan2(dy, dx); poche.add(m);
+  };
+  for (const w of plan.walls) {
+    let segs = [[w.a, w.b]];
+    if (A) {
+      const s0 = w.a[0] * A.n.x + w.a[1] * A.n.y, s1 = w.b[0] * A.n.x + w.b[1] * A.n.y;
+      if (Math.abs(s0 - s1) < 0.05 && Math.abs(s0 - (A.sAttach - 0.08)) < 0.12) {
+        const ta = w.a[0] * A.t.x + w.a[1] * A.t.y, tb = w.b[0] * A.t.x + w.b[1] * A.t.y, lo = Math.min(ta, tb), hi = Math.max(ta, tb);
+        const P = t => [A.n.x * s0 + A.t.x * t, A.n.y * s0 + A.t.y * t];
+        segs = [];
+        if (door.c0 > lo) segs.push([P(lo), P(Math.min(hi, door.c0))]);
+        if (door.c1 < hi) segs.push([P(Math.max(lo, door.c1)), P(hi)]);
+      }
+    }
+    for (const [a, b] of segs) add(a, b, w.thickness);
+  }
+  if (A) {
+    const T = 0.16, h = T / 2, P = (s, c) => [A.n.x * s + A.t.x * c, A.n.y * s + A.t.y * c];
+    add(P(A.sAttach, A.c0 + h), P(A.sOut - h, A.c0 + h), T); add(P(A.sOut - h, A.c0 + h), P(A.sOut - h, A.c1 - h), T); add(P(A.sOut - h, A.c1 - h), P(A.sAttach, A.c1 - h), T);
+  }
+  scene.add(poche);
+}
+buildPoche();
+function setCut(on) { cutOn = on; if (poche) poche.visible = on; for (const m of cutMats()) { m.clippingPlanes = on ? CUT : null; m.needsUpdate = true; } for (const k of ['roof', 'ridge', 'soffit', 'flashing']) M[k].visible = !on; }
+// minimal orbit controls for a z-up world
+const controls = {
+  target: new THREE.Vector3(), r: 20, az: 0, el: 0.4,
+  sync() { if (camera !== persp) return; const d = persp.position.clone().sub(this.target); this.r = d.length(); this.az = Math.atan2(d.y, d.x); this.el = Math.asin(d.z / this.r); },
+  apply() { if (camera !== persp) return; const c = Math.cos(this.el); persp.position.set(this.target.x + this.r * c * Math.cos(this.az), this.target.y + this.r * c * Math.sin(this.az), this.target.z + this.r * Math.sin(this.el)); persp.lookAt(this.target); },
+};
+if (!VIEW) {
+  let drag = null;
+  renderer.domElement.addEventListener('contextmenu', e => e.preventDefault());
+  renderer.domElement.addEventListener('pointerdown', e => { if (camera !== persp) { camera = persp; controls.sync(); } drag = { x: e.clientX, y: e.clientY, b: e.button || (e.shiftKey ? 2 : 0) }; });
+  addEventListener('pointerup', () => drag = null);
+  addEventListener('pointermove', e => {
+    if (!drag) return; const dx = e.clientX - drag.x, dy = e.clientY - drag.y; drag.x = e.clientX; drag.y = e.clientY;
+    if (drag.b === 2) {
+      const right = new THREE.Vector3().setFromMatrixColumn(persp.matrix, 0), up = new THREE.Vector3().setFromMatrixColumn(persp.matrix, 1);
+      const k = controls.r * 0.0015; controls.target.addScaledVector(right, -dx * k).addScaledVector(up, dy * k);
+    } else { controls.az -= dx * 0.006; controls.el = Math.max(-0.2, Math.min(1.5, controls.el + dy * 0.005)); }
+    controls.apply();
+  });
+  renderer.domElement.addEventListener('wheel', e => { controls.r = Math.max(0.5, Math.min(300, controls.r * Math.exp(e.deltaY * 0.001))); controls.apply(); e.preventDefault(); }, { passive: false });
+  addEventListener('resize', () => { renderer.setSize(innerWidth, innerHeight); persp.aspect = innerWidth / innerHeight; persp.updateProjectionMatrix(); });
+}
+
+setView(VIEW || 'aerial');
+const roofMeshes = () => { const out = []; houseObj.group.traverse(o => { if (o.isMesh && (o.material === M.roof || o.material === M.ridge || o.material === M.soffit || o.material === M.flashing)) out.push(o); }); return out; };
+
+if (!VIEW) {
+  const ui = document.getElementById('ui'); ui.hidden = false;
+  const mkBtns = (el, items, cur, fn) => { el.innerHTML = ''; for (const it of items) { const b = document.createElement('button'); b.textContent = it; if (it === cur) b.className = 'on'; b.onclick = () => { fn(it); mkBtns(el, items, it, fn); }; el.appendChild(b); } };
+  const fill = () => { const r = houseObj.A.rect; ex0.value = r.x0; ey0.value = r.y0; ex1.value = r.x1; ey1.value = r.y1; };
+  mkBtns(document.getElementById('cases'), tc.additions.map(a => a.id), CASE, id => { CASE = id; build(caseDef(id)); fill(); });
+  mkBtns(document.getElementById('views'), Object.keys(tc.views).filter(k => k !== 'size'), 'aerial', v => setView(v));
+  fill();
+  document.getElementById('regen').onclick = () => {
+    const base = caseDef(CASE), x0 = +ex0.value, y0 = +ey0.value, x1 = +ex1.value, y1 = +ey1.value;
+    const cw = base.connect_wall, horiz = Math.abs(cw.a[1] - cw.b[1]) < 1e-3;
+    // keep the side it connects to; clamp the shared edge to the house wall
+    let poly, conn;
+    if (horiz) { const yw = cw.a[1]; const north = Math.abs(yw - Math.min(y0, y1)) < Math.abs(yw - Math.max(y0, y1)); const far = north ? Math.max(y0, y1) : Math.min(y0, y1); poly = [[x0, yw], [x1, yw], [x1, far], [x0, far]]; conn = { a: [x0, yw], b: [x1, yw] }; }
+    else { const xw = cw.a[0]; const west = Math.abs(xw - Math.max(x0, x1)) < Math.abs(xw - Math.min(x0, x1)); const far = west ? Math.min(x0, x1) : Math.max(x0, x1); poly = [[xw, y0], [xw, y1], [far, y1], [far, y0]]; conn = { a: [xw, y0], b: [xw, y1] }; }
+    build({ ...base, polygon: poly, connect_wall: conn }); fill();
+  };
+  document.getElementById('cut').onchange = e => setCut(e.target.checked);
+}
+
+const HIDE = (Q.get('hide') || '').split(',');
+if (HIDE.includes('scan')) scan.visible = false;
+if (HIDE.includes('house')) houseObj.group.visible = false;
+for (const k of HIDE) if (M[k]) M[k].visible = false;
+function frame() { renderer.render(scene, camera); }
+if (VIEW) {
+  // render a few frames (textures upload, shadow map) then flag READY
+  let k = 0;
+  const tick = () => { frame(); if (++k < 4) requestAnimationFrame(tick); else { document.title = 'READY'; } };
+  requestAnimationFrame(tick);
+} else {
+  renderer.setAnimationLoop(frame);
+}
+window.__dbg = { scene, M, H, houseObj: () => houseObj };
+</script>
+</body>
+</html>
