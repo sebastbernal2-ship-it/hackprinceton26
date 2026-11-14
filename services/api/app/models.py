@@ -1,4 +1,4 @@
-from typing import Literal, Optional
+from typing import Literal, Optional, Union
 
 from pydantic import BaseModel, Field, model_validator
 
@@ -54,9 +54,43 @@ class MatchesRequest(BaseModel):
     brief: list[Exchange] = []
 
 
+class ConstraintVerdict(BaseModel):
+    constraint: str
+    status: Literal["PASS", "FAIL", "UNKNOWN"]
+    reason: str
+    missingFields: list[str] = []
+    evidence: dict = {}
+
+
+class ShortlistMatch(Match):
+    """A Match plus its hard-constraint verdicts. FAIL sites are never returned. Not a fit score."""
+    constraintStatus: Literal["PASS", "UNKNOWN"]
+    constraints: list[ConstraintVerdict]
+    missingFields: list[str]
+
+
+class ParsedProfile(BaseModel):
+    """Operator profile as read from the brief (null = not stated, constraint not applied)."""
+    cities: Optional[list[str]] = None
+    minAreaSqft: Optional[float] = None
+    maxAreaSqft: Optional[float] = None
+    minSeats: Optional[int] = None
+    maxSeats: Optional[int] = None
+    budget: Optional[float] = None
+    requireActiveListing: bool = False
+    requireScanModel: bool = False
+    requireRestaurantUse: bool = False
+    matchedText: dict[str, str] = {}
+
+
 class MatchesResponse(BaseModel):
     dataAvailable: bool
-    matches: list[Match]
+    matches: list[ShortlistMatch]
+    profile: Optional[ParsedProfile] = None
+    counts: dict[str, int] = {}
+    excludedCount: int = 0
+    notShownCount: int = 0
+    note: str = ""
 
 
 class NextQuestionRequest(BaseModel):
@@ -160,9 +194,35 @@ class AssumptionInput(BaseModel):
     note: str = ""
 
 
-class AssessRequest(BaseModel):
+class EquipmentChoice(BaseModel):
+    id: str
+    quantity: Optional[float] = None
+
+
+class PriceOverride(BaseModel):
+    low: float
+    high: float
+
+
+class AssessInputs(BaseModel):
+    """User assumptions for the scenario. Unset stays unknown; nothing here is observed evidence."""
+    budget: Optional[float] = None
+    equipment: Optional[list[Union[str, EquipmentChoice]]] = None  # None = catalog defaults
+    unitPriceOverrides: dict[str, Union[float, PriceOverride]] = {}  # a number = low == high
+    repairs: dict[str, float] = {}  # confirmed quantities only
+    leaseStartDelayMonths: float = 0.0
+    monthlyRent: Optional[float] = None
+    rentFreeMonths: Optional[float] = None
+    delayCostPerMonth: Optional[float] = None
+    plannedOpenMonths: Optional[float] = None
+    draws: int = Field(5000, ge=200, le=50000)
+    seed: int = 0
+
+
+class AssessRequest(AssessInputs):
     listingId: Optional[int] = None
     assumptions: list[AssumptionInput] = []
+    brief: list[Exchange] = []  # budget is read from the brief when not given
 
 
 class ScenarioAssessment(BaseModel):
@@ -172,6 +232,45 @@ class ScenarioAssessment(BaseModel):
     modelsAvailable: bool
     assumptions: list[AssumptionInput] = []
     projections: list[ProjectionCard] = []
+    note: str = ""
+    # Slice demo/assess: the scenario result. All null/empty when inputs are missing (unknown, not zero).
+    analysisBasis: str = "unknown"  # unknown | buildout_only | buildout_plus_rent_and_delay
+    budget: Optional[float] = None
+    pOverBudgetBuildout: Optional[float] = None
+    pOverBudget: Optional[float] = None
+    buildout: Optional[dict] = None
+    total: Optional[dict] = None
+    sensitivity: Optional[dict] = None
+    costLines: list[dict] = []
+    totals: Optional[dict] = None
+    totalsStatus: str = ""
+    excludedLineIds: list[str] = []
+    assumptionsUsed: list[dict] = []
+    unknownInputs: dict = {}
+    notes: list[str] = []
+    method: str = ""
+    seed: int = 0
+    draws: int = 0
+
+
+class ReplanRequest(BaseModel):
+    """profileChange keys: cities, minAreaSqft, maxAreaSqft, minSeats, maxSeats, budget, requireActiveListing,
+    requireScanModel, requireRestaurantUse; plus assessment keys (see AssessInputs)."""
+    brief: list[Exchange] = []
+    profile: Optional[ParsedProfile] = None  # overrides the brief-derived profile when given
+    assess: AssessInputs = AssessInputs()
+    profileChange: dict
+    listingId: Optional[int] = None
+
+
+class ReplanResponse(BaseModel):
+    label: Literal["scenario analysis, not a forecast"] = SCENARIO_LABEL
+    dataAvailable: bool
+    change: dict
+    changed: list[dict]
+    countsBefore: dict[str, int]
+    countsAfter: dict[str, int]
+    pOverBudget: dict
     note: str = ""
 
 
