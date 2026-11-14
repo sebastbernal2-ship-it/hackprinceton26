@@ -1,0 +1,5 @@
+numpy
+pandas
+lifelines
+pydantic
+pytest
