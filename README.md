@@ -28,7 +28,7 @@ It is not a listing ranker, a revenue forecaster, or a safety scorer. Every numb
 | `contracts/` | JSON Schemas generated from the API pydantic models. |
 | `config/` | Published-source config. |
 | `tools/` | `board` (GitHub coordination issue) and `codex-delegate` (review/ask/work with Codex CLI). |
-| `data_scripts/`, `docs/`, `.claude/` | One-off scripts, documentation, project agents/hooks/workflow. |
+| `docs/`, `.claude/` | Documentation, project agents/hooks/workflow. |
 
 ## Quickstart (no sponsor data needed)
 ```bash

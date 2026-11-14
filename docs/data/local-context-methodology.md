@@ -12,7 +12,7 @@
 ## Method
 
 - Nearby commercial inventory: count other CoStar commercial-property records with coordinates within 1 mile using Haversine distance. Retail and hospitality use CoStar `propertyType` enum values. Historic food-services presence is based on direct tenant-location/property occupancy IDs joined to company-detail industry enum; no tenant names are emitted.
-- Police: filter source rows to City=Houston; weight each record by `Offense Count` (invalid/missing values default to 1, matching the upstream branch's rough handling); parse mapped lat/lon and count events within 0.5 mile. Violent/property groupings use the NIBRS-code sets from Afnan's `origin/frontend_dev:data_scripts/house_report.py`.
+- Police: filter source rows to City=Houston; weight each record by `Offense Count` (invalid/missing values default to 1, matching the upstream branch's rough handling); parse mapped lat/lon and count events within 0.5 mile. Violent/property groupings use NIBRS-code sets (the upstream prototype script was removed from this repo).
 - Period is only the source file's observed date range, not a full year. A point-radius count is not a population- or exposure-adjusted crime rate. Geocoding/reporting coverage and classification limitations apply. Do not call it a neighborhood safety score, forecast, causal effect, or risk probability.
 - The per-city reference comparison from Afnan's residential script is deliberately not reused: its Houston land-area denominator and residential use case are not validated for commercial-site comparisons.
 
