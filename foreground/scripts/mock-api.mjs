@@ -28,6 +28,36 @@ const MATCHES = [
   },
 ];
 
+// Projection mock. MOCK_PROJ=none -> empty/unknown. Fake numbers for UI testing only.
+const cite = { source: "Mock Rent Survey", recordId: "https://example.test/mock-survey", asOf: "2026-01-01", geography: "MOCK area", limitations: "Fake test data." };
+const base = { horizon: "12 months", scenario: "baseline", unit: "USD/sf/yr", status: "estimated", hidden: false, hiddenReason: "" };
+const PROJECTIONS = [
+  { ...base, kind: "published", metric: "market_rent", point: 31, lower: 28, upper: 35, method: "Published survey median with stated range (mock).", citation: cite },
+  { ...base, kind: "fitted", metric: "rent_growth", unit: "percent", point: 3, lower: 1, upper: 5, method: "Mock fitted model with conformal interval.", trainingWindow: { start: "2018", end: "2025", geography: "MOCK area" },
+    validation: [{ name: "coverage", value: 0.9, threshold: 0.8, passed: true }] },
+  { ...base, kind: "scenario", metric: "vacancy_rate", status: "unknown", point: null, lower: null, upper: null, unit: "percent", method: "No basis to estimate (mock)." },
+  // Failed validation: must be hidden by the client even though hidden:false.
+  { ...base, kind: "fitted", metric: "foot_traffic_growth", point: 9, lower: 1, upper: 20, method: "Bad model (mock).", trainingWindow: { start: "2018", end: "2025", geography: "MOCK" },
+    validation: [{ name: "coverage", value: 0.4, threshold: 0.8, passed: false }] },
+  // Interval does not bracket the point: client must hide it.
+  { ...base, kind: "scenario", metric: "broken_interval", point: 50, lower: 60, upper: 70, method: "Invalid (mock)." },
+];
+
+// P(over budget) is a logistic of rent vs budget; the interval is +/-0.1. Fake math for UI testing only.
+function assess(assumptions, listingId) {
+  const get = (k) => assumptions.find((a) => a.key === k)?.value;
+  const budget = get("monthly_budget");
+  if (budget === undefined) return { modelsAvailable: true, status: "unknown", label: "scenario analysis, not a forecast", listingId, note: "monthly_budget is required.", assumptions, projections: [] };
+  const growth = get("rent_growth") ?? 0;
+  const rent = 7500 * (1 + growth / 100);
+  const p = 1 / (1 + Math.exp((budget - rent) / 800));
+  const point = Math.round(p * 100) / 100;
+  return {
+    modelsAvailable: true, status: "estimated", label: "scenario analysis, not a forecast", listingId, note: "", assumptions,
+    projections: [{ ...base, kind: "scenario", metric: "p_over_budget", unit: "probability", point, lower: Math.max(0, Math.round((point - 0.1) * 100) / 100), upper: Math.min(1, Math.round((point + 0.1) * 100) / 100), method: "Mock logistic of rent vs budget; not a forecast." }],
+  };
+}
+
 const send = (res, code, body) => {
   res.writeHead(code, { "content-type": "application/json" });
   res.end(JSON.stringify(body));
@@ -50,6 +80,15 @@ createServer(async (req, res) => {
   if (req.method === "GET" && property) {
     const found = MATCHES.find((m) => String(m.listingId) === property[1]);
     return found ? send(res, 200, found) : send(res, 404, { detail: "not found" });
+  }
+  const proj = url.pathname.match(/^\/api\/property\/(\d+)\/projections$/);
+  if (req.method === "GET" && proj) {
+    const none = process.env.MOCK_PROJ === "none";
+    return send(res, 200, { listingId: Number(proj[1]), modelsAvailable: !none, projections: none ? [] : PROJECTIONS, note: none ? "Models are not available." : "" });
+  }
+  if (req.method === "POST" && url.pathname === "/api/assess") {
+    const { listingId = null, assumptions = [] } = await readJson(req);
+    return send(res, 200, assess(assumptions, listingId));
   }
   if (req.method === "POST" && url.pathname === "/api/next-question") {
     const { history = [] } = await readJson(req);
