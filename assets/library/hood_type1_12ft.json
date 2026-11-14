@@ -1,0 +1,58 @@
+{
+  "assetId": "hood_type1_12ft",
+  "name": "Type I hood 12 ft x 48 in",
+  "category": "hood",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 3.6576,
+    "d": 1.2192,
+    "h": 0.6096
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      3.6576,
+      0.0
+    ],
+    [
+      3.6576,
+      1.2192
+    ],
+    [
+      0.0,
+      1.2192
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.0,
+    "sides": 0.0,
+    "back": 0.0
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): none (overhead; the cooking line below carries the aisle). Aisle widths commonly cited for commercial kitchens are ~0.9-1.1 m (36-42 in; 36 in / 0.915 m is the ADA minimum clear width), dining chair pull-out ~0.45 m; confirm with the local health/building authority.",
+  "model": null,
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "kitchen",
+    "overhead"
+  ],
+  "priceRef": "type_i_hood",
+  "provenance": {
+    "origin": "https://www.webstaurantstore.com/halifax-scho1248-package-type-1-commercial-kitchen-hood-system-with-short-cycle-makeup-air-12-x-48/421SCHP1248.html",
+    "retrievedAt": "2026-11-14",
+    "notes": "Length 12 ft and depth 48 in from the financial-catalog label (Halifax SCHO1248); canopy height is estimated. Hood sits above the cooking line; footprint is the plan projection."
+  },
+  "status": "confirmed"
+}
