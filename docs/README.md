@@ -30,7 +30,7 @@ A property decision workspace with four connected capabilities:
 
 ### Scoring and trust principles
 
-A single opaque “Rick score” (working name; not yet defined) is not enough for a high-stakes property decision. Prefer a configurable fit summary with separate dimensions—concept fit, location demand, access/visibility, operating costs, physical condition, and regulatory readiness—and explain how each was derived. Let Tony set priorities and see how changing them changes the ranking. Missing or stale data should lower confidence, not silently count as favorable evidence.
+A single opaque risk score is not enough for a high-stakes property decision. Prefer an explainable risk profile with separate dimensions—concept fit, location demand, access/visibility, operating costs, physical condition, and regulatory readiness—and explain how each was derived. Let Tony set priorities and see how changing them changes the ranking. Missing or stale data should lower confidence, not silently count as favorable evidence.
 
 The product is decision support, not a substitute for a licensed inspection, legal advice, zoning determination, or revenue guarantee. Avoid asserting that an agent concealed a defect without verified evidence. Label potential issues as leads to investigate, keep an audit trail of sources and dates, and protect sensitive business and property information.
 
@@ -80,7 +80,7 @@ Keep the first version focused on one operator persona and one market. A useful 
 
 ### Open questions
 
-- What does “Rick score” mean, and should the product use a named score at all?
+- Should the product present a single risk score, a multi-dimensional risk profile, or both? What evidence and calibration would make either trustworthy?
 - Which city and data sources are in scope, and what can be licensed or accessed reliably?
 - Is Tony leasing or buying, and what property types and restaurant formats are supported?
 - What data exists from restaurant one (sales, customer patterns, layout, equipment, costs), and what can safely be reused?
