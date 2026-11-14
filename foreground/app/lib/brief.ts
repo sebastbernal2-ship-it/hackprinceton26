@@ -26,6 +26,16 @@ export function clearBrief() {
   notify();
 }
 
+/** Non-hook read for code outside React render. */
+export function readBrief(): Exchange[] {
+  try {
+    const parsed = JSON.parse(read() ?? "[]") as Exchange[];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
 function subscribe(onChange: () => void) {
   window.addEventListener(CHANGE, onChange);
   window.addEventListener("storage", onChange);

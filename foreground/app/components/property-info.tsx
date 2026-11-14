@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { monthlyRent, type Match } from "../lib/matches";
+import EvidenceReadiness from "./evidence-readiness";
+import FactorCards from "./factor-cards";
 import SpaceChat from "./space-chat";
 
 const number = new Intl.NumberFormat("en-US");
@@ -124,9 +126,7 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
               ${number.format(monthlyRent(match))}
               <span className="text-[0.55em] font-normal text-foreground/45">/mo</span>
             </p>
-            <span className="rounded-full bg-match-soft px-3 py-1 text-sm font-medium tabular-nums text-match">
-              {match.confidence}% match
-            </span>
+            <EvidenceReadiness match={match} />
           </div>
         </div>
 
@@ -134,6 +134,8 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
           <FactList title="Property Details" rows={facts.property} />
           <FactList title="Location & Area" rows={facts.location} />
         </div>
+
+        <FactorCards factors={match.factors ?? []} demo={match.demo} />
 
         <p className="mt-5 text-xs text-foreground/40">
           From the CoStar listing and the Matterport model on file.

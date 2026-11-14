@@ -149,6 +149,7 @@ export default function TourOverlay({ tourId, title, detail, openChat = false, o
 
         {status === "ready" && (
           <TourChat
+            tourId={tourId}
             sdk={sdk}
             open={chatOpen}
             onOpenChange={setChatOpen}

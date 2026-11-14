@@ -1,3 +1,6 @@
+import { fetchTourAgent } from "./api";
+import { DEMO_FALLBACK } from "./demo-flag";
+
 export type TourKind = "table" | "chair" | "sofa" | "counter" | "wall";
 
 export type TourAction =
@@ -9,6 +12,8 @@ export type TourAction =
 export type TourAgentResult = {
   reply: string;
   action: TourAction;
+  /** True when the reply comes from a placeholder, not a layout model. */
+  stub?: boolean;
 };
 
 const FURNITURE: { kind: TourKind; label: string; pattern: RegExp }[] = [
@@ -21,11 +26,18 @@ const FURNITURE: { kind: TourKind; label: string; pattern: RegExp }[] = [
 
 const CYCLE: TourKind[] = ["table", "chair", "sofa", "counter", "wall"];
 
-/**
- * Stand-in for the layout agent. Every message changes the room: a move slides the
- * last piece, anything else stages the next piece. The tour draws that immediately.
- */
-export function tourAgentReply(message: string, placedCount: number): TourAgentResult {
+/** Asks the API's layout agent (a labelled stub for now). Unreachable API: no change to the room. */
+export async function tourAgentReply(message: string, placedCount: number, tourId: string): Promise<TourAgentResult> {
+  try {
+    return await fetchTourAgent(message, placedCount, tourId);
+  } catch {
+    if (DEMO_FALLBACK) return { ...demoTourReply(message, placedCount), stub: true };
+    return { reply: "The layout agent is unreachable, so nothing changed in the room.", action: { type: "none", note: "api-unreachable" } };
+  }
+}
+
+/** Demo-only: every message changes the room. Used with NEXT_PUBLIC_DEMO_FALLBACK=1. */
+function demoTourReply(message: string, placedCount: number): TourAgentResult {
   const lower = message.trim().toLowerCase();
   const named = FURNITURE.find((item) => item.pattern.test(message));
   const wantsMove = /\b(move|shift|slide|nudge|push)\b/.test(lower) && placedCount > 0;
