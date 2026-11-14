@@ -52,7 +52,7 @@
     "beverage",
     "indian"
   ],
-  "priceRef": null,
+  "priceRef": "lassi_dispenser_counter",
   "provenance": {
     "origin": "standard published/typical dimensions for this equipment class (not read from a specific spec sheet)",
     "retrievedAt": null,

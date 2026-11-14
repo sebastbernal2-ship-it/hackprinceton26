@@ -54,7 +54,7 @@
     "dosa",
     "griddle"
   ],
-  "priceRef": null,
+  "priceRef": "dosa_griddle_36",
   "provenance": {
     "origin": "standard published/typical dimensions for this equipment class (not read from a specific spec sheet)",
     "retrievedAt": null,

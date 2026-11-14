@@ -20,7 +20,7 @@ Range = tuple[float, float]
 @lru_cache(maxsize=1)
 def financial_ids() -> frozenset[str]:
     d = json.loads(FIN_CATALOG.read_text())
-    return frozenset(e["id"] for e in d.get("equipment", []))
+    return frozenset(e["id"] for k in ("equipment", "reskinEquipment") for e in d.get(k, []))
 
 
 class Dims(BaseModel):

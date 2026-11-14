@@ -51,7 +51,7 @@
     "front_of_house",
     "coffee"
   ],
-  "priceRef": null,
+  "priceRef": "coffee_grinder_on_demand",
   "provenance": {
     "origin": "standard published/typical dimensions for this equipment class (not read from a specific spec sheet)",
     "retrievedAt": null,
