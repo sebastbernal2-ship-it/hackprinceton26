@@ -23,6 +23,28 @@ def records(path):
                 yield json.loads(line)
 
 
+def active_lease_spaces(listings, statuses, pid):
+    """Spaces of Active listings for property pid that are not lease-pending.
+
+    Returns (min_sqft_values, max_sqft_values): per-space squareFeetMin (only
+    numeric) and squareFeetMax-or-Min-or-0. Status codes resolve through the
+    enum; unknown or missing status is never treated as Active.
+    """
+    mins, maxima = [], []
+    for listing in listings:
+        if statuses.get(str(listing.get("listingStatus"))) != "Active":
+            continue
+        for space in (listing.get("forLeaseSummary") or {}).get("spaces", []):
+            if space.get("propertyId") and str(space["propertyId"]) != pid:
+                continue
+            if space.get("isLeasePending"):
+                continue
+            if isinstance(space.get("squareFeetMin"), (int, float)):
+                mins.append(space["squareFeetMin"])
+            maxima.append(space.get("squareFeetMax") or space.get("squareFeetMin") or 0)
+    return mins, maxima
+
+
 def main():
     enums = json.loads((KIT / "schemas/enums.json").read_text())
     statuses = enums["ListingStatus"]
@@ -59,17 +81,7 @@ def main():
             pid = row["property_id"]
             ls = listings.get(pid, [])
             os_ = occupancies.get(pid, [])
-            active_spaces = []
-            for listing in ls:
-                if statuses.get(str(listing.get("listingStatus"))) != "Active":
-                    continue
-                for space in (listing.get("forLeaseSummary") or {}).get("spaces", []):
-                    if space.get("propertyId") and str(space["propertyId"]) != pid:
-                        continue
-                    if space.get("isLeasePending") is True:
-                        continue
-                    if isinstance(space.get("squareFeetMin"), (int, float)):
-                        active_spaces.append(space["squareFeetMin"])
+            active_spaces, maxima = active_lease_spaces(ls, statuses, pid)
             moveins = sorted(x.get("moveInDate", "")[:10] for x in os_ if x.get("moveInDate"))
             inds = Counter(industries.get(str(x.get("industryType")), "Unknown") for x in os_)
             tenant_ids = {str(x["tenantLocationId"]) for x in os_ if x.get("tenantLocationId") is not None}
@@ -82,7 +94,7 @@ def main():
                 "listing_types": ";".join(sorted({listing_types.get(str(x.get("listingType")), "Unknown") for x in ls})),
                 "explicitly_active_lease_spaces": len(active_spaces),
                 "active_listed_min_available_sqft": sum(active_spaces) if active_spaces else "",
-                "active_listed_max_available_sqft": sum((x.get("squareFeetMax") or x.get("squareFeetMin") or 0) for x in []),
+                "active_listed_max_available_sqft": sum(maxima) if maxima else "",
                 "occupancy_record_count": len(os_),
                 "occupancy_industry_types": ";".join(f"{k}:{v}" for k, v in sorted(inds.items())),
                 "tenant_details_matched": len(matched_tenants),
@@ -92,8 +104,6 @@ def main():
                 "evidence_as_of": as_of,
                 "availability_interpretation": "Directly linked active listings are evidence to verify, not a guarantee of availability; no listing/occupancy records means unknown, not vacant.",
             })
-            maxima = [s.get("squareFeetMax") or s.get("squareFeetMin") or 0 for x in ls if statuses.get(str(x.get("listingStatus"))) == "Active" for s in (x.get("forLeaseSummary") or {}).get("spaces", []) if not s.get("isLeasePending")]
-            row["active_listed_max_available_sqft"] = sum(maxima) if maxima else ""
             writer.writerow(row)
     print(f"Wrote {len(candidates)} evidence-enriched candidate rows: {OUTPUT.relative_to(ROOT)}")
     print("Evidence uses direct property-ID joins; vacancy and availability are not inferred from missing records.")
