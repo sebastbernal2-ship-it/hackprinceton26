@@ -155,7 +155,7 @@ def test_routes_replay_fixture_and_run(tmp_path, monkeypatch):
     from app.main import app
     c = TestClient(app)
     monkeypatch.setenv("DERIVED_DIR", str(tmp_path))
-    body = c.get("/api/agent/replay").text
+    body = c.get("/api/agent/replay?source=fixture").text
     assert "event: replay_info" in body and "SYNTHETIC" in body and "event: final" in body
     assert '"mode": "SCRIPTED"' not in body  # relabelled
     monkeypatch.setattr(agent_routes, "build_run", lambda req: (runner.Run(
@@ -215,3 +215,19 @@ def test_replay_route_streams_lazily(tmp_path, monkeypatch):
     resp = agent_routes.agent_replay(delay=0.5)
     first = asyncio.run(resp.body_iterator.__anext__())
     assert "replay_info" in first and time.monotonic() - t0 < 0.3
+
+
+def test_replay_prefers_local_real_then_sanitized_then_synthetic(tmp_path, monkeypatch):
+    import re
+    from fastapi.testclient import TestClient
+    from app.main import app
+    c = TestClient(app)
+    monkeypatch.setenv("DERIVED_DIR", str(tmp_path))
+    body = c.get("/api/agent/replay").text
+    assert '"source": "recorded-run-sanitized"' in body and "masked" in body
+    assert not re.search(r"\b\d{2,5} [A-Z][a-z]+ (?:St|Street|Ave|Rd|Road|Dr)\b", body)
+    (tmp_path / "agent").mkdir()
+    (tmp_path / "agent" / "replay.json").write_text('[{"type": "final", "mode": "LIVE", "provider": "local", "model": "m", "date": "d", "text": "real"}]')
+    body = c.get("/api/agent/replay").text
+    assert '"source": "local-recorded-run"' in body and "real" in body
+    assert '"source": "SYNTHETIC-fixture"' in c.get("/api/agent/replay?source=fixture").text
