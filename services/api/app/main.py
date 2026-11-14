@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException
 
 from . import inspection_routes, pipeline, projections, stubs
+from .assets_ingest_routes import router as assets_ingest_router
 from .costs_routes import router as costs_router
 from .loader import load_matches
 from .models import (
@@ -12,6 +13,7 @@ from .models import (
 app = FastAPI(title="Site evidence API")
 app.include_router(inspection_routes.router)
 app.include_router(costs_router)
+app.include_router(assets_ingest_router)
 
 
 @app.get("/api/health")
