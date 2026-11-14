@@ -1,0 +1,149 @@
+{
+  "id": "italian",
+  "name": "Italian trattoria / pizzeria",
+  "equipment": [
+    {
+      "assetId": "oven_pizza_deck_floor_2deck",
+      "qty": {
+        "perSeats": 60,
+        "min": 1
+      },
+      "role": "pizza",
+      "specific": true
+    },
+    {
+      "assetId": "pasta_cooker_gas_1tank",
+      "qty": {
+        "perSeats": 80,
+        "min": 1
+      },
+      "role": "pasta",
+      "specific": true
+    },
+    {
+      "assetId": "gelato_batch_freezer_20qt",
+      "qty": {
+        "fixed": 1
+      },
+      "role": "gelato",
+      "specific": true
+    },
+    {
+      "assetId": "display_gelato_49",
+      "qty": {
+        "fixed": 1
+      },
+      "role": "gelato display",
+      "specific": true
+    },
+    {
+      "assetId": "pizza_prep_table_60",
+      "qty": {
+        "perSeats": 60,
+        "min": 1
+      },
+      "role": "pizza prep",
+      "specific": true
+    },
+    {
+      "assetId": "dough_mixer_20qt",
+      "qty": {
+        "fixed": 1
+      },
+      "role": "dough",
+      "specific": true
+    },
+    {
+      "assetId": "range_6burner_36",
+      "qty": {
+        "perSeats": 50,
+        "min": 1
+      },
+      "role": "saute/sauces",
+      "specific": false
+    }
+  ],
+  "adjacency": [
+    {
+      "a": "oven_pizza_deck_floor_2deck",
+      "b": "pizza_prep_table_60",
+      "maxGapM": 2.0,
+      "why": "dough-to-oven handoff",
+      "status": "assumption",
+      "basis": "analyst workflow assumption (line flow), not a code requirement"
+    },
+    {
+      "a": "pasta_cooker_gas_1tank",
+      "b": "range_6burner_36",
+      "maxGapM": 2.5,
+      "why": "pasta finishes in saute pans",
+      "status": "assumption",
+      "basis": "analyst workflow assumption (line flow), not a code requirement"
+    }
+  ],
+  "loads": [
+    {
+      "kind": "ventilation",
+      "note": "Gas pizza deck and pasta cooker need exhaust; hood class depends on oven fuel and appliance listing: verify with inspector",
+      "status": "assumption",
+      "basis": "analyst assumption from typical equipment class; confirm with equipment spec sheet and a licensed MEP engineer"
+    },
+    {
+      "kind": "gas",
+      "note": "Gas deck oven + pasta cooker + range: aggregate BTU/h must be checked against the service meter and line size",
+      "status": "assumption",
+      "basis": "analyst assumption from typical equipment class; confirm with equipment spec sheet and a licensed MEP engineer"
+    },
+    {
+      "kind": "water",
+      "note": "Pasta cooker needs fill and drain; drain near cooker",
+      "status": "assumption",
+      "basis": "analyst assumption from typical equipment class; confirm with equipment spec sheet and a licensed MEP engineer"
+    },
+    {
+      "kind": "electrical",
+      "note": "Dough mixer and gelato freezer on dedicated circuits (assumed)",
+      "status": "assumption",
+      "basis": "analyst assumption from typical equipment class; confirm with equipment spec sheet and a licensed MEP engineer"
+    }
+  ],
+  "materials": {
+    "wall": {
+      "name": "warm plaster, terracotta",
+      "hex": "#C9805A"
+    },
+    "floor": {
+      "name": "terracotta/cement tile",
+      "hex": "#B5603A"
+    },
+    "ceiling": {
+      "name": "painted white with exposed timber",
+      "hex": "#F2EBDD"
+    },
+    "accent": {
+      "name": "olive green",
+      "hex": "#6B7A3A"
+    }
+  },
+  "decor": [
+    "exposed brick",
+    "checkered cloth",
+    "wine shelving",
+    "open pizza oven view"
+  ],
+  "signage": "Script wordmark, warm lit awning (assumption)",
+  "permits": [
+    {
+      "item": "Hood/fire suppression review for gas deck oven",
+      "status": "assumption",
+      "source": "none fetched: ask the local building/fire/health authority"
+    },
+    {
+      "item": "Health department plan review for new food-prep layout",
+      "status": "assumption",
+      "source": "none fetched: ask the local building/fire/health authority"
+    }
+  ],
+  "seatsPerUnitNote": "qty.perSeats = one unit per N seats, ceil, at least min (default 1); a scaling ASSUMPTION, not a code figure",
+  "status": "draft concept profile: assumptions, not an engineering or code determination"
+}

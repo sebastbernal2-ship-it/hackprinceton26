@@ -1,0 +1,61 @@
+{
+  "assetId": "coffee_grinder_on_demand",
+  "name": "Espresso grinder",
+  "category": "other",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 0.2286,
+    "d": 0.381,
+    "h": 0.6096
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      0.2286,
+      0.0
+    ],
+    [
+      0.2286,
+      0.381
+    ],
+    [
+      0.0,
+      0.381
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.7,
+    "sides": 0.05,
+    "back": 0.05
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front working aisle 0.70 m, sides 0.05 m, back 0.05 m. Aisle widths commonly cited for commercial kitchens are ~0.9-1.1 m (36-42 in; 36 in / 0.915 m is the ADA minimum clear width), dining chair pull-out ~0.45 m; manufacturer rear/side clearances to combustibles vary by model: confirm with the spec sheet and the local health/building/fire authority.",
+  "model": {
+    "uri": "assets/library/models/coffee_grinder_on_demand.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "front_of_house",
+    "coffee"
+  ],
+  "priceRef": null,
+  "provenance": {
+    "origin": "standard published/typical dimensions for this equipment class (not read from a specific spec sheet)",
+    "retrievedAt": null,
+    "notes": "Nominal."
+  },
+  "status": "draft"
+}

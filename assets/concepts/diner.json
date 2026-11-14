@@ -1,0 +1,141 @@
+{
+  "id": "diner",
+  "name": "American diner",
+  "equipment": [
+    {
+      "assetId": "griddle_flat_36",
+      "qty": {
+        "fixed": 1
+      },
+      "role": "griddle",
+      "specific": true
+    },
+    {
+      "assetId": "fryer_floor_40lb",
+      "qty": {
+        "perSeats": 60,
+        "min": 1
+      },
+      "role": "fry",
+      "specific": true
+    },
+    {
+      "assetId": "milkshake_mixer_2spindle",
+      "qty": {
+        "fixed": 1
+      },
+      "role": "shakes",
+      "specific": true
+    },
+    {
+      "assetId": "pie_display_case_36",
+      "qty": {
+        "fixed": 1
+      },
+      "role": "desserts",
+      "specific": true
+    },
+    {
+      "assetId": "charbroiler_36",
+      "qty": {
+        "fixed": 1
+      },
+      "role": "burgers",
+      "specific": false
+    },
+    {
+      "assetId": "diner_counter_run_96",
+      "qty": {
+        "fixed": 1
+      },
+      "role": "counter",
+      "specific": true
+    },
+    {
+      "assetId": "counter_stool",
+      "qty": {
+        "perSeats": 6,
+        "min": 8
+      },
+      "role": "counter seating",
+      "specific": true
+    }
+  ],
+  "adjacency": [
+    {
+      "a": "griddle_flat_36",
+      "b": "fryer_floor_40lb",
+      "maxGapM": 2.0,
+      "why": "short-order line",
+      "status": "assumption",
+      "basis": "analyst workflow assumption (line flow), not a code requirement"
+    },
+    {
+      "a": "milkshake_mixer_2spindle",
+      "b": "pie_display_case_36",
+      "maxGapM": 3.0,
+      "why": "counter dessert service",
+      "status": "assumption",
+      "basis": "analyst workflow assumption (line flow), not a code requirement"
+    }
+  ],
+  "loads": [
+    {
+      "kind": "ventilation",
+      "note": "Griddle + fryer + broiler: standard grease-duty hood (class: verify with inspector)",
+      "status": "assumption",
+      "basis": "analyst assumption from typical equipment class; confirm with equipment spec sheet and a licensed MEP engineer"
+    },
+    {
+      "kind": "gas",
+      "note": "Griddle, fryer, broiler gas",
+      "status": "assumption",
+      "basis": "analyst assumption from typical equipment class; confirm with equipment spec sheet and a licensed MEP engineer"
+    },
+    {
+      "kind": "water",
+      "note": "Standard (assumed)",
+      "status": "assumption",
+      "basis": "analyst assumption from typical equipment class; confirm with equipment spec sheet and a licensed MEP engineer"
+    },
+    {
+      "kind": "electrical",
+      "note": "Shake mixers and display cases (assumed)",
+      "status": "assumption",
+      "basis": "analyst assumption from typical equipment class; confirm with equipment spec sheet and a licensed MEP engineer"
+    }
+  ],
+  "materials": {
+    "wall": {
+      "name": "cream/red painted",
+      "hex": "#E8DDC4"
+    },
+    "floor": {
+      "name": "black/white checker tile",
+      "hex": "#3A3A3A"
+    },
+    "ceiling": {
+      "name": "white acoustic tile",
+      "hex": "#F4F1EA"
+    },
+    "accent": {
+      "name": "chrome + red vinyl",
+      "hex": "#B3262A"
+    }
+  },
+  "decor": [
+    "chrome trim",
+    "jukebox",
+    "vinyl booths"
+  ],
+  "signage": "Neon script sign (assumption)",
+  "permits": [
+    {
+      "item": "Standard hood/fire suppression review",
+      "status": "assumption",
+      "source": "none fetched: ask the local building/fire/health authority"
+    }
+  ],
+  "seatsPerUnitNote": "qty.perSeats = one unit per N seats, ceil, at least min (default 1); a scaling ASSUMPTION, not a code figure",
+  "status": "draft concept profile: assumptions, not an engineering or code determination"
+}

@@ -104,3 +104,113 @@ def parse_glb(data: bytes) -> dict:
     if jt != 0x4E4F534A or bt != 0x004E4942:
         raise ValueError("bad chunk types")
     return {"json": doc, "bin": data[28 + jl:28 + jl + bl]}
+
+
+# ---------------------------------------------------------------------------------------------------------------
+# Multi-part, multi-material GLB (procedural visual models) and palette restyle. Visual only: not scans.
+# ---------------------------------------------------------------------------------------------------------------
+import math  # noqa: E402
+import re  # noqa: E402
+
+
+def hex_to_rgba(h: str, a: float = 1.0) -> list[float]:
+    """'#RRGGBB' (sRGB) -> glTF linear baseColorFactor [r,g,b,a]."""
+    if not re.fullmatch(r"#[0-9a-fA-F]{6}", h):
+        raise ValueError(f"bad hex colour {h!r}")
+    lin = lambda c: ((c / 255 + 0.055) / 1.055) ** 2.4 if c / 255 > 0.04045 else c / 255 / 12.92  # noqa: E731
+    return [round(lin(int(h[i:i + 2], 16)), 6) for i in (1, 3, 5)] + [a]
+
+
+def circle_ring(cx: float, cy: float, r: float, n: int = 24) -> list[Pt]:
+    """Closed CCW regular n-gon ring (first point repeated at the end)."""
+    pts = [(round(cx + r * math.cos(2 * math.pi * k / n), 6), round(cy + r * math.sin(2 * math.pi * k / n), 6)) for k in range(n)]
+    return pts + [pts[0]]
+
+
+def _prism(ring: list[Pt], y0: float, y1: float, base: int):
+    """Vertices + outward-wound indices for a prism of a closed footprint between heights y0 and y1."""
+    r = [tuple(p) for p in ring[:-1]]
+    n = len(r)
+    tris = triangulate(r)
+    pos = [(x, y0, y) for x, y in r] + [(x, y1, y) for x, y in r]
+    ccw = polygon_area(r + [r[0]]) > 0
+    ind = []
+    for a, b, c in tris:
+        ind += [n + a, n + b, n + c, c, b, a]
+    for i in range(n):
+        j = (i + 1) % n
+        ind += [i, j, n + j, i, n + j, n + i] if ccw else [j, i, n + i, j, n + i, n + j]
+    ind = [t for k in range(0, len(ind), 3) for t in (ind[k], ind[k + 2], ind[k + 1])]
+    return pos, [i + base for i in ind]
+
+
+def glb_from_parts(parts: list[dict], generator: str = "pi-assets procedural parts") -> bytes:
+    """parts: [{'ring': closed footprint, 'y0': m, 'y1': m, 'material': str, 'color': '#RRGGBB'}].
+    One glTF primitive and one named material per distinct material name (first colour wins)."""
+    if not parts:
+        raise ValueError("no parts")
+    mats: dict[str, str] = {}
+    prims: dict[str, tuple[list, list]] = {}
+    for p in parts:
+        if not p["y1"] > p["y0"]:
+            raise ValueError("part needs y1 > y0")
+        m = p["material"]
+        mats.setdefault(m, p["color"])
+        pos, ind = prims.setdefault(m, ([], []))
+        pp, ii = _prism(p["ring"], p["y0"], p["y1"], len(pos))
+        pos += pp
+        ind += ii
+    pb = ib = b""
+    views, accs, primitives = [], [], []
+    names = list(mats)
+    for mi, name in enumerate(names):
+        pos, ind = prims[name]
+        pbytes = b"".join(struct.pack("<3f", *q) for q in pos)
+        ibytes = b"".join(struct.pack("<I", i) for i in ind)
+        off = len(pb) + len(ib)
+        views.append({"buffer": 0, "byteOffset": off, "byteLength": len(pbytes), "target": 34962})
+        views.append({"buffer": 0, "byteOffset": off + len(pbytes), "byteLength": len(ibytes), "target": 34963})
+        mn = [min(q[k] for q in pos) for k in range(3)]
+        mx = [max(q[k] for q in pos) for k in range(3)]
+        accs.append({"bufferView": 2 * mi, "componentType": 5126, "count": len(pos), "type": "VEC3", "min": mn, "max": mx})
+        accs.append({"bufferView": 2 * mi + 1, "componentType": 5125, "count": len(ind), "type": "SCALAR"})
+        primitives.append({"attributes": {"POSITION": 2 * mi}, "indices": 2 * mi + 1, "mode": 4, "material": mi})
+        pb += pbytes + ibytes  # (pb carries both; ib stays empty so offsets stay contiguous)
+    doc = {"asset": {"version": "2.0", "generator": generator}, "scene": 0, "scenes": [{"nodes": [0]}], "nodes": [{"mesh": 0}],
+           "meshes": [{"primitives": primitives}],
+           "materials": [{"name": n, "pbrMetallicRoughness": {"baseColorFactor": hex_to_rgba(mats[n]), "metallicFactor": 0.0,
+                                                               "roughnessFactor": 0.8}} for n in names],
+           "buffers": [{"byteLength": len(pb)}], "bufferViews": views, "accessors": accs}
+    return _pack(doc, pb)
+
+
+def _pack(doc: dict, bin_: bytes) -> bytes:
+    js = json.dumps(doc, separators=(",", ":")).encode()
+    js += b" " * (-len(js) % 4)
+    bin_ += b"\0" * (-len(bin_) % 4)
+    total = 12 + 8 + len(js) + 8 + len(bin_)
+    return (struct.pack("<III", 0x46546C67, 2, total) + struct.pack("<II", len(js), 0x4E4F534A) + js
+            + struct.pack("<II", len(bin_), 0x004E4942) + bin_)
+
+
+def restyle_glb(data: bytes, palette: dict[str, str]) -> tuple[bytes, dict[str, str]]:
+    """Recolour a GLB's materials. palette maps a case-insensitive substring of a material NAME to '#RRGGBB'
+    (the longest matching key wins). Matched materials get that baseColorFactor and lose their colour/normal/
+    metal-rough textures (a retexture to flat colour). Geometry and binary data are untouched.
+    Returns (new glb, {materialName: hex applied}). Materials with no matching key are left as they were."""
+    parsed = parse_glb(data)
+    doc, bin_ = parsed["json"], parsed["bin"]
+    applied: dict[str, str] = {}
+    keys = sorted(palette, key=len, reverse=True)
+    for m in doc.get("materials", []):
+        name = (m.get("name") or "").lower()
+        k = next((k for k in keys if k.lower() in name), None)
+        if k is None:
+            continue
+        pbr = m.setdefault("pbrMetallicRoughness", {})
+        pbr["baseColorFactor"] = hex_to_rgba(palette[k])
+        for t in ("baseColorTexture", "metallicRoughnessTexture"):
+            pbr.pop(t, None)
+        m.pop("normalTexture", None)
+        applied[m.get("name", "")] = palette[k]
+    return _pack(doc, bin_), applied
