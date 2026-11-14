@@ -51,7 +51,7 @@ export function FootprintSvg({ asset, size = 120 }: { asset: Asset; size?: numbe
       style={{ aspectRatio: `${vbW} / ${vbH}` }}
       role="img"
       aria-label={`Footprint of ${asset.name}, ${fmtM(w)} by ${fmtM(d)}, ${asset.footprint.length} corners`}
-      className="shrink-0 rounded border border-foreground/15 bg-panel"
+      className="shrink-0 self-start rounded border border-foreground/15 bg-panel"
     >
       <rect x={pad} y={d + pad} width={w} height={c} fill="none" stroke="currentColor" strokeWidth={0.02} strokeDasharray="0.06 0.05" opacity={0.45} />
       <polygon points={pts} className="fill-match-soft stroke-match" strokeWidth={0.03} />

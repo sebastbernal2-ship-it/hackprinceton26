@@ -143,8 +143,8 @@ export default function LayoutPanel({ match, lines = [] }: { match: Match; lines
                   <g key={piece.key}>
                     {z && <polygon points={z.map(([x, y]) => `${x},${y}`).join(" ")} fill="none" stroke="currentColor" strokeWidth={0.03} strokeDasharray="0.12 0.08" opacity={0.4} />}
                     <polygon points={piece.poly.map(([x, y]) => `${x},${y}`).join(" ")} className="fill-match-soft stroke-match" strokeWidth={0.04} />
-                    <text x={(piece.box.x0 + piece.box.x1) / 2} y={(piece.box.y0 + piece.box.y1) / 2} fontSize={Math.min(0.3, (piece.box.x1 - piece.box.x0) / 5)} textAnchor="middle" dominantBaseline="middle" className="fill-foreground">
-                      {piece.asset.name}
+                    <text x={(piece.box.x0 + piece.box.x1) / 2} y={(piece.box.y0 + piece.box.y1) / 2} fontSize={0.35} textAnchor="middle" dominantBaseline="middle" className="fill-foreground">
+                      {Number(piece.key.slice(piece.key.lastIndexOf("-") + 1)) + 1}
                     </text>
                   </g>
                 );
@@ -175,7 +175,7 @@ export default function LayoutPanel({ match, lines = [] }: { match: Match; lines
               <ul className="mt-3 space-y-1 text-xs" aria-label="Pieces in this layout">
                 {items.map((item, i) => (
                   <li key={i} className="flex justify-between gap-2">
-                    <span>{item.name}{item.status === "draft" ? " (draft)" : ""}: {priced[i].text}</span>
+                    <span>{i + 1}. {item.name}{item.status === "draft" ? " (draft)" : ""}: {priced[i].text}</span>
                     <button type="button" onClick={() => setItems((c) => c.filter((_, j) => j !== i))} aria-label={`Remove ${item.name}`} className="text-foreground/55 underline">remove</button>
                   </li>
                 ))}

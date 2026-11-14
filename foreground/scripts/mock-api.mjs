@@ -74,6 +74,7 @@ const FINDINGS = [
 const LINES = [
   { itemId: "c1", label: "Ceiling repair and repaint", category: "repair", quantity: 40, unit: "sq ft", low: 800, expected: 1600, high: 3200, currency: "USD", basis: "one_time", status: "estimated", source: "mock method", asOf: "2026-01-01", rationale: "Mock: area times a neutral per-sq-ft range." },
   { itemId: "c2", label: "Electricity", category: "utility", quantity: null, unit: "", low: 300, expected: 450, high: 700, currency: "USD", basis: "monthly", status: "estimated", source: "mock method", asOf: "2026-01-01", rationale: "Mock: area times a regional rate range." },
+  { itemId: "equip:range_6_burner", label: "6-burner gas range with oven", category: "equipment", quantity: 1, unit: "unit", low: 1299, expected: 1299, high: 1299, currency: "USD", basis: "one_time", status: "observed", source: "mock catalog link", asOf: "2026-01-01", rationale: "Mock line so the priceRef link can be exercised." },
   { itemId: "c3", label: "Commercial HVAC unit", category: "equipment", quantity: 1, unit: "unit", low: null, expected: null, high: null, currency: "USD", basis: "one_time", status: "unknown", source: "none", asOf: "2026-01-01", rationale: "No price basis found." },
 ];
 const sum = (basis, k) => LINES.filter((l) => l.basis === basis && l.expected !== null).reduce((a, l) => a + l[k], 0);

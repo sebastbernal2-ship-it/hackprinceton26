@@ -36,6 +36,7 @@ export function packAssets(floor: Rect, assets: Asset[], respectClearance = true
   let y = margin;
   let rowDepth = 0;
   let rowGap = 0;
+  let prevSide = 0;
   assets.forEach((asset, i) => {
     const b = bbox(asset.footprint);
     const w = b.x1 - b.x0;
@@ -48,6 +49,8 @@ export function packAssets(floor: Rect, assets: Asset[], respectClearance = true
     let pd = d;
     if (w > floor.width - 2 * margin + EPS && d <= floor.width - 2 * margin + EPS) { rot = 90; pw = d; pd = w; }
     if (pw > floor.width - 2 * margin + EPS) { unplaced.push({ asset, reason: `${fmt(w)} by ${fmt(d)} m is wider than the floor` }); return; }
+    // Gap to the left neighbour is the larger of the two side clearances, matching the aisle check.
+    if (x > margin && respectClearance) x += Math.max(0, side - prevSide) ;
     if (x + pw > floor.width - margin + EPS) {
       x = margin;
       y += rowDepth + rowGap;
@@ -57,6 +60,7 @@ export function packAssets(floor: Rect, assets: Asset[], respectClearance = true
     if (y + pd > floor.depth - margin + EPS) { unplaced.push({ asset, reason: "no room left on the assumed floor" }); return; }
     placed.push(place(asset, key, rot, x, y));
     x += pw + side;
+    prevSide = side;
     rowDepth = Math.max(rowDepth, pd);
     rowGap = Math.max(rowGap, front);
   });
