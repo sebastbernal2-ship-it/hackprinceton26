@@ -6,6 +6,7 @@
 pano_*/
 interior_*/
 bundle_*/
+assets_*/
 floorplans/
 mp_out/
 cache/
@@ -21,3 +22,4 @@ __pycache__/
 .vscode/
 .DS_Store
 Thumbs.db
+_to_delete/

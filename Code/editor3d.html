@@ -42,7 +42,10 @@
     <button id="tCeil">Ceiling</button><button id="tWalls" class="on">Walls</button>
     <button id="tFurn" class="on">Furniture</button><button id="tSmall" class="on">Tentative</button>
   </div>
-  <div class="row"><button id="tWallEdit">Wall edit mode</button><button id="tTop">Top view</button></div>
+  <div class="row"><select id="views" style="background:#2a2f37;color:#e6e8eb;border:1px solid #2c3038;border-radius:6px;padding:5px"><option value="">Stand in a room…</option></select><button id="vOut">Overview</button></div>
+  <div class="row"><button id="vPrev">◀ spot</button><button id="vNext">spot ▶</button><button id="tPhoto" class="on">Photo projection</button></div>
+  <div class="muted" style="font-size:11px">At a spot: drag to look around, wheel to zoom. Delete furniture to see the real empty room behind it.</div>
+  <div class="row"><button id="tReal" class="on">Photo colours</button><button id="tWallEdit">Wall edit mode</button><button id="tTop">Top view</button></div>
   <div class="row muted" style="font-size:11px">
     <span><span class="chip" style="background:#3ecf8e"></span>mesh-verified</span>
     <span><span class="chip" style="background:#f0b429"></span>mesh-only</span>
@@ -80,7 +83,7 @@ const src = document.getElementById('three-src').textContent;
 const THREE = await import(URL.createObjectURL(new Blob([src], {type:'text/javascript'})));
 
 // ---------------------------------------------------------------- state
-const S = { plan:null, scene:null, floorZ:0, emptyV:null, emptyF:null, emptyG:null,
+const S = { photo:true, byFile:{}, realistic:true, lastFiles:null, plan:null, scene:null, floorZ:0, emptyV:null, emptyF:null, emptyG:null,
             objs:[], removedWalls:new Set(), history:[], showCeil:false, showWalls:true,
             showFurn:true, showTent:true, wallEdit:false, sel:null, baseAreas:null };
 
@@ -110,7 +113,7 @@ function placeCam(){ const {r,th,ph,target:t}=orb;
 placeCam();
 let drag=null;
 renderer.domElement.addEventListener('contextmenu', e=>e.preventDefault());
-renderer.domElement.addEventListener('wheel', e=>{ orb.r=Math.min(80,Math.max(1.5,orb.r*(1+Math.sign(e.deltaY)*0.1))); placeCam(); e.preventDefault(); }, {passive:false});
+renderer.domElement.addEventListener('wheel', e=>{ orb.r=Math.min(80,Math.max(orb.r<0.5?0.05:1.5,orb.r*(1+Math.sign(e.deltaY)*0.1))); placeCam(); e.preventDefault(); }, {passive:false});
 
 // ---------------------------------------------------------------- helpers
 const raycaster = new THREE.Raycaster();
@@ -138,13 +141,80 @@ function roomAt(x,y){ for (const r of S.plan.rooms){ const p=r.polygon; let insi
     if ((yi>y)!==(yj>y) && x<(xj-xi)*(y-yi)/(yj-yi+1e-12)+xi) inside=!inside; } if (inside) return r; } return null; }
 
 // ---------------------------------------------------------------- OBJ parsing
-function parseOBJ(txt){ const V=[], F=[], G=[]; let g='';
+function parseOBJ(txt){ const V=[], F=[], G=[], C=[]; let g='';
   for (const line of txt.split('\n')){
-    if (line.startsWith('v ')){ const p=line.split(/\s+/); V.push(+p[1],+p[2],+p[3]); }
+    if (line.startsWith('v ')){ const p=line.trim().split(/\s+/); V.push(+p[1],+p[2],+p[3]); if (p.length>=7) C.push(+p[4],+p[5],+p[6]); }
     else if (line.startsWith('g ')||line.startsWith('o ')) g=line.slice(2).trim();
     else if (line.startsWith('f ')){ const idx=line.trim().split(/\s+/).slice(1).map(t=>{ const i=parseInt(t); return i>0?i-1:V.length/3+i; });
       for (let k=1;k<idx.length-1;k++){ F.push(idx[0],idx[k],idx[k+1]); G.push(g); } } }
-  return {V:new Float32Array(V), F, G}; }
+  return {V:new Float32Array(V), F, G, C: C.length===V.length ? new Float32Array(C) : null}; }
+
+
+// ---------------------------------------------------------------- photo projection shader
+const PROJ_VS = `attribute vec3 color; varying vec3 vC; varying vec3 vW;
+  void main(){ vC=color; vec4 w=modelMatrix*vec4(position,1.0); vW=w.xyz; gl_Position=projectionMatrix*viewMatrix*w; }`;
+const PROJ_FS = `#include <packing>
+  uniform sampler2D tex; uniform vec3 cam; uniform float yaw; uniform float mirr; uniform float amt; uniform float dim;
+  uniform samplerCube dcube; uniform float useDepth;
+  varying vec3 vC; varying vec3 vW;
+  const float PI=3.14159265;
+  void main(){ vec3 c=vC*dim;
+    float a=amt;
+    if (a>0.0 && useDepth>0.0){ vec3 dd=vW-cam; float stored=unpackRGBAToDepth(textureCube(dcube, dd))*(30.0-0.05)+0.05;
+      if (length(dd) > stored*1.03+0.12) a=0.0; }
+    if (a>0.0){ vec3 d=vW-cam; float th=atan(d.y,d.x); float lon=mod((th-yaw)*mirr+PI, 2.0*PI)-PI;
+      float lat=atan(d.z, length(d.xy)); vec2 uv=vec2((lon+PI)/(2.0*PI), (lat+PI*0.5)/PI);
+      c=mix(c, texture2D(tex, uv).rgb, a); }
+    gl_FragColor=vec4(c,1.0); }`;
+function projMaterial(shared){ return new THREE.ShaderMaterial({ vertexShader:PROJ_VS, fragmentShader:PROJ_FS, side:THREE.DoubleSide,
+  uniforms:{ tex:shared.tex, cam:shared.cam, yaw:shared.yaw, mirr:shared.mirr, amt:{value:0}, dim:{value:1},
+    dcube:DEPTH.tex, useDepth:shared.useDepth||{value:0} } }); }
+// depth of the ORIGINAL furnished scene seen from the photo spot: a fragment only takes the furnished photo
+// if it is the surface the camera actually saw (stops furniture behind walls/openings picking up wrong pixels)
+const DEPTH = { rt:new THREE.WebGLCubeRenderTarget(512), tex:{value:null}, use:{value:0} };
+DEPTH.tex.value = DEPTH.rt.texture;
+function renderDepth(p){
+  const ds=new THREE.Scene();
+  const mat=new THREE.ShaderMaterial({ side:THREE.DoubleSide, uniforms:{ref:{value:new THREE.Vector3(...p.position)}},
+    vertexShader:`varying vec3 vW; void main(){ vec4 w=modelMatrix*vec4(position,1.0); vW=w.xyz; gl_Position=projectionMatrix*viewMatrix*w; }`,
+    fragmentShader:`#include <packing>
+      uniform vec3 ref; varying vec3 vW; void main(){ gl_FragColor=packDepthToRGBA(clamp((length(vW-ref)-0.05)/(30.0-0.05),0.0,0.9999)); }` });
+  if (emptyMesh){ ds.add(new THREE.Mesh(emptyMesh.geometry, mat)); if (ceilMesh) ds.add(new THREE.Mesh(ceilMesh.geometry, mat)); }
+  for (const o of S.objs){ const h=o.size[2]||0.5; const m=new THREE.Mesh(new THREE.BoxGeometry(o.size[0]*0.92,o.size[1]*0.92,h*0.95), mat);
+    m.position.set(o.x0,o.y0,S.floorZ+(o.zb||0)+h/2); m.rotation.z=o.yaw00*Math.PI/180; ds.add(m); }
+  const cc=new THREE.CubeCamera(0.05, 30, DEPTH.rt); cc.position.set(...p.position); ds.add(cc);
+  const bg=renderer.getClearColor(new THREE.Color()); renderer.setClearColor(0xffffff,1); cc.update(renderer, ds); renderer.setClearColor(bg,1);
+  ds.traverse(m=>{ if (m.isMesh && m.geometry!==emptyMesh.geometry && (!ceilMesh||m.geometry!==ceilMesh.geometry)) m.geometry.dispose(); });
+}
+const PH = { // shared uniforms: one set for the empty house, one for furniture
+  house:{ tex:{value:null}, cam:{value:new THREE.Vector3()}, yaw:{value:0}, mirr:{value:-1} },
+  furn: { tex:{value:null}, cam:{value:new THREE.Vector3()}, yaw:{value:0}, mirr:{value:-1}, useDepth:{value:1} },
+  at:null };
+const texLoader = new THREE.TextureLoader();
+function loadTex(file){ return new Promise(res=>{ const url=URL.createObjectURL(file); texLoader.load(url, t=>{ t.colorSpace=THREE.NoColorSpace; t.minFilter=THREE.LinearFilter; t.generateMipmaps=false; t.anisotropy=renderer.capabilities.getMaxAnisotropy(); res(t); }, undefined, ()=>res(null)); }); }
+async function photoAt(p){ // p = entry of pano_poses.json, or null to leave photo mode
+  PH.at=p;
+  if (p){
+    const [th, tf] = await Promise.all([ p.defurnished&&S.byFile[p.defurnished] ? loadTex(S.byFile[p.defurnished]) : null,
+                                         p.furnished&&S.byFile[p.furnished] ? loadTex(S.byFile[p.furnished]) : null ]);
+    for (const [u,t] of [[PH.house,th],[PH.furn,tf]]){ if (u.tex.value) u.tex.value.dispose(); u.tex.value=t;
+      u.cam.value.set(...p.position); u.yaw.value=p.yaw_deg*Math.PI/180; u.mirr.value=p.mirror; }
+    renderDepth(p);
+  }
+  applyPhoto();
+}
+function segCross(ax,ay,bx,by,cx,cy,dx,dy){ const r1=(bx-ax)*(cy-ay)-(by-ay)*(cx-ax), r2=(bx-ax)*(dy-ay)-(by-ay)*(dx-ax), r3=(dx-cx)*(ay-cy)-(dy-cy)*(ax-cx), r4=(dx-cx)*(by-cy)-(dy-cy)*(bx-cx); return r1*r2<0 && r3*r4<0; }
+function seenFromSpot(o){ // any corner (pulled 10% inward) with a clear 2D line of sight from the photo spot
+  const p=PH.at.position; const walls=S.plan.walls.filter((w,i)=>!S.removedWalls.has(i));
+  return corners(o).map(([x,y])=>[o.x+(x-o.x)*0.9, o.y+(y-o.y)*0.9]).concat([[o.x,o.y]]).some(([x,y])=>
+    Math.hypot(x-p[0],y-p[1])<9 && !walls.some(w=>segCross(p[0],p[1],x,y,w.a[0],w.a[1],w.b[0],w.b[1]))); }
+function applyPhoto(){
+  const on = !!PH.at && S.photo;
+  S.objs.forEach(o=>{ if (o.edges && o.tex){ const sel=S.sel&&S.sel.obj===o; if (!sel && o.boxMat.opacity===0) o.edges.visible=false; } });
+  [emptyMesh, ceilMesh].forEach(m=>{ if (m && m.material.uniforms) m.material.uniforms.amt.value = on && PH.house.tex.value ? 1 : 0; });
+  S.objs.forEach(o=>{ if (!o.texMat) return; const moved=o.x!==o.x0||o.y!==o.y0||o.yaw!==o.yaw00;
+    o.texMat.uniforms.amt.value = on && !moved && PH.furn.tex.value  ? 1 : 0; });
+}
 
 // ---------------------------------------------------------------- build empty mesh
 function triInfo(){ const {emptyV:V, emptyF:F}=S; const n=F.length/3, info=new Array(n);
@@ -165,20 +235,21 @@ function classifyTris(){
 function rebuildEmpty(){
   if (emptyMesh){ world.remove(emptyMesh); emptyMesh.geometry.dispose(); }
   if (ceilMesh){ world.remove(ceilMesh); ceilMesh.geometry.dispose(); }
-  const idx=[], cidx=[], cols=new Float32Array(S.emptyV.length);
+  const idx=[], cidx=[], cols=S.emptyC ? S.emptyC : new Float32Array(S.emptyV.length);
   const colOf={floor:[0.62,0.58,0.52], wall:[0.85,0.85,0.82], other:[0.72,0.74,0.78], ceil:[0.9,0.9,0.9]};
   TI.forEach((t,i)=>{
     if (triWall[i]>=0 && S.removedWalls.has(triWall[i])) return;
     if (t.kind==='ceil'){ cidx.push(S.emptyF[3*i],S.emptyF[3*i+1],S.emptyF[3*i+2]); return; }
     if (!S.showWalls && (t.kind==='wall' || t.kind==='other') && t.cz > S.floorZ+0.3) return;
     idx.push(S.emptyF[3*i],S.emptyF[3*i+1],S.emptyF[3*i+2]);
-    for (let k=0;k<3;k++){ const v=S.emptyF[3*i+k]; cols.set(colOf[t.kind], 3*v); } });
+    if (!S.emptyC) for (let k=0;k<3;k++){ const v=S.emptyF[3*i+k]; cols.set(colOf[t.kind], 3*v); } });
+  const vcC = !!S.emptyC;
   const mk=(ix, color, vc)=>{ const g=new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(S.emptyV,3));
     if (vc) g.setAttribute('color', new THREE.BufferAttribute(cols,3)); g.setIndex(ix); g.computeVertexNormals();
-    return new THREE.Mesh(g, new THREE.MeshStandardMaterial({color, vertexColors:!!vc, side:THREE.DoubleSide, roughness:0.95, flatShading:true})); };
+    return new THREE.Mesh(g, (S.emptyC ? projMaterial(PH.house) : new THREE.MeshStandardMaterial({color, vertexColors:!!vc, side:THREE.DoubleSide, roughness:0.95, flatShading:true}))); };
   emptyMesh=mk(idx, 0xffffff, true); world.add(emptyMesh);
-  ceilMesh=mk(cidx, 0xdddddd, false); ceilMesh.visible=S.showCeil; world.add(ceilMesh);
-  drawWallLines();
+  ceilMesh=mk(cidx, 0xdddddd, vcC); ceilMesh.visible=S.showCeil; world.add(ceilMesh);
+  drawWallLines(); if (PH.at && DEPTH) renderDepth(PH.at); applyPhoto();
 }
 function drawWallLines(){
   wallLines.clear(); if (!S.wallEdit) return;
@@ -196,17 +267,21 @@ function makeObjMesh(o){
   const mat=new THREE.MeshStandardMaterial({color:COLORS[o.source]||0x999999, transparent:true, opacity:o.source==='pano'?0.45:0.8});
   const box=new THREE.Mesh(new THREE.BoxGeometry(o.size[0], o.size[1], h), mat);
   box.position.z=zb+h/2; grp.add(box);
+  if (o.tex){ const g=new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(o.tex.V,3));
+    g.setAttribute('color', new THREE.BufferAttribute(o.tex.C,3)); g.setIndex(o.tex.F);
+    o.texMat=projMaterial(PH.furn); grp.add(new THREE.Mesh(g, o.texMat));
+    mat.opacity=0.0; mat.depthWrite=false; o.realistic=true; }
   const edges=new THREE.LineSegments(new THREE.EdgesGeometry(box.geometry), new THREE.LineBasicMaterial({color:0x000000}));
-  edges.position.copy(box.position); grp.add(edges);
-  if (o.patch){ // real surface patches from the furnished-side mesh (kept in world orientation)
+  edges.position.copy(box.position); edges.visible=!o.tex && !o.patch; o.edges=edges; grp.add(edges);
+  if (o.patch && !o.tex){ // real surface patches from the furnished-side mesh (kept in world orientation)
     const g=new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(o.patch.V,3)); g.setIndex(o.patch.F); g.computeVertexNormals();
     const pm=new THREE.Mesh(g, new THREE.MeshStandardMaterial({color:0xffffff, side:THREE.DoubleSide, flatShading:true}));
     pm.rotation.z = -o.yaw0*Math.PI/180; grp.add(pm); }
   grp.userData.obj=o; o.mesh=grp; o.boxMat=mat; return grp;
 }
-function placeObj(o){ o.mesh.position.set(o.x,o.y,S.floorZ); o.mesh.rotation.z=o.yaw*Math.PI/180;
+function placeObj(o){ if (o.texMat){ const moved=o.x!==o.x0||o.y!==o.y0||o.yaw!==o.yaw00; o.texMat.uniforms.amt.value = (PH.at&&S.photo&&!moved&&PH.furn.tex.value)?1:0; } o.mesh.position.set(o.x,o.y,S.floorZ); o.mesh.rotation.z=o.yaw*Math.PI/180;
   o.mesh.visible = S.showFurn && !o.deleted && (S.showTent || o.source!=='pano'); }
-function refreshObjs(){ S.objs.forEach(placeObj); evaluate(); }
+function refreshObjs(){ S.objs.forEach(placeObj); evaluate(); applyPhoto(); }
 
 // ---------------------------------------------------------------- evaluation (the "consequences")
 function currentRooms(){
@@ -228,7 +303,9 @@ function evaluate(){
     for (const w of walls) if (rectHitsWall(live[i], w)) { wallHit.add(live[i]); break; }
     for (let j=i+1;j<live.length;j++) if (obbOverlap(live[i],live[j])) { clash.add(live[i]); clash.add(live[j]); } }
   S.objs.forEach(o=>{ if (!o.boxMat) return; const moved=o.x!==o.x0||o.y!==o.y0||o.yaw!==o.yaw00;
-    o.boxMat.emissive.setHex((moved && (clash.has(o)||wallHit.has(o))) ? 0xaa0000 : (S.sel&&S.sel.obj===o ? 0x224466 : 0x000000)); });
+    const bad=moved && (clash.has(o)||wallHit.has(o)), sel=S.sel&&S.sel.obj===o;
+    o.boxMat.emissive.setHex(bad ? 0xaa0000 : (sel ? 0x224466 : 0x000000));
+    if (o.tex){ o.boxMat.opacity = bad ? 0.45 : 0; o.edges.visible = bad||sel; o.edges.material.color.setHex(bad?0xff3333:0x4fa3ff); } });
   // rooms table
   const rooms=currentRooms(); const tbl=document.getElementById('rooms');
   const furnIn=r=>live.filter(o=>r.rooms.includes(roomAt(o.x,o.y))).reduce((s,o)=>s+o.size[0]*o.size[1],0);
@@ -260,7 +337,9 @@ function showSel(){
   if (S.sel.obj){ const o=S.sel.obj, r=roomAt(o.x,o.y);
     el.innerHTML=`<b>${o.label||'object '+o.id}</b> <span class="muted">#${o.id}</span><br>${o.size.map(v=>v.toFixed(2)).join(' × ')} m · ${o.layer} · ${r?r.label:'—'}<br>
     source: ${o.source}${o.flags&&o.flags.length?'<br><span class="muted">'+o.flags.join(', ')+'</span>':''}
-    <div class="row"><button id="bDel">Remove</button><button id="bRot">Rotate 90°</button><button id="bRes">Reset</button></div>`;
+    <div class="row"><button id="bDel">Remove</button><button id="bRot">Rotate 90°</button><button id="bRes">Reset</button></div>
+    <div class="row"><button id="bEmpty">Empty this room</button></div>`;
+    document.getElementById('bEmpty').onclick=()=>{ push(); const rr=roomAt(o.x,o.y); S.objs.forEach(q=>{ if (roomAt(q.x,q.y)===rr) q.deleted=true; }); S.sel=null; showSel(); refreshObjs(); };
     document.getElementById('bDel').onclick=()=>{ push(); o.deleted=true; S.sel=null; showSel(); refreshObjs(); };
     document.getElementById('bRot').onclick=()=>{ push(); o.yaw=(o.yaw+90)%360; refreshObjs(); };
     document.getElementById('bRes').onclick=()=>{ push(); o.x=o.x0; o.y=o.y0; o.yaw=o.yaw00; refreshObjs(); };
@@ -298,6 +377,7 @@ addEventListener('pointerup', ()=>{ if (drag&&drag.mode==='move'&&!drag.moved) S
 addEventListener('keydown', e=>{
   if (e.target.tagName==='INPUT') return;
   if ((e.ctrlKey||e.metaKey) && e.key==='z'){ undo(); e.preventDefault(); return; }
+  if (e.key===']'){ stepSpot(1); return; } if (e.key==='['){ stepSpot(-1); return; }
   const o=S.sel&&S.sel.obj; if (!o) return;
   if (e.key==='q'||e.key==='e'){ push(); o.yaw=(o.yaw+(e.key==='q'?15:-15)+360)%360; refreshObjs(); }
   if (e.key==='Delete'||e.key==='Backspace'){ push(); o.deleted=true; S.sel=null; showSel(); refreshObjs(); }
@@ -310,6 +390,15 @@ tog('tWalls','showWalls',()=>S.plan&&rebuildEmpty());
 tog('tFurn','showFurn',refreshObjs);
 tog('tSmall','showTent',refreshObjs);
 tog('tWallEdit','wallEdit',()=>{ drawWallLines(); if (S.wallEdit && S.showCeil){ S.showCeil=false; document.getElementById('tCeil').classList.remove('on'); ceilMesh&&(ceilMesh.visible=false);} });
+function standAt(p){ orb.target.set(p[0],p[1],p[2]); orb.r=0.05; orb.ph=Math.PI/2; camera.fov=75; camera.updateProjectionMatrix(); placeCam(); }
+async function goSpot(p){ if (!p) return; document.getElementById('views').value=p.id;
+  if (S.showCeil===false){ S.showCeil=true; document.getElementById('tCeil').classList.add('on'); ceilMesh&&(ceilMesh.visible=true);}
+  standAt(p.position); await photoAt(p); }
+document.getElementById('views').onchange=e=>goSpot((S.panos||[]).find(p=>p.id===e.target.value));
+const stepSpot=k=>{ const L=S.panos||[]; if (!L.length) return; const i=L.findIndex(p=>PH.at&&p.id===PH.at.id); goSpot(L[(i+k+L.length)%L.length]); };
+document.getElementById('vPrev').onclick=()=>stepSpot(-1); document.getElementById('vNext').onclick=()=>stepSpot(1);
+document.getElementById('tPhoto').onclick=()=>{ S.photo=!S.photo; document.getElementById('tPhoto').classList.toggle('on',S.photo); applyPhoto(); };
+document.getElementById('vOut').onclick=()=>{ photoAt(null); camera.fov=50; camera.updateProjectionMatrix(); const box=new THREE.Box3().setFromObject(emptyMesh); box.getCenter(orb.target); orb.r=box.getSize(new THREE.Vector3()).length()*0.8; orb.ph=0.75; placeCam(); };
 document.getElementById('tTop').onclick=()=>{ orb.ph=0.02; placeCam(); };
 document.getElementById('reset').onclick=()=>{ push(); S.objs.forEach(o=>{o.x=o.x0;o.y=o.y0;o.yaw=o.yaw00;o.deleted=false;}); S.removedWalls.clear(); rebuildEmpty(); refreshObjs(); };
 document.getElementById('exp').onclick=()=>{
@@ -329,7 +418,11 @@ async function loadFrom(files){
   S.scene=by['scene.json'] ? JSON.parse(await txt('scene.json')) : {objects:[]};
   const fused=by['objects.json'] ? JSON.parse(await txt('objects.json')) : (by['objects_fused.json'] ? JSON.parse(await txt('objects_fused.json')) : null);
   const labels=by['labels.json'] ? JSON.parse(await txt('labels.json')) : {};
-  const m=parseOBJ(await txt('empty_room.obj')); S.emptyV=m.V; S.emptyF=m.F; S.emptyG=m.G;
+  const useTex = S.realistic && by['empty_room_textured.obj'];
+  document.getElementById('loadinfo').textContent='loading house mesh…';
+  const m=parseOBJ(await txt(useTex ? 'empty_room_textured.obj' : 'empty_room.obj')); S.emptyV=m.V; S.emptyF=m.F; S.emptyG=m.G; S.emptyC=m.C;
+  const texScene = (S.realistic && by['scene_textured.json']) ? JSON.parse(await txt('scene_textured.json')) : {objects:[]};
+  const texById={}; texScene.objects.forEach(t=>texById[t.id]=t);
   S.floorZ = S.scene.floor_z ?? (fused&&fused.objects[0] ? fused.objects[0].floor_z : 0);
   // wall height from mesh
   let zmax=-1e9; for (let i=2;i<S.emptyV.length;i+=3) zmax=Math.max(zmax,S.emptyV[i]); S.wallH=Math.min(3.2, Math.max(2.2, zmax-S.floorZ-0.05));
@@ -346,19 +439,28 @@ async function loadFrom(files){
       x:b.centre[0], y:b.centre[1], yaw:b.yaw_deg, size:b.size_lwh_m.slice(), zb:b.z_bottom||0 };
     ob.x0=ob.x; ob.y0=ob.y; ob.yaw00=ob.yaw; ob.yaw0=ob.yaw;
     const sc=sceneById[o.id];
+    const tx=texById[o.id];
+    if (tx && by[tx.file]){ const pm=parseOBJ(await txt(tx.file)); if (pm.C) ob.tex={V:pm.V, F:pm.F, C:pm.C}; if (tx.label && !ob.label) ob.label=tx.label; }
     if (sc && sc.kind==='surface_patches' && by[sc.file]){ const pm=parseOBJ(await txt(sc.file)); ob.patch={V:pm.V, F:pm.F}; }
     furnGroup.add(makeObjMesh(ob)); S.objs.push(ob);
   }
   refreshObjs();
   // frame camera
   const box=new THREE.Box3().setFromObject(emptyMesh); box.getCenter(orb.target); orb.r=box.getSize(new THREE.Vector3()).length()*0.8; orb.ph=0.75; placeCam();
+  S.byFile = by;
+  S.panos = by['pano_poses.json'] ? JSON.parse(await txt('pano_poses.json')).panos : (by['panos.json'] ? JSON.parse(await txt('panos.json')) : []);
+  PH.at=null;
+  const sel=document.getElementById('views'); sel.length=1;
+  S.panos.forEach(p=>{ const r=roomAt(p.position[0],p.position[1]); const o=document.createElement('option'); o.value=p.id; o.textContent=`${r?r.label:'?'} (spot ${p.label})`; sel.appendChild(o); });
   document.getElementById('drop').style.display='none';
   const cnt=k=>S.objs.filter(o=>o.source===k).length;
   document.getElementById('loadinfo').innerHTML=`${(S.emptyF.length/3)|0} triangles · ${S.plan.walls.length} walls · ${S.plan.rooms.length} rooms<br>objects: ${cnt('pano+mesh')} verified, ${cnt('mesh')} mesh-only, ${cnt('pano')} panorama guesses`;
 }
-document.getElementById('folder').onchange=e=>loadFrom([...e.target.files]);
-window.__loadFiles = loadFrom; window.__S = S; window.__cam = camera; window.__THREE = THREE;   // used by tests
-(function loop(){ renderer.render(scene,camera); requestAnimationFrame(loop); })();
+document.getElementById('folder').onchange=e=>{ S.lastFiles=[...e.target.files]; loadFrom(S.lastFiles); };
+document.getElementById('tReal').onclick=()=>{ S.realistic=!S.realistic; document.getElementById('tReal').classList.toggle('on',S.realistic); if (S.lastFiles) loadFrom(S.lastFiles); };
+window.__loadFiles = loadFrom; window.__S = S; window.__orb = orb; window.__placeCam = placeCam; window.__standAt = standAt; window.__goSpot = goSpot; window.__showSel = showSel; window.__cam = camera; window.__THREE = THREE;   // used by tests
+window.__render=()=>renderer.render(scene,camera);
+if (!location.hash.includes('test')) (function loop(){ renderer.render(scene,camera); requestAnimationFrame(loop); })();
 </script>
 </body>
 </html>
