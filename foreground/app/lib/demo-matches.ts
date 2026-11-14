@@ -157,8 +157,8 @@ export function rankMatches(brief: Exchange[]): Match[] {
   const scored = MATCH_POOL.map((space, index) => {
     let score = 40 + ((index * 17) % 13);
     const rent = monthlyRent(space);
-    if (wantsCheap && rent < 10000) score += 28;
-    if (wantsCheap && rent >= 15000) score -= 20;
+    if (wantsCheap && rent !== null && rent < 10000) score += 28;
+    if (wantsCheap && rent !== null && rent >= 15000) score -= 20;
     if (wantsLarge && space.squareFeet >= 4500) score += 26;
     if (wantsLarge && space.squareFeet < 3000) score -= 18;
     if (wantsSmall && space.squareFeet <= 3600) score += 24;
