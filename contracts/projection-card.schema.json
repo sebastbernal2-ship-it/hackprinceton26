@@ -1,0 +1,213 @@
+{
+  "$defs": {
+    "Citation": {
+      "properties": {
+        "asOf": {
+          "title": "Asof",
+          "type": "string"
+        },
+        "geography": {
+          "title": "Geography",
+          "type": "string"
+        },
+        "limitations": {
+          "title": "Limitations",
+          "type": "string"
+        },
+        "recordId": {
+          "title": "Recordid",
+          "type": "string"
+        },
+        "source": {
+          "title": "Source",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source",
+        "recordId",
+        "asOf",
+        "geography",
+        "limitations"
+      ],
+      "title": "Citation",
+      "type": "object"
+    },
+    "TrainingWindow": {
+      "properties": {
+        "end": {
+          "title": "End",
+          "type": "string"
+        },
+        "geography": {
+          "title": "Geography",
+          "type": "string"
+        },
+        "start": {
+          "title": "Start",
+          "type": "string"
+        }
+      },
+      "required": [
+        "start",
+        "end",
+        "geography"
+      ],
+      "title": "TrainingWindow",
+      "type": "object"
+    },
+    "ValidationMetric": {
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "passed": {
+          "title": "Passed",
+          "type": "boolean"
+        },
+        "threshold": {
+          "title": "Threshold",
+          "type": "number"
+        },
+        "value": {
+          "title": "Value",
+          "type": "number"
+        }
+      },
+      "required": [
+        "name",
+        "value",
+        "threshold",
+        "passed"
+      ],
+      "title": "ValidationMetric",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "citation": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Citation"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "hidden": {
+      "default": false,
+      "title": "Hidden",
+      "type": "boolean"
+    },
+    "hiddenReason": {
+      "default": "",
+      "title": "Hiddenreason",
+      "type": "string"
+    },
+    "horizon": {
+      "title": "Horizon",
+      "type": "string"
+    },
+    "kind": {
+      "enum": [
+        "published",
+        "fitted",
+        "scenario"
+      ],
+      "title": "Kind",
+      "type": "string"
+    },
+    "lower": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Lower"
+    },
+    "method": {
+      "title": "Method",
+      "type": "string"
+    },
+    "metric": {
+      "title": "Metric",
+      "type": "string"
+    },
+    "point": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Point"
+    },
+    "scenario": {
+      "title": "Scenario",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "estimated",
+        "unknown"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "trainingWindow": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/TrainingWindow"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "unit": {
+      "default": "",
+      "title": "Unit",
+      "type": "string"
+    },
+    "upper": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Upper"
+    },
+    "validation": {
+      "items": {
+        "$ref": "#/$defs/ValidationMetric"
+      },
+      "title": "Validation",
+      "type": "array"
+    }
+  },
+  "required": [
+    "kind",
+    "status",
+    "metric",
+    "horizon",
+    "scenario",
+    "method"
+  ],
+  "title": "ProjectionCard",
+  "type": "object"
+}
