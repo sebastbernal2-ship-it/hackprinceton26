@@ -1,0 +1,23 @@
+{
+  "name": "site-walkthrough",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "3D walkthrough viewer that pins candidate inspection findings on captured surfaces",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc --noEmit && vite build",
+    "typecheck": "tsc --noEmit",
+    "test": "node --experimental-strip-types --test test/*.test.ts"
+  },
+  "dependencies": {
+    "@sparkjsdev/spark": "2.3.1",
+    "three": "0.186.1",
+    "three-mesh-bvh": "0.9.15"
+  },
+  "devDependencies": {
+    "@types/three": "0.186.0",
+    "typescript": "5.9.3",
+    "vite": "7.1.12"
+  }
+}
