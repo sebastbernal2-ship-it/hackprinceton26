@@ -34,6 +34,39 @@ A single opaque “Rick score” (working name; not yet defined) is not enough f
 
 The product is decision support, not a substitute for a licensed inspection, legal advice, zoning determination, or revenue guarantee. Avoid asserting that an agent concealed a defect without verified evidence. Label potential issues as leads to investigate, keep an audit trail of sources and dates, and protect sensitive business and property information.
 
+### Refined direction: from site selection to a business decision engine
+
+The cost plan is not the headline by itself: it is the real-time feedback loop that makes spatial and market analysis economically legible. The larger opportunity is to help a business decide **where and how to operate**, using connected evidence about the building, its surroundings, and the business model. The product should quantify consequences—cost, capacity, access, operational fit, and uncertainty—rather than merely describe a property.
+
+This framing fits both the Business & Enterprise track (streamlining business planning and financial decisions) and the CoStar “Inside and Out” challenge. The sponsor challenge explicitly rewards combining at least two of CoStar, Matterport, and Vexcel; agentic reasoning and action; spatial/visual understanding; and a non-obvious use of the combined data. The strongest differentiation is therefore not “AI chat over listings” or “another 3D tour,” but an agent that turns linked market, building, and aerial evidence into a testable operating plan and quantified decision.
+
+#### Potential signature experience: a site-to-operations simulation
+
+Given an operator's concept and a candidate address, the agent could:
+
+1. Link CoStar property/availability context, Matterport interior spatial data, and Vexcel aerial context for that address (where coverage and permitted API access allow).
+2. Inspect complementary signals: for example, compare the interior's usable layout with aerially observed parking/access, then relate those constraints to the operator's required capacity, customer arrival pattern, or delivery workflow.
+3. Generate one or more feasible operating configurations—not just a ranked listing—including a proposed space plan, equipment/furniture needs, likely repairs, operational constraints, and questions requiring verification.
+4. Recalculate the business consequences as the user changes assumptions: estimated build-out investment, usable capacity, visibility/access trade-offs, and key unknowns. Show source evidence and confidence for every consequential claim.
+5. Take useful next actions: prepare a diligence or site-visit checklist, request missing information, and produce a shareable decision memo for the owner, broker, lender, contractor, or business partner.
+
+The “surprise” should come from a cross-layer inference or action that would be difficult from any one dataset alone. Illustrative hypotheses to test—not promises of available data or accuracy—include identifying a mismatch between apparent aerial access/parking and interior circulation; testing whether a target operating layout fits the scanned geometry; or showing how alternative layouts change capacity and estimated opening cost. The product must make clear when a signal is inferred, stale, incomplete, or needs on-site verification.
+
+#### Business and enterprise depth
+
+Treat the property as an input to a business plan, not the whole customer problem. Help an operator reason about capital at risk before commitment: distinguish recurring occupancy costs from one-time build-out, itemize assumptions behind estimates, surface high-impact unknowns, and compare scenarios (for example, a lower-rent space with expensive renovation versus a more expensive space that is closer to ready). Where useful, turn the chosen scenario into structured tasks and a diligence packet that can be handed to relevant professionals.
+
+A later extension could connect operators who have opened similar businesses and let them share opted-in, appropriately aggregated lessons about timelines, build-out costs, and operational choices. Such benchmarks need context and provenance; one business's result should not be presented as a prediction for another.
+
+#### Differentiation hypotheses to validate
+
+- **Cross-layer reasoning:** Does linking aerial, interior, and market data reveal useful constraints or opportunities that each source alone misses?
+- **Operational simulation:** Can a user change a layout or business requirement and immediately understand the spatial and financial consequences?
+- **Agentic diligence:** Can the agent identify missing evidence, plan the next investigation, and prepare actionable work products instead of stopping at a report?
+- **Business-specific learning:** Can an operator's own prior location, costs, and operating requirements meaningfully personalize a new-site analysis without overclaiming predictive power?
+
+These are candidate differentiators, not a commitment to build every capability. Validate them against actual Houston/Los Angeles dataset coverage, sponsor API/SDK terms and formats, implementation time, and feedback from a real business owner. A strong hackathon prototype should demonstrate one convincing end-to-end slice, use at least two sponsor data layers substantively, and quantify a decision consequence.
+
 ### Initial MVP direction
 
 Keep the first version focused on one operator persona and one market. A useful prototype could support:
