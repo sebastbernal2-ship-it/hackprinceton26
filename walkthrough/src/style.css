@@ -1,0 +1,42 @@
+:root { --bg:#0f1117; --panel:rgba(18,20,27,.92); --line:#2a2e3a; --text:#eef0f5; --dim:#a0a7b6; --violet:#8c5cff; --warn:#f5a524; }
+* { box-sizing: border-box; }
+html, body { margin:0; height:100%; background:var(--bg); color:var(--text); font:14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; overflow:hidden; }
+#stage, #stage canvas { position:fixed; inset:0; width:100%; height:100%; display:block; touch-action:none; }
+#crosshair { position:fixed; left:50%; top:50%; width:10px; height:10px; margin:-5px; border:2px solid #fff; border-radius:50%; mix-blend-mode:difference; pointer-events:none; }
+#bar { position:fixed; top:0; left:0; right:0; display:flex; gap:10px; align-items:center; padding:8px 16px; background:linear-gradient(var(--panel), transparent); pointer-events:none; flex-wrap:wrap; }
+#bar > * { pointer-events:auto; }
+#status { color:var(--dim); font-size:12px; flex:1; min-width:0; }
+#badge { background:var(--warn); color:#1a1200; font-weight:700; border-radius:4px; padding:1px 8px; font-size:12px; }
+button { font:inherit; background:#222634; color:var(--text); border:1px solid var(--line); border-radius:6px; padding:5px 11px; cursor:pointer; }
+button:hover { background:#2c3142; }
+button[aria-pressed="true"] { border-color:var(--violet); }
+#list { position:fixed; top:48px; left:16px; width:300px; max-height:calc(100% - 200px); overflow:auto; background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:8px; }
+#list[hidden] { display:none; }
+#list h3 { margin:2px 6px 6px; font-size:12px; letter-spacing:.04em; text-transform:uppercase; color:var(--dim); }
+#list button { display:flex; width:100%; text-align:left; gap:8px; align-items:flex-start; margin:0 0 4px; padding:6px 8px; }
+#list button[aria-current="true"] { border-color:#fff; }
+#list .dot { width:12px; height:12px; border-radius:50%; flex:none; margin-top:3px; border:2px solid #fff; }
+#list .dot.inferred { background:transparent !important; border:2px dashed var(--violet); }
+#list small { display:block; color:var(--dim); }
+#card { position:fixed; top:48px; right:16px; width:min(400px, calc(100% - 32px)); max-height:calc(100% - 200px); overflow:auto; background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:14px 16px; }
+#card[hidden] { display:none; }
+#card h2 { margin:0 0 6px; font-size:17px; }
+#card .badges { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px; }
+#card .badge { border:1px solid var(--line); border-radius:999px; padding:1px 9px; font-size:12px; color:var(--dim); }
+#card .notice { color:var(--dim); font-style:italic; margin:0 0 8px; }
+#card .warn { background:rgba(140,92,255,.18); border:1px solid var(--violet); border-radius:6px; padding:6px 9px; margin:0 0 10px; }
+#card dt { font-size:11px; letter-spacing:.04em; text-transform:uppercase; color:var(--dim); margin-top:10px; }
+#card dd { margin:2px 0 0; }
+#card dt.verify { color:var(--warn); }
+#card .close { position:absolute; top:8px; right:8px; padding:0 8px; }
+#legend { position:fixed; left:16px; bottom:16px; background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:8px 12px; font-size:12px; max-width:340px; }
+#legend .row { display:flex; align-items:center; gap:8px; margin:2px 0; }
+#legend .sw { width:14px; height:14px; border-radius:50%; border:2px solid #fff; flex:none; }
+#legend .sq { width:14px; height:14px; border-radius:3px; flex:none; }
+#legend .note { color:var(--dim); margin-top:4px; }
+#hint { position:fixed; bottom:16px; left:50%; transform:translateX(-50%); background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:6px 12px; font-size:12px; color:var(--dim); max-width:min(520px, 40vw); text-align:center; }
+#hint.hidden { display:none; }
+#loading { position:fixed; inset:0; display:grid; place-items:center; background:var(--bg); z-index:10; text-align:center; padding:24px; }
+#loading.done { display:none; }
+#loading.error #loadText { color:#ff8a8f; }
+@media (max-width: 760px) { #hint { display:none; } #list { width:calc(100% - 32px); max-height:30%; } #card { top:auto; bottom:150px; max-height:40%; } #legend { bottom:8px; } }
