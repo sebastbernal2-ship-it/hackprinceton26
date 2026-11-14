@@ -25,6 +25,12 @@ def _money(text: str):
         return _n(m.group(1)) * _MULT.get(m.group(2) or "", 1), m.group(0).strip()
     for m in re.finditer(r"budget[^.\d$]{0,30}" + _NUM + r"\s*(k|m|mm|million|thousand)\b", text):
         return _n(m.group(1)) * _MULT[m.group(2)], m.group(0).strip()
+    # '200k budget', 'under 200k', 'up to 1.2 million': a k/m/million suffix is required so
+    # plain numbers such as 'under 3000 sq ft' are never read as money.
+    for m in re.finditer(_NUM + r"\s*(k|m|mm|million|thousand)\s+budget\b", text):
+        return _n(m.group(1)) * _MULT[m.group(2)], m.group(0).strip()
+    for m in re.finditer(_MAX_W + r"\s*" + _NUM + r"\s*(k|m|mm|million|thousand)\b", text):
+        return _n(m.group(1)) * _MULT[m.group(2)], m.group(0).strip()
     return None
 
 

@@ -25,3 +25,17 @@ def test_nothing_stated_sets_nothing():
     pr, why = parse_brief(["we love pasta"], CITIES)
     assert pr.cities is None and pr.budget is None and pr.min_area_sqft is None and why == {}
     assert not (pr.require_active_listing or pr.require_scan_model or pr.require_restaurant_use)
+
+
+def test_budget_phrases_without_dollar_sign_or_the_word_budget():
+    for text, expected in [
+        ("under 200k", 200_000), ("up to 1.2 million", 1_200_000), ("a 300k budget", 300_000),
+        ("below 450k", 450_000), ("no more than $250,000", 250_000),
+    ]:
+        profile, matched = parse_brief([text], [])
+        assert profile.budget == expected, (text, profile.budget)
+
+
+def test_sqft_bound_is_not_mistaken_for_budget():
+    profile, _ = parse_brief(["under 3000 sq ft"], [])
+    assert profile.budget is None
