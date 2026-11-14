@@ -1,0 +1,16 @@
+factor_id,folder,notes,preliminary_status
+property_market,property-market,,
+operator_preferences,operator-preferences,,
+spatial_interior,spatial-interior,,
+crime_safety,crime-safety,,
+schools_education,schools-education,Blocked on source,
+traffic_access,traffic-access,,preliminary
+income_demographics,income-demographics,,
+signage_visibility,signage-visibility,,
+climate_weather,climate-weather,,
+natural_hazards,natural-hazards,,
+mobility_tourism,mobility-tourism,,
+aerial_site,aerial-site,,
+infrastructure_permits,infrastructure-permits,,
+costs_timeline,costs-timeline,,
+labor_supply,labor-supply,,
