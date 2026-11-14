@@ -3,10 +3,12 @@ import { failureStatus } from "../../lib/server-env";
 import { layoutFromPlan, type FloorLayout } from "../../lib/floor-layout";
 import { traceFloorplan } from "../../lib/gemini-rooms";
 import { loadScan } from "../../lib/matterport-scan";
+import { boundedSet, rateLimited } from "../../lib/guard";
 
 const plans = new Map<string, FloorLayout>();
 
 export async function POST(request: Request) {
+  if (rateLimited("layout-analyze", request, 6)) return NextResponse.json({ error: "Too many requests; try again in a minute." }, { status: 429 });
   const body = (await request.json().catch(() => null)) as { modelId?: string; squareFeet?: number } | null;
   const modelId = body?.modelId || "";
   const squareFeet = Number(body?.squareFeet) || 0;
@@ -46,7 +48,7 @@ export async function POST(request: Request) {
     if (layout.source !== "plan") {
       return NextResponse.json({ error: "The floorplan did not produce room polygons.", layout: null }, { status: 422 });
     }
-    plans.set(cacheKey, layout);
+    boundedSet(plans, cacheKey, layout);
     return NextResponse.json({ layout });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Could not read the floorplan.";

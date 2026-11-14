@@ -95,6 +95,7 @@ export function loadScan(modelId: string): Promise<ScanRecord> {
   const existing = records.get(modelId);
   if (existing) return existing;
   const pending = readScan(modelId);
+  if (records.size >= 50) records.delete(records.keys().next().value as string);
   records.set(modelId, pending);
   pending.catch(() => records.delete(modelId));
   return pending;
@@ -129,6 +130,7 @@ async function downloadFloorplan(plan: FloorplanNode): Promise<ScanFloorplan> {
   const response = await fetch(plan.url!, { cache: "no-store" });
   if (!response.ok) throw new Error(`Floorplan download failed (${response.status}).`);
   const bytes = Buffer.from(await response.arrayBuffer());
+  if (bytes.length > 12 * 1024 * 1024) throw new Error("Floorplan image is larger than the 12 MB limit.");
   const format = (plan.format || "jpg").toLowerCase();
   return {
     format,
