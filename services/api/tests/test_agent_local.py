@@ -119,3 +119,19 @@ def test_model_cannot_call_a_listing_strong_when_evidence_is_missing(tmp_path):
     assert v["verdict"] == "workable" and v["verdictCapped"]
     text = " ".join(v["unknowns"])
     assert "no inspection" in text and "2 cost line" in text and "monthly_rent" in text
+
+
+def test_citing_inspect_sites_cannot_launder_model_written_numbers(tmp_path):
+    """inspect_sites returns model-written verdict text; a claim citing it may only use numbers from the evidence it cites."""
+    from agent.providers import FakeProvider, Turn
+    sub = FakeProvider([Turn(tool_calls=[{"id": "1", "name": "assess", "args": {}}]),
+                        Turn(tool_calls=[{"id": "v", "name": "submit_verdict", "args": {
+                            "verdict": "risky", "headline": "p over budget 0.18", "cites": ["r1"]}}])])
+    claims = [{"text": "p over budget 0.18", "cites": ["r2"]}, {"text": "model invented 777", "cites": ["r2"]}]
+    plan = FakeProvider([Turn(tool_calls=[{"id": "p", "name": "inspect_sites", "args": {"listingIds": [9001]}}]),
+                         lambda s, m: Turn(tool_calls=[{"id": "b", "name": "save_brief", "args": {"claims": claims}}])])
+    r = runner.Run("g", ScriptedEnv(), plan, sub, mode="LIVE", derived_dir=tmp_path)
+    evs = r.run()
+    brief = evs[-1]["brief"]
+    assert [c["text"] for c in brief["claims"]] == ["p over budget 0.18"]
+    assert [c["text"] for c in brief["rejectedClaims"]] == ["model invented 777"]
