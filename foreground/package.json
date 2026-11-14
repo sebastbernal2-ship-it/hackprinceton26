@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "mock-api": "node scripts/mock-api.mjs"
   },
   "dependencies": {
     "@matterport/sdk": "^1.6.2",

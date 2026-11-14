@@ -1,5 +1,8 @@
 import type { NextConfig } from "next";
 
+// Python API (services/api). Server-side only; the browser always calls same-origin /api/*.
+const API_URL = process.env.API_URL ?? "http://127.0.0.1:8000";
+
 const nextConfig: NextConfig = {
   /* config options here */
   experimental: {
@@ -7,6 +10,9 @@ const nextConfig: NextConfig = {
   },
   cacheComponents: true,
   partialPrefetching: true,
+  async rewrites() {
+    return [{ source: "/api/:path*", destination: `${API_URL}/api/:path*` }];
+  },
   turbopack: {
     rules: {
       "*.css": {
