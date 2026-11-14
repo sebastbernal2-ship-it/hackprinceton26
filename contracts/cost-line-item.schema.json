@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CostLineItem",
+  "type": "object",
+  "required": ["itemId", "label", "category", "quantity", "unit", "low", "expected", "high", "currency", "basis", "status", "source", "asOf", "rationale"],
+  "properties": {
+    "itemId": {"type": "string"},
+    "label": {"type": "string"},
+    "category": {"enum": ["repair", "maintenance", "utility", "equipment", "buildout"]},
+    "quantity": {"type": ["number", "null"]},
+    "unit": {"type": "string"},
+    "low": {"type": ["number", "null"]},
+    "expected": {"type": ["number", "null"]},
+    "high": {"type": ["number", "null"]},
+    "currency": {"const": "USD"},
+    "basis": {"enum": ["one_time", "monthly", "annual"]},
+    "status": {"enum": ["observed", "estimated", "unknown"]},
+    "source": {"type": "string"},
+    "asOf": {"type": "string"},
+    "rationale": {"type": "string"},
+    "unitLow": {"type": "number"},
+    "unitExpected": {"type": "number"},
+    "unitHigh": {"type": "number"}
+  },
+  "additionalProperties": false
+}
