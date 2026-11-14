@@ -150,3 +150,10 @@ def test_replay_info_preserves_recording_metadata(tmp_path, monkeypatch):
     assert info["source"] == "local-recorded-run"
     assert info["recordedFrom"] == {"originalMode": "LIVE", "provider": "local", "model": "qwen-x", "date": "2026-11-15"}
     assert "recorded" in info["note"].lower() and "not a live run" in info["note"].lower()
+
+
+def test_briefs_are_saved_under_derived_dir_env(tmp_path, monkeypatch):
+    monkeypatch.setenv("DERIVED_DIR", str(tmp_path))
+    r = runner.Run("g", ScriptedEnv(), ScriptedPlanner(), ScriptedInspector(), mode="SCRIPTED")
+    r.run()
+    assert (tmp_path / "agent" / "briefs" / f"{r.run_id}.json").is_file()

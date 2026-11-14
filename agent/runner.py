@@ -1,6 +1,7 @@
 """Mission Control runner: planner loop, parallel tool calls, parallel site-inspector subagents, actions, guarded brief.
 Emits events: plan, tool_call, tool_result, subagent_start, subagent_finish, finding, action, final, error."""
 import json
+import os
 import queue
 import re
 import threading
@@ -100,7 +101,7 @@ class Run:
         self.q: queue.Queue = queue.Queue()
         self.lock = threading.Lock()
         self.n = 0
-        self.derived = Path(derived_dir or "data/derived") / "agent" / "briefs"
+        self.derived = Path(derived_dir or os.environ.get("DERIVED_DIR", "data/derived")) / "agent" / "briefs"
         self.tokens = {"input": 0, "output": 0, "calls": 0}
         self.verdicts: dict = {}
         self.trace: list = []
