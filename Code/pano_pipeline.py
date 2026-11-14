@@ -41,15 +41,16 @@ Q_PLAN = """query Plan($id: ID!) { model(id: $id) {
 } }"""
 
 Q_PANOS = """query Panos($id: ID!) { model(id: $id) {
-  panoLocations { id label position { x y z } skybox(resolution: "RES") { status children } }
+  panoLocations { id label position { x y z } rotation { x y z w } skybox(resolution: "RES") { status children } }
 } }"""
 
 SKIP_EDGE_TYPES = ("invisible", "opening")
 EQ_W = 1024                  # analysis resolution of the equirect images
 DIFF_THRESH = 28             # furnished vs defurnished colour difference (0-255) that counts as "changed"
-MIN_BLOB = 350               # smallest blob, in pixels at EQ_W
+MIN_BLOB = 600               # smallest blob, in pixels at EQ_W
 FUSE_DIST = 0.6              # metres: detections closer than this are the same object
 DEFAULT_CEIL = 2.7
+NADIR_CUT = 66                # degrees below horizon: tripod patch, ignored
 
 
 # ============================================================================ API
@@ -172,6 +173,8 @@ def download_views(s, plan, model, res, cache, max_panos):
                 continue
             e = panos.setdefault(p["id"], {"id": p["id"], "label": p.get("label"),
                                            "position": [p["position"][k] for k in "xyz"], "faces": {}})
+            if name == "furnished" and p.get("rotation"):
+                e["rotation"] = [p["rotation"][k] for k in "xyzw"]
             paths = []
             for k, url in enumerate(kids):
                 fp = cache / name / f"{p['id']}_{k}.jpg"
@@ -239,7 +242,7 @@ def lat_to_row(lat, H):
 
 
 # ============================================================================ calibration
-def calibrate(img, pos, plan):
+def calibrate(img, pos, plan, mirrors=(1, -1), heights=None, yaw_window=None):
     """Search heading (0.5 deg), mirror and camera height so the plan's floor/ceiling lines hit image edges."""
     from scipy import ndimage
     H, W = img.shape[:2]
@@ -256,17 +259,23 @@ def calibrate(img, pos, plan):
     cols = np.arange(W)
     lon_deg = np.degrees(lon)
     best = None
-    for mirror in (1, -1):
+    heights = np.arange(1.1, 1.95, 0.05) if heights is None else heights
+    for mirror in mirrors:
         idx = (((np.arange(0, 360, step)[:, None] + mirror * lon_deg[None]) % 360) / step).astype(int) % len(dtab)
         D = dtab[idx]                                                      # (yaws, W)
-        for h in np.arange(1.1, 1.95, 0.05):
+        for h in heights:
             rf = lat_to_row(-np.arctan(h / D), H)
             rc = lat_to_row(np.arctan(max(ceil - h, 0.2) / D), H)
             score = grad[rf, cols].mean(1) + grad[rc, cols].mean(1)
+            if yaw_window is not None:                     # (centre_deg, half_width_deg)
+                off = (np.arange(0, 360, step) - yaw_window[0] + 180) % 360 - 180
+                score = np.where(np.abs(off) <= yaw_window[1], score, -np.inf)
+                med = float(np.median(grad[rf, cols].mean(1) + grad[rc, cols].mean(1)))
             k = int(np.argmax(score))
             if best is None or score[k] > best["score"]:
                 best = {"yaw_deg": float(k * step), "mirror": mirror, "cam_height_m": round(float(h), 2),
-                        "score": float(score[k]), "median": float(np.median(score))}
+                        "score": float(score[k]),
+                        "median": med if yaw_window is not None else float(np.median(score))}
     best["confidence"] = round(best["score"] / max(best["median"], 1e-6), 2)
     best["ceiling_m"] = ceil
     best["room"] = (room or {}).get("label")
@@ -275,6 +284,45 @@ def calibrate(img, pos, plan):
 
 def world_theta(lon, cal):
     return np.radians(cal["yaw_deg"]) + cal["mirror"] * lon
+
+
+def quat_rotate(q, v):
+    x, y, z, w = q
+    u = np.array([x, y, z]); v = np.asarray(v, float)
+    return 2 * u.dot(v) * u + (w * w - u.dot(u)) * v + 2 * w * np.cross(u, v)
+
+
+def fit_quat_heading(panos, cals, min_conf=2.0):
+    """Learn how Matterport's (undocumented) pano quaternion maps to our heading, from the confidently
+    calibrated panos: heading = sign * angle(component j, component i of q*e) + offset. Tries every
+    axis/plane/sign; keeps the one whose offsets agree best. Returns a function pano -> heading, or None."""
+    good = [(p, cals[p["id"]]) for p in panos if p.get("rotation") and cals[p["id"]]["confidence"] >= min_conf]
+    if len(good) < 3:
+        return None, f"only {len(good)} confident panos with rotations"
+    axes = [np.eye(3)[i] * sg for i in range(3) for sg in (1, -1)]
+    best = None
+    for e in axes:
+        vs = np.array([quat_rotate(p["rotation"], e) for p, _ in good])
+        for i in range(3):
+            for j in range(3):
+                if i == j:
+                    continue
+                cand = np.degrees(np.arctan2(vs[:, j], vs[:, i]))
+                for sg in (1, -1):
+                    r = np.radians(np.array([c["yaw_deg"] for _, c in good]) - sg * cand)
+                    wts = np.array([c["confidence"] for _, c in good])
+                    mean = np.arctan2((wts * np.sin(r)).sum(), (wts * np.cos(r)).sum())
+                    dev = np.degrees(np.abs((r - mean + np.pi) % (2 * np.pi) - np.pi))
+                    spread = float(np.median(dev))
+                    if best is None or spread < best[0]:
+                        best = (spread, e, i, j, sg, float(np.degrees(mean)), float(np.mean(dev < 10)))
+    spread, e, i, j, sg, off, frac = best
+    if spread > 6 or frac < 0.6:
+        return None, f"no consistent quaternion convention (median spread {spread:.1f} deg, {frac:.0%} agree)"
+    def heading(p):
+        v = quat_rotate(p["rotation"], e)
+        return (sg * np.degrees(np.arctan2(v[j], v[i])) + off) % 360
+    return heading, f"quaternion heading model: median error {spread:.1f} deg, {frac:.0%} of confident panos within 10 deg"
 
 
 # ============================================================================ detection
@@ -286,18 +334,21 @@ def furniture_mask(F, D):
     diff = np.abs(Ff - Df * ratio).mean(2)
     H, W = diff.shape
     _, lat = grid(W)
-    band = (np.abs(lat) < np.radians(72))[:, None]                         # ignore tripod / ceiling cap
+    band = (lat < np.radians(72))[:, None]                               # ignore the ceiling cap
     m = (diff > DIFF_THRESH) & band
     m = ndimage.binary_opening(m, iterations=2)
     m = ndimage.binary_closing(m, iterations=4)
     m = ndimage.binary_fill_holes(m)
     lab, n = ndimage.label(m)
     sizes = ndimage.sum(np.ones_like(lab), lab, range(1, n + 1))
-    keep = [i + 1 for i, sz in enumerate(sizes) if sz >= MIN_BLOB]
+    tops = ndimage.minimum(np.arange(H)[:, None].repeat(W, 1), lab, range(1, n + 1))
+    nadir_row = lat_to_row(np.array(-np.radians(NADIR_CUT)), H)
+    # drop small blobs, and blobs lying wholly in the tripod patch under the camera
+    keep = [i + 1 for i, (sz, t) in enumerate(zip(sizes, tops)) if sz >= MIN_BLOB and t < nadir_row]
     return lab, keep, diff
 
 
-def place(lab, k, cal, pano, dtab, step, jump=0.5):
+def place(lab, k, cal, pano, dtab, step, jump=0.5, D=None, wall_items=False):
     """Blob -> floor points. One blob can hold several objects at different depths (table in front of a
     sofa); it is split wherever the floor distance jumps by more than `jump` metres between columns."""
     H, W = lab.shape
@@ -310,18 +361,39 @@ def place(lab, k, cal, pano, dtab, step, jump=0.5):
     h = cal["cam_height_m"]
     ucols = np.unique(cols)
     samples = []
-    for c in ucols[:: max(1, len(ucols) // 160)]:
+    stride = max(1, len(ucols) // 160)
+    for c in ucols[::stride]:
         rc = rows[cols == c]
         th = world_theta(lon[c], cal)
         dwall = dtab[int(round(np.degrees(th) % 360 / step)) % len(dtab)]
         pb = lat[rc.max()]
-        elev = pb >= -np.radians(3)
-        d = dwall - 0.03 if elev else min(h / np.tan(-pb), dwall - 0.03)
-        top_row = core_top[c] if core_top[c] >= 0 else rc.min()
-        samples.append((c, th, d, lat[top_row], lat[rc.max()], elev))
+        d_floor = h / np.tan(-pb) if pb < -np.radians(1) else np.inf
+        if d_floor <= dwall + 0.15:                                    # stands on this room's floor
+            elev, d = False, min(d_floor, dwall - 0.03)
+        else:
+            # bottom above the floor/wall line: wall-mounted, OR furniture seen through a doorway (the wall
+            # graph has no openings). Doorway if the defurnished image just below the object looks like floor.
+            if D is not None and is_opening(D, c, rc.max(), cal, dwall):
+                continue
+            if not wall_items:
+                continue
+            elev, d = True, dwall - 0.03
+        # height: walk up from the bottom while the mask is unbroken (gaps <= 4 px), so art hanging above a
+        # cabinet doesn't count as the cabinet's height
+        colmask = blob[:, c]
+        r = rc.max(); gap = 0; top_row = r
+        while r > 0 and gap <= 4:
+            r -= 1
+            if colmask[r]:
+                top_row, gap = r, 0
+            else:
+                gap += 1
+        top_row = max(top_row, core_top[c]) if core_top[c] >= 0 and core_top[c] <= rc.max() else top_row
+        top_row = min(top_row + 3, rc.max())                       # undo the mask dilation at the top
+        samples.append((c, th, d, lat[top_row], lat[rc.max()], elev, top_row, rc.max()))
     out, seg = [], [samples[0]] if samples else []
     for prev, cur in zip(samples, samples[1:]):
-        if abs(cur[2] - prev[2]) > jump or cur[0] - prev[0] > 8:
+        if abs(cur[2] - prev[2]) > max(jump, 0.35 * min(cur[2], prev[2])) or cur[0] - prev[0] > 4 * stride + 4:
             out.append(seg); seg = []
         seg.append(cur)
     if seg:
@@ -330,12 +402,12 @@ def place(lab, k, cal, pano, dtab, step, jump=0.5):
     for seg in out:
         if len(seg) < 3:
             continue
-        c, th, d, top, bot, elev = map(np.array, zip(*seg))
+        c, th, d, top, bot, elev, trow, brow = map(np.array, zip(*seg))
         is_elev = elev.mean() > 0.5
         dref = float(np.median(d))
         xy = np.c_[pano["position"][0] + d * np.cos(th), pano["position"][1] + d * np.sin(th)]
         cmask = np.isin(cols, np.arange(c.min(), c.max() + 1))
-        r0, r1 = rows[cmask].min(), rows[cmask].max()
+        r0, r1 = int(trow.min()), int(brow.max())
         dets.append({"pano": pano["id"], "pano_label": pano["label"], "pano_xy": np.array(pano["position"][:2]),
                      "cam_h": h, "ceiling": cal["ceiling_m"], "xy": xy, "distance_m": dref,
                      "ray_theta": th, "ray_top_lat": top,
@@ -344,6 +416,18 @@ def place(lab, k, cal, pano, dtab, step, jump=0.5):
                      "bbox_px": [int(c.min()), int(r0), int(c.max()), int(r1)],
                      "wraps": bool(c.min() == 0 or c.max() == W - 1)})
     return dets
+
+
+def is_opening(D, c, bottom_row, cal, dwall, tol=30.0):
+    """Compare the defurnished pixels just under an object's bottom edge with this room's floor
+    just below the predicted floor/wall line in the same column."""
+    H = D.shape[0]
+    floor_row = lat_to_row(np.array(-np.arctan(cal["cam_height_m"] / dwall)), H)
+    below = D[min(H - 1, bottom_row + 2): min(H, bottom_row + 8), c].astype(float)
+    floor = D[min(H - 1, floor_row + 4): min(H, floor_row + 14), c].astype(float)
+    if len(below) == 0 or len(floor) == 0 or bottom_row + 2 >= floor_row:
+        return False
+    return float(np.abs(below.mean(0) - floor.mean(0)).mean()) < tol
 
 
 def ray_box(o, th, centre, size, yaw):
@@ -380,18 +464,39 @@ def min_area_box(xy):
     return centre, (hi - lo), yaw
 
 
+MAX_SPAN = 3.5   # metres: a single detection wider than this is several objects run together
+
+
 def fuse(dets):
-    """Merge detections whose floor points come within 0.3 m of each other (same object, other pano)."""
+    """Merge detections of the same object from different panos. A detection joins an object if its
+    centroid is within FUSE_DIST, or its points come within 0.25 m - but only while the merged object
+    stays about as big as its parts (stops chains of neighbours growing into one giant object)."""
     from scipy.spatial import cKDTree
     objs = []
     for d in sorted(dets, key=lambda d: -d["pixels"]):
+        dspan = np.ptp(d["xy"], 0).max()
+        if dspan > MAX_SPAN:
+            continue
+        c = d["xy"].mean(0)
+        best, bscore = None, np.inf
         for o in objs:
-            if o["elevated"] == d["elevated"] and cKDTree(o["xy"]).query(d["xy"])[0].min() < 0.3 \
-                    and np.linalg.norm(o["xy"].mean(0) - d["xy"].mean(0)) < 2.0:
-                o["xy"] = np.vstack([o["xy"], d["xy"]]); o["views"].append(d)
-                break
+            if o["elevated"] != d["elevated"] or d["pano"] in o["panos"]:
+                continue
+            cd = np.linalg.norm(o["centroid"] - c)
+            near = cKDTree(o["xy"]).query(d["xy"])[0].min()
+            if cd >= FUSE_DIST and near >= 0.25:
+                continue
+            merged = np.ptp(np.vstack([o["xy"], d["xy"]]), 0).max()
+            if merged > 1.25 * max(np.ptp(o["xy"], 0).max(), dspan) + 0.3 or merged > MAX_SPAN:
+                continue
+            if cd < bscore:
+                best, bscore = o, cd
+        if best:
+            best["xy"] = np.vstack([best["xy"], d["xy"]]); best["views"].append(d); best["panos"].add(d["pano"])
+            best["centroid"] = best["xy"].mean(0)
         else:
-            objs.append({"xy": d["xy"].copy(), "elevated": d["elevated"], "views": [d]})
+            objs.append({"xy": d["xy"].copy(), "elevated": d["elevated"], "views": [d],
+                         "panos": {d["pano"]}, "centroid": c})
     return objs
 
 
@@ -407,7 +512,9 @@ def solidify(o, min_depth=0.6):
     is measured at the box's far corner (or near corner if above eye level); median over views."""
     centre, size, yaw = min_area_box(o["xy"])
     flags = []
-    if size[1] < 0.3:
+    if o["elevated"]:
+        size = np.array([size[0], max(size[1], 0.05)])          # wall-mounted: stays flat on the wall
+    elif size[1] < 0.3:
         t = np.radians(yaw)
         v = np.array([-np.sin(t), np.cos(t)])
         away = centre - min(o["views"], key=lambda w: w["distance_m"])["pano_xy"]
@@ -523,6 +630,7 @@ def main():
     ap.add_argument("--max-panos", type=int, default=0, help="0 = all; use 3-5 for a quick test")
     ap.add_argument("--diff-thresh", type=int, default=DIFF_THRESH)
     ap.add_argument("--min-confidence", type=float, default=1.3, help="skip panos calibrated below this")
+    ap.add_argument("--wall-items", action="store_true", help="also keep wall-mounted items (art, mirrors, TVs)")
     ap.add_argument("--label", action="store_true", help="label each object with a vision model")
     ap.add_argument("--vlm", default="claude-haiku-5-5")
     ap.add_argument("--labels", help="hand-edited labels.json to merge in")
@@ -544,26 +652,66 @@ def main():
     json.dump(plan, open(out / "plan.json", "w"), indent=1)
 
     panos = download_views(s, plan, a.model, a.res, cache, a.max_panos)
-    cals, dets, eqs = {}, [], {}
-    for i, p in enumerate(panos):
+    # pass 1: free search (heading, mirror, height) per pano
+    imgs, first = {}, {}
+    for p in panos:
         F = equirect(p["faces"]["furnished"]); D = equirect(p["faces"]["defurnished"])
-        cal, dtab, step = calibrate(F, p["position"], plan)
+        imgs[p["id"]] = (F, D)
+        first[p["id"]] = calibrate(F, p["position"], plan)[0]
+    # the mirror is a property of the camera format, so it must be the same for every pano: weighted vote
+    votes = {1: 0.0, -1: 0.0}
+    for c in first.values():
+        votes[c["mirror"]] += max(c["confidence"] - 1, 0)
+    mirror = 1 if votes[1] >= votes[-1] else -1
+    # camera height = pano z - floor z; floor z per storey (panos grouped by z) from the pass-1 heights
+    zs = sorted((p["position"][2], p["id"]) for p in panos)
+    groups, cur = [], [zs[0]]
+    for z in zs[1:]:
+        if z[0] - cur[-1][0] > 1.2:
+            groups.append(cur); cur = []
+        cur.append(z)
+    groups.append(cur)
+    floor_z = {}
+    for g in groups:
+        fz = float(np.median([z - first[i]["cam_height_m"] for z, i in g if first[i]["mirror"] == mirror] or
+                             [z - first[i]["cam_height_m"] for z, i in g]))
+        for _, i in g:
+            floor_z[i] = fz
+    print(f"global mirror {mirror:+d} (votes {votes[1]:.1f} vs {votes[-1]:.1f}); "
+          f"floor z per storey: {sorted({round(v, 2) for v in floor_z.values()})}")
+
+    first_with_h = {}
+    for p in panos:   # re-score pass 1 at the pinned height so confidences are comparable
+        first_with_h[p["id"]] = first[p["id"]]
+    heading, msg = fit_quat_heading(panos, first_with_h)
+    print(msg)
+
+    # pass 2: heading only, with mirror and camera height pinned
+    cals, dets, eqs = {}, [], {}
+    for p in panos:
+        F, D = imgs[p["id"]]
+        h0 = p["position"][2] - floor_z[p["id"]]
+        win = (heading(p), 4.0) if heading and p.get("rotation") else None
+        cal, dtab, step = calibrate(F, p["position"], plan, mirrors=(mirror,),
+                                    heights=h0 + np.array([-0.05, 0, 0.05]), yaw_window=win)
+        cal["heading_source"] = "quaternion model (+-4 deg refined)" if win else "image search"
+        cal["floor_z"] = round(floor_z[p["id"]], 3)
         cals[p["id"]] = cal
         lab, keep, _ = furniture_mask(F, D)
         debug_image(F, lab, keep, cal, dtab, step, out / "debug" / f"pano_{p['label']}.jpg")
-        ok = cal["confidence"] >= a.min_confidence
-        print(f"  pano {p['label']:>3}: room {cal['room']}, yaw {cal['yaw_deg']:5.1f}, mirror {cal['mirror']:+d}, "
-              f"cam {cal['cam_height_m']} m, confidence {cal['confidence']}{'' if ok else '  (SKIPPED)'}; "
-              f"{len(keep)} blobs")
+        ok = cal["confidence"] >= a.min_confidence or win is not None
+        print(f"  pano {p['label']:>3}: room {cal['room']}, yaw {cal['yaw_deg']:5.1f}, cam {cal['cam_height_m']} m, "
+              f"confidence {cal['confidence']}{'' if ok else '  (SKIPPED)'}; {len(keep)} blobs")
         if not ok:
             continue
+        own = room_of(plan, p["position"][:2])
         for k in keep:
-            dets.extend(place(lab, k, cal, p, dtab, step))
+            for d in place(lab, k, cal, p, dtab, step, D=D, wall_items=a.wall_items):
+                r = room_of(plan, d["xy"].mean(0))
+                if own is None or (r is not None and r["id"] == own["id"]):   # each pano reports its own room only
+                    dets.append(d)
         eqs[p["id"]] = p
-    mirrors = [c["mirror"] for c in cals.values() if c["confidence"] >= a.min_confidence]
-    if mirrors and len(set(mirrors)) > 1:
-        print(f"note: panos disagree on mirror ({mirrors.count(1)} vs {mirrors.count(-1)}); the minority is "
-              "likely mis-calibrated - check their debug images.")
+    json.dump([{k: p.get(k) for k in ("id", "label", "position", "rotation")} for p in panos], open(out / "panos.json", "w"), indent=1)
 
     labels = json.load(open(a.labels)) if a.labels else {}
     objects = []
@@ -571,8 +719,18 @@ def main():
     for o in fuse(dets):
         if len(o["xy"]) < 3:
             continue
-        centre, size, yaw, z_bot, z_top, extra = solidify(o)
-        room = room_of(plan, centre)
+        home = room_of(plan, o["xy"].mean(0))
+        for md in (0.6, 0.3, 0.05):          # guessed depth must not push the box through a wall
+            centre, size, yaw, z_bot, z_top, extra = solidify(o, min_depth=md)
+            if o["elevated"] or home is None or (room_of(plan, centre) or {}).get("id") == home["id"]:
+                break
+        if max(size) < 0.25 or (z_top - z_bot) < 0.1:
+            continue                                                  # slivers and flat patches (rugs, shadows)
+        probe = centre
+        if o["elevated"]:
+            v = o["views"][0]["pano_xy"] - centre
+            probe = centre + 0.15 * v / (np.linalg.norm(v) or 1)
+        room = room_of(plan, probe)
         if room is None:
             continue                                                  # landed outside the plan: discard
         primary = min(o["views"], key=lambda v: v["distance_m"])

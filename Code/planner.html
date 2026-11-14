@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Floor-plan furniture planner</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root {
+    --bg: #f6f4ef; --panel: #fffdf8; --ink: #1e1e1c; --muted: #77746c; --line: #e4e0d6;
+    --wall: #1e1e1c; --accent: #2f5d50; --bad: #c2412d; --warn: #c98a17; --ok: #2f5d50;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink);
+    font: 13px/1.4 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+  #app { display: grid; grid-template-columns: 1fr 330px; grid-template-rows: auto 1fr; height: 100vh; }
+  header { grid-column: 1 / -1; display: flex; gap: 10px; align-items: center; padding: 10px 14px;
+    border-bottom: 1px solid var(--line); background: var(--panel); flex-wrap: wrap; }
+  header h1 { font-size: 14px; margin: 0 12px 0 0; letter-spacing: .02em; }
+  header .sep { flex: 1; }
+  button, .btn { font: inherit; border: 1px solid var(--line); background: #fff; border-radius: 6px;
+    padding: 5px 10px; cursor: pointer; color: var(--ink); }
+  button:hover, .btn:hover { border-color: #bdb8ab; }
+  button.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  input[type=file] { display: none; }
+  #stage { position: relative; overflow: hidden; }
+  canvas { display: block; width: 100%; height: 100%; cursor: default; }
+  #hint { position: absolute; left: 12px; bottom: 10px; color: var(--muted); font-size: 12px;
+    background: rgba(246,244,239,.85); padding: 4px 8px; border-radius: 6px; }
+  #empty { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); text-align: center; }
+  #empty b { color: var(--ink); }
+  aside { border-left: 1px solid var(--line); background: var(--panel); overflow: auto; padding: 12px 14px; }
+  aside h2 { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted);
+    margin: 16px 0 6px; font-weight: 600; }
+  aside h2:first-child { margin-top: 0; }
+  .row { display: flex; gap: 6px; align-items: center; margin: 4px 0; }
+  .row label { width: 70px; color: var(--muted); }
+  .row input { flex: 1; min-width: 0; font: inherit; padding: 4px 6px; border: 1px solid var(--line); border-radius: 5px; }
+  .row input.num { width: 60px; flex: none; }
+  #crop { width: 100%; border-radius: 6px; border: 1px solid var(--line); display: none; margin-top: 6px; }
+  .flags { color: var(--warn); font-size: 12px; margin: 4px 0 0; padding-left: 16px; }
+  .issues { font-size: 12px; margin: 4px 0; padding-left: 16px; }
+  .issues .bad { color: var(--bad); } .issues .warn { color: var(--warn); }
+  #list { list-style: none; padding: 0; margin: 0; }
+  #list li { display: flex; gap: 8px; align-items: center; padding: 5px 6px; border-radius: 5px; cursor: pointer; }
+  #list li:hover { background: #f1ede4; } #list li.sel { background: #e6efe9; }
+  #list .sw { width: 10px; height: 10px; border-radius: 2px; flex: none; }
+  #list .lab { flex: 1; } #list .lab.none { color: var(--muted); font-style: italic; }
+  #list .st { font-size: 11px; }
+  .muted { color: var(--muted); }
+  table.rooms { width: 100%; border-collapse: collapse; font-size: 12px; }
+  table.rooms td { padding: 3px 0; border-bottom: 1px solid var(--line); }
+  table.rooms td.r { text-align: right; font-variant-numeric: tabular-nums; }
+  .pill { display: inline-block; padding: 1px 7px; border-radius: 10px; font-size: 11px; }
+  .pill.bad { background: #f7ded9; color: var(--bad); } .pill.warn { background: #f7ecd4; color: #8a5d0b; }
+  .pill.ok { background: #dfeee8; color: var(--ok); }
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1>Furniture planner</h1>
+    <label class="btn" title="Pick the pano_<sid> (or interior_<sid>) output folder">Open output folder
+      <input id="dir" type="file" webkitdirectory multiple></label>
+    <label class="btn" title="Or pick plan.json, objects.json and crops/*.jpg">Open files
+      <input id="files" type="file" multiple accept=".json,.jpg,.jpeg,.png"></label>
+    <button id="demo">Load demo</button>
+    <span class="sep"></span>
+    <label class="muted">Walkway <input id="clear" type="number" value="0.6" min="0" step="0.1" style="width:52px"> m</label>
+    <button id="undo" title="Ctrl+Z">Undo</button>
+    <button id="fit">Fit</button>
+    <button id="exportObj" class="primary">Export objects.json</button>
+    <button id="exportLab">Export labels.json</button>
+  </header>
+  <div id="stage">
+    <canvas id="cv"></canvas>
+    <div id="empty"><div><b>Open the pipeline's output folder</b><br>(the one with plan.json and objects.json)<br>or click <b>Load demo</b>.</div></div>
+    <div id="hint">Drag to move · Q / E rotate 15° (Shift: 1°) · Del remove · D duplicate · drag empty space to pan · wheel to zoom</div>
+  </div>
+  <aside>
+    <h2>Selected</h2>
+    <div id="sel" class="muted">Click an object.</div>
+    <h2>Objects <span id="summary"></span></h2>
+    <ul id="list"></ul>
+    <h2>Rooms</h2>
+    <table class="rooms" id="rooms"></table>
+  </aside>
+</div>
+
+<script id="demo-data" type="application/json">{"plan": {"model": "FAKE", "name": "synthetic house", "walls": [{"floor": "f0", "type": "wall", "a": [0, 0], "b": [5, 0], "thickness": 0.12, "physical": true}, {"floor": "f0", "type": "wall", "a": [5, 0], "b": [9, 0], "thickness": 0.12, "physical": true}, {"floor": "f0", "type": "wall", "a": [9, 0], "b": [9, 4], "thickness": 0.12, "physical": true}, {"floor": "f0", "type": "wall", "a": [9, 4], "b": [5, 4], "thickness": 0.12, "physical": true}, {"floor": "f0", "type": "wall", "a": [5, 4], "b": [0, 4], "thickness": 0.12, "physical": true}, {"floor": "f0", "type": "wall", "a": [0, 4], "b": [0, 0], "thickness": 0.12, "physical": true}, {"floor": "f0", "type": "wall", "a": [5, 0], "b": [5, 4], "thickness": 0.12, "physical": true}], "rooms": [{"id": "rA", "floor": "f0", "label": "Living Room", "polygon": [[0, 0], [5, 0], [5, 4], [0, 4], [0, 0]], "area_m2": null, "height_m": 2.7}, {"id": "rB", "floor": "f0", "label": "Bedroom", "polygon": [[5, 0], [9, 0], [9, 4], [5, 4], [5, 0]], "area_m2": null, "height_m": 2.7}], "defurnished_view": "FAKE_DEF"}, "objects": {"model": "zvKHR9DHNjJ", "units": "metres, Matterport model frame, z up, heights above floor", "method": "furnished minus defurnished panoramas, placed with plan-calibrated pano poses", "objects": [{"id": 0, "label": "dining table", "label_source": "demo", "furniture": null, "room": {"id": "rA", "label": "Living Room"}, "box": {"centre": [2.304, 1.807, 0.422], "size_lwh_m": [1.3, 0.8, 0.84], "yaw_deg": 0.0, "z_bottom": 0.0, "z_top": 0.84}, "on_floor": true, "seen_from_panos": ["0", "1"], "primary_view": {"pano": "p0", "pano_label": "0", "distance_m": 0.47, "bbox_px_at_1024": [536, 285, 860, 460]}, "flags": []}, {"id": 1, "label": "bed", "label_source": "demo", "furniture": null, "room": {"id": "rB", "label": "Bedroom"}, "box": {"centre": [7.46, 2.72, 0.412], "size_lwh_m": [1.71, 0.6, 0.82], "yaw_deg": 2.0, "z_bottom": 0.0, "z_top": 0.82}, "on_floor": true, "seen_from_panos": ["2"], "primary_view": {"pano": "p2", "pano_label": "2", "distance_m": 0.57, "bbox_px_at_1024": [299, 316, 651, 460]}, "flags": ["depth unseen: set to 0.6 m", "seen from one pano only"]}, {"id": 2, "label": "sofa", "label_source": "demo", "furniture": null, "room": {"id": "rA", "label": "Living Room"}, "box": {"centre": [2.366, 3.416, 0.455], "size_lwh_m": [1.68, 0.79, 0.91], "yaw_deg": 0.0, "z_bottom": 0.0, "z_top": 0.91}, "on_floor": true, "seen_from_panos": ["1"], "primary_view": {"pano": "p1", "pano_label": "1", "distance_m": 1.01, "bbox_px_at_1024": [271, 294, 431, 442]}, "flags": ["seen from one pano only"]}]}, "crops": {"obj_000.jpg": "data:image/jpeg;base64,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", "obj_001.jpg": "data:image/jpeg;base64,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", "obj_002.jpg": "data:image/jpeg;base64,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"}}</script>
+<script>
+"use strict";
+// ---------------------------------------------------------------- state
+const S = { plan: null, doc: null, objs: [], crops: {}, sel: null, undo: [],
+            view: { cx: 0, cy: 0, scale: 60 }, issues: new Map() };
+const cv = document.getElementById("cv"), ctx = cv.getContext("2d");
+const $ = id => document.getElementById(id);
+const PALETTE = ["#4e79a7","#f28e2b","#59a14f","#b07aa1","#76b7b2","#edc948","#ff9da7","#9c755f","#e15759","#86bcb6"];
+const labelColour = {};
+function colourFor(o) {
+  const k = (o.label || "?").toLowerCase();
+  if (!(k in labelColour)) labelColour[k] = PALETTE[Object.keys(labelColour).length % PALETTE.length];
+  return o.label ? labelColour[k] : "#9a968c";
+}
+
+// ---------------------------------------------------------------- geometry
+function corners(o) {
+  const [cx, cy] = o.box.centre, [L, W] = o.box.size_lwh_m, t = o.box.yaw_deg * Math.PI / 180;
+  const ux = Math.cos(t), uy = Math.sin(t), vx = -uy, vy = ux;
+  return [[-1,-1],[1,-1],[1,1],[-1,1]].map(([a, b]) =>
+    [cx + a * L / 2 * ux + b * W / 2 * vx, cy + a * L / 2 * uy + b * W / 2 * vy]);
+}
+function wallPoly(w) {
+  const [ax, ay] = w.a, [bx, by] = w.b, dx = bx - ax, dy = by - ay, n = Math.hypot(dx, dy) || 1;
+  const h = (w.thickness || 0.12) / 2, nx = -dy / n * h, ny = dx / n * h;
+  return [[ax + nx, ay + ny], [bx + nx, by + ny], [bx - nx, by - ny], [ax - nx, ay - ny]];
+}
+function project(P, ax) { let lo = Infinity, hi = -Infinity;
+  for (const p of P) { const d = p[0] * ax[0] + p[1] * ax[1]; lo = Math.min(lo, d); hi = Math.max(hi, d); } return [lo, hi]; }
+function overlap(A, B) {           // separating-axis test for convex polygons, shrunk 1 cm to allow touching
+  for (const P of [A, B]) for (let i = 0; i < P.length; i++) {
+    const p = P[i], q = P[(i + 1) % P.length], n = Math.hypot(q[0] - p[0], q[1] - p[1]) || 1;
+    const ax = [-(q[1] - p[1]) / n, (q[0] - p[0]) / n];
+    const [a0, a1] = project(A, ax), [b0, b1] = project(B, ax);
+    if (a1 <= b0 + 0.01 || b1 <= a0 + 0.01) return false;
+  }
+  return true;
+}
+function segDist(p, a, b) { const dx = b[0] - a[0], dy = b[1] - a[1], L = dx * dx + dy * dy || 1;
+  const t = Math.max(0, Math.min(1, ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / L));
+  return Math.hypot(p[0] - a[0] - t * dx, p[1] - a[1] - t * dy); }
+function polyDist(A, B) { if (overlap(A, B)) return 0; let d = Infinity;
+  for (const [P, Q] of [[A, B], [B, A]]) for (const p of P) for (let i = 0; i < Q.length; i++)
+    d = Math.min(d, segDist(p, Q[i], Q[(i + 1) % Q.length])); return d; }
+function inPoly(pt, poly) { let c = false;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const [xi, yi] = poly[i], [xj, yj] = poly[j];
+    if ((yi > pt[1]) !== (yj > pt[1]) && pt[0] < (xj - xi) * (pt[1] - yi) / (yj - yi) + xi) c = !c; }
+  return c; }
+function polyArea(P) { let a = 0; for (let i = 0; i < P.length; i++) { const p = P[i], q = P[(i + 1) % P.length];
+  a += p[0] * q[1] - q[0] * p[1]; } return Math.abs(a) / 2; }
+function roomAt(pt) { return (S.plan.rooms || []).find(r => inPoly(pt, r.polygon)) || null; }
+function walls() { return (S.plan.walls || (S.plan.floors || []).flatMap(f => f.walls || [])).filter(w => w.physical !== false); }
+
+// ---------------------------------------------------------------- checks
+function check() {
+  const clear = parseFloat($("clear").value) || 0, W = walls().map(wallPoly);
+  S.issues = new Map(S.objs.map(o => [o, []]));
+  const polys = new Map(S.objs.map(o => [o, corners(o)]));
+  for (const o of S.objs) {
+    const P = polys.get(o), r = roomAt(o.box.centre);
+    o.room = r ? { id: r.id, label: r.label } : null;
+    if (!r) S.issues.get(o).push(["bad", "outside every room"]);
+    if (o.on_floor !== false && W.some(w => overlap(P, w))) S.issues.get(o).push(["bad", "goes through a wall"]);
+  }
+  for (let i = 0; i < S.objs.length; i++) for (let j = i + 1; j < S.objs.length; j++) {
+    const a = S.objs[i], b = S.objs[j];
+    if (a.on_floor === false || b.on_floor === false) continue;
+    const d = polyDist(polys.get(a), polys.get(b)), na = name(a), nb = name(b);
+    if (d === 0) { S.issues.get(a).push(["bad", `overlaps ${nb}`]); S.issues.get(b).push(["bad", `overlaps ${na}`]); }
+    else if (d < clear) { S.issues.get(a).push(["warn", `${d.toFixed(2)} m from ${nb}`]);
+                          S.issues.get(b).push(["warn", `${d.toFixed(2)} m from ${na}`]); }
+  }
+}
+function status(o) { const is = S.issues.get(o) || [];
+  return is.some(i => i[0] === "bad") ? "bad" : is.length ? "warn" : "ok"; }
+function name(o) { return `#${o.id} ${o.label || "unlabelled"}`; }
+
+// ---------------------------------------------------------------- drawing
+function resize() { const r = cv.parentElement.getBoundingClientRect(), d = devicePixelRatio || 1;
+  cv.width = r.width * d; cv.height = r.height * d; ctx.setTransform(d, 0, 0, d, 0, 0); draw(); }
+function toScreen([x, y]) { const r = cv.getBoundingClientRect(), v = S.view;
+  return [(x - v.cx) * v.scale + r.width / 2, r.height / 2 - (y - v.cy) * v.scale]; }
+function toWorld(px, py) { const r = cv.getBoundingClientRect(), v = S.view;
+  return [(px - r.width / 2) / v.scale + v.cx, (r.height / 2 - py) / v.scale + v.cy]; }
+function path(P) { ctx.beginPath(); P.forEach((p, i) => { const [x, y] = toScreen(p); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }); ctx.closePath(); }
+function draw() {
+  const r = cv.getBoundingClientRect(); ctx.clearRect(0, 0, r.width, r.height);
+  if (!S.plan) return;
+  // grid (1 m)
+  ctx.strokeStyle = "#ebe7dd"; ctx.lineWidth = 1;
+  const [x0, y1] = toWorld(0, 0), [x1, y0] = toWorld(r.width, r.height);
+  for (let x = Math.floor(x0); x <= x1; x++) { const [sx] = toScreen([x, 0]); ctx.beginPath(); ctx.moveTo(sx, 0); ctx.lineTo(sx, r.height); ctx.stroke(); }
+  for (let y = Math.floor(y0); y <= y1; y++) { const [, sy] = toScreen([0, y]); ctx.beginPath(); ctx.moveTo(0, sy); ctx.lineTo(r.width, sy); ctx.stroke(); }
+  // rooms
+  for (const rm of S.plan.rooms || []) {
+    path(rm.polygon); ctx.fillStyle = "rgba(255,253,248,.95)"; ctx.fill();
+    const c = rm.polygon.reduce((a, p) => [a[0] + p[0] / rm.polygon.length, a[1] + p[1] / rm.polygon.length], [0, 0]);
+    const [sx, sy] = toScreen(c); ctx.fillStyle = "#b3aea2"; ctx.font = "600 11px system-ui"; ctx.textAlign = "center";
+    ctx.fillText(rm.label.toUpperCase(), sx, sy);
+  }
+  // walls
+  for (const w of (S.plan.walls || (S.plan.floors || []).flatMap(f => f.walls || []))) {
+    if (w.physical === false) { ctx.setLineDash([4, 4]); ctx.strokeStyle = "#c9c4b8"; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(...toScreen(w.a)); ctx.lineTo(...toScreen(w.b)); ctx.stroke(); ctx.setLineDash([]); continue; }
+    path(wallPoly(w)); ctx.fillStyle = getComputedStyle(document.body).getPropertyValue("--wall"); ctx.fill();
+  }
+  // objects
+  const clear = parseFloat($("clear").value) || 0;
+  for (const o of S.objs) {
+    const P = corners(o), st = status(o), col = colourFor(o), sel = o === S.sel;
+    if (sel && clear > 0 && o.on_floor !== false) {      // walkway halo
+      ctx.save(); path(P); ctx.lineWidth = clear * 2 * S.view.scale; ctx.strokeStyle = "rgba(47,93,80,.08)";
+      ctx.lineJoin = "round"; ctx.stroke(); ctx.restore(); }
+    path(P); ctx.fillStyle = col + (sel ? "cc" : "88"); ctx.fill();
+    ctx.lineWidth = sel ? 2.5 : 1.5;
+    ctx.strokeStyle = st === "bad" ? "#c2412d" : st === "warn" ? "#c98a17" : col;
+    if (o.on_floor === false) ctx.setLineDash([5, 3]);
+    ctx.stroke(); ctx.setLineDash([]);
+    // front marker (long side direction)
+    const [sx, sy] = toScreen(o.box.centre);
+    ctx.fillStyle = "#1e1e1c"; ctx.font = (sel ? "600 " : "") + "11px system-ui"; ctx.textAlign = "center";
+    ctx.fillText(o.label || `#${o.id}`, sx, sy + 4);
+  }
+}
+
+// ---------------------------------------------------------------- panel
+function renderPanel() {
+  check(); draw();
+  const n = S.objs.length, bad = S.objs.filter(o => status(o) === "bad").length,
+        warn = S.objs.filter(o => status(o) === "warn").length, unl = S.objs.filter(o => !o.label).length;
+  $("summary").innerHTML = n ? `<span class="pill ${bad ? "bad" : "ok"}">${bad} conflicts</span> <span class="pill warn">${warn} tight</span> <span class="muted">${unl} unlabelled</span>` : "";
+  const list = $("list"); list.innerHTML = "";
+  for (const o of S.objs) {
+    const li = document.createElement("li"); if (o === S.sel) li.className = "sel";
+    const st = status(o);
+    li.innerHTML = `<span class="sw" style="background:${colourFor(o)}"></span>
+      <span class="lab ${o.label ? "" : "none"}">#${o.id} ${o.label || "unlabelled"}</span>
+      <span class="st pill ${st}">${st === "ok" ? "ok" : st === "bad" ? "conflict" : "tight"}</span>`;
+    li.onclick = () => { select(o); };
+    list.appendChild(li);
+  }
+  // rooms
+  const rows = (S.plan.rooms || []).map(rm => {
+    const area = polyArea(rm.polygon), used = S.objs.filter(o => o.on_floor !== false && o.room && o.room.id === rm.id)
+      .reduce((a, o) => a + o.box.size_lwh_m[0] * o.box.size_lwh_m[1], 0);
+    return `<tr><td>${rm.label}</td><td class="r">${area.toFixed(1)} m²</td><td class="r muted">${area ? Math.round(100 * (1 - used / area)) : 0}% free</td></tr>`;
+  });
+  $("rooms").innerHTML = rows.join("");
+  renderSel();
+}
+function renderSel() {
+  const o = S.sel, box = $("sel");
+  if (!o) { box.className = "muted"; box.textContent = "Click an object."; return; }
+  box.className = "";
+  const b = o.box, is = S.issues.get(o) || [], crop = S.crops[`obj_${String(o.id).padStart(3, "0")}.jpg`];
+  box.innerHTML = `
+    <div class="row"><label>Label</label><input id="fLabel" value="${(o.label || "").replace(/"/g, "&quot;")}" placeholder="e.g. sofa"></div>
+    <div class="row"><label>Size (m)</label><input class="num" id="fL" type="number" step="0.05" value="${b.size_lwh_m[0]}">
+      <input class="num" id="fW" type="number" step="0.05" value="${b.size_lwh_m[1]}"><input class="num" id="fH" type="number" step="0.05" value="${b.size_lwh_m[2]}"></div>
+    <div class="row"><label>Rotation</label><input class="num" id="fYaw" type="number" step="1" value="${b.yaw_deg}"> <span class="muted">°</span></div>
+    <div class="row"><label>Room</label><span>${o.room ? o.room.label : "—"}</span></div>
+    <div class="row"><label>Position</label><span class="muted">${b.centre[0].toFixed(2)}, ${b.centre[1].toFixed(2)} m · ${o.on_floor === false ? "off the floor" : "on floor"}</span></div>
+    ${o.seen_from_panos ? `<div class="row"><label>Seen from</label><span class="muted">pano ${o.seen_from_panos.join(", ")}</span></div>` : ""}
+    ${is.length ? `<ul class="issues">${is.map(([k, t]) => `<li class="${k}">${t}</li>`).join("")}</ul>` : `<div class="row"><span class="pill ok">no conflicts</span></div>`}
+    ${(o.flags || []).length ? `<ul class="flags">${o.flags.map(f => `<li>${f}</li>`).join("")}</ul>` : ""}
+    <img id="crop" alt="crop">
+    <div class="row" style="margin-top:8px"><button id="bDup">Duplicate</button><button id="bDel">Remove</button></div>`;
+  if (crop) { $("crop").src = crop; $("crop").style.display = "block"; }
+  const num = (id, fn) => $(id).onchange = e => { push(); fn(parseFloat(e.target.value) || 0); renderPanel(); };
+  $("fLabel").onchange = e => { push(); o.label = e.target.value.trim() || null; o.label_source = "planner"; renderPanel(); };
+  num("fL", v => b.size_lwh_m[0] = Math.max(0.05, v)); num("fW", v => b.size_lwh_m[1] = Math.max(0.05, v));
+  num("fH", v => { b.size_lwh_m[2] = Math.max(0.02, v); b.z_top = +(b.z_bottom + b.size_lwh_m[2]).toFixed(2); });
+  num("fYaw", v => b.yaw_deg = ((v % 360) + 360) % 360);
+  $("bDup").onclick = duplicate; $("bDel").onclick = remove;
+}
+function select(o) { S.sel = o; renderPanel(); }
+
+// ---------------------------------------------------------------- edits
+function push() { S.undo.push(JSON.stringify(S.objs)); if (S.undo.length > 100) S.undo.shift(); }
+function undo() { if (!S.undo.length) return; const selId = S.sel && S.sel.id;
+  S.objs = JSON.parse(S.undo.pop()); S.sel = S.objs.find(o => o.id === selId) || null; renderPanel(); }
+function nextId() { return S.objs.reduce((m, o) => Math.max(m, o.id), -1) + 1; }
+function duplicate() { if (!S.sel) return; push(); const c = JSON.parse(JSON.stringify(S.sel));
+  c.id = nextId(); c.box.centre[0] += 0.3; c.box.centre[1] -= 0.3; c.flags = ["added in planner"]; c.label_source = "planner";
+  S.objs.push(c); select(c); }
+function remove() { if (!S.sel) return; push(); S.objs = S.objs.filter(o => o !== S.sel); S.sel = null; renderPanel(); }
+function rotate(deg) { if (!S.sel) return; push(); S.sel.box.yaw_deg = ((S.sel.box.yaw_deg + deg) % 360 + 360) % 360; renderPanel(); }
+
+// ---------------------------------------------------------------- mouse
+let drag = null;
+function hit(w) { for (let i = S.objs.length - 1; i >= 0; i--) if (inPoly(w, corners(S.objs[i]))) return S.objs[i]; return null; }
+cv.addEventListener("mousedown", e => {
+  if (!S.plan) return;
+  const w = toWorld(e.offsetX, e.offsetY), o = hit(w);
+  if (o) { push(); S.sel = o; drag = { kind: "obj", o, dx: w[0] - o.box.centre[0], dy: w[1] - o.box.centre[1], moved: false }; renderPanel(); }
+  else drag = { kind: "pan", x: e.offsetX, y: e.offsetY, cx: S.view.cx, cy: S.view.cy, moved: false };
+});
+cv.addEventListener("mousemove", e => {
+  if (!drag) { if (S.plan) cv.style.cursor = hit(toWorld(e.offsetX, e.offsetY)) ? "move" : "grab"; return; }
+  drag.moved = true;
+  if (drag.kind === "obj") { const w = toWorld(e.offsetX, e.offsetY);
+    drag.o.box.centre[0] = +(w[0] - drag.dx).toFixed(3); drag.o.box.centre[1] = +(w[1] - drag.dy).toFixed(3); check(); draw(); }
+  else { S.view.cx = drag.cx - (e.offsetX - drag.x) / S.view.scale; S.view.cy = drag.cy + (e.offsetY - drag.y) / S.view.scale; draw(); }
+});
+addEventListener("mouseup", () => {
+  if (!drag) return;
+  if (drag.kind === "obj") { if (!drag.moved) S.undo.pop(); else drag.o.label_source = drag.o.label_source || "planner"; renderPanel(); }
+  else if (!drag.moved && S.sel) { S.sel = null; renderPanel(); }
+  drag = null;
+});
+cv.addEventListener("wheel", e => { e.preventDefault(); const w = toWorld(e.offsetX, e.offsetY), f = Math.exp(-e.deltaY * 0.0015);
+  S.view.scale = Math.min(400, Math.max(8, S.view.scale * f));
+  const w2 = toWorld(e.offsetX, e.offsetY); S.view.cx += w[0] - w2[0]; S.view.cy += w[1] - w2[1]; draw(); }, { passive: false });
+addEventListener("keydown", e => {
+  if (e.target.tagName === "INPUT") return;
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") { e.preventDefault(); undo(); return; }
+  const step = e.shiftKey ? 1 : 15;
+  if (e.key.toLowerCase() === "q") rotate(step); else if (e.key.toLowerCase() === "e") rotate(-step);
+  else if (e.key === "Delete" || e.key === "Backspace") remove(); else if (e.key.toLowerCase() === "d") duplicate();
+  else if (e.key === "Escape") { S.sel = null; renderPanel(); }
+});
+
+// ---------------------------------------------------------------- loading
+function fit() {
+  const pts = (S.plan.rooms || []).flatMap(r => r.polygon).concat(walls().flatMap(w => [w.a, w.b]));
+  if (!pts.length) return;
+  const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]), r = cv.getBoundingClientRect();
+  const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+  S.view = { cx: (x0 + x1) / 2, cy: (y0 + y1) / 2, scale: 0.88 * Math.min(r.width / (x1 - x0 || 1), r.height / (y1 - y0 || 1)) };
+  draw();
+}
+function load(plan, doc, crops) {
+  S.plan = plan; S.doc = doc; S.crops = crops || {}; S.undo = []; S.sel = null;
+  S.objs = JSON.parse(JSON.stringify(doc.objects || []));
+  for (const k in labelColour) delete labelColour[k];
+  $("empty").style.display = "none"; fit(); renderPanel();
+}
+async function loadFiles(list) {
+  const files = [...list], byName = n => files.find(f => f.name === n);
+  const pf = byName("plan.json"), of = byName("objects.json");
+  if (!pf || !of) { alert("Need plan.json and objects.json (the pipeline's output folder)."); return; }
+  const plan = JSON.parse(await pf.text()), doc = JSON.parse(await of.text()), crops = {};
+  const labelsF = byName("labels.json");
+  if (labelsF) { const L = JSON.parse(await labelsF.text());
+    for (const o of doc.objects) if (!o.label && L[String(o.id)]) o.label = L[String(o.id)]; }
+  for (const f of files) if (/^obj_\d+\.jpe?g$/i.test(f.name)) crops[f.name] = URL.createObjectURL(f);
+  load(plan, doc, crops);
+}
+$("dir").onchange = e => loadFiles(e.target.files);
+$("files").onchange = e => loadFiles(e.target.files);
+$("demo").onclick = () => { const d = JSON.parse($("demo-data").textContent); load(d.plan, d.objects, d.crops); };
+$("fit").onclick = () => S.plan && fit();
+$("undo").onclick = undo;
+$("clear").oninput = () => S.plan && renderPanel();
+function download(name, data) { const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 1)], { type: "application/json" })); a.download = name; a.click(); }
+$("exportObj").onclick = () => { if (!S.plan) return;
+  download("objects.json", { ...S.doc, objects: S.objs.map(o => ({ ...o, planner_issues: (S.issues.get(o) || []).map(i => i[1]) })) }); };
+$("exportLab").onclick = () => { if (!S.plan) return;
+  download("labels.json", Object.fromEntries(S.objs.map(o => [String(o.id), o.label || ""]))); };
+addEventListener("resize", resize);
+resize();
+</script>
+</body>
+</html>

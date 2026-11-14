@@ -1,0 +1,17 @@
+name: run
+on: [push, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14.7"
+      - run: python Code/MatterportTest.py
+        env:
+          MATTERPORT_API_KEY: ${{ secrets.MATTERPORT_API_KEY }}
+          MATTERPORT_API_TOKEN: ${{ secrets.MATTERPORT_API_TOKEN }}
+          MATTERPORT_SDK_KEY: ${{ secrets.MATTERPORT_SDK_KEY }}
+          VEXCEL_API_KEY: ${{ secrets.VEXCEL_API_KEY }}

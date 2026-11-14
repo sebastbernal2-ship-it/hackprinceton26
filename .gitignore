@@ -1,0 +1,23 @@
+# Secrets - API keys live in env vars or a local .env, never in git
+.env
+*.env
+
+# Pipeline output (regenerate with the scripts in Code/)
+pano_*/
+interior_*/
+bundle_*/
+floorplans/
+mp_out/
+cache/
+
+# Hackathon track data: large (one file is over GitHub's 100 MB limit) and sponsor-provided
+Code/costar_kit/
+models_index.csv
+
+# Python / editor clutter
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.vscode/
+.DS_Store
+Thumbs.db
