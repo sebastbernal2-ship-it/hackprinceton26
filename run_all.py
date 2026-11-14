@@ -214,8 +214,18 @@ def step_carve():
     run(cmd)
 
 
+def walk_done():
+    """walk.html's pack is current when it is newer than everything it is built from."""
+    out = ASSETS / "walk" / "meta.json"
+    if not out.exists():
+        return False
+    srcs = [TILES / "furnished_mesh.npz", MD / "objects.json", MD / "scene_tiles.json", MD / "empty_room_textured.obj",
+            MD / "pano_poses.json", CODE / "walk_export.py"]
+    return all(out.stat().st_mtime >= s.stat().st_mtime for s in srcs if s.exists())
+
+
 def step_walk():
-    """Pack the furnished mesh for walk.html (first-person walk-through). Cheap, so it always refreshes."""
+    """Pack the furnished mesh + movable furniture pieces for walk.html (first-person walk-through)."""
     if not (TILES / "furnished_mesh.npz").exists():
         print("   no furnished mesh (matterpak / tiles step) - skipping the walk-through"); return
     run([PY, script("walk_export.py"), "--model", SID], fatal=False)
@@ -282,7 +292,7 @@ STEPS = [  # name, function, "done" check
     ("tileobjects", step_tileobjects, lambda: (MD / "scene_tiles.json").exists()),
     ("bake",     step_bake,     lambda: (MD / "empty_room_textured.obj").exists() and (MD / "pano_poses.json").exists()),
     ("carve",    step_carve,    lambda: (MD / "scene_shapes.json").exists()),
-    ("walk",     step_walk,     lambda: False),           # cheap: always repacks the walk-through mesh
+    ("walk",     step_walk,     walk_done),               # repacks when the mesh / pieces / photos change
     ("sdk",      step_sdk,      lambda: False),           # cheap: always refreshes config.js
     ("serve",    step_serve,    lambda: False),
 ]

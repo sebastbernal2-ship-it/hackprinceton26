@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Walk-through v1</title>
+<title>Walk-through v3</title>
 <!-- Served by run_all.py at http://localhost:8000/Code/walk.html?model=<sid>  (needs assets_<sid>/walk/ from Code/walk_export.py) -->
 <script src="showcase/config.js"></script>
 <style>
@@ -15,6 +15,12 @@
   #cross { position:fixed; left:50%; top:50%; width:6px; height:6px; margin:-3px 0 0 -3px; border-radius:50%; background:#fff8; pointer-events:none; }
   #hint { position:fixed; left:50%; bottom:22px; transform:translateX(-50%); background:#000a; padding:6px 12px; border-radius:16px; font-size:12px; pointer-events:none; transition:opacity .3s; }
   #fade { position:fixed; inset:0; background:#000; opacity:0; pointer-events:none; transition:opacity .25s; }
+  #target { position:fixed; left:50%; top:calc(50% + 22px); transform:translateX(-50%); background:#000b; padding:4px 10px; border-radius:6px;
+            font-size:12px; pointer-events:none; white-space:nowrap; transition:opacity .15s; }
+  #target.bad { color:#ff8a8a; }
+  #panel { position:fixed; right:12px; bottom:12px; background:#000a; padding:6px 8px; border-radius:8px; font-size:12px; color:var(--dim); }
+  #panel button { background:#2a2f37; color:var(--text); border:1px solid #3a3f48; border-radius:5px; padding:3px 8px; margin-left:4px; cursor:pointer; font:inherit; }
+  #panel button:hover { border-color:var(--acc); }
 </style>
 </head>
 <body>
@@ -22,8 +28,11 @@
   <div id="status" class="dim">Loading…</div>
   <div class="dim" style="margin-top:4px">Click to look around · <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> walk · <kbd>Shift</kbd> run ·
     <kbd>N</kbd>/<kbd>B</kbd> next/previous scan spot · <kbd>P</kbd> photo view on/off · <kbd>Esc</kbd> free the mouse</div>
+  <div class="dim" style="margin-top:4px">Furniture: aim at a piece · <kbd>E</kbd> or click pick up / place · wheel or <kbd>R</kbd> turn ·
+    <kbd>X</kbd> remove · <kbd>Ctrl</kbd>+<kbd>Z</kbd> undo</div>
 </div>
-<div id="cross"></div><div id="hint" style="opacity:0"></div><div id="fade"></div>
+<div id="panel"><span id="edits"></span> <button id="exportBtn">Export edits.json</button><button id="resetBtn">Reset all</button></div>
+<div id="cross"></div><div id="target" style="opacity:0"></div><div id="hint" style="opacity:0"></div><div id="fade"></div>
 <script type="module">
 import * as THREE from './vendor/three.module.min.js';
 
@@ -59,22 +68,30 @@ const buf = await (await fetch(BASE + 'mesh.bin')).arrayBuffer();
 const P = new Float32Array(buf, meta.offsets.position, meta.vertices * 3);
 const UV = new Float32Array(buf, meta.offsets.uv, meta.vertices * 2);
 const IDX = new Uint32Array(buf, meta.offsets.index, meta.triangles * 3);
-const geo = new THREE.BufferGeometry();
-geo.setAttribute('position', new THREE.BufferAttribute(P, 3));
-geo.setAttribute('uv', new THREE.BufferAttribute(UV, 2));
-geo.setIndex(new THREE.BufferAttribute(IDX, 1));
-geo.computeBoundingSphere();
-const blank = new THREE.MeshBasicMaterial({ color: 0x777777, side: THREE.DoubleSide });
-const mats = meta.groups.map((g, i) => { geo.addGroup(g.start, g.count, i); return g.tex ? new THREE.MeshBasicMaterial({ color: 0x777777, side: THREE.DoubleSide }) : blank; });
-const mesh = new THREE.Mesh(geo, mats); scene.add(mesh);
+// one vertex buffer; the house and every movable piece are separate meshes (index ranges) over it
+const posAttr = new THREE.BufferAttribute(P, 3), uvAttr = new THREE.BufferAttribute(UV, 2);
+const mats = meta.textures.map(() => new THREE.MeshBasicMaterial({ color: 0x777777, side: THREE.DoubleSide }));
+const span = gs => [Math.min(...gs.map(g => g.start)), Math.max(...gs.map(g => g.start + g.count))];
+function subGeometry(gs) {
+  const [lo, hi] = span(gs), g = new THREE.BufferGeometry();
+  g.setAttribute('position', posAttr); g.setAttribute('uv', uvAttr);
+  g.setIndex(new THREE.BufferAttribute(IDX.subarray(lo, hi), 1));
+  for (const gr of gs) g.addGroup(gr.start - lo, gr.count, gr.tex);
+  const b = new THREE.Box3();                      // bounds from this range only (the shared buffer holds everything)
+  for (let k = lo; k < hi; k++) { const v = IDX[k] * 3; b.expandByPoint(new THREE.Vector3(P[v], P[v + 1], P[v + 2])); }
+  g.boundingBox = b; g.boundingSphere = b.getBoundingSphere(new THREE.Sphere());
+  return g;
+}
+const HOUSE_END = meta.groups.length ? span(meta.groups)[1] : 0;    // index units; pieces follow the house
+const house = new THREE.Mesh(subGeometry(meta.groups), mats); scene.add(house);
 
-// texture level of detail: everything at half resolution, full resolution for the groups closest to you
-const groups = meta.groups.map((g, i) => {
-  const lo = [Infinity, Infinity, Infinity], hi = [-Infinity, -Infinity, -Infinity];
+// texture level of detail: everything at half resolution, full resolution for the textures closest to you
+const groups = meta.textures.map((tex, i) => ({ tex, i, lo: [Infinity, Infinity, Infinity], hi: [-Infinity, -Infinity, -Infinity], low: null, full: null }));
+for (const g of [...meta.groups, ...(meta.pieces || []).flatMap(p => p.groups)]) {
+  const t = groups[g.tex];
   for (let k = g.start; k < g.start + g.count; k++) { const v = IDX[k] * 3;
-    for (let a = 0; a < 3; a++) { const x = P[v + a]; if (x < lo[a]) lo[a] = x; if (x > hi[a]) hi[a] = x; } }
-  return { ...g, i, lo, hi, low: null, full: null, busy: false };
-});
+    for (let a = 0; a < 3; a++) { const x = P[v + a]; if (x < t.lo[a]) t.lo[a] = x; if (x > t.hi[a]) t.hi[a] = x; } }
+}
 // Decode off the main thread, already flipped and not premultiplied, so the GPU upload is a straight copy
 // (a premultiplied bitmap makes WebGL convert every pixel on the main thread during the upload).
 const RAW = { premultiplyAlpha: 'none', colorSpaceConversion: 'none' };
@@ -99,69 +116,136 @@ await Promise.all(Array.from({ length: 6 }, async () => {
     status(`Loading textures ${++loaded}/${groups.length}…`); }
 }));
 const boxDist = (g, p) => Math.hypot(Math.max(g.lo[0] - p.x, 0, p.x - g.hi[0]), Math.max(g.lo[1] - p.y, 0, p.y - g.hi[1]), Math.max(g.lo[2] - p.z, 0, p.z - g.hi[2]));
+// Textures loaded while you walk must not stall a frame. Two costs hide in a plain upload: the browser decodes the
+// JPEG lazily, on the main thread, at upload time (~15 ms for 2048x2048), and the upload itself. So: decode to raw
+// pixels in background workers, then copy them into an empty texture 128 rows per frame (~1 ms each); mipmaps are
+// built once on the GPU after the last strip.
+const decoders = Array.from({ length: 2 }, () => new Worker(URL.createObjectURL(new Blob([`
+  onmessage = async e => {
+    const { id, url } = e.data;
+    try {
+      const b = await createImageBitmap(await (await fetch(url)).blob());
+      const W = b.width, H = b.height, oc = new OffscreenCanvas(W, H), cx = oc.getContext('2d', { willReadFrequently: true });
+      cx.drawImage(b, 0, 0); b.close();
+      const px = cx.getImageData(0, 0, W, H).data, out = new Uint8Array(W * H * 4), row = W * 4;
+      for (let y = 0; y < H; y++) out.set(px.subarray((H - 1 - y) * row, (H - y) * row), y * row);   // WebGL rows run bottom-up
+      postMessage({ id, W, H, data: out }, [out.buffer]);
+    } catch (err) { postMessage({ id, error: String(err) }); }
+  };`], { type: 'text/javascript' }))));
+const decodeJobs = new Map(); let decodeId = 0, nextDecoder = 0;
+decoders.forEach(w => w.onmessage = e => { decodeJobs.get(e.data.id)(e.data); decodeJobs.delete(e.data.id); });
+function decode(url) {
+  const id = ++decodeId, w = decoders[nextDecoder++ % decoders.length];
+  return new Promise((res, rej) => { decodeJobs.set(id, d => d.error ? rej(new Error(d.error)) : res(d));
+    w.postMessage({ id, url: new URL(url, location.href).href }); });
+}
+const STRIP = 128;
+async function stripUpload(url, wrap) {
+  const { W, H, data } = await decode(url);
+  const src = new THREE.DataTexture(data, W, H, THREE.RGBAFormat, THREE.UnsignedByteType);
+  const dst = new THREE.DataTexture(null, W, H, THREE.RGBAFormat, THREE.UnsignedByteType);
+  dst.colorSpace = THREE.SRGBColorSpace; dst.anisotropy = aniso; dst.flipY = false;
+  if (wrap) dst.wrapS = THREE.RepeatWrapping;
+  dst.minFilter = THREE.LinearMipmapLinearFilter; dst.magFilter = THREE.LinearFilter; dst.generateMipmaps = true;
+  dst.source.dataReady = false; dst.needsUpdate = true;      // allocate storage (with mip levels) but send no pixels yet
+  await nextFrame(); renderer.initTexture(dst);
+  dst.generateMipmaps = false;
+  const region = new THREE.Box2(new THREE.Vector2(), new THREE.Vector2()), at = new THREE.Vector2();
+  for (let y = 0; y < H; y += STRIP) {
+    await nextFrame();
+    const h = Math.min(STRIP, H - y);
+    if (y + h >= H) dst.generateMipmaps = true;
+    region.min.set(0, y); region.max.set(W, y + h);
+    renderer.copyTextureToTexture(src, dst, region, at.set(0, y));
+  }
+  return dst;
+}
 // Upgrades are paced (one GPU upload, then a pause) and sticky (a texture only drops back to half resolution once it is
 // well outside the nearest set), so walking along the edge of the set does not keep re-uploading the same textures.
 let lodBusy = false;
 async function updateLOD() {
   if (lodBusy) return; lodBusy = true;
   try {
-    const ranked = groups.filter(g => g.tex).sort((a, b) => boxDist(a, camera.position) - boxDist(b, camera.position));
+    const ranked = groups.filter(g => g.tex && isFinite(g.lo[0])).sort((a, b) => boxDist(a, camera.position) - boxDist(b, camera.position));
     const rank = new Map(ranked.map((g, i) => [g, i]));
     for (const g of groups) if (g.full && rank.get(g) >= HI_BUDGET * 1.25) {
-      setMap(g, g.low); g.full.dispose(); g.full.image.close?.(); g.full = null; }
+      setMap(g, g.low); g.full.dispose(); g.full = null; }
     for (const g of ranked.slice(0, HI_BUDGET)) {
       if (g.full) continue;
       let t;
-      try { t = texture(await bitmap(meta.texture_dir + g.tex, false)); } catch (e) { continue; }
-      await nextFrame();
-      renderer.initTexture(t);                    // upload now, between frames, instead of in the middle of a draw
+      try { t = await stripUpload(meta.texture_dir + g.tex); } catch (e) { console.warn(g.tex, e); continue; }
       g.full = t; setMap(g, t);
-      await wait(150);
+      await wait(50);
     }
   } finally { lodBusy = false; }
 }
 
-// ------------------------------------------------------------------ collision grid (triangles bucketed into 0.5 m XY cells)
-const NT = meta.triangles, CELL = 0.5;
-const X0 = meta.bbox[0][0] - 1, Y0 = meta.bbox[0][1] - 1;
-const NX = Math.ceil((meta.bbox[1][0] - X0 + 1) / CELL), NY = Math.ceil((meta.bbox[1][1] - Y0 + 1) / CELL);
-const NZ = new Float32Array(NT);                // |normal.z| of each triangle (1 = floor-like)
-const cellStart = new Uint32Array(NX * NY + 1);
-const triRange = t => { const a = IDX[t * 3] * 3, b = IDX[t * 3 + 1] * 3, c = IDX[t * 3 + 2] * 3;
-  return [Math.floor((Math.min(P[a], P[b], P[c]) - X0) / CELL), Math.floor((Math.max(P[a], P[b], P[c]) - X0) / CELL),
-          Math.floor((Math.min(P[a + 1], P[b + 1], P[c + 1]) - Y0) / CELL), Math.floor((Math.max(P[a + 1], P[b + 1], P[c + 1]) - Y0) / CELL)]; };
-for (let t = 0; t < NT; t++) {
-  const a = IDX[t * 3] * 3, b = IDX[t * 3 + 1] * 3, c = IDX[t * 3 + 2] * 3;
-  const ux = P[b] - P[a], uy = P[b + 1] - P[a + 1], uz = P[b + 2] - P[a + 2], vx = P[c] - P[a], vy = P[c + 1] - P[a + 1], vz = P[c + 2] - P[a + 2];
-  const nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
-  NZ[t] = Math.abs(nz) / (Math.hypot(nx, ny, nz) || 1);
-  const [i0, i1, j0, j1] = triRange(t);
-  for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++) cellStart[j * NX + i + 1]++;
+// ------------------------------------------------------------------ collision
+// A "soup" is a set of triangles bucketed into XY cells. The house is one (plus the floor of the fill patches, so you
+// can walk where a piece used to stand); every movable piece has its own, queried in the piece's original frame.
+function makeSoup(Pos, Ix, cell) {
+  const n = Ix.length / 3, nz = new Float32Array(n);
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  for (let k = 0; k < Ix.length; k++) { const v = Ix[k] * 3;
+    if (Pos[v] < x0) x0 = Pos[v]; if (Pos[v] > x1) x1 = Pos[v]; if (Pos[v + 1] < y0) y0 = Pos[v + 1]; if (Pos[v + 1] > y1) y1 = Pos[v + 1]; }
+  x0 -= cell; y0 -= cell;
+  const nx = Math.max(1, Math.ceil((x1 - x0) / cell) + 1), ny = Math.max(1, Math.ceil((y1 - y0) / cell) + 1);
+  const start = new Uint32Array(nx * ny + 1);
+  const range = t => { const a = Ix[t * 3] * 3, b = Ix[t * 3 + 1] * 3, c = Ix[t * 3 + 2] * 3;
+    return [Math.floor((Math.min(Pos[a], Pos[b], Pos[c]) - x0) / cell), Math.floor((Math.max(Pos[a], Pos[b], Pos[c]) - x0) / cell),
+            Math.floor((Math.min(Pos[a + 1], Pos[b + 1], Pos[c + 1]) - y0) / cell), Math.floor((Math.max(Pos[a + 1], Pos[b + 1], Pos[c + 1]) - y0) / cell)]; };
+  for (let t = 0; t < n; t++) {
+    const a = Ix[t * 3] * 3, b = Ix[t * 3 + 1] * 3, c = Ix[t * 3 + 2] * 3;
+    const ux = Pos[b] - Pos[a], uy = Pos[b + 1] - Pos[a + 1], uz = Pos[b + 2] - Pos[a + 2], vx = Pos[c] - Pos[a], vy = Pos[c + 1] - Pos[a + 1], vz = Pos[c + 2] - Pos[a + 2];
+    const qx = uy * vz - uz * vy, qy = uz * vx - ux * vz, qz = ux * vy - uy * vx;
+    nz[t] = Math.abs(qz) / (Math.hypot(qx, qy, qz) || 1);
+    const [i0, i1, j0, j1] = range(t);
+    for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++) start[j * nx + i + 1]++;
+  }
+  for (let k = 0; k < nx * ny; k++) start[k + 1] += start[k];
+  const tris = new Uint32Array(start[nx * ny]), fillAt = start.slice(0, nx * ny);
+  for (let t = 0; t < n; t++) { const [i0, i1, j0, j1] = range(t);
+    for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++) tris[fillAt[j * nx + i]++] = t; }
+  return { Pos, Ix, n, nz, cell, x0, y0, nx, ny, start, tris, stamp: new Uint32Array(n), sid: 0 };
 }
-for (let k = 0; k < NX * NY; k++) cellStart[k + 1] += cellStart[k];
-const cellTris = new Uint32Array(cellStart[NX * NY]), fill = cellStart.slice(0, NX * NY);
-for (let t = 0; t < NT; t++) { const [i0, i1, j0, j1] = triRange(t);
-  for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++) cellTris[fill[j * NX + i]++] = t; }
-const stamp = new Uint32Array(NT); let stampId = 0;
-function eachTri(xmin, xmax, ymin, ymax, fn) {
-  stampId++;
-  const i0 = Math.max(0, Math.floor((xmin - X0) / CELL)), i1 = Math.min(NX - 1, Math.floor((xmax - X0) / CELL));
-  const j0 = Math.max(0, Math.floor((ymin - Y0) / CELL)), j1 = Math.min(NY - 1, Math.floor((ymax - Y0) / CELL));
+function eachTri(S, xmin, xmax, ymin, ymax, fn) {
+  S.sid++;
+  const i0 = Math.max(0, Math.floor((xmin - S.x0) / S.cell)), i1 = Math.min(S.nx - 1, Math.floor((xmax - S.x0) / S.cell));
+  const j0 = Math.max(0, Math.floor((ymin - S.y0) / S.cell)), j1 = Math.min(S.ny - 1, Math.floor((ymax - S.y0) / S.cell));
   for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++)
-    for (let k = cellStart[j * NX + i], e = cellStart[j * NX + i + 1]; k < e; k++) {
-      const t = cellTris[k]; if (stamp[t] === stampId) continue; stamp[t] = stampId; fn(t); }
+    for (let k = S.start[j * S.nx + i], e = S.start[j * S.nx + i + 1]; k < e; k++) {
+      const t = S.tris[k]; if (S.stamp[t] === S.sid) continue; S.stamp[t] = S.sid; fn(t); }
 }
+
+// the house soup: house triangles + floor-like fill triangles
+const patchN = meta.patch ? meta.patch.vertices : 0, patchT = meta.patch ? meta.patch.triangles : 0;
+const PP = patchN ? new Float32Array(buf, meta.offsets.patch_position, patchN * 3) : new Float32Array(0);
+const PI_ = patchT ? new Uint32Array(buf, meta.offsets.patch_index, patchT * 3) : new Uint32Array(0);
+const nV = meta.vertices;
+const CP = new Float32Array(P.length + PP.length); CP.set(P); CP.set(PP, P.length);
+const floorFill = [];
+for (let t = 0; t < patchT; t++) {
+  const a = PI_[t * 3] * 3, b = PI_[t * 3 + 1] * 3, c = PI_[t * 3 + 2] * 3;
+  const ux = PP[b] - PP[a], uy = PP[b + 1] - PP[a + 1], uz = PP[b + 2] - PP[a + 2], vx = PP[c] - PP[a], vy = PP[c + 1] - PP[a + 1], vz = PP[c + 2] - PP[a + 2];
+  const qx = uy * vz - uz * vy, qy = uz * vx - ux * vz, qz = ux * vy - uy * vx;
+  if (Math.abs(qz) >= 0.6 * Math.hypot(qx, qy, qz)) floorFill.push(t);
+}
+const CI = new Uint32Array(HOUSE_END + floorFill.length * 3); CI.set(IDX.subarray(0, HOUSE_END));
+floorFill.forEach((t, k) => { for (let a = 0; a < 3; a++) CI[HOUSE_END + k * 3 + a] = PI_[t * 3 + a] + nV; });
+const STATIC = makeSoup(CP, CI, 0.5);
+
 // highest floor-like surface under (x, y) between zBot and zTop, or -Infinity
 function floorAt(x, y, zTop, zBot) {
+  const S = STATIC, Pos = S.Pos, Ix = S.Ix;
   let best = -Infinity;
-  eachTri(x, x, y, y, t => {
-    if (NZ[t] < 0.6) return;
-    const a = IDX[t * 3] * 3, b = IDX[t * 3 + 1] * 3, c = IDX[t * 3 + 2] * 3;
-    const d = (P[b + 1] - P[c + 1]) * (P[a] - P[c]) + (P[c] - P[b]) * (P[a + 1] - P[c + 1]); if (Math.abs(d) < 1e-12) return;
-    const l1 = ((P[b + 1] - P[c + 1]) * (x - P[c]) + (P[c] - P[b]) * (y - P[c + 1])) / d;
-    const l2 = ((P[c + 1] - P[a + 1]) * (x - P[c]) + (P[a] - P[c]) * (y - P[c + 1])) / d, l3 = 1 - l1 - l2;
+  eachTri(S, x, x, y, y, t => {
+    if (S.nz[t] < 0.6) return;
+    const a = Ix[t * 3] * 3, b = Ix[t * 3 + 1] * 3, c = Ix[t * 3 + 2] * 3;
+    const d = (Pos[b + 1] - Pos[c + 1]) * (Pos[a] - Pos[c]) + (Pos[c] - Pos[b]) * (Pos[a + 1] - Pos[c + 1]); if (Math.abs(d) < 1e-12) return;
+    const l1 = ((Pos[b + 1] - Pos[c + 1]) * (x - Pos[c]) + (Pos[c] - Pos[b]) * (y - Pos[c + 1])) / d;
+    const l2 = ((Pos[c + 1] - Pos[a + 1]) * (x - Pos[c]) + (Pos[a] - Pos[c]) * (y - Pos[c + 1])) / d, l3 = 1 - l1 - l2;
     if (l1 < -1e-6 || l2 < -1e-6 || l3 < -1e-6) return;
-    const z = l1 * P[a + 2] + l2 * P[b + 2] + l3 * P[c + 2];
+    const z = l1 * Pos[a + 2] + l2 * Pos[b + 2] + l3 * Pos[c + 2];
     if (z <= zTop && z >= zBot && z > best) best = z;
   });
   return best;
@@ -173,8 +257,9 @@ function groundAt(x, y, zTop, zBot) {
   return best;
 }
 // closest point on triangle (Ericson, Real-Time Collision Detection 5.1.5)
-function closest(px, py, pz, t, out) {
-  const a = IDX[t * 3] * 3, b = IDX[t * 3 + 1] * 3, c = IDX[t * 3 + 2] * 3;
+function closest(S, px, py, pz, t, out) {
+  const P = S.Pos, Ix = S.Ix;
+  const a = Ix[t * 3] * 3, b = Ix[t * 3 + 1] * 3, c = Ix[t * 3 + 2] * 3;
   const ax = P[a], ay = P[a + 1], az = P[a + 2];
   const abx = P[b] - ax, aby = P[b + 1] - ay, abz = P[b + 2] - az, acx = P[c] - ax, acy = P[c + 1] - ay, acz = P[c + 2] - az;
   const apx = px - ax, apy = py - ay, apz = pz - az;
@@ -198,24 +283,60 @@ function closest(px, py, pz, t, out) {
 }
 function set(o, x, y, z) { o[0] = x; o[1] = y; o[2] = z; return o; }
 const tmp = [0, 0, 0];
-// push the player's body spheres horizontally out of walls and furniture
+// horizontal push that takes a sphere at (x, y, z) out of the triangles of S (in S's own frame)
+function sphereOut(S, x, y, z, r) {
+  let px = 0, py = 0;
+  eachTri(S, x - r, x + r, y - r, y + r, t => {
+    closest(S, x + px, y + py, z, t, tmp);
+    const dx = x + px - tmp[0], dy = y + py - tmp[1], dz = z - tmp[2], d = Math.hypot(dx, dy, dz);
+    if (d >= r) return;
+    const hl = Math.hypot(dx, dy); if (hl < 1e-4) return;        // straight above/below: floor or ceiling, not a wall
+    const k = Math.min(r - d, 0.2) / hl; px += dx * k; py += dy * k;
+  });
+  return [px, py];
+}
+// push the player's body spheres horizontally out of walls and furniture (furniture wherever it has been moved to)
 function pushOut(feet) {
   for (let it = 0; it < 4; it++) {
     let moved = false;
     for (const h of SPHERES) {
-      const cx = feet.x, cy = feet.y, cz = feet.z + h;
-      let px = 0, py = 0;
-      eachTri(cx - RADIUS, cx + RADIUS, cy - RADIUS, cy + RADIUS, t => {
-        closest(cx + px, cy + py, cz, t, tmp);
-        const dx = cx + px - tmp[0], dy = cy + py - tmp[1], dz = cz - tmp[2], d = Math.hypot(dx, dy, dz);
-        if (d >= RADIUS) return;
-        const hl = Math.hypot(dx, dy); if (hl < 1e-4) return;        // straight above/below: floor or ceiling, not a wall
-        const k = Math.min(RADIUS - d, 0.2) / hl; px += dx * k; py += dy * k;
-      });
+      const cz = feet.z + h;
+      let [px, py] = sphereOut(STATIC, feet.x, feet.y, cz, RADIUS);
+      for (const pc of pieces) {
+        if (pc.deleted || pc === carried) continue;
+        const wx = feet.x + px - pc.cx - pc.tx, wy = feet.y + py - pc.cy - pc.ty;
+        if (wx * wx + wy * wy > (pc.rxy + RADIUS) ** 2 || cz < pc.zmin + pc.dz - RADIUS || cz > pc.zmax + pc.dz + RADIUS) continue;
+        const c = Math.cos(pc.dyaw), s = Math.sin(pc.dyaw);           // into the piece's original frame
+        const [lx, ly] = sphereOut(soupOf(pc), pc.cx + wx * c + wy * s, pc.cy - wx * s + wy * c, cz - pc.dz, RADIUS);
+        px += lx * c - ly * s; py += lx * s + ly * c;                  // and the push back out to the world
+      }
       if (px || py) { feet.x += px; feet.y += py; moved = true; }
     }
     if (!moved) break;
   }
+}
+// first static hit along a ray (for "is that piece behind a wall?")
+function rayStatic(o, d, maxD) {
+  const S = STATIC, Pos = S.Pos, Ix = S.Ix;
+  let best = maxD;
+  for (let s0 = 0; s0 < best; s0 += 0.5) {
+    const s1 = Math.min(s0 + 0.5, best);
+    const ax = o.x + d.x * s0, ay = o.y + d.y * s0, bx = o.x + d.x * s1, by = o.y + d.y * s1;
+    eachTri(S, Math.min(ax, bx), Math.max(ax, bx), Math.min(ay, by), Math.max(ay, by), t => {
+      const a = Ix[t * 3] * 3, b = Ix[t * 3 + 1] * 3, c = Ix[t * 3 + 2] * 3;
+      const e1x = Pos[b] - Pos[a], e1y = Pos[b + 1] - Pos[a + 1], e1z = Pos[b + 2] - Pos[a + 2];
+      const e2x = Pos[c] - Pos[a], e2y = Pos[c + 1] - Pos[a + 1], e2z = Pos[c + 2] - Pos[a + 2];
+      const px = d.y * e2z - d.z * e2y, py = d.z * e2x - d.x * e2z, pz = d.x * e2y - d.y * e2x;
+      const det = e1x * px + e1y * py + e1z * pz; if (Math.abs(det) < 1e-12) return;
+      const inv = 1 / det, tx = o.x - Pos[a], ty = o.y - Pos[a + 1], tz = o.z - Pos[a + 2];
+      const u = (tx * px + ty * py + tz * pz) * inv; if (u < 0 || u > 1) return;
+      const qx = ty * e1z - tz * e1y, qy = tz * e1x - tx * e1z, qz = tx * e1y - ty * e1x;
+      const v = (d.x * qx + d.y * qy + d.z * qz) * inv; if (v < 0 || u + v > 1) return;
+      const h = (e2x * qx + e2y * qy + e2z * qz) * inv; if (h > 0.02 && h < best) best = h;
+    });
+    if (best <= s1) break;
+  }
+  return best;
 }
 
 // ------------------------------------------------------------------ scan spots + photo view
@@ -249,46 +370,77 @@ const eqMat = new THREE.ShaderMaterial({ uniforms: { cube: { value: null } }, de
       gl_FragColor = textureCube(cube, vec3(cos(la) * cos(th), cos(la) * sin(th), sin(la))); }` });
 const quad = new THREE.Scene(); quad.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), eqMat));
 const orth = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-function edges(px) {                                  // RGBA rows top-down -> zero-mean gradient magnitude
-  const g = new Float32Array(EW * EH), G = new Float32Array(EW * EH); let mean = 0;
-  for (let i = 0; i < EW * EH; i++) g[i] = px[i * 4] + px[i * 4 + 1] + px[i * 4 + 2];
-  for (let y = 1; y < EH - 1; y++) for (let x = 0; x < EW; x++) {
-    const gx = g[y * EW + (x + 1) % EW] - g[y * EW + (x + EW - 1) % EW], gy = g[(y + 1) * EW + x] - g[(y - 1) * EW + x];
-    mean += G[y * EW + x] = Math.hypot(gx, gy); }
-  mean /= EW * EH; for (let i = 0; i < EW * EH; i++) G[i] -= mean; return G;
-}
-function alignSpot(s, img) {
-  const rt = new THREE.WebGLCubeRenderTarget(512); const cc = new THREE.CubeCamera(0.05, 60, rt); cc.position.copy(s.pos);
-  photo.visible = false; cc.update(renderer, scene);
+// The heavy part (edge images + scoring 512 rotations) runs in a worker so walking never waits for it.
+const worker = new Worker(URL.createObjectURL(new Blob([`
+  function edges(px, W, H) {                        // RGBA rows top-down -> zero-mean gradient magnitude
+    const g = new Float32Array(W * H), G = new Float32Array(W * H); let mean = 0;
+    for (let i = 0; i < W * H; i++) g[i] = px[i * 4] + px[i * 4 + 1] + px[i * 4 + 2];
+    for (let y = 1; y < H - 1; y++) for (let x = 0; x < W; x++) {
+      const gx = g[y * W + (x + 1) % W] - g[y * W + (x + W - 1) % W], gy = g[(y + 1) * W + x] - g[(y - 1) * W + x];
+      mean += G[y * W + x] = Math.hypot(gx, gy); }
+    mean /= W * H; for (let i = 0; i < W * H; i++) G[i] -= mean; return G;
+  }
+  onmessage = e => {
+    const { id, raw, small, mirrors, W, H } = e.data;
+    const flip = new Uint8Array(W * H * 4);         // GL rows are bottom-up
+    for (let y = 0; y < H; y++) flip.set(raw.subarray((H - 1 - y) * W * 4, (H - y) * W * 4), y * W * 4);
+    const oc = new OffscreenCanvas(W, H), cx = oc.getContext('2d'); cx.drawImage(small, 0, 0, W, H); small.close();
+    const Gr = edges(flip, W, H), Gp = edges(cx.getImageData(0, 0, W, H).data, W, H);
+    const y0 = Math.floor(H * 0.22), y1 = Math.ceil(H * 0.78);
+    const score = (sh, m) => { let sc = 0; for (let y = y0; y < y1; y++) { const r = y * W;
+      for (let c = 0; c < W; c++) { let t = (sh + m * c) % W; if (t < 0) t += W; sc += Gp[r + c] * Gr[r + t]; } } return sc; };
+    let best = { sc: -Infinity };
+    for (const m of mirrors) for (let sh = 0; sh < W; sh++) { const sc = score(sh, m); if (sc > best.sc) best = { sc, sh, m }; }
+    let second = -Infinity;
+    for (let sh = 0; sh < W; sh++) { const dd = Math.abs(sh - best.sh); if (dd > 8 && dd < W - 8) second = Math.max(second, score(sh, best.m)); }
+    const lon0 = (0.5 / W) * 2 * Math.PI - Math.PI, th0 = ((best.sh + 0.5) / W) * 2 * Math.PI - Math.PI;
+    postMessage({ id, yaw: th0 - best.m * lon0, mirror: best.m, ratio: best.sc / second });
+  };`], { type: 'text/javascript' })));
+const jobs = new Map(); let jobId = 0;
+worker.onmessage = e => { jobs.get(e.data.id)(e.data); jobs.delete(e.data.id); };
+
+async function alignSpot(s, small) {
+  // render the mesh as a 360 from the scan spot, one cube face per frame, then read it back without stalling
+  const rt = new THREE.WebGLCubeRenderTarget(512), cc = new THREE.CubeCamera(0.05, 60, rt);
+  cc.position.copy(s.pos); cc.coordinateSystem = renderer.coordinateSystem; cc.updateCoordinateSystem(); cc.updateMatrixWorld(true);
+  for (let i = 0; i < 6; i++) {
+    await nextFrame();
+    const vis = photo.visible; photo.visible = false;
+    renderer.setRenderTarget(rt, i); renderer.render(scene, cc.children[i]); renderer.setRenderTarget(null);
+    photo.visible = vis;
+  }
+  await nextFrame();
   eqMat.uniforms.cube.value = rt.texture;
   const eq = new THREE.WebGLRenderTarget(EW, EH); renderer.setRenderTarget(eq); renderer.render(quad, orth); renderer.setRenderTarget(null);
-  const raw = new Uint8Array(EW * EH * 4), flip = new Uint8Array(EW * EH * 4); renderer.readRenderTargetPixels(eq, 0, 0, EW, EH, raw);
-  for (let y = 0; y < EH; y++) flip.set(raw.subarray((EH - 1 - y) * EW * 4, (EH - y) * EW * 4), y * EW * 4);
+  const raw = new Uint8Array(EW * EH * 4);
+  await renderer.readRenderTargetPixelsAsync(eq, 0, 0, EW, EH, raw);
   rt.dispose(); eq.dispose();
-  const cv = document.createElement('canvas'); cv.width = EW; cv.height = EH; const cx = cv.getContext('2d'); cx.drawImage(img, 0, 0, EW, EH);
-  const Gr = edges(flip), Gp = edges(cx.getImageData(0, 0, EW, EH).data);
-  const y0 = Math.floor(EH * 0.22), y1 = Math.ceil(EH * 0.78);
-  const score = (sh, m) => { let sc = 0; for (let y = y0; y < y1; y++) { const r = y * EW;
-    for (let c = 0; c < EW; c++) { let t = (sh + m * c) % EW; if (t < 0) t += EW; sc += Gp[r + c] * Gr[r + t]; } } return sc; };
-  const mirrors = s.mirror ? [s.mirror] : [1, -1];
-  let best = { sc: -Infinity };
-  for (const m of mirrors) for (let sh = 0; sh < EW; sh++) { const sc = score(sh, m); if (sc > best.sc) best = { sc, sh, m }; }
-  let second = -Infinity;
-  for (let sh = 0; sh < EW; sh++) { const dd = Math.abs(sh - best.sh); if (dd > 8 && dd < EW - 8) second = Math.max(second, score(sh, best.m)); }
-  const lon0 = (0.5 / EW) * 2 * Math.PI - Math.PI, th0 = ((best.sh + 0.5) / EW) * 2 * Math.PI - Math.PI;
-  return { yaw: th0 - best.m * lon0, mirror: best.m, ratio: best.sc / second };
+  const id = ++jobId;
+  return new Promise(res => { jobs.set(id, res);
+    worker.postMessage({ id, raw, small, mirrors: s.mirror ? [s.mirror] : [1, -1], W: EW, H: EH }, [raw.buffer, small]); });
 }
+const KEEP_PHOTOS = 3;                                // full-size photos kept in memory (32 MB each on the GPU)
+let photoOrder = [];
 function prepareSpot(s) {
   if (s.loading || !s.furnished) return s.loading;
-  s.loading = new Promise(res => { const img = new Image(); img.onload = () => res(img); img.onerror = () => res(null); img.src = s.furnished; })
-    .then(img => {
-      if (!img) return;
-      const a = alignSpot(s, img);
-      s.align = a.ratio >= 1.15 ? a : (s.yaw_deg != null ? { yaw: s.yaw_deg * Math.PI / 180, mirror: s.mirror || 1, ratio: a.ratio, fallback: true } : null);
-      const t = new THREE.Texture(img); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = THREE.RepeatWrapping; t.anisotropy = aniso; t.needsUpdate = true;
-      s.tex = t;
-      console.log(`scan spot ${s.label}: heading ${(a.yaw * 180 / Math.PI).toFixed(1)} deg, match ${a.ratio.toFixed(2)}${s.align && s.align.fallback ? ' (weak - using stored heading)' : ''}`);
-    });
+  s.loading = (async () => {
+    try {
+      if (!s.aligned) {
+        const blob = await (await fetch(s.furnished)).blob();
+        const small = await createImageBitmap(blob, { resizeWidth: EW, resizeHeight: EH, resizeQuality: 'medium' });
+        const a = await alignSpot(s, small);
+        s.aligned = true;
+        s.align = a.ratio >= 1.15 ? a : (s.yaw_deg != null ? { yaw: s.yaw_deg * Math.PI / 180, mirror: s.mirror || 1, ratio: a.ratio, fallback: true } : null);
+        console.log(`scan spot ${s.label}: heading ${(a.yaw * 180 / Math.PI).toFixed(1)} deg, match ${a.ratio.toFixed(2)}${s.align && s.align.fallback ? ' (weak - using stored heading)' : ''}`);
+      }
+      s.tex = await stripUpload(s.furnished, true);   // uploaded in strips while you walk up to the spot
+      photoOrder = photoOrder.filter(o => o !== s); photoOrder.push(s);
+      while (photoOrder.length > KEEP_PHOTOS) {        // forget photos you walked away from (the heading is kept)
+        const o = photoOrder.shift(); if (o === active) { photoOrder.push(o); break; }
+        o.tex.dispose(); o.tex = null; o.loading = null;
+      }
+    } catch (e) { console.warn('scan spot', s.label, e); }
+  })();
   return s.loading;
 }
 
@@ -314,7 +466,10 @@ addEventListener('keyup', e => keys.delete(e.code));
 addEventListener('blur', () => keys.clear());
 const cv = renderer.domElement;
 let dragging = false;
-cv.addEventListener('mousedown', () => { if (document.pointerLockElement !== cv) { cv.requestPointerLock?.()?.catch?.(() => {}); dragging = true; } });
+cv.addEventListener('mousedown', e => {
+  if (document.pointerLockElement === cv) { if (e.button === 0) interact(e.shiftKey); return; }   // mouse captured: click = pick up / place
+  cv.requestPointerLock?.()?.catch?.(() => {}); dragging = true;
+});
 addEventListener('mouseup', () => dragging = false);
 addEventListener('mousemove', e => {
   if (document.pointerLockElement !== cv && !dragging) return;
@@ -335,6 +490,202 @@ function nearestSpot(maxD) {
     if (d < bd && Math.abs(s.pos.z - (feet.z + 1.3)) < 0.9) { bd = d; best = s; } }
   return best;
 }
+
+// ------------------------------------------------------------------ furniture: look at a piece, pick it up, carry it
+const REACH = 4.0;                                    // m: how far away you can grab a piece
+const SAVE_KEY = `walk-edits-${SID}`;
+const srgbToLinear = Array.from({ length: 256 }, (_, i) => { const c = i / 255; return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; });
+let fillGeoAttrs = null;
+if (patchN) {
+  const rgb = new Uint8Array(buf, meta.offsets.patch_color, patchN * 4), col = new Float32Array(patchN * 3);
+  for (let i = 0; i < patchN; i++) for (let a = 0; a < 3; a++) col[i * 3 + a] = srgbToLinear[rgb[i * 4 + a]];
+  fillGeoAttrs = { position: new THREE.BufferAttribute(PP, 3), color: new THREE.BufferAttribute(col, 3) };
+}
+// the fill sits a hair behind the scan mesh, so it only shows where the scan has nothing (under / behind a moved piece)
+const fillMat = new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: 2, polygonOffsetUnits: 8 });
+const outlineMat = new THREE.LineBasicMaterial({ color: 0x4fa3ff, depthTest: false, transparent: true });
+const pieces = (meta.pieces || []).map(p => {
+  const geo = subGeometry(p.groups), [lo, hi] = span(p.groups);
+  const cx = p.centre[0], cy = p.centre[1];
+  let rxy = 0;
+  for (let k = lo; k < hi; k++) { const v = IDX[k] * 3; rxy = Math.max(rxy, Math.hypot(P[v] - cx, P[v + 1] - cy)); }
+  const mesh = new THREE.Mesh(geo, mats); mesh.position.set(-cx, -cy, 0);
+  const pivot = new THREE.Group(); pivot.position.set(cx, cy, 0); pivot.add(mesh); scene.add(pivot);
+  const h = Math.max(0.05, p.z_top - p.z_bottom);
+  const outline = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(p.size[0] + 0.04, p.size[1] + 0.04, h + 0.04)), outlineMat);
+  outline.position.set(0, 0, (p.z_top + p.z_bottom) / 2); outline.rotation.z = p.yaw_deg * Math.PI / 180;
+  outline.renderOrder = 6; outline.visible = false; outline.raycast = () => {}; pivot.add(outline);
+  let fill = null;
+  if (fillGeoAttrs && p.fill && p.fill.count) {
+    const fg = new THREE.BufferGeometry(); fg.setAttribute('position', fillGeoAttrs.position); fg.setAttribute('color', fillGeoAttrs.color);
+    fg.setIndex(new THREE.BufferAttribute(PI_.subarray(p.fill.start, p.fill.start + p.fill.count), 1));
+    fg.boundingSphere = new THREE.Sphere(new THREE.Vector3(cx, cy, (p.z_top + p.floor_z) / 2), rxy + 0.6 + h);
+    fill = new THREE.Mesh(fg, fillMat); fill.visible = false; scene.add(fill);
+  }
+  mesh.userData.piece = null;
+  const pc = { ...p, lo, hi, cx, cy, rxy, zmin: geo.boundingBox.min.z, zmax: geo.boundingBox.max.z, mesh, pivot, outline, fill,
+               tx: 0, ty: 0, dz: 0, dyaw: 0, deleted: false, soup: null, occ: null };
+  mesh.userData.piece = pc;
+  return pc;
+});
+function soupOf(pc) { return pc.soup || (pc.soup = makeSoup(P, IDX.subarray(pc.lo, pc.hi), 0.25)); }
+const isEdited = pc => pc.deleted || Math.abs(pc.tx) > 0.005 || Math.abs(pc.ty) > 0.005 || Math.abs(pc.dz) > 0.005 || Math.abs(pc.dyaw) > 0.003;
+function applyPose(pc) {
+  pc.pivot.position.set(pc.cx + pc.tx, pc.cy + pc.ty, pc.dz); pc.pivot.rotation.z = pc.dyaw;
+  pc.pivot.visible = !pc.deleted;
+  if (pc.fill) pc.fill.visible = isEdited(pc);
+}
+const poseOf = pc => ({ tx: pc.tx, ty: pc.ty, dz: pc.dz, dyaw: pc.dyaw, deleted: pc.deleted });
+const setPose = (pc, s) => { Object.assign(pc, s); applyPose(pc); };
+
+// edits survive a reload (per browser) and export as edits.json in the studio's format
+function save() {
+  const out = {};
+  for (const pc of pieces) if (isEdited(pc)) out[pc.id] = poseOf(pc);
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify(out)); } catch (e) {}
+  $('edits').textContent = `${Object.keys(out).length} piece${Object.keys(out).length === 1 ? '' : 's'} changed`;
+}
+try { const s = JSON.parse(localStorage.getItem(SAVE_KEY) || '{}');
+  for (const pc of pieces) if (s[pc.id]) setPose(pc, s[pc.id]); } catch (e) {}
+function exportEdits() {
+  const objects = pieces.filter(isEdited).map(pc => {
+    const yaw0 = pc.yaw_deg;
+    return { id: pc.id, label: pc.label, source: 'mesh_segment', deleted: pc.deleted,
+             original: { x: pc.cx, y: pc.cy, yaw_deg: yaw0 },
+             now: { x: +(pc.cx + pc.tx).toFixed(3), y: +(pc.cy + pc.ty).toFixed(3), yaw_deg: +(yaw0 + pc.dyaw * 180 / Math.PI).toFixed(1), z_shift: +pc.dz.toFixed(3) } };
+  });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify({ model: SID, units: 'metres', source: 'walk.html', objects }, null, 1)], { type: 'application/json' }));
+  a.download = 'edits.json'; a.click();
+}
+
+const undoStack = [];
+const pushUndo = pc => { undoStack.push([pc, poseOf(pc)]); if (undoStack.length > 200) undoStack.shift(); };
+function undo() {
+  if (carried) { cancelCarry(); return; }
+  const u = undoStack.pop(); if (!u) return;
+  setPose(u[0], u[1]); save(); flash(`Undid: ${u[0].label}`);
+}
+
+// what the crosshair is on: the nearest piece hit in front of any wall
+const ray = new THREE.Raycaster(); ray.far = REACH;
+const center = new THREE.Vector2(0, 0), lookDir = new THREE.Vector3();
+let target = null, carried = null, carry = null, fits = true, fitTimer = 0;
+function aim() {
+  camera.getWorldDirection(lookDir);
+  ray.set(camera.position, lookDir); ray.far = Math.min(REACH, rayStatic(camera.position, lookDir, REACH));
+  const hits = ray.intersectObjects(pieces.filter(pc => !pc.deleted).map(pc => pc.mesh), false);
+  return hits.length ? hits[0].object.userData.piece : null;
+}
+function setTarget(pc) {
+  if (target === pc) return;
+  if (target && target !== carried) target.outline.visible = false;
+  target = pc; if (pc) { pc.outline.visible = true; outlineMat.color.set(0x4fa3ff); }
+}
+function pickUp(pc) {
+  pushUndo(pc);
+  const d = Math.hypot(pc.cx + pc.tx - feet.x, pc.cy + pc.ty - feet.y);
+  carried = pc; carry = { start: poseOf(pc), hold: Math.min(REACH, Math.max(d, pc.rxy * 0.6 + 0.6)) };
+  pc.outline.visible = true; leavePhoto(true);
+}
+function drop(force) {
+  if (!carried) return;
+  if (!fits && !force) { flash("Doesn't fit here - something is in the way (Shift+E to drop anyway)"); return; }
+  carried.outline.visible = target === carried; outlineMat.color.set(0x4fa3ff);
+  flash(`Placed ${carried.label}`); carried = null; carry = null; fits = true; save();
+}
+function cancelCarry() {
+  if (!carried) return;
+  setPose(carried, carry.start); undoStack.pop();
+  carried.outline.visible = false; outlineMat.color.set(0x4fa3ff); carried = null; carry = null; fits = true;
+}
+function removePiece(pc) {
+  if (!pc) return;
+  if (carried === pc) { carried = null; carry = null; fits = true; } else pushUndo(pc);
+  pc.outline.visible = false; pc.deleted = true; applyPose(pc); if (target === pc) target = null;
+  save(); flash(`Removed ${pc.label} (Ctrl+Z to undo)`);
+}
+function interact(force) { if (carried) drop(force); else if (target) pickUp(target); }
+
+// Does the carried piece overlap a wall or another piece? Its top-down footprint (10 cm cells, original frame) is
+// tested against wall triangles and other pieces' triangles that fall inside it at overlapping heights.
+function occOf(pc) {
+  if (pc.occ) return pc.occ;
+  const C = 0.1, x0 = pc.cx - pc.rxy - C, y0 = pc.cy - pc.rxy - C, n = Math.ceil((2 * pc.rxy + 2 * C) / C) + 1;
+  const grid = new Uint8Array(n * n);
+  for (let k = pc.lo; k < pc.hi; k++) { const v = IDX[k] * 3; if (P[v + 2] < pc.floor_z + 0.08) continue;   // legs' feet don't count
+    grid[Math.floor((P[v + 1] - y0) / C) * n + Math.floor((P[v] - x0) / C)] = 1; }
+  return pc.occ = { C, x0, y0, n, grid };
+}
+function inFootprint(pc, wx, wy, wz) {                // world point -> inside pc's footprint and height band?
+  const o = occOf(pc), dx = wx - pc.cx - pc.tx, dy = wy - pc.cy - pc.ty, c = Math.cos(pc.dyaw), s = Math.sin(pc.dyaw);
+  const lx = pc.cx + dx * c + dy * s, ly = pc.cy - dx * s + dy * c, lz = wz - pc.dz;
+  if (lz < Math.max(pc.zmin, pc.floor_z) + 0.1 || lz > pc.zmax - 0.03) return false;
+  const i = Math.floor((lx - o.x0) / o.C), j = Math.floor((ly - o.y0) / o.C);
+  return i >= 0 && j >= 0 && i < o.n && j < o.n && o.grid[j * o.n + i] === 1;
+}
+function checkFit(pc) {
+  let hits = 0;
+  const x = pc.cx + pc.tx, y = pc.cy + pc.ty, r = pc.rxy, S = STATIC;
+  eachTri(S, x - r, x + r, y - r, y + r, t => {
+    if (hits > 12 || S.nz[t] >= 0.6) return;                      // floors are fine; walls and other solids are not
+    const a = S.Ix[t * 3] * 3, b = S.Ix[t * 3 + 1] * 3, c = S.Ix[t * 3 + 2] * 3;
+    if (inFootprint(pc, (S.Pos[a] + S.Pos[b] + S.Pos[c]) / 3, (S.Pos[a + 1] + S.Pos[b + 1] + S.Pos[c + 1]) / 3, (S.Pos[a + 2] + S.Pos[b + 2] + S.Pos[c + 2]) / 3)) hits++;
+  });
+  for (const q of pieces) {
+    if (q === pc || q.deleted || hits > 12) continue;
+    if (Math.hypot(q.cx + q.tx - x, q.cy + q.ty - y) > q.rxy + r) continue;
+    const c = Math.cos(q.dyaw), s = Math.sin(q.dyaw);
+    for (let k = q.lo; k < q.hi && hits <= 12; k += 3) {           // every triangle's first corner, in q's current pose
+      const v = IDX[k] * 3, dx = P[v] - q.cx, dy = P[v + 1] - q.cy;
+      if (inFootprint(pc, q.cx + q.tx + dx * c - dy * s, q.cy + q.ty + dx * s + dy * c, P[v + 2] + q.dz)) hits++;
+    }
+  }
+  return hits <= 12;
+}
+let wheel = 0;
+function updateFurniture(dt) {
+  if (carried) {
+    const pc = carried;
+    const tx = feet.x + Math.cos(yaw) * carry.hold - pc.cx, ty = feet.y + Math.sin(yaw) * carry.hold - pc.cy;
+    const k = 1 - Math.exp(-dt * 14);
+    pc.tx += (tx - pc.tx) * k; pc.ty += (ty - pc.ty) * k;
+    if (wheel) { pc.dyaw += wheel * Math.PI / 12; wheel = 0; }
+    if (pc.on_floor) {                                             // rest on whatever floor is under it
+      const g = groundAt(pc.cx + pc.tx, pc.cy + pc.ty, pc.floor_z + pc.dz + 0.5, pc.floor_z + pc.dz - 1.5);
+      if (isFinite(g)) pc.dz += (g - pc.floor_z - pc.dz) * k;
+    }
+    applyPose(pc);
+    if ((fitTimer += dt) > 0.12) { fitTimer = 0; fits = checkFit(pc); outlineMat.color.set(fits ? 0x3ecf8e : 0xff5d5d); }
+    $('target').textContent = fits ? `Carrying ${pc.label} - E or click to place · wheel / R to turn · X remove · Esc put back`
+                                   : `${pc.label} doesn't fit here · Shift+E to place anyway · Esc put back`;
+    $('target').className = fits ? '' : 'bad';
+  } else {
+    wheel = 0;
+    setTarget(mode === 'walk' ? aim() : null);
+    $('target').textContent = target ? `${target.label}${target.room ? ' · ' + target.room : ''} - E or click to pick up · X remove` : '';
+    $('target').className = '';
+  }
+  $('target').style.opacity = $('target').textContent ? 1 : 0;
+}
+let flashTimer = 0;
+function flash(s) { hint(s); flashTimer = 2.2; }
+const editedNear = s => pieces.some(pc => isEdited(pc) && Math.hypot(pc.cx + pc.tx - s.pos.x, pc.cy + pc.ty - s.pos.y) < 12 && Math.abs(pc.floor_z - (s.pos.z - 1.3)) < 2);
+
+addEventListener('keydown', e => {
+  if (e.repeat) return;
+  if (e.code === 'KeyE') interact(e.shiftKey);
+  else if (e.code === 'KeyX' || e.code === 'Delete') removePiece(carried || target);
+  else if (e.code === 'KeyR' && carried) { carried.dyaw += Math.PI / 2; applyPose(carried); }
+  else if (e.code === 'KeyZ' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); undo(); }
+  else if (e.code === 'Escape') cancelCarry();
+});
+addEventListener('wheel', e => { if (carried) { wheel += Math.sign(e.deltaY); e.preventDefault(); } }, { passive: false });
+$('exportBtn').onclick = exportEdits;
+$('resetBtn').onclick = () => { if (!confirm('Put every piece back where it was scanned?')) return;
+  for (const pc of pieces) if (isEdited(pc)) { pushUndo(pc); setPose(pc, { tx: 0, ty: 0, dz: 0, dyaw: 0, deleted: false }); }
+  save(); };
+save();
 
 // ------------------------------------------------------------------ loop
 const clock = new THREE.Clock();
@@ -367,9 +718,9 @@ function frame() {
     eye.x = target.x; eye.y = target.y; eye.z += (target.z - eye.z) * (1 - Math.exp(-dt * 10));   // stairs feel smooth
     idle = moving || Math.hypot(vel.x, vel.y) > 0.05 ? 0 : idle + dt;
 
-    if (autoPhoto && idle > IDLE_S) {
+    if (autoPhoto && idle > IDLE_S && !carried) {
       const s = nearestSpot(PHOTO_DIST);
-      if (s && s.tex && s.align) { mode = 'glide'; active = s; glide = { from: eye.clone(), t: 0 };
+      if (s && s.tex && s.align && !editedNear(s)) {         // the photo would show the old layout mode = 'glide'; active = s; glide = { from: eye.clone(), t: 0 };
         photoMat.uniforms.pano.value = s.tex; photoMat.uniforms.ym.value.set(s.align.yaw, s.align.mirror); }
     }
   } else if (mode === 'glide' || mode === 'photo') {
@@ -385,21 +736,25 @@ function frame() {
 
   camera.position.copy(eye);
   camera.lookAt(eye.x + Math.cos(pitch) * Math.cos(yaw), eye.y + Math.cos(pitch) * Math.sin(yaw), eye.z + Math.sin(pitch));
+  updateFurniture(dt);
   renderer.render(scene, camera);
+  if (flashTimer > 0 && (flashTimer -= dt) <= 0) hint('');
 
   lodTimer += dt; if (lodTimer > 1) { lodTimer = 0; updateLOD(); }
   prefetchTimer += dt;
   if (prefetchTimer > 0.5) { prefetchTimer = 0;
-    const s = nearestSpot(2.5); if (s && !s.loading) prepareSpot(s);
+    const s = autoPhoto && nearestSpot(2.5); if (s && !s.loading) prepareSpot(s);
     const near = nearestSpot(PHOTO_DIST);
     status(`${mode === 'photo' ? 'Photo at scan spot ' + active.label : 'Walking'} · ${spots.length} scan spots` +
       (near && !near.tex ? ' · loading photo…' : '') + (near && near.tex && !near.align ? ' · this photo could not be lined up' : ''));
-    hint(mode === 'photo' ? 'Real photo - move to keep walking' : (near && autoPhoto && near.tex && near.align && idle < IDLE_S && !moving ? 'Stand still to see the photo' : ''));
+    if (flashTimer <= 0) hint(mode === 'photo' ? 'Real photo - move to keep walking' :
+      (near && autoPhoto && near.tex && near.align && idle < IDLE_S && !moving && !carried && !editedNear(near) ? 'Stand still to see the photo' : ''));
   }
   requestAnimationFrame(frame);
 }
 status(`Ready · ${spots.length} scan spots`);
-window.walk = { feet, eye, spots, get mode() { return mode; }, setView(y, p) { yaw = y; pitch = p; }, keys };   // for debugging
+window.walk = { feet, eye, spots, groups, renderer, pieces, interact, removePiece, undo, get target() { return target; },
+  get carried() { return carried; }, get fits() { return fits; }, get mode() { return mode; }, setView(y, p) { yaw = y; pitch = p; }, keys };   // for debugging
 frame();
 </script>
 </body>
