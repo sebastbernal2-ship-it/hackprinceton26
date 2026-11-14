@@ -6,9 +6,34 @@
       "Bash(tools/codex-delegate ask:*)",
       "Bash(python3 data/test_*.py)",
       "Bash(python3 -m pytest:*)",
-      "Bash(git status:*)", "Bash(git diff:*)", "Bash(git log:*)", "Bash(git branch:*)",
-      "Bash(gh-axi issue list:*)", "Bash(gh-axi issue view:*)", "Bash(gh-axi pr view:*)"
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git branch:*)",
+      "Bash(gh-axi issue list:*)",
+      "Bash(gh-axi issue view:*)",
+      "Bash(gh-axi pr view:*)",
+      "Bash(python3 -m pytest:*)",
+      "Bash(uv run:*)"
     ],
-    "deny": ["Read(./.env)", "Read(./.env.*)", "Read(./data/raw/**)", "Bash(git push --force:*)"]
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./data/raw/**)",
+      "Bash(git push --force:*)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard-staging.py\""
+          }
+        ]
+      }
+    ]
   }
 }
