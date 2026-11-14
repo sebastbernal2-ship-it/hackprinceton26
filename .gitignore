@@ -21,3 +21,8 @@ __pycache__/
 .hippo/
 .pi/decisions.md
 .pi/task-control/
+
+# Sponsor kit, generated reports and datasets stay local
+costar-hackathon-kit-hackPrinceton/
+reports/
+*.jsonl
