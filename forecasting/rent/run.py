@@ -84,7 +84,7 @@ def run(kit: Path, out: Path) -> dict:
                 "trainingWindow": tw, "validation": val,
             }
     out.mkdir(parents=True, exist_ok=True)
-    (out / "report.json").write_text(json.dumps(report, indent=1, default=str))
+    (out / "report.json").write_text(json.dumps(M.finite(report), indent=1, default=str))
     (out / "predictions.json").write_text(json.dumps(preds))
     return report
 

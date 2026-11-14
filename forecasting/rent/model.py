@@ -37,6 +37,7 @@ class Design:
         self.levels = {c: sorted({str(v) for v in df[c].dropna()}) for c in CATEGORICAL}
         self.cols = list(NUMERIC) + [f"{c}_missing" for c in self.flag] + [f"{c}={l}" for c in CATEGORICAL for l in self.levels[c]]
         self.owner = {n: (n.split("=")[0] if "=" in n else n.replace("_missing", "")) for n in self.cols}
+        self._centre = self.transform(df).mean(axis=0)  # reference = the TRAINING average listing, reused for every prediction batch
         return self
 
     def transform(self, df: pd.DataFrame) -> np.ndarray:
@@ -68,13 +69,19 @@ def contributions(d: Design, m, X: np.ndarray) -> list[dict[str, float]]:
     return out
 
 
-def _centre(d: Design, df: pd.DataFrame) -> None:
-    d._centre = d.transform(df).mean(axis=0)
-
-
 def group_contrib(d, m, df):
-    _centre(d, df)
     return contributions(d, m, d.transform(df))
+
+
+def finite(obj):
+    """Replace NaN/inf (undefined metrics of an empty or tiny segment) by None so reports are valid JSON."""
+    if isinstance(obj, float):
+        return obj if np.isfinite(obj) else None
+    if isinstance(obj, dict):
+        return {k: finite(v) for k, v in obj.items()}
+    if isinstance(obj, (list, tuple)):
+        return [finite(v) for v in obj]
+    return obj
 
 
 def baselines(train: pd.DataFrame, test: pd.DataFrame) -> dict[str, np.ndarray]:

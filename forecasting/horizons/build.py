@@ -28,7 +28,7 @@ ROWS = [("rent_level", "Rent level"), ("leasing_volume", "Leasing volume"), ("cr
         ("traffic_trend", "Traffic trend"), ("tenancy_survival", "Tenancy survival prior"), ("rent_expectation", "Rent expectation")]
 CITIES = {"los angeles": "Los Angeles", "houston": "Houston"}
 STATES = {"CA": "California", "TX": "Texas"}
-PTYPE = {"GeneralRetail": "retail"}
+PTYPE = {"GeneralRetail": "retail", "Office": "office", "Multifamily": "multifamily", "Industrial": "industrial", "Hospitality": "hospitality", "Flex": "flex"}
 NOTICE = ("Fitted cells are scenario/estimate cards that passed a pre-declared held-out gate; published cells are cite-only or published "
           "scenarios, not our forecasts. 'cannot_say' means no gated or cited source exists; unknown is never zero.")
 # row -> (artifact source, metric regex)
@@ -66,7 +66,14 @@ def load_artifact(d: Path) -> dict:
     failed = None
     if isinstance(m, dict) and isinstance(m.get("gate"), dict) and m["gate"].get("passed") is False:
         failed = "gate failed on held-out split: " + "; ".join(map(str, m["gate"].get("reasons") or ["no reason recorded"]))[:300]
-    return {"present": cards is not None or failed is not None, "cards": cards or [], "gate_failed": failed}
+    rep, preds = _json(d / "report.json"), _json(d / "predictions.json")
+    if isinstance(rep, dict) and rep.get("segments") and not cards:
+        # the rent pipeline writes report.json + predictions.json (not cards.json); no predictions = every segment failed its gate
+        if not preds and failed is None:
+            reasons = sorted({str(r) for v in rep["segments"].values() for r in ((v.get("gate") or {}).get("reasons") or [])})
+            failed = "gate failed on held-out splits in every segment: " + "; ".join(reasons)[:300]
+    return {"present": cards is not None or failed is not None or isinstance(rep, dict), "cards": cards or [], "gate_failed": failed,
+            "predictions": bool(preds)}
 
 
 def months(horizon: str) -> int | None:
@@ -208,6 +215,13 @@ def build_table(p: dict, *, ptype: str | None = None, factors: list[dict] | None
     rent_absent = not A["rent"]["present"]
     table["rent_level"]["now"] = (pending("rent artifact not produced yet; kit snapshot carries listing status only, no asking rent in factor cards")
                                   if rent_absent else cannot("no observed asking-rent value surfaced for this property"))
+    # the rent model estimates today's building-based asking rent (a current-listing estimate, not a forecast)
+    if rent_absent:
+        table["rent_expectation"]["now"] = pending("rent artifact not produced yet")
+    elif A["rent"].get("gate_failed"):
+        table["rent_expectation"]["now"] = cannot(A["rent"]["gate_failed"])
+    elif A["rent"].get("predictions"):
+        table["rent_expectation"]["now"] = pending("rent estimates exist; the per-listing card is served at /api/rent/{id}")
     for col in ("12m", "3_5y", "2030", "2050", "2070"):
         table["rent_level"][col] = cannot("future rent is carried in the rent_expectation row; level is observed now only")
     # fitted rows
@@ -216,7 +230,8 @@ def build_table(p: dict, *, ptype: str | None = None, factors: list[dict] | None
             table[key][col] = _pick(A["series"], "series", pat, city, col)
     for col in ("12m", "3_5y"):
         c1 = _pick(A["survival"], "survival", r"tenanc", city, col, extra=(lambda c, s=seg: bool(s) and f"in {s} space" in c.get("metric", "")))
-        h = _pick(A["hazard"], "hazard", r"hazard|tenanc|closure", city, col)
+        h = _pick(A["hazard"], "hazard", r"hazard|tenanc|closure", city, col,
+                  extra=(lambda c, s=seg: bool(s) and f"in {s} space" in c.get("metric", "")))  # priors are per property type
         if c1["state"] == "fitted":
             table["tenancy_survival"][col] = c1
         elif h["state"] == "fitted":
