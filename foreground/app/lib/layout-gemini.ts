@@ -1,9 +1,5 @@
 import {
   customItem,
-  EXTEND_PRICE_PER_METER,
-  findCatalogItem,
-  money,
-  REMOVE_ROOM_PRICE,
   type LayoutDecision,
 } from "./layout-catalog";
 import { catalogPrompt, findRoom, pieceFits, type PlacedFootprint, type RoomMeasure } from "./layout-fit";
@@ -16,7 +12,6 @@ export async function decideLayout(input: {
   mode: "matterport" | "foreground";
   rooms: RoomMeasure[];
   placed: PlacedFootprint[];
-  total: number;
 }): Promise<LayoutDecision> {
   const raw = await askGemini(promptFor(input));
   return resolveDecision(raw, input);
@@ -27,7 +22,6 @@ function promptFor(input: {
   mode: "matterport" | "foreground";
   rooms: RoomMeasure[];
   placed: PlacedFootprint[];
-  total: number;
 }) {
   const rooms = input.rooms.map((room) => `${room.label}: ${room.width} m by ${room.depth} m, ${room.area} m²`).join("\n") || "No measured rooms yet.";
   const placed = input.placed.map((piece) => `${piece.item} in ${piece.room}, ${piece.width} m by ${piece.depth} m`).join("\n") || "Nothing placed yet.";
@@ -38,7 +32,7 @@ function promptFor(input: {
 {"action":"none","reply":"short sentence"}
 
 Rules:
-- For a catalog piece, item is the catalog id. For anything else the user names, item is that object name, such as booth, stool, kitchen, island, plant, or host stand. size must be one of small, seat, table, lounge, kitchen, run. Do not invent a price or a measurement.
+- The item is that object name, such as booth, stool, kitchen, island, plant, or host stand. size must be one of small, seat, table, lounge, kitchen, run. Do not invent a price or a measurement.
 - room and into must be a room name from the list below. When mode is foreground, that is the Imagine Tour, and walls can be removed or added there.
 - extend meters is between 0.5 and 2.
 - Use add for furniture. If they ask for several of one piece, still return one add for that item.
@@ -47,8 +41,7 @@ Rules:
 - The reply is one or two sentences. Do not mention the catalog ids.
 
 Mode: ${input.mode}
-Running total: ${money(input.total)}
-Removing a room costs ${money(REMOVE_ROOM_PRICE)}. Extending a room costs ${money(EXTEND_PRICE_PER_METER)} per meter.
+Do not mention prices or costs.
 
 Catalog:
 ${catalogPrompt()}
@@ -64,21 +57,19 @@ User: ${input.message}`;
 
 function resolveDecision(
   raw: Record<string, unknown>,
-  input: { message: string; mode: "matterport" | "foreground"; rooms: RoomMeasure[]; placed: PlacedFootprint[]; total: number },
+  input: { message: string; mode: "matterport" | "foreground"; rooms: RoomMeasure[]; placed: PlacedFootprint[] },
 ): LayoutDecision {
   const action = String(raw.action || "none");
   const reply = String(raw.reply || "").trim();
   if (action === "add") {
-    const item = findCatalogItem(String(raw.item || "")) ?? customItem(String(raw.item || raw.name || ""), String(raw.size || ""));
-    if (!item) return { reply: reply || "Tell me which object to add.", total: input.total, action: { type: "none" } };
+    const item = customItem(String(raw.item || raw.name || ""), String(raw.size || ""));
+    if (!item) return { reply: reply || "Tell me which object to add.", action: { type: "none" } };
     const room = findRoom(input.rooms, String(raw.room || "")) ?? largestRoom(input.rooms);
-    if (!room) return { reply: "I need a measured room before I can place that.", total: input.total, action: { type: "none" } };
+    if (!room) return { reply: "I need a measured room before I can place that.", action: { type: "none" } };
     const fit = pieceFits(room, item, input.placed);
-    if (!fit.ok) return { reply: fit.reply, total: input.total, action: { type: "none" } };
-    const total = input.total + item.price;
+    if (!fit.ok) return { reply: fit.reply, action: { type: "none" } };
     return {
-      reply: finishReply(reply || `Placed a ${item.label.toLowerCase()} in ${room.label}. It is ${item.width} m by ${item.depth} m.`, total),
-      total,
+      reply: finishReply(reply || `Placed a ${item.label.toLowerCase()} in ${room.label}. It is ${item.width} m by ${item.depth} m.`),
       action: { type: "add", item, room: room.label },
     };
   }
@@ -86,39 +77,34 @@ function resolveDecision(
     if (input.mode === "matterport") {
       return {
         reply: "Wall changes happen in Imagine Tour. Switch to that toggle and ask again.",
-        total: input.total,
+        
         action: { type: "none" },
       };
     }
     if (action === "remove-room") {
       const room = findRoom(input.rooms, String(raw.room || ""));
-      if (!room) return { reply: reply || "I can't find that room on this plan.", total: input.total, action: { type: "none" } };
-      const total = input.total + REMOVE_ROOM_PRICE;
+      if (!room) return { reply: reply || "I can't find that room on this plan.", action: { type: "none" } };
       return {
-        reply: finishReply(reply || `Took down the walls around ${room.label}.`, total),
-        total,
-        action: { type: "structure", edit: { kind: "remove-room", room: room.label }, price: REMOVE_ROOM_PRICE },
+        reply: finishReply(reply || `Took down the walls around ${room.label}.`),
+        action: { type: "structure", edit: { kind: "remove-room", room: room.label } },
       };
     }
     const room = findRoom(input.rooms, String(raw.room || ""));
     const into = findRoom(input.rooms, String(raw.into || ""));
     const meters = Math.max(0.5, Math.min(2, Number(raw.meters) || 1.6));
     if (!room || !into || room.id === into.id) {
-      return { reply: reply || "I need two different rooms on this plan before I can move that wall.", total: input.total, action: { type: "none" } };
+      return { reply: reply || "I need two different rooms on this plan before I can move that wall.", action: { type: "none" } };
     }
-    const price = Math.round(meters * EXTEND_PRICE_PER_METER);
-    const total = input.total + price;
     return {
-      reply: finishReply(reply || `Extended ${room.label} by ${meters.toFixed(1)} m into ${into.label}.`, total),
-      total,
-      action: { type: "structure", edit: { kind: "extend", room: room.label, into: into.label, meters }, price },
+      reply: finishReply(reply || `Extended ${room.label} by ${meters.toFixed(1)} m into ${into.label}.`),
+      action: { type: "structure", edit: { kind: "extend", room: room.label, into: into.label, meters } },
     };
   }
-  return inferEdit(input, reply) ?? { reply: reply || "Tell me a piece to add, a room to remove, or a room to extend.", total: input.total, action: { type: "none" } };
+  return inferEdit(input, reply) ?? { reply: reply || "Tell me a piece to add, a room to remove, or a room to extend.", action: { type: "none" } };
 }
 
 function inferEdit(
-  input: { message?: string; mode: "matterport" | "foreground"; rooms: RoomMeasure[]; total: number },
+  input: { message?: string; mode: "matterport" | "foreground"; rooms: RoomMeasure[] },
   reply: string,
 ): LayoutDecision | null {
   const message = input.message?.toLowerCase() || "";
@@ -126,11 +112,9 @@ function inferEdit(
   if (/remove|take down|get rid|delete/.test(message)) {
     const room = namedRoom(input.rooms, message);
     if (!room) return null;
-    const total = input.total + REMOVE_ROOM_PRICE;
     return {
-      reply: finishReply(reply || `Took down the walls around ${room.label}.`, total),
-      total,
-      action: { type: "structure", edit: { kind: "remove-room", room: room.label }, price: REMOVE_ROOM_PRICE },
+      reply: finishReply(reply || `Took down the walls around ${room.label}.`),
+      action: { type: "structure", edit: { kind: "remove-room", room: room.label } },
     };
   }
   if (/extend|more space|bigger/.test(message)) {
@@ -138,12 +122,9 @@ function inferEdit(
     const into = input.rooms.filter((entry) => entry.id !== room?.id).sort((left, right) => left.area - right.area)[0];
     if (!room || !into) return null;
     const meters = 1.6;
-    const price = Math.round(meters * EXTEND_PRICE_PER_METER);
-    const total = input.total + price;
     return {
-      reply: finishReply(`Extended ${room.label} by ${meters.toFixed(1)} m into ${into.label}.`, total),
-      total,
-      action: { type: "structure", edit: { kind: "extend", room: room.label, into: into.label, meters }, price },
+      reply: finishReply(`Extended ${room.label} by ${meters.toFixed(1)} m into ${into.label}.`),
+      action: { type: "structure", edit: { kind: "extend", room: room.label, into: into.label, meters } },
     };
   }
   return null;
@@ -161,7 +142,7 @@ function namedRoom(rooms: RoomMeasure[], message: string) {
 }
 
 // The layout catalog prices were never sourced, so replies carry no running total.
-function finishReply(reply: string, _total: number) {
+function finishReply(reply: string) {
   return reply;
 }
 
