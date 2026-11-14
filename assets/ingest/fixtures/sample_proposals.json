@@ -1,0 +1,4 @@
+{"_note": "SYNTHETIC sample proposals for demo/offline mode. Not identified from any image.",
+ "proposals": [
+  {"id": "counter-1", "name": "Stainless prep counter (sample)", "category": "counter", "dims_m": [1.8, 0.7, 0.9], "tags": ["brushed steel"]},
+  {"id": "fridge-1", "name": "Reach-in fridge (sample)", "category": "fridge", "dims_m": [0.75, 0.8, 2.0], "tags": ["stainless"]}]}

@@ -7,29 +7,19 @@ export type CatalogItem = {
   kind: TourKind;
   width: number;
   depth: number;
-  price: number;
 };
 
-export const CATALOG: CatalogItem[] = [
-  { id: "dining-table", label: "Dining table", kind: "table", width: 1.8, depth: 0.9, price: 1400 },
-  { id: "chair", label: "Chair", kind: "chair", width: 0.5, depth: 0.5, price: 180 },
-  { id: "sofa", label: "Sofa", kind: "sofa", width: 2.1, depth: 0.9, price: 2200 },
-  { id: "counter", label: "Service counter", kind: "counter", width: 2.4, depth: 0.7, price: 3200 },
-];
-
-const SIZES: Record<string, { width: number; depth: number; price: number }> = {
-  small: { width: 0.45, depth: 0.45, price: 220 },
-  seat: { width: 0.52, depth: 0.55, price: 480 },
-  table: { width: 1.6, depth: 0.9, price: 1400 },
-  lounge: { width: 2.1, depth: 0.95, price: 2200 },
-  kitchen: { width: 3.2, depth: 0.7, price: 6400 },
-  run: { width: 2.4, depth: 0.7, price: 3200 },
+/** ASSUMED nominal footprints for pieces named in chat (no catalog match). Not measurements, and no prices. */
+const SIZES: Record<string, { width: number; depth: number }> = {
+  small: { width: 0.45, depth: 0.45 },
+  seat: { width: 0.52, depth: 0.55 },
+  table: { width: 1.6, depth: 0.9 },
+  lounge: { width: 2.1, depth: 0.95 },
+  kitchen: { width: 3.2, depth: 0.7 },
+  run: { width: 2.4, depth: 0.7 },
 };
 
-export const REMOVE_ROOM_PRICE = 2500;
-export const EXTEND_PRICE_PER_METER = 800;
-
-/** A named object outside the fixed catalog. Size and price still come from our table. */
+/** A named object with an ASSUMED size from the table above. Asset-catalog pieces come from /api/assets instead. */
 export function customItem(name: string, size: string): CatalogItem | null {
   const label = name.replace(/[-_]+/g, " ").replace(/\s+/g, " ").trim();
   if (label.length < 2) return null;
@@ -40,7 +30,6 @@ export function customItem(name: string, size: string): CatalogItem | null {
     kind: kindFor(label),
     width: footprint.width,
     depth: footprint.depth,
-    price: footprint.price,
   };
 }
 
@@ -63,24 +52,10 @@ function kindFor(label: string): TourKind {
   return "counter";
 }
 
-export function money(value: number) {
-  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(value);
-}
-
 export type LayoutDecision = {
   reply: string;
-  total: number;
   action:
     | { type: "add"; item: CatalogItem; room: string }
-    | { type: "structure"; edit: StructureEdit; price: number }
+    | { type: "structure"; edit: StructureEdit }
     | { type: "none" };
 };
-
-export function findCatalogItem(name: string): CatalogItem | null {
-  const key = name.toLowerCase().replace(/[_ ]+/g, "-");
-  return (
-    CATALOG.find((item) => item.id === key || item.label.toLowerCase() === name.toLowerCase()) ??
-    CATALOG.find((item) => item.id.includes(key) || key.includes(item.kind)) ??
-    null
-  );
-}

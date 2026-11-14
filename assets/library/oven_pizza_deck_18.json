@@ -1,0 +1,59 @@
+{
+  "assetId": "oven_pizza_deck_18",
+  "name": "Countertop double-deck pizza oven (18 in class)",
+  "category": "oven",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 0.6604,
+    "d": 0.6096,
+    "h": 0.4064
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      0.6604,
+      0.0
+    ],
+    [
+      0.6604,
+      0.6096
+    ],
+    [
+      0.0,
+      0.6096
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.9,
+    "sides": 0.15,
+    "back": 0.15
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 1.0 m working aisle, 0 at sides/back (wall-adjacent allowed). Aisle widths commonly cited for commercial kitchens are ~0.9-1.1 m (36-42 in; 36 in / 0.915 m is the ADA minimum clear width), dining chair pull-out ~0.45 m; confirm with the local health/building authority.",
+  "model": null,
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "kitchen",
+    "cooking",
+    "pizza"
+  ],
+  "priceRef": "pizza_deck_oven",
+  "provenance": {
+    "origin": "https://www.webstaurantstore.com/avantco-dpo-18-dd-double-deck-countertop-pizza-oven-with-two-independent-chambers-3200w-240v/177DPO18DD.html",
+    "retrievedAt": "2026-11-14",
+    "notes": "Avantco DPO-18-DD is an 18 in-class countertop deck oven; the overall envelope here is a nominal estimate, not read from the product page."
+  },
+  "status": "confirmed"
+}

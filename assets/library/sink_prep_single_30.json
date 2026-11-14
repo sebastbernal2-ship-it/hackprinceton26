@@ -1,0 +1,72 @@
+{
+  "assetId": "sink_prep_single_30",
+  "name": "Single-bowl prep sink 30 in",
+  "category": "sink",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 0.762,
+    "d": 0.762,
+    "h": 1.1176
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": {
+    "w": [
+      0.6096,
+      1.2192
+    ],
+    "d": [
+      0.6096,
+      0.762
+    ],
+    "h": [
+      1.1176,
+      1.1176
+    ]
+  },
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      0.762,
+      0.0
+    ],
+    [
+      0.762,
+      0.762
+    ],
+    [
+      0.0,
+      0.762
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 1.0,
+    "sides": 0,
+    "back": 0
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 1.0 m working aisle, 0 at sides/back (wall-adjacent allowed). Aisle widths commonly cited for commercial kitchens are ~0.9-1.1 m (36-42 in; 36 in / 0.915 m is the ADA minimum clear width), dining chair pull-out ~0.45 m; confirm with the local health/building authority.",
+  "model": null,
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "kitchen",
+    "sink",
+    "prep"
+  ],
+  "priceRef": null,
+  "provenance": {
+    "origin": "standard published/typical dimensions",
+    "retrievedAt": null,
+    "notes": "Nominal size typical of the equipment class; NOT read from a manufacturer spec sheet in this slice (no fetch performed). Treat as estimated until a spec sheet or tape measurement replaces it."
+  },
+  "status": "confirmed"
+}
