@@ -137,7 +137,6 @@ export default function Intake() {
     }
   }
 
-  const hasSelection = selection.start !== selection.end;
   const blocks = [...history, null];
 
   return (
@@ -169,7 +168,10 @@ export default function Intake() {
           autoCorrect="off"
           spellCheck={false}
           enterKeyHint="next"
-          className="pointer-events-none fixed left-1/2 top-1/2 h-px w-px text-base opacity-0"
+          disabled={phase !== "asking"}
+          placeholder={phase === "welcome" ? "" : "Type your answer, then press Enter"}
+          className="fixed bottom-10 left-1/2 z-10 w-[min(36rem,calc(100%-3rem))] -translate-x-1/2 cursor-text rounded-full border border-foreground/20 bg-background px-6 py-4 text-base shadow-sm outline-none focus:border-accent disabled:opacity-40"
+          onMouseDown={(event) => event.stopPropagation()}
         />
       </form>
 
@@ -213,27 +215,7 @@ export default function Intake() {
             ) : (
               <>
                 <p className={`${QUESTION} animate-rise`}>{question}</p>
-                <p className={ANSWER} aria-hidden>
-                  {value.slice(0, selection.start)}
-                  {hasSelection ? (
-                    <span className="rounded-sm bg-accent/25">{value.slice(selection.start, selection.end)}</span>
-                  ) : (
-                    <span
-                      key={`${value.length}:${selection.start}`}
-                      className="relative inline-block h-[1.1em] w-0 align-text-bottom"
-                    >
-                      <span className="absolute -left-px top-0 h-full w-[3px] rounded-full bg-accent opacity-30 group-focus-within:animate-caret group-focus-within:opacity-100" />
-                    </span>
-                  )}
-                  {value.slice(selection.end)}
-                  <span
-                    className={`absolute inset-x-0 top-full mt-4 text-sm tracking-normal text-foreground/40 transition-opacity duration-500 ${
-                      value.trim() ? "opacity-100" : "opacity-0"
-                    }`}
-                  >
-                    Press Enter ↵
-                  </span>
-                </p>
+                <p className={ANSWER} aria-hidden />
               </>
             )}
           </div>
