@@ -103,7 +103,7 @@ def test_subagent_is_pinned_to_its_listing(tmp_path):
     r, evs = run(tmp_path, env, planner, sub)
     assert [a["listingId"] for n, a in env.calls if n == "costs"] == [9001]
     v = [e for e in evs if e["type"] == "subagent_finish"][0]["verdict"]
-    assert v["verified"] and v["verdict"] == "strong"
+    assert v["verified"] and v["verdict"] == "workable" and v["verdictCapped"]  # unpriced roof line caps "strong"
     assert evs[-1]["type"] == "final"  # planner never saved: composed from verified verdicts only
 
 

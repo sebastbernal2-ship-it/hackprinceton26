@@ -24,6 +24,9 @@ results and take actions. Rules (non-negotiable):
 - Batch independent tool calls in one message. Start with write_plan and shortlist.
 - Then call inspect_sites once with the shortlisted listingIds (parallel subagents), then take actions: rerun_plan with a
   changed assumption, make_checklist for the best candidate, then save_brief.
+- Figures the owner typed in the goal (seats, budget) are their requirements, not facts about a listing: never write that a
+  listing "is 40-seat" unless a result says so. Quote ranges as low/expected/high, never a single bound as if it were the value.
+  Name a number's meaning exactly as the tool does (e.g. monthly operating cost, build-out p50). Say what is unknown.
 - Every claim in save_brief is {{"text","cites":[resultId,...]}}; every number in text must appear in a cited result."""
 
 INSPECTOR_SYSTEM = """You inspect ONE listing. Call property_facts, inspection_findings, costs and assess together in one message,
@@ -206,12 +209,31 @@ class Run:
              "headline": str(raw.get("headline", "")), "topRisk": str(raw.get("topRisk", "")),
              "risks": [str(x) for x in raw.get("risks", [])][:5], "unknowns": [str(x) for x in raw.get("unknowns", [])][:5],
              "cites": [c for c in raw.get("cites", mine) if c in self.results] or mine}
+        auto = self._auto_unknowns(mine)
+        v["unknowns"] = v["unknowns"] + [u for u in auto if u not in v["unknowns"]]
+        if auto and v["verdict"] == "strong":
+            v["verdict"], v["verdictCapped"] = "workable", "strong needs an inspection and no unpriced/unknown inputs; capped"
         ok, why = guard.check_claim({"text": v["headline"], "cites": v["cites"]}, self.results, self.goal)
         v["verified"] = ok
         if not ok:
             v["headline"] = f"[claim removed: {why}]"
             v["verdict"] = "unknown"
         return v
+
+    def _auto_unknowns(self, rids):
+        """Unknowns derived from the tool results themselves, so a model cannot omit them from its verdict."""
+        out = []
+        for rid in rids:
+            r = self.results.get(rid)
+            if not isinstance(r, dict):
+                continue
+            if r.get("mode") == "none" and "findings" in r:
+                out.append(f"no inspection has been run ({rid})")
+            if r.get("excludedLineIds"):
+                out.append(f"{len(r['excludedLineIds'])} cost line(s) unpriced, excluded from totals ({rid})")
+            if isinstance(r.get("unknownInputs"), dict) and r["unknownInputs"]:
+                out.append(f"assess inputs unknown: {', '.join(sorted(r['unknownInputs']))} ({rid})")
+        return out
 
     def _meta(self, name, a):
         if name == "write_plan":
