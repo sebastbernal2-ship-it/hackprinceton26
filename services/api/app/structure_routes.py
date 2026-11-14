@@ -35,7 +35,7 @@ def _load(name):
 def _prop(listing_id: int):
     props = _load("properties.json")
     if props is None:
-        raise HTTPException(status_code=404, detail="structure snapshot unavailable (run structure/fetch_sources.py)")
+        raise HTTPException(status_code=503, detail="structure snapshot unavailable (run structure/fetch_sources.py)")
     p = props.get(str(listing_id))
     if p is None:
         raise HTTPException(status_code=404, detail="listing not found in structure snapshot")
@@ -73,7 +73,10 @@ class ExpansionRequest(BaseModel):
 def structure_expansion(req: ExpansionRequest):
     p = None
     if req.listingId is not None:
-        p, _ = _prop(req.listingId)
+        try:
+            p, _ = _prop(req.listingId)
+        except HTTPException:
+            p = None  # snapshot missing or listing absent: the sample-plan run proceeds with unknown (never defaulted) signals
     city = req.city or (p or {}).get("city")
     state = req.state or (p or {}).get("state")
     if not req.plan.get("rooms"):
