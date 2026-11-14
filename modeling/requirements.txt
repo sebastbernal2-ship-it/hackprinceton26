@@ -8,4 +8,7 @@ matplotlib         # debug/topdown plots (mesh_furniture.py has --no-plot)
 pandas             # MatterportTest.py only
 DracoPy            # only needed when 3D Tiles are Draco-compressed (tiles_mesh.py)
 # ipython is imported lazily in MatterportTest.py notebook cells; install it only if you run that notebook.
+fast-simplification  # complete_objects.py (decimation)
+scikit-image       # refine_objects.py, variants/ (marching cubes)
+opencv-python      # expansion/c_housedna/analyse_house.py only
 pytest             # tests under modeling/tests
