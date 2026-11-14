@@ -115,3 +115,28 @@ def test_endpoint_none(tmp_path, monkeypatch):
     assert r["mode"] == "none" and r["findings"] == []
     monkeypatch.setenv("INSPECTION_FIXTURE", "1")
     assert client.get("/api/property/9/inspection").json()["mode"] == "fixture"
+
+
+def test_box_2d_and_reality_check(tmp_path):
+    raw = json.dumps([
+        {"category": "flooring", "title": "Cracked tile", "severity": "medium", "modelConfidence": 0.6,
+         "box_2d": [100, 200, 300, 600], "grounding": "observed", "visibleEvidence": "diagonal crack near door"},
+        {"category": "flooring", "title": "Claims observed, no evidence", "modelConfidence": 0.6,
+         "box_2d": [0, 0, 500, 500], "grounding": "observed"},
+        {"category": "kitchen_infrastructure", "title": "No grease hood visible", "modelConfidence": 0.5,
+         "box_2d": [0, 0, 500, 500], "grounding": "observed", "visibleEvidence": "ceiling"},
+        {"category": "hvac", "title": "Vague", "modelConfidence": 0.1, "grounding": "observed", "visibleEvidence": "x"},
+        {"category": "other", "title": "Bad box", "box_2d": [500, 500, 100, 100], "modelConfidence": 0.5},
+        {"category": "other", "title": "Model says unknown", "box_2d": [0, 0, 10, 10], "grounding": "unknown",
+         "visibleEvidence": "y", "modelConfidence": 0.9}])
+    fs = {f["title"]: f for f in run_vision(imgs(tmp_path, 1), FakeClient(raw))["findings"]}
+    a = fs["Cracked tile"]
+    assert a["evidence"]["region"] == pytest.approx({"x": .2, "y": .1, "w": .4, "h": .2})
+    assert a["grounding"] == "observed" and a["framing"] == "hypothesis" and a["verificationStep"]
+    assert fs["Claims observed, no evidence"]["grounding"] == "inferred"
+    assert fs["No grease hood visible"]["grounding"] == "inferred"
+    assert fs["Vague"]["grounding"] == "unknown"
+    assert fs["Bad box"]["evidence"]["region"] is None and fs["Bad box"]["grounding"] == "unknown"
+    assert fs["Model says unknown"]["grounding"] == "unknown"
+    for f in fs.values():
+        assert validate_finding(f) == []

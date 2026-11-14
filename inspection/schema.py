@@ -4,7 +4,26 @@ from typing import Any
 CATEGORIES = {"plumbing", "electrical", "hvac", "flooring", "ceiling_water_damage", "walls_finishes",
               "structural", "kitchen_infrastructure", "egress_accessibility", "layout_inefficiency", "other"}
 SEVERITIES = {"low", "medium", "high", "unknown"}
+GROUNDINGS = {"observed", "inferred", "unknown"}
 SOURCES = {"panorama", "floorplan_geometry", "listing_text"}
+
+
+def region_from(raw: dict) -> dict | None:
+    """Normalized {x,y,w,h} (0-1, top-left origin) from `box_2d` [ymin,xmin,ymax,xmax] on a 0-1000 grid
+    (Gemini convention) or from an explicit `region` dict. Invalid/degenerate boxes become None."""
+    box = raw.get("box_2d")
+    if isinstance(box, (list, tuple)) and len(box) == 4 and all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in box):
+        y0, x0, y1, x1 = (min(1000.0, max(0.0, float(v))) / 1000.0 for v in box)
+        if x1 > x0 and y1 > y0:
+            return {"x": x0, "y": y0, "w": x1 - x0, "h": y1 - y0}
+        return None
+    r = raw.get("region")
+    if isinstance(r, dict) and all(isinstance(r.get(k), (int, float)) and not isinstance(r.get(k), bool) for k in "xywh"):
+        r = {k: float(r[k]) for k in "xywh"}
+        if r["w"] > 0 and r["h"] > 0 and 0 <= r["x"] <= 1 and 0 <= r["y"] <= 1:
+            r["w"], r["h"] = min(r["w"], 1 - r["x"]), min(r["h"], 1 - r["y"])
+            return r
+    return None
 
 
 def coerce_finding(raw: dict, fid: str, source: str, ref: str, room_id: Any = None) -> dict | None:
@@ -19,11 +38,7 @@ def coerce_finding(raw: dict, fid: str, source: str, ref: str, room_id: Any = No
     except (TypeError, ValueError):
         conf = 0.0
     conf = min(1.0, max(0.0, conf))
-    region = raw.get("region")
-    if isinstance(region, dict) and all(isinstance(region.get(k), (int, float)) for k in "xywh"):
-        region = {k: float(region[k]) for k in "xywh"}
-    else:
-        region = None
+    region = region_from(raw)
     can = raw.get("canConfirmFromImagery")
     step = str(raw.get("verificationStep", "")).strip() or "On-site inspector must verify this item in person."
     return {
@@ -33,6 +48,9 @@ def coerce_finding(raw: dict, fid: str, source: str, ref: str, room_id: Any = No
         "evidence": {"source": source, "ref": ref, "region": region},
         "canConfirmFromImagery": can if isinstance(can, bool) else False,
         "verificationStep": step, "costLineItemIds": [],
+        "framing": "hypothesis",
+        "grounding": raw.get("grounding") if raw.get("grounding") in GROUNDINGS else "unknown",
+        "visibleEvidence": str(raw.get("visibleEvidence", "")).strip()[:300],
     }
 
 
