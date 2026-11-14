@@ -299,6 +299,22 @@ def room_of(pt, rooms):
 
 
 # ----------------------------------------------------------------------------- main
+def estimate_floor_z(P, N, bin_m=0.02):
+    """Mode of upward-facing samples in the lowest 40% of heights (2 cm bins).
+    Safe for perfectly flat floors (all samples at one height) and for meshes with
+    no upward-facing low samples (falls back to the lowest sample height)."""
+    if len(P) == 0:
+        raise ValueError("empty mesh: cannot estimate floor height")
+    low = P[(N[:, 2] > 0.8) & (P[:, 2] < np.percentile(P[:, 2], 40))]
+    if len(low) == 0:
+        return float(P[:, 2].min())
+    z0, z1 = float(low[:, 2].min()), float(low[:, 2].max())
+    # np.arange(z0, z1 + bin) yields a single edge (zero bins) when z0 == z1; build >= 1 bin explicitly
+    nbins = max(1, int(math.ceil((z1 - z0) / bin_m)))
+    hist, edges = np.histogram(low[:, 2], bins=nbins, range=(z0, z0 + nbins * bin_m))
+    return float(edges[hist.argmax()] + bin_m / 2)
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--furnished", default=None, help="OBJ with the furniture still in it (default: the simple-planes OBJ found in assets_<sid>/)")
@@ -355,9 +371,7 @@ def main():
 
     # ---- floor height: mode of upward-facing empty-mesh samples below 0.6 m
     Pe, Ne, _, _ = sample_surface(Ve, Fe, 0.06, rng)
-    low = Pe[(Ne[:, 2] > 0.8) & (Pe[:, 2] < np.percentile(Pe[:, 2], 40))]
-    hist, edges = np.histogram(low[:, 2], bins=np.arange(low[:, 2].min(), low[:, 2].max() + 0.02, 0.02))
-    floor_z = float(edges[hist.argmax()] + 0.01)
+    floor_z = estimate_floor_z(Pe, Ne)
     if pano and pano_objs:
         floor_z = float(np.median([o["floor_z"] for o in pano_objs if "floor_z" in o] or [floor_z]))
     ceil_z = float(np.percentile(Pe[Ne[:, 2] < -0.8][:, 2], 50)) if (Ne[:, 2] < -0.8).any() else floor_z + 2.6
