@@ -100,3 +100,22 @@ def test_api_simulate_and_ledger():
     assert client.get("/api/finance/ledger/nope").status_code == 404
     unk = client.post("/api/finance/simulate", json={"nDraws": 500}).json()
     assert unk["status"] == "blocked"
+
+
+def test_opening_deficit_counts_as_shortfall():
+    # build-out far exceeds equity, so the restaurant cannot fund its opening even though month 1 is very profitable
+    inp = simple(buildout=(50000, 50000, 50000), equity=1000, loan_principal=0.0, avg_check=(2000, 2000, 2000))
+    r = model.simulate(inp, seed=1, n=200, sensitivity=False)
+    assert r["status"] == "simulated"
+    assert r["pCashShortfall"] == 1.0
+    assert r["minCash"]["p50"] < 0
+
+
+def test_ledger_reconciles_to_the_simulated_cash_path():
+    inp = simple(buildout=(10000, 10000, 10000), equity=20000, loan_principal=5000.0, other_opex_fixed=300,
+                 other_opex_pct=0.02, pre_open_months=2)
+    p = model.representative_path(inp, seed=5, n=200)
+    sb = nessie.LocalSandbox()
+    nessie.post_trail(sb, p, inp.open_days_per_month)
+    balance = sum(d["amount"] for d in sb.t["deposits"]) - sum(x["amount"] for x in sb.t["purchases"])
+    assert balance == pytest.approx(float(p["cash"][-1]), abs=15.0)

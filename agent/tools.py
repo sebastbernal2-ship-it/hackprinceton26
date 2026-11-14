@@ -45,6 +45,40 @@ def tool_defs(names) -> list[dict]:
              "input_schema": {"type": "object", "properties": SPECS[n][1], "required": SPECS[n][2]}} for n in names]
 
 
+_CACHE: dict = {}
+
+
+def _read_json(f: Path):
+    """Parse a derived artifact once per modification time (triage/results.json is several MB)."""
+    if not f.is_file():
+        return None
+    key = (str(f), f.stat().st_mtime_ns)
+    if key not in _CACHE:
+        _CACHE.clear()
+        _CACHE[key] = json.loads(f.read_text())
+    return _CACHE[key]
+
+
+def _layer_data(base: Path, layer: str, listing_id):
+    """Each layer lives where its producer writes it (not a generic <layer>/<id>.json convention):
+    triage -> triage/results.json (list), review_queue -> triage/queue.json (list), aerial -> triage/aerial/properties/<id>.json,
+    lineage -> lineage/lineage.json and presence -> lineage/presence.json (dicts keyed by listing id)."""
+    lid = None if listing_id is None else str(listing_id)
+    if layer == "aerial":
+        return _read_json(base / "triage" / "aerial" / "properties" / f"{lid}.json") if lid else None
+    if layer in ("lineage", "presence"):
+        d = _read_json(base / "lineage" / f"{layer}.json")
+        return d.get(lid) if (isinstance(d, dict) and lid) else None
+    if layer == "triage":
+        rows = _read_json(base / "triage" / "results.json")
+        return next((r for r in rows if str(r.get("listingId")) == lid), None) if (rows and lid) else None
+    rows = _read_json(base / "triage" / "queue.json")  # review_queue
+    if not rows:
+        return None
+    picked = [r for r in rows if str(r.get("listingId")) == lid] if lid else rows[:25]
+    return picked[:50] or None
+
+
 class LiveEnv:
     """In-process calls into the same logic the HTTP routes use. Read-only."""
 
@@ -148,12 +182,8 @@ class LiveEnv:
     def t_derived_layer(self, layer, listingId=None):
         if layer not in LAYERS:
             raise ValueError(f"unknown layer {layer!r}")
-        base = Path(os.environ.get("DERIVED_DIR", "data/derived")) / layer
-        for f in ([base / f"{listingId}.json"] if listingId is not None else []) + [base / "all.json"]:
-            if f.is_file() and f.stat().st_size < 1_000_000:
-                d = json.loads(f.read_text())
-                if listingId is not None and isinstance(d, dict) and str(listingId) in d:
-                    d = d[str(listingId)]
-                return {"layer": layer, "status": "available", "data": d}
+        data = _layer_data(Path(os.environ.get("DERIVED_DIR", "data/derived")), layer, listingId)
+        if data is not None:
+            return {"layer": layer, "status": "available", "data": data}
         return {"layer": layer, "status": "unavailable", "listingId": listingId,
                 "note": "layer not produced for this listing; value unknown (not zero)"}

@@ -176,3 +176,29 @@ def test_anthropic_provider_maps_blocks_with_fake_client():
     t = AnthropicProvider("claude-sonnet-5-5", client).step("sys", [{"role": "user", "content": "x"}], runner.planner_tools())
     assert t.text == "plan" and t.tool_calls == [{"id": "tu1", "name": "shortlist", "args": {"goal": "g"}}]
     assert sent["model"] == "claude-sonnet-5-5" and sent["tools"][0]["input_schema"]["type"] == "object"
+
+
+def test_derived_layer_reads_the_producers_actual_paths(tmp_path, monkeypatch):
+    import json
+    from agent.tools import LiveEnv
+
+    def put(rel, obj):
+        f = tmp_path / rel
+        f.parent.mkdir(parents=True, exist_ok=True)
+        f.write_text(json.dumps(obj))
+
+    put("triage/results.json", [{"listingId": "1", "hasScan": True, "fields": {"floors": {"status": "confirmed"}}}, {"listingId": "2"}])
+    put("triage/queue.json", [{"listingId": "1", "field": "floors", "status": "conflicting", "score": 9}, {"listingId": "2", "field": "area", "status": "filled", "score": 3}])
+    put("triage/aerial/properties/1.json", {"listingId": "1", "vehicles": {"expected": 20}})
+    put("lineage/lineage.json", {"1": {"tenants": 3}})
+    put("lineage/presence.json", {"1": {"shape": "mixed"}})
+    monkeypatch.setenv("DERIVED_DIR", str(tmp_path))
+    env = LiveEnv(pool=[])
+    for layer in ("triage", "review_queue", "aerial", "lineage", "presence"):
+        r = env.t_derived_layer(layer, 1)
+        assert r["status"] == "available", (layer, r)
+    assert env.t_derived_layer("triage", 1)["data"]["fields"]["floors"]["status"] == "confirmed"
+    assert [x["field"] for x in env.t_derived_layer("review_queue", 1)["data"]] == ["floors"]
+    assert env.t_derived_layer("lineage", 1)["data"]["tenants"] == 3
+    assert env.t_derived_layer("aerial", 99)["status"] == "unavailable"
+    assert env.t_derived_layer("presence", 99)["status"] == "unavailable"
