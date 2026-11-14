@@ -1,12 +1,17 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useMemo, useState } from "react";
-import { conceptFootprint, packConcept } from "../lib/concept-layout";
+import { useEffect, useMemo, useState } from "react";
+import { packAssets, frontZone } from "../lib/asset-layout";
+import { bbox, listAssets, orderAssets, priceFor, type Asset, type AssetCategory } from "../lib/assets";
+import { conceptFootprint } from "../lib/concept-layout";
+import type { CostLineItem } from "../lib/costs";
 import type { FloorLayout } from "../lib/floor-layout";
-import { CATALOG, customItem, type CatalogItem } from "../lib/layout-catalog";
 import type { Match } from "../lib/matches";
+import type { TourKind } from "../lib/tour-agent";
 import type { StagedPiece } from "../lib/tour-scene";
+import AssetBrowser from "./asset-browser";
+import AssetUpload from "./asset-upload";
 
 const ForegroundTour = dynamic(() => import("./foreground-tour"), {
   ssr: false,
@@ -20,15 +25,30 @@ type Trace =
   | { status: "notConfigured"; message: string }
   | { status: "failed"; message: string };
 
-const SQM_TO_SQFT = 10.7639;
 
-export default function LayoutPanel({ match }: { match: Match }) {
-  const [items, setItems] = useState<CatalogItem[]>([]);
-  const [custom, setCustom] = useState("");
+const KIND: Partial<Record<Asset["category"], TourKind>> = { seating: "chair", table: "table", prep_table: "table" };
+
+export default function LayoutPanel({ match, lines = [] }: { match: Match; lines?: CostLineItem[] }) {
+  const [items, setItems] = useState<Asset[]>([]);
   const [trace, setTrace] = useState<Trace>({ status: "idle" });
+  const [profileDraft, setProfileDraft] = useState("");
+  const [profileId, setProfileId] = useState<string | null>(null);
+  const [category, setCategory] = useState<AssetCategory | "">("");
+  const [catalog, setCatalog] = useState<{ status: "loading" | "ok" | "error"; assets: Asset[]; error: string }>({ status: "loading", assets: [], error: "" });
+  const [reload, setReload] = useState(0);
+  const [uploading, setUploading] = useState(false);
+  const [respect, setRespect] = useState(true);
+
+  useEffect(() => {
+    let live = true;
+    listAssets({ profileId, category })
+      .then((assets) => live && setCatalog({ status: "ok", assets: orderAssets(assets, profileId), error: "" }))
+      .catch((e: unknown) => live && setCatalog({ status: "error", assets: [], error: e instanceof Error ? e.message : "failed" }));
+    return () => { live = false; };
+  }, [profileId, category, reload]);
 
   const footprint = useMemo(() => conceptFootprint(match.squareFeet), [match.squareFeet]);
-  const result = useMemo(() => (footprint ? packConcept(footprint, items) : null), [footprint, items]);
+  const result = useMemo(() => (footprint ? packAssets(footprint, items, respect) : null), [footprint, items, respect]);
 
   async function traceFloorplan() {
     setTrace({ status: "loading" });
@@ -51,26 +71,25 @@ export default function LayoutPanel({ match }: { match: Match }) {
   const tracedPieces: StagedPiece[] = useMemo(() => {
     if (!traced) return [];
     const room = [...traced.rooms].filter((r) => !r.absorbed).sort((a, b) => b.w * b.d - a.w * a.d)[0]?.label;
-    return items.map((item, index) => ({
-      id: `${item.id}-${index}`,
-      kind: item.kind,
-      label: item.label,
-      tagId: null,
-      position: { x: 0, y: 0, z: 0 },
-      stem: { x: 0, y: 0, z: 0 },
-      screen: { x: 0, y: 0 },
-      width: item.width,
-      depth: item.depth,
-      room,
-    }));
+    return items.map((item, index) => {
+      const b = bbox(item.footprint);
+      return {
+        id: `${item.assetId}-${index}`,
+        kind: KIND[item.category] ?? "counter",
+        label: item.name,
+        tagId: null,
+        position: { x: 0, y: 0, z: 0 },
+        stem: { x: 0, y: 0, z: 0 },
+        screen: { x: 0, y: 0 },
+        width: b.x1 - b.x0,
+        depth: b.y1 - b.y0,
+        room,
+      };
+    });
   }, [traced, items]);
 
-  function addCustom() {
-    const item = customItem(custom, "");
-    if (!item) return;
-    setItems((current) => [...current, item]);
-    setCustom("");
-  }
+  const priced = items.map((item) => priceFor(item, lines));
+  const withPrice = priced.filter((p) => p.kind === "line").length;
 
   return (
     <section className="mt-8 border-t border-foreground/10 pt-6" aria-labelledby="layout-title">
@@ -78,78 +97,92 @@ export default function LayoutPanel({ match }: { match: Match }) {
       <h2 id="layout-title" className="text-lg font-medium tracking-tight">Layout and equipment placement</h2>
       <p role="note" className="mt-2 rounded-lg border border-foreground/25 bg-foreground/5 px-3 py-2 text-sm font-medium">
         Concept placement, not verified geometry. The floor below is a rectangle with the listed area; real walls, columns and
-        doors are unknown, and piece sizes are assumed. Nothing here shows the pieces fit the real space.
+        doors are unknown. Piece sizes carry their own status (measured, catalog or estimated) and clearances are assumptions.
+        Nothing here shows the pieces fit the real space.
       </p>
 
-      <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label="Add equipment">
-        {CATALOG.map((item) => (
-          <button
-            key={item.id}
-            type="button"
-            onClick={() => setItems((current) => [...current, item])}
-            className="rounded-full border border-foreground/20 px-3 py-1.5 text-sm transition-opacity hover:opacity-70"
-          >
-            + {item.label} <span className="text-foreground/45">{item.width} x {item.depth} m</span>
-          </button>
-        ))}
-        <form
-          className="flex gap-2"
-          onSubmit={(event) => {
-            event.preventDefault();
-            addCustom();
-          }}
-        >
-          <input
-            value={custom}
-            onChange={(event) => setCustom(event.target.value)}
-            placeholder="Other piece, e.g. booth"
-            aria-label="Other piece"
-            className="rounded-full border border-foreground/20 bg-background px-3 py-1.5 text-sm"
-          />
-          <button type="submit" className="rounded-full bg-foreground px-3 py-1.5 text-sm text-background">Add</button>
+      <div className="mt-4 flex flex-wrap items-center gap-3">
+        <form className="flex items-center gap-2 text-sm" onSubmit={(e) => { e.preventDefault(); setProfileId(profileDraft.trim() || null); }}>
+          <label>Profile (chain or brand id){" "}
+            <input value={profileDraft} onChange={(e) => setProfileDraft(e.target.value)} placeholder="optional" className="rounded border border-foreground/20 bg-background px-2 py-1" />
+          </label>
+          <button type="submit" className="rounded-full border border-foreground/25 px-3 py-1">Use</button>
         </form>
-        {items.length > 0 && (
-          <button type="button" onClick={() => setItems([])} className="px-2 text-sm text-foreground/55 underline">Clear</button>
-        )}
+        <button type="button" onClick={() => setUploading(true)} className="rounded-full bg-foreground px-4 py-1.5 text-sm text-background">Upload photos to add assets</button>
+        {profileId && <span className="text-xs text-foreground/60">Profile assets are listed first.</span>}
+      </div>
+      <AssetBrowser
+        assets={catalog.assets} profileId={profileId} status={catalog.status} error={catalog.error}
+        category={category} onCategory={setCategory} lines={lines}
+        onAdd={(asset) => setItems((current) => [...current, asset])}
+        onSaved={() => setReload((n) => n + 1)}
+      />
+      {uploading && <AssetUpload profileId={profileId} onClose={() => setUploading(false)} onConfirmed={() => setReload((n) => n + 1)} />}
+
+      <div className="mt-6 flex flex-wrap items-center gap-3 text-sm">
+        <h3 className="font-medium">Placement</h3>
+        <label className="flex items-center gap-1.5"><input type="checkbox" checked={respect} onChange={(e) => setRespect(e.target.checked)} /> Space pieces by their clearance assumptions</label>
+        {items.length > 0 && <button type="button" onClick={() => setItems([])} className="px-2 text-foreground/55 underline">Clear</button>}
       </div>
 
       {!footprint || !result ? (
         <p className="mt-4 text-sm text-foreground/60">Cannot say: this listing has no usable square footage.</p>
       ) : (
-        <div className="mt-4 grid gap-6 md:grid-cols-[2fr_1fr]">
+        <div className="mt-3 grid gap-6 md:grid-cols-[2fr_1fr]">
           <figure>
             <svg
               viewBox={`-0.3 -0.3 ${footprint.width + 0.6} ${footprint.depth + 0.6}`}
               role="img"
-              aria-label={`Concept floor, ${footprint.width.toFixed(1)} by ${footprint.depth.toFixed(1)} meters, ${result.placed.length} pieces placed`}
+              aria-label={`Concept floor, ${footprint.width.toFixed(1)} by ${footprint.depth.toFixed(1)} meters, ${result.placed.length} pieces placed, ${result.issues.length} problems found`}
               className="w-full rounded-lg border border-foreground/15 bg-panel"
             >
               <rect x={0} y={0} width={footprint.width} height={footprint.depth} fill="none" stroke="currentColor" strokeWidth={0.06} strokeDasharray="0.3 0.2" opacity={0.5} />
-              {result.placed.map((piece) => (
-                <g key={piece.key}>
-                  <rect x={piece.x} y={piece.z} width={piece.w} height={piece.d} rx={0.05} className="fill-match-soft stroke-match" strokeWidth={0.04} />
-                  <text x={piece.x + piece.w / 2} y={piece.z + piece.d / 2} fontSize={Math.min(0.32, piece.w / 4)} textAnchor="middle" dominantBaseline="middle" className="fill-foreground">
-                    {piece.item.label}
-                  </text>
-                </g>
-              ))}
+              {result.placed.map((piece) => {
+                const z = piece.asset.clearance.front > 0 ? frontZone(piece) : null;
+                return (
+                  <g key={piece.key}>
+                    {z && <polygon points={z.map(([x, y]) => `${x},${y}`).join(" ")} fill="none" stroke="currentColor" strokeWidth={0.03} strokeDasharray="0.12 0.08" opacity={0.4} />}
+                    <polygon points={piece.poly.map(([x, y]) => `${x},${y}`).join(" ")} className="fill-match-soft stroke-match" strokeWidth={0.04} />
+                    <text x={(piece.box.x0 + piece.box.x1) / 2} y={(piece.box.y0 + piece.box.y1) / 2} fontSize={Math.min(0.3, (piece.box.x1 - piece.box.x0) / 5)} textAnchor="middle" dominantBaseline="middle" className="fill-foreground">
+                      {piece.asset.name}
+                    </text>
+                  </g>
+                );
+              })}
             </svg>
             <figcaption className="mt-2 text-xs text-foreground/50">
-              Dashed outline: assumed {footprint.width.toFixed(1)} m x {footprint.depth.toFixed(1)} m rectangle ({Math.round(match.squareFeet).toLocaleString("en-US")} sq ft listed, 3:2 shape assumed).
+              Dashed outline: assumed {footprint.width.toFixed(1)} m x {footprint.depth.toFixed(1)} m rectangle ({Math.round(match.squareFeet).toLocaleString("en-US")} sq ft listed, 3:2 shape assumed). Faint dashed boxes: front clearance assumptions.
             </figcaption>
           </figure>
           <div className="text-sm">
             <dl className="space-y-2">
               <Row label="Pieces placed" value={`${result.placed.length} of ${items.length}`} />
-              <Row label="Floor covered by pieces" value={`${Math.round(((result.usedM2 * SQM_TO_SQFT) / match.squareFeet) * 100)}% (estimated)`} />
-              <Row label="Prices" value="Not shown: no price basis for equipment" />
+              <Row label="Problems found" value={String(result.issues.length)} />
+              <Row label="Priced from costs" value={`${withPrice} of ${items.length}`} />
             </dl>
-            {result.unplaced.length > 0 && (
-              <p className="mt-3 text-foreground/70">
-                Did not fit in the assumed rectangle: {result.unplaced.map((item) => item.label).join(", ")}.
-              </p>
+            {result.issues.length > 0 && (
+              <ul role="alert" className="mt-3 list-disc space-y-1 pl-4 text-foreground/80">
+                {result.issues.map((issue, i) => <li key={i}>{issue.message}</li>)}
+              </ul>
             )}
-            {items.length === 0 && <p className="mt-3 text-foreground/55">Add a piece to see it placed.</p>}
+            {result.unplaced.length > 0 && (
+              <div className="mt-3 text-foreground/70">
+                <p>Does not fit:</p>
+                <ul className="list-disc pl-4">{result.unplaced.map((u, i) => <li key={i}>{u.asset.name}: {u.reason}.</li>)}</ul>
+              </div>
+            )}
+            {items.length > 0 && (
+              <ul className="mt-3 space-y-1 text-xs" aria-label="Pieces in this layout">
+                {items.map((item, i) => (
+                  <li key={i} className="flex justify-between gap-2">
+                    <span>{item.name}{item.status === "draft" ? " (draft)" : ""}: {priced[i].text}</span>
+                    <button type="button" onClick={() => setItems((c) => c.filter((_, j) => j !== i))} aria-label={`Remove ${item.name}`} className="text-foreground/55 underline">remove</button>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <p className="mt-3 text-xs text-foreground/55">No total is shown. Prices appear only where a piece links to a line in this property&apos;s costs.</p>
+            {items.length === 0 && <p className="mt-3 text-foreground/55">Add a piece from the catalog to see it placed.</p>}
           </div>
         </div>
       )}
