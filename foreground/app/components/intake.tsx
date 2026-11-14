@@ -193,7 +193,7 @@ export default function Intake() {
               </>
             ) : phase === "welcome" ? (
               <h1 className={`${QUESTION} animate-interlude`} style={{ animationDuration: `${WELCOME_MS}ms` }}>
-                Welcome to Foreground
+                Welcome to <span className="text-accent">Foreground</span>
               </h1>
             ) : phase === "leaving" ? (
               <p

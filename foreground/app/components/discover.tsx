@@ -59,9 +59,10 @@ export default function Discover() {
                 <button
                   type="button"
                   onClick={() => setTour(match)}
-                  className="inline-flex items-center rounded-full bg-foreground px-5 py-2.5 text-sm font-medium text-background transition-[transform,opacity] duration-300 hover:opacity-90 active:scale-[0.98]"
+                  className="inline-flex items-center gap-2 rounded-full bg-foreground px-5 py-2.5 text-sm font-medium text-background transition-[transform,opacity] duration-300 hover:opacity-90 active:scale-[0.98]"
                 >
-                  Open Tour
+                  <Cube />
+                  Open 3D Tour
                 </button>
                 <button
                   type="button"
@@ -93,5 +94,14 @@ export default function Discover() {
         />
       )}
     </>
+  );
+}
+
+function Cube() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
+      <path d="M12 3.5 19 7.5v9L12 20.5 5 16.5v-9L12 3.5Z" strokeLinejoin="round" />
+      <path d="M12 12.2 19 7.7M12 12.2 5 7.7M12 12.2v8.3" strokeLinejoin="round" />
+    </svg>
   );
 }
