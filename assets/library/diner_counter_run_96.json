@@ -1,0 +1,61 @@
+{
+  "assetId": "diner_counter_run_96",
+  "name": "Diner service counter run, 96 in",
+  "category": "counter",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 2.4384,
+    "d": 0.762,
+    "h": 1.0668
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      2.4384,
+      0.0
+    ],
+    [
+      2.4384,
+      0.762
+    ],
+    [
+      0.0,
+      0.762
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 1.0,
+    "sides": 0.0,
+    "back": 0.0
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front working aisle 1.00 m, sides 0.00 m, back 0.00 m. Aisle widths commonly cited for commercial kitchens are ~0.9-1.1 m (36-42 in; 36 in / 0.915 m is the ADA minimum clear width), dining chair pull-out ~0.45 m; manufacturer rear/side clearances to combustibles vary by model: confirm with the spec sheet and the local health/building/fire authority.",
+  "model": {
+    "uri": "assets/library/models/diner_counter_run_96.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "front_of_house",
+    "american"
+  ],
+  "priceRef": null,
+  "provenance": {
+    "origin": "standard published/typical dimensions for this equipment class (not read from a specific spec sheet)",
+    "retrievedAt": null,
+    "notes": "Parametric counter run."
+  },
+  "status": "draft"
+}

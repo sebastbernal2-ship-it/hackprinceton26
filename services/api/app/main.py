@@ -8,6 +8,7 @@ from .assets_ingest_routes import router as assets_ingest_router
 from .costs_routes import router as costs_router
 from .triage_routes import router as triage_router
 from .lineage_routes import router as lineage_router
+from .concepts_routes import router as concepts_router
 from .loader import load_matches
 from .models import (
     AssessRequest, ProjectionsResponse, ReplanRequest, ReplanResponse, ScenarioAssessment,
@@ -24,6 +25,7 @@ app.include_router(triage_router)
 app.include_router(aerial_router)
 app.include_router(lineage_router)
 app.include_router(agent_router)
+app.include_router(concepts_router)
 
 
 @app.get("/api/health")

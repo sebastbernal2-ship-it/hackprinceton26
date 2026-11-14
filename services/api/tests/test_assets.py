@@ -27,7 +27,7 @@ def base(**kw):
 
 def test_seed_library_validates_and_is_sparse():
     files = sorted(LIB.glob("*.json"))
-    assert 14 <= len(files) <= 20
+    assert 14 <= len(files) <= 80
     for f in files:
         a = Asset.model_validate_json(f.read_text())
         assert a.clearanceBasis.startswith("ASSUMPTION") and a.dimsStatus in ("measured", "catalog", "estimated")

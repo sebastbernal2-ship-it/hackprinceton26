@@ -1,0 +1,145 @@
+{
+  "id": "mexican",
+  "name": "Mexican taqueria / cantina",
+  "equipment": [
+    {
+      "assetId": "charbroiler_36",
+      "qty": {
+        "fixed": 1
+      },
+      "role": "carne asada",
+      "specific": true
+    },
+    {
+      "assetId": "taco_steam_table_5well",
+      "qty": {
+        "fixed": 1
+      },
+      "role": "fillings",
+      "specific": true
+    },
+    {
+      "assetId": "tortilla_warmer_press",
+      "qty": {
+        "fixed": 1
+      },
+      "role": "tortillas",
+      "specific": true
+    },
+    {
+      "assetId": "salsa_cold_rail_36",
+      "qty": {
+        "fixed": 1
+      },
+      "role": "salsas",
+      "specific": true
+    },
+    {
+      "assetId": "margarita_machine_2bowl",
+      "qty": {
+        "fixed": 1
+      },
+      "role": "bar",
+      "specific": true
+    },
+    {
+      "assetId": "fryer_floor_40lb",
+      "qty": {
+        "perSeats": 80,
+        "min": 1
+      },
+      "role": "chips/churros",
+      "specific": false
+    },
+    {
+      "assetId": "griddle_flat_36",
+      "qty": {
+        "fixed": 1
+      },
+      "role": "plancha",
+      "specific": false
+    }
+  ],
+  "adjacency": [
+    {
+      "a": "charbroiler_36",
+      "b": "taco_steam_table_5well",
+      "maxGapM": 2.5,
+      "why": "grill to filling line",
+      "status": "assumption",
+      "basis": "analyst workflow assumption (line flow), not a code requirement"
+    },
+    {
+      "a": "tortilla_warmer_press",
+      "b": "taco_steam_table_5well",
+      "maxGapM": 1.5,
+      "why": "tortillas to assembly",
+      "status": "assumption",
+      "basis": "analyst workflow assumption (line flow), not a code requirement"
+    }
+  ],
+  "loads": [
+    {
+      "kind": "ventilation",
+      "note": "Charbroiler and fryer are heavy grease/smoke producers; hood and possibly filtration class: verify with inspector",
+      "status": "assumption",
+      "basis": "analyst assumption from typical equipment class; confirm with equipment spec sheet and a licensed MEP engineer"
+    },
+    {
+      "kind": "gas",
+      "note": "Charbroiler + plancha + fryer",
+      "status": "assumption",
+      "basis": "analyst assumption from typical equipment class; confirm with equipment spec sheet and a licensed MEP engineer"
+    },
+    {
+      "kind": "water",
+      "note": "Salsa prep sink and hand sink at line (assumed)",
+      "status": "assumption",
+      "basis": "analyst assumption from typical equipment class; confirm with equipment spec sheet and a licensed MEP engineer"
+    },
+    {
+      "kind": "electrical",
+      "note": "Frozen drink machine needs its own circuit (assumed)",
+      "status": "assumption",
+      "basis": "analyst assumption from typical equipment class; confirm with equipment spec sheet and a licensed MEP engineer"
+    }
+  ],
+  "materials": {
+    "wall": {
+      "name": "bright stucco paint",
+      "hex": "#E0723C"
+    },
+    "floor": {
+      "name": "saltillo/cement tile",
+      "hex": "#A8502F"
+    },
+    "ceiling": {
+      "name": "painted dark with string lights",
+      "hex": "#2E2A2A"
+    },
+    "accent": {
+      "name": "cobalt blue accent",
+      "hex": "#1F4E9E"
+    }
+  },
+  "decor": [
+    "papel picado",
+    "talavera tile",
+    "neon cactus sign"
+  ],
+  "signage": "Bold hand-painted wordmark (assumption)",
+  "permits": [
+    {
+      "item": "Hood/fire suppression review for charbroiler",
+      "status": "assumption",
+      "source": "none fetched: ask the local building/fire/health authority"
+    },
+    {
+      "item": "Liquor license if margaritas served",
+      "status": "assumption",
+      "source": "none fetched: ask the local building/fire/health authority"
+    }
+  ],
+  "seatsPerUnitNote": "qty.perSeats = one unit per N seats, ceil, at least min (default 1); a scaling ASSUMPTION, not a code figure",
+  "status": "draft concept profile: assumptions, not an engineering or code determination"
+}

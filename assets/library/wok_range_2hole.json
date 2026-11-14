@@ -1,0 +1,64 @@
+{
+  "assetId": "wok_range_2hole",
+  "name": "Chinese-style wok range, 2 hole",
+  "category": "range",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 0.6096,
+    "d": 0.8128,
+    "h": 0.7112
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      0.6096,
+      0.0
+    ],
+    [
+      0.6096,
+      0.8128
+    ],
+    [
+      0.0,
+      0.8128
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 1.0,
+    "sides": 0.15,
+    "back": 0.15
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front working aisle 1.00 m, sides 0.15 m, back 0.15 m. Aisle widths commonly cited for commercial kitchens are ~0.9-1.1 m (36-42 in; 36 in / 0.915 m is the ADA minimum clear width), dining chair pull-out ~0.45 m; manufacturer rear/side clearances to combustibles vary by model: confirm with the spec sheet and the local health/building/fire authority.",
+  "model": {
+    "uri": "assets/library/models/wok_range_2hole.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "kitchen",
+    "cooking",
+    "japanese",
+    "asian",
+    "open_flame"
+  ],
+  "priceRef": null,
+  "provenance": {
+    "origin": "standard published/typical dimensions for this equipment class (not read from a specific spec sheet)",
+    "retrievedAt": null,
+    "notes": "Water-cooled wok range class; needs water and high-BTU gas: verify."
+  },
+  "status": "draft"
+}
