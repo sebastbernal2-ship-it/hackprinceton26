@@ -141,7 +141,7 @@ def mtl_textures(mtl_path):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--model", default="zvKHR9DHNjJ")
+    ap.add_argument("--model", default="Jxmnkp6KpJN")
     ap.add_argument("--no-download", action="store_true")
     ap.add_argument("--cloud", action="store_true", help="also extract cloud.xyz (~400 MB colored point cloud)")
     a = ap.parse_args()

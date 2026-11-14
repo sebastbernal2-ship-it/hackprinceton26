@@ -1,0 +1,235 @@
+
+[1/12] download ...
+   $ C:\Users\dmsch\AppData\Local\Python\pythoncore-3.14-64\python.exe C:\Users\dmsch\Documents\GitHub\hackprinceton26\Code\download_assets.py --model GpFkvxKtRrp --res 2k --drone 12
+Salon (GpFkvxKtRrp, public) - 3330 Audley St, Houston, TX, 77098, US
+Model API assets ...
+asset types with files: ['clips', 'floorplan', 'floorplans', 'meshes', 'photo', 'photos', 'resources', 'textures']
+  clips: 3 with links / 3 listed
+  floorplan: 1 with links / 1 listed
+  floorplans: 8 with links / 8 listed
+  meshes: 2 with links / 2 listed
+  photo: query failed (needs arguments?)
+  photos: 6 with links / 6 listed
+  resources: 0 with links / 3 listed
+  textures: 0 with links / 2 listed
+Panoramas (2k) ...
+  furnished: 13 panos, 78 faces
+  defurnished: 13 panos, 78 faces
+Hackathon site ...
+  hackathon site: no splat/drone data for GpFkvxKtRrp (HTTP 404) - only 232 models have it
+Vexcel ...
+
+178 files, 68 MB on disk -> assets_GpFkvxKtRrp/
+[1/12] download finished in 10s
+
+[2/12] matterpak ...
+   $ C:\Users\dmsch\AppData\Local\Python\pythoncore-3.14-64\python.exe C:\Users\dmsch\Documents\GitHub\hackprinceton26\Code\matterpak.py --model GpFkvxKtRrp
+MatterPak availability: unlocked
+downloading mp_matterpak_Salon_GpFkvxKtRrp.zip
+MatterPak: assets_GpFkvxKtRrp\matterpak\mp_matterpak_Salon_GpFkvxKtRrp.zip
+OBJ: 4d9317f8807f4e2889ae24fcae2c7390.obj
+   applying frame fix 'as-is (z up)' (overlap 0.81)
+   alignment check vs the defurnished OBJ: 'as-is (z up)', overlap 0.81
+297139 triangles, 30 textures (100% of faces textured) -> assets_GpFkvxKtRrp\tiles in 11s
+[2/12] matterpak finished in 11s
+
+[3/12] fetch ...
+   $ C:\Users\dmsch\AppData\Local\Python\pythoncore-3.14-64\python.exe C:\Users\dmsch\Documents\GitHub\hackprinceton26\Code\fetch_tiles.py --model GpFkvxKtRrp
+
+=== furnished (GpFkvxKtRrp)
+   tilesets: ModelAssets has no 'tilesets' field for this API key
+   objectAnnotations: 0  
+
+=== defurnished (zmx94674a0csxfur6fxnz9k0a)
+   tilesets: ModelAssets has no 'tilesets' field for this API key
+   objectAnnotations: 0  
+
+report: assets_GpFkvxKtRrp\tiles\report.txt - paste it back
+[3/12] fetch finished in 4s
+[4/12] tiles: already done (use --force or --from tiles to redo)
+
+[5/12] pipeline ...
+   $ C:\Users\dmsch\AppData\Local\Python\pythoncore-3.14-64\python.exe C:\Users\dmsch\Documents\GitHub\hackprinceton26\Code\pano_pipeline.py --model GpFkvxKtRrp --res high --max-panos 0 --min-confidence 1.3
+plan: 2 rooms, 14 wall edges, edge types ['wall']
+downloading 156 skybox faces ...
+13 panos with both furnished and defurnished imagery
+global mirror -1 (votes 3.7 vs 10.3); floor z per storey: [-0.01]
+no consistent quaternion convention (median spread 1.8 deg, 57% agree)
+  pano   0: room Other, yaw 239.5, cam 1.27 m, confidence 1.83; 3 blobs
+  pano   1: room Other, yaw 240.5, cam 1.25 m, confidence 1.78; 9 blobs
+  pano   2: room Other, yaw 287.5, cam 1.35 m, confidence 1.75; 9 blobs
+  pano   3: room Other, yaw  23.5, cam 1.25 m, confidence 1.65; 10 blobs
+  pano   4: room Other, yaw 239.0, cam 1.24 m, confidence 1.66; 7 blobs
+  pano   5: room Other, yaw 152.5, cam 1.23 m, confidence 1.59; 5 blobs
+  pano   6: room Other, yaw 313.0, cam 1.25 m, confidence 1.59; 8 blobs
+  pano   7: room Other, yaw  18.5, cam 1.3 m, confidence 2.5; 14 blobs
+  pano   8: room Other, yaw 179.0, cam 1.25 m, confidence 2.03; 9 blobs
+  pano   9: room Other, yaw 155.5, cam 1.28 m, confidence 1.76; 11 blobs
+  pano  10: room Other, yaw 103.0, cam 1.25 m, confidence 2.44; 7 blobs
+  pano  11: room Other, yaw 131.5, cam 1.25 m, confidence 2.6; 5 blobs
+  pano  12: room Other, yaw 146.5, cam 1.35 m, confidence 2.0; 10 blobs
+
+77 objects -> pano_GpFkvxKtRrp/objects.json, overview.png, crops/, debug/
+Check debug/*.jpg first: red = predicted floor line, blue = ceiling line, green = detected furniture.
+[5/12] pipeline finished in 59s
+
+[6/12] meshdiff ...
+   furnished: full-quality mesh (furnished_mesh.obj); empty: 001_obj_50k_defurnished_50k.obj
+   $ C:\Users\dmsch\AppData\Local\Python\pythoncore-3.14-64\python.exe C:\Users\dmsch\Documents\GitHub\hackprinceton26\Code\mesh_furniture.py --furnished C:\Users\dmsch\Documents\GitHub\hackprinceton26\assets_GpFkvxKtRrp\tiles\furnished_mesh.obj --empty C:\Users\dmsch\Documents\GitHub\hackprinceton26\assets_GpFkvxKtRrp\matterport\meshes\001_obj_50k_defurnished_50k.obj --pano-dir C:\Users\dmsch\Documents\GitHub\hackprinceton26\pano_GpFkvxKtRrp --tol 0.12 --cluster-radius 0.2
+furnished: C:\Users\dmsch\Documents\GitHub\hackprinceton26\assets_GpFkvxKtRrp\tiles\furnished_mesh.obj 
+empty    : C:\Users\dmsch\Documents\GitHub\hackprinceton26\assets_GpFkvxKtRrp\matterport\meshes\001_obj_50k_defurnished_50k.obj
+loading meshes ...
+  empty     :  13308 verts   4436 tris
+  furnished : 337312 verts 297139 tris
+  floor z = -0.011 m   ceiling z ~ 2.86 m
+  furnished samples: 461488  not in empty mesh: 105373 (22.8%)
+  evidence points kept: 65273
+  mesh clusters: 38 kept, 92 dropped (too small/thin/large)
+  pano-only boxes rejected (mesh support < 12% of footprint and < 30 points): 9  ids [9, 35, 54, 59, 65, 66, 68, 70, 74]
+  pano-only boxes whose evidence is all inside a confirmed object (marked duplicate_of_): [(3, 19), (16, 41), (20, 47), (34, 47), (39, 30)]
+
+objects: {'pano+mesh': 23, 'pano': 45, 'mesh': 10}
+
+written to C:\Users\dmsch\Documents\GitHub\hackprinceton26\pano_GpFkvxKtRrp\mesh_diff
+[6/12] meshdiff finished in 11s
+
+[7/12] prepare ...
+   prepared C:\Users\dmsch\Documents\GitHub\hackprinceton26\pano_GpFkvxKtRrp\mesh_diff
+[7/12] prepare finished in 0s
+
+[8/12] tileobjects ...
+   $ C:\Users\dmsch\AppData\Local\Python\pythoncore-3.14-64\python.exe C:\Users\dmsch\Documents\GitHub\hackprinceton26\Code\segment_furniture.py --model GpFkvxKtRrp --tol 0.1
+furnished 297139 tris | empty 4436 tris | floor -0.011  ceiling 2.59
+furniture triangles: 64133
+connected pieces: 344
+pieces after neck split: 115 (1 connected pieces were split)
+filled inside outlines: 3204 triangles
+grown back: 29471 trimmed triangles
+tables split from chairs: 0
+objects: 108 (dropped 7 small pieces)
+wrote pano_GpFkvxKtRrp\mesh_diff/objects.json, scene_tiles.json, objects_tiles/seg_*.glb
+[8/12] tileobjects finished in 38s
+
+[9/12] bake ...
+   $ C:\Users\dmsch\AppData\Local\Python\pythoncore-3.14-64\python.exe C:\Users\dmsch\Documents\GitHub\hackprinceton26\Code\texture_bake.py --pano-dir C:\Users\dmsch\Documents\GitHub\hackprinceton26\pano_GpFkvxKtRrp --edge 0.09 --obj-edge 0.06 --pano-width 4096
+panorama faces from assets_GpFkvxKtRrp\matterport
+13 defurnished / 13 furnished panoramas with poses
+house mesh subdivided to 711621 triangles (0s)
+refining panorama headings against the mesh ...
+   pano   0: yaw  239.5 -> 240.00  conf 3.02
+   pano   1: yaw  240.5 -> 238.75  conf 2.50
+   pano   2: yaw  287.5 -> 285.75  conf 2.07
+   pano   3: yaw   23.5 ->  13.75  conf 0.79  (kept old)
+   pano   4: yaw  239.0 -> 238.25  conf 1.36
+   pano   5: yaw  152.5 -> 147.75  conf 1.89
+   pano   6: yaw  313.0 -> 314.25  conf 1.82
+   pano   7: yaw   18.5 ->  20.50  conf 5.02
+   pano   8: yaw  179.0 -> 176.50  conf 2.94
+   pano   9: yaw  155.5 -> 147.00  conf 1.18  (kept old)
+   pano  10: yaw  103.0 -> 105.50  conf 2.59
+   pano  11: yaw  131.5 -> 131.00  conf 2.26
+   pano  12: yaw  146.5 -> 147.50  conf 2.52
+   global mirror -1 (votes 24 / 32)
+  saved C:\Users\dmsch\Documents\GitHub\hackprinceton26\pano_GpFkvxKtRrp/poses_refined.json (21s)
+  coloured 99% of vertices directly (28s)
+exported 13 panoramas (4096 px) -> C:\Users\dmsch\Documents\GitHub\hackprinceton26\pano_GpFkvxKtRrp\mesh_diff\panos
+104 furniture models written (112s) -> C:\Users\dmsch\Documents\GitHub\hackprinceton26\pano_GpFkvxKtRrp\mesh_diff
+[9/12] bake finished in 113s
+
+[10/12] carve ...
+   $ C:\Users\dmsch\AppData\Local\Python\pythoncore-3.14-64\python.exe C:\Users\dmsch\Documents\GitHub\hackprinceton26\Code\shape_carve.py --pano-dir C:\Users\dmsch\Documents\GitHub\hackprinceton26\pano_GpFkvxKtRrp --mask-mode both --voxel 0.03 --debug
+81 objects, loading 13 panoramas + masks ...
+  building both masks ...
+  ready (14s)
+  obj   0 Stool 1      carved                     views=8 kept=0.67 tris=6996
+  obj   1 Cabinet 1    carved                     views=10 kept=0.12 tris=9308
+  obj   2 Cabinet 2    carved                     views=1 kept=0.51 tris=14944
+  obj   3 Dresser 1    carved                     views=3 kept=0.57 tris=17412
+  obj   4 Cabinet 3    carved                     views=3 kept=0.44 tris=44352
+  obj   7 Cabinet 4    carved                     views=8 kept=0.14 tris=17104
+  obj   9 Wardrobe 1   carved                     views=6 kept=0.06 tris=51244
+  obj  10 Cabinet      carved                     views=3 kept=0.31 tris=10328
+  obj  12 Cabinet 5    carved                     views=6 kept=0.11 tris=8708
+  obj  13 Cabinet 6    carved                     views=1 kept=0.77 tris=16316
+  obj  14 Lamp 2       carved                     views=11 kept=0.09 tris=1212
+  obj  15 Wardrobe 2   carved                     views=5 kept=0.16 tris=67284
+  obj  16 Shelf 1      carved                     views=3 kept=0.50 tris=15932
+  obj  17 Shelf 2      carved                     views=3 kept=0.76 tris=5788
+  obj  18 Cabinet 7    carved                     views=5 kept=0.55 tris=27872
+  obj  20 Shelf 3      box (carving not trusted)  views=0 kept=0.64 tris=2540
+  obj  21 Wall unit 1  carved                     views=1 kept=0.41 tris=11228
+  obj  22 Wall unit 1  carved                     views=3 kept=0.57 tris=15952
+  obj  24 Table        carved                     views=4 kept=0.50 tris=28376
+  obj  25 Wall unit 2  carved                     views=4 kept=0.58 tris=15000
+  obj  26 Wall unit 3  carved                     views=8 kept=0.23 tris=21568
+  obj  27 Wall unit 4  carved                     views=5 kept=0.38 tris=10464
+  obj  28 Wall unit 5  carved                     views=8 kept=0.17 tris=5352
+  obj  29 Cabinet 8    carved                     views=7 kept=0.22 tris=8108
+  obj  31 Dresser 2    carved                     views=4 kept=0.96 tris=16952
+  obj  32 Shelf 2      carved                     views=2 kept=0.89 tris=7620
+  obj  33 Dresser 3    carved                     views=11 kept=0.52 tris=43708
+  obj  34 Shelf 4      carved                     views=9 kept=0.24 tris=5100
+  obj  36 Small item 1 carved                     views=9 kept=0.66 tris=6188
+  obj  37 Side table 1 carved                     views=5 kept=0.75 tris=11088
+  obj  40 Dresser      carved                     views=5 kept=0.63 tris=15568
+  obj  42 Stool        carved                     views=4 kept=0.75 tris=4956
+  obj  43 Side table 1 carved                     views=5 kept=0.48 tris=6428
+  obj  44 Shelf 5      carved                     views=1 kept=0.64 tris=6744
+  obj  45 Lamp 9       carved                     views=2 kept=0.50 tris=4720
+  obj  46 Stool 2      carved                     views=5 kept=0.17 tris=1112
+  obj  47 Stool 3      carved                     views=5 kept=0.23 tris=4668
+  obj  48 Stool 4      carved                     views=3 kept=0.58 tris=4988
+  obj  49 Dresser 4    carved                     views=4 kept=0.44 tris=89840
+  obj  50 Shelf 6      carved                     views=3 kept=0.70 tris=13672
+  obj  51 Dresser 5    carved                     views=3 kept=0.71 tris=31064
+  obj  52 Side table 2 carved                     views=3 kept=0.76 tris=25212
+  obj  53 Shelf 7      carved                     views=3 kept=0.44 tris=5512
+  obj  56 Cabinet 9    carved                     views=3 kept=0.77 tris=12852
+  obj  57 Shelf 3      carved                     views=2 kept=0.17 tris=3016
+  obj  60 Wall unit 8  carved                     views=6 kept=0.50 tris=16368
+  obj  62 Shelf 8      carved                     views=3 kept=0.43 tris=7920
+  obj  63 Side table 3 carved                     views=3 kept=0.37 tris=7540
+  obj  64 Dresser 6    carved                     views=7 kept=0.52 tris=13568
+  obj  65 Wall unit 10 carved                     views=5 kept=0.17 tris=6244
+  obj  66 Side table 4 carved                     views=8 kept=0.39 tris=4560
+  obj  67 Side table 5 carved                     views=1 kept=0.09 tris=3976
+  obj  68 Cabinet 10   carved                     views=6 kept=0.57 tris=41272
+  obj  69 Shelf 9      carved                     views=8 kept=0.35 tris=3828
+  obj  71 Small item   carved                     views=3 kept=0.52 tris=6116
+  obj  72 Dresser 7    carved                     views=7 kept=0.37 tris=21480
+  obj  76 Shelf 10     carved                     views=5 kept=0.42 tris=12984
+  obj  77 Side table 6 carved                     views=5 kept=0.28 tris=9748
+  obj  78 Decor 1      carved                     views=5 kept=0.12 tris=1276
+  obj  79 Stool 5      carved                     views=6 kept=0.71 tris=4092
+  obj  80 Stool 6      carved                     views=5 kept=0.84 tris=3548
+  obj  81 Side table 7 carved                     views=6 kept=0.10 tris=2456
+  obj  82 Shelf 11     carved                     views=8 kept=0.41 tris=7264
+  obj  83 Decor 2      carved                     views=8 kept=0.66 tris=5948
+  obj  84 Shelf 12     carved                     views=4 kept=0.27 tris=3760
+  obj  85 Stool 7      carved                     views=3 kept=0.58 tris=7000
+  obj  86 Lamp 14      carved                     views=3 kept=0.83 tris=5084
+  obj  90 Wall unit 11 carved                     views=6 kept=0.52 tris=10968
+  obj  91 Shelf 13     carved                     views=5 kept=0.31 tris=5796
+  obj  92 Side table 2 carved                     views=5 kept=0.46 tris=6392
+  obj  94 Stool 8      carved                     views=4 kept=0.85 tris=3624
+  obj  96 Decor 6      carved                     views=2 kept=0.58 tris=2332
+  obj  97 Small item 2 carved                     views=7 kept=0.93 tris=3124
+  obj  98 Small item 3 carved                     views=3 kept=0.46 tris=2212
+  obj  99 Decor 7      box (carving not trusted)  views=0 kept=0.56 tris=780
+  obj 101 Dresser 8    carved                     views=3 kept=0.65 tris=19208
+  obj 103 Shelf 14     carved                     views=3 kept=0.41 tris=8200
+  obj 104 Small item 4 carved                     views=3 kept=0.92 tris=8804
+  obj 105 Lamp 6       carved                     views=3 kept=0.72 tris=4480
+  obj 106 Lamp 16      carved                     views=1 kept=0.76 tris=3700
+  obj 107 Decor 9      box (carving not trusted)  views=0 kept=0.56 tris=744
+done in 30s -> C:\Users\dmsch\Documents\GitHub\hackprinceton26\pano_GpFkvxKtRrp\mesh_diff\objects_shape
+[10/12] carve finished in 30s
+
+[11/12] sdk ...
+   wrote C:\Users\dmsch\Documents\GitHub\hackprinceton26\Code\showcase\config.js (defurnished view: zmx94674a0csxfur6fxnz9k0a)
+[11/12] sdk finished in 0s
+
+[12/12] serve ...
+   studio : http://localhost:8000/Code/studio.html   (the page title shows its version)
+   editor : http://localhost:8000/Code/editor3d.html  (choose the folder C:\Users\dmsch\Documents\GitHub\hackprinceton26\pano_GpFkvxKtRrp\mesh_diff)
+   serving - press Ctrl+C to stop

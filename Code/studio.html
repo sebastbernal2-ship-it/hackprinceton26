@@ -44,6 +44,7 @@
   <h2>House</h2>
   <button id="mEmpty" class="on">Empty (defurnished)</button><button id="mFull">As scanned</button><br>
   <button data-mode="INSIDE">Walk</button><button data-mode="DOLLHOUSE">Dollhouse</button><button data-mode="FLOORPLAN">Floor plan</button><button id="tPlan" class="on" title="Floor plan view: draw our rooms and walls over Matterport's roof/drone image">Our plan</button>
+  <button id="freeWalk" title="First-person walk-through on the 3D model (WASD), opens in a new tab">Free walk ↗</button>
 
   <h2>Furniture</h2>
   <button id="tEdit">Edit furniture</button><button id="tFurn" class="on">Show</button><button id="tTent" class="on">Tentative</button><button id="tTiles" class="on">Matterport models</button><button id="tShapes">Carved shapes</button><button id="tDoll">Show in dollhouse</button>
@@ -622,6 +623,7 @@ toggle('tPlan', 'planView', () => {});
 $('mEmpty').onclick = () => { if (S.empty) return; S.empty = true; $('mEmpty').classList.add('on'); $('mFull').classList.remove('on'); loadShowcase(); };
 $('mFull').onclick = () => { if (!S.empty) return; S.empty = false; $('mFull').classList.add('on'); $('mEmpty').classList.remove('on'); loadShowcase(); };
 function download(name, obj) { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(obj, null, 1)], { type:'application/json' })); a.download = name; a.click(); }
+$('freeWalk').onclick = () => open('walk.html?model=' + encodeURIComponent(C.model), '_blank');
 $('exp').onclick = () => download('edits.json', { model:C.model, units:'metres', source:'studio.html',
   objects:S.objs.filter(o => o.deleted || o.x !== o.x0 || o.y !== o.y0 || o.yaw !== o.yaw0).map(o => ({ id:o.id, label:o.label, source:o.source,
     deleted:!!o.deleted, original:{ x:o.x0, y:o.y0, yaw_deg:o.yaw0 }, now:{ x:+o.x.toFixed(3), y:+o.y.toFixed(3), yaw_deg:o.yaw } })) });
@@ -629,7 +631,12 @@ $('expSweeps').onclick = () => download('sdk_sweeps.json', { model:S.empty ? C.d
   sweeps:Object.entries(S.sweeps).map(([id, s]) => ({ id, position:fromSc(s.position), rotation_sdk:s.rotation })) });
 
 window.__studio = { S, camera, THREE, wallSnap, piecesAt, wallGap };   // for debugging in the console
-loadData().then(() => loadShowcase()).catch(e => status(`Could not load our data from ${C.dataDir}: ${fmt(e)}`, true));
+loadData().then(() => loadShowcase()).catch(e => {
+  // no pipeline output for this model (e.g. a public model the API can't download): still show the tour
+  console.warn(`Could not load our data from ${C.dataDir}`, e);
+  S.plan = S.plan || { walls: [], rooms: [] }; S.objData = S.objData || []; S.objs = S.objs || [];
+  loadShowcase();
+});
 </script>
 </body>
 </html>

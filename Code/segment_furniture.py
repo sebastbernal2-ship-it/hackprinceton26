@@ -372,7 +372,7 @@ def shape_kind(V, F, sel, nrm, area, floor_z, l, w, zb, zt, on_floor):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--model", default="zvKHR9DHNjJ")
+    ap.add_argument("--model", default="Jxmnkp6KpJN")
     ap.add_argument("--tol", type=float, default=0.10, help="closer than this to the empty house = house (coarse 50k empty mesh)")
     ap.add_argument("--voxel", type=float, default=0.035, help="connectivity voxel (m): gaps up to ~1 voxel are bridged")
     ap.add_argument("--cell", type=float, default=0.04, help="footprint cell for the neck split (m)")

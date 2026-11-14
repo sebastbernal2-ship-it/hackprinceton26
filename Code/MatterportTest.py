@@ -14,7 +14,7 @@
 #
 # Matterport turns real buildings into 3D digital twins you can measure, search and reimagine. Your hackathon key reaches about 15,000 of them in Houston and Los Angeles. 232 of those also come with an aerial Gaussian splat and the drone photos it was trained from.
 #
-# This notebook walks through one house, 5836 La Mirada Ave in Los Angeles (model `zvKHR9DHNjJ`), from the inside out. Each section stands on its own and does one thing: one snippet, one picture. Change `MODEL` to any other model and run it again.
+# This notebook walks through one restaurant building, 141-143 N La Brea Ave in Los Angeles (model `Jxmnkp6KpJN`), from the inside out. Each section stands on its own and does one thing: one snippet, one picture. Change `MODEL` to any other model and run it again.
 #
 # | # | Section | What you get | In the talk |
 # |---|---|---|---|
@@ -58,7 +58,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-MODEL = "zvKHR9DHNjJ"  # 5836 La Mirada Ave, Los Angeles. Try any sid from models_index.csv.
+MODEL = "Jxmnkp6KpJN"  # 141-143 N La Brea Ave, Los Angeles (restaurant). Try any sid from models_index.csv.
 API = "https://api.matterport.com/api/models/graph"  # production only: these keys are rejected on qa3 and other hosts
 # The hackathon site serves splats and drone photos (signed links). Override with HACKATHON_SITE if it moves.
 SITE = os.environ.get("HACKATHON_SITE", "https://beta-app.matterport.com/2026-princeton-hackathon").rstrip("/")

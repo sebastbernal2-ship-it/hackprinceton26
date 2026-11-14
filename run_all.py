@@ -4,7 +4,7 @@ run_all.py - run the whole HackPrinceton pipeline, one step after another, with 
 
     python run_all.py                 # run every step that is not already done
     python run_all.py --force         # redo every step
-    python run_all.py --from bake     # start at a step (download, matterpak, fetch, tiles, pipeline, meshdiff, prepare, tileobjects, bake, carve, sdk, serve)
+    python run_all.py --from bake     # start at a step (download, matterpak, fetch, tiles, pipeline, meshdiff, prepare, tileobjects, bake, carve, walk, sdk, serve)
     python run_all.py --only meshdiff # run one step
     python run_all.py --list          # show the steps and whether each is done
     python run_all.py --only serve    # just start the local server and open the studio
@@ -17,7 +17,8 @@ from pathlib import Path
 
 # =============================================================================== SETTINGS
 SETTINGS = {
-    "model": "zvKHR9DHNjJ",          # Matterport model id
+    "model": "GpFkvxKtRrp",          # Matterport model id (salon, 3330 Audley St; others: Jxmnkp6KpJN La Brea, ehkUbPpNrhE Houston C600, zKgykpJUQ69 empty storefront)
+                                     # needs a Matterport *defurnished_50k* mesh asset; z2GNDCNYdoE / 8PT6XLSLRCQ lack one and stop at meshdiff
 
     # 1. download every Matterport / hackathon visual (download_assets.py)
     "download_res": "2k",            # panorama face resolution: low | high | 2k | 4k  (4k = sharpest textures)
@@ -213,6 +214,13 @@ def step_carve():
     run(cmd)
 
 
+def step_walk():
+    """Pack the furnished mesh for walk.html (first-person walk-through). Cheap, so it always refreshes."""
+    if not (TILES / "furnished_mesh.npz").exists():
+        print("   no furnished mesh (matterpak / tiles step) - skipping the walk-through"); return
+    run([PY, script("walk_export.py"), "--model", SID], fatal=False)
+
+
 SHOWCASE = CODE / "showcase"
 
 
@@ -250,6 +258,7 @@ def step_serve():
     base = f"http://localhost:{port}"
     print(f"   studio : {base}/Code/studio.html   (the page title shows its version)")
     print(f"   editor : {base}/Code/editor3d.html  (choose the folder {MD})")
+    print(f"   walk   : {base}/Code/walk.html?model={SID}  (first-person walk-through)")
     if S["open_studio"]:
         threading.Timer(1.0, lambda: webbrowser.open(base + "/Code/studio.html")).start()
     if S["open_editor"]:
@@ -273,6 +282,7 @@ STEPS = [  # name, function, "done" check
     ("tileobjects", step_tileobjects, lambda: (MD / "scene_tiles.json").exists()),
     ("bake",     step_bake,     lambda: (MD / "empty_room_textured.obj").exists() and (MD / "pano_poses.json").exists()),
     ("carve",    step_carve,    lambda: (MD / "scene_shapes.json").exists()),
+    ("walk",     step_walk,     lambda: False),           # cheap: always repacks the walk-through mesh
     ("sdk",      step_sdk,      lambda: False),           # cheap: always refreshes config.js
     ("serve",    step_serve,    lambda: False),
 ]

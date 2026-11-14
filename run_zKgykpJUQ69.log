@@ -1,0 +1,171 @@
+
+[1/12] download ...
+   $ C:\Users\dmsch\AppData\Local\Python\pythoncore-3.14-64\python.exe C:\Users\dmsch\Documents\GitHub\hackprinceton26\Code\download_assets.py --model zKgykpJUQ69 --res 2k --drone 12
+Suite B1 (zKgykpJUQ69, public) - 14800 Westheimer Rd, Houston, TX, 77082, US
+Model API assets ...
+asset types with files: ['clips', 'floorplan', 'floorplans', 'meshes', 'photo', 'photos', 'resources', 'textures']
+  clips: 3 with links / 3 listed
+  floorplan: 1 with links / 1 listed
+  floorplans: 8 with links / 8 listed
+  meshes: 2 with links / 2 listed
+  photo: query failed (needs arguments?)
+  photos: 6 with links / 6 listed
+  resources: 0 with links / 3 listed
+  textures: 0 with links / 2 listed
+Panoramas (2k) ...
+  furnished: 15 panos, 90 faces
+  defurnished: 15 panos, 90 faces
+Hackathon site ...
+  hackathon site: no splat/drone data for zKgykpJUQ69 (HTTP 404) - only 232 models have it
+Vexcel ...
+
+202 files, 95 MB on disk -> assets_zKgykpJUQ69/
+[1/12] download finished in 11s
+
+[2/12] matterpak ...
+   $ C:\Users\dmsch\AppData\Local\Python\pythoncore-3.14-64\python.exe C:\Users\dmsch\Documents\GitHub\hackprinceton26\Code\matterpak.py --model zKgykpJUQ69
+MatterPak availability: unlocked
+downloading mp_matterpak_Suite-B1_zKgykpJUQ69.zip
+MatterPak: assets_zKgykpJUQ69\matterpak\mp_matterpak_Suite-B1_zKgykpJUQ69.zip
+OBJ: 7278b46fb10645f69eb80ac56d62e075.obj
+   applying frame fix 'as-is (z up)' (overlap 0.96)
+   alignment check vs the defurnished OBJ: 'as-is (z up)', overlap 0.96
+222123 triangles, 18 textures (100% of faces textured) -> assets_zKgykpJUQ69\tiles in 8s
+[2/12] matterpak finished in 8s
+
+[3/12] fetch ...
+   $ C:\Users\dmsch\AppData\Local\Python\pythoncore-3.14-64\python.exe C:\Users\dmsch\Documents\GitHub\hackprinceton26\Code\fetch_tiles.py --model zKgykpJUQ69
+
+=== furnished (zKgykpJUQ69)
+   tilesets: ModelAssets has no 'tilesets' field for this API key
+   objectAnnotations: 0  
+
+=== defurnished (rzf6d8c7f0zgy8kzq0uusqaid)
+   tilesets: ModelAssets has no 'tilesets' field for this API key
+   objectAnnotations: 0  
+
+report: assets_zKgykpJUQ69\tiles\report.txt - paste it back
+[3/12] fetch finished in 4s
+[4/12] tiles: already done (use --force or --from tiles to redo)
+
+[5/12] pipeline ...
+   $ C:\Users\dmsch\AppData\Local\Python\pythoncore-3.14-64\python.exe C:\Users\dmsch\Documents\GitHub\hackprinceton26\Code\pano_pipeline.py --model zKgykpJUQ69 --res high --max-panos 0 --min-confidence 1.3
+plan: 3 rooms, 12 wall edges, edge types ['wall']
+downloading 180 skybox faces ...
+15 panos with both furnished and defurnished imagery
+global mirror -1 (votes 6.5 vs 58.5); floor z per storey: [0.03]
+quaternion heading model: median error 5.7 deg, 93% of confident panos within 10 deg
+  pano   0: room Other, yaw 192.5, cam 1.38 m, confidence 3.43; 1 blobs
+  pano   1: room Other, yaw 126.5, cam 1.33 m, confidence 5.24; 1 blobs
+  pano   2: room Other, yaw 205.5, cam 1.39 m, confidence 5.73; 1 blobs
+  pano   3: room Other, yaw 313.0, cam 1.35 m, confidence 7.22; 0 blobs
+  pano   4: room Other, yaw 302.0, cam 1.36 m, confidence 6.31; 0 blobs
+  pano   5: room Other, yaw 104.0, cam 1.35 m, confidence 6.09; 0 blobs
+  pano   6: room Other, yaw 120.0, cam 1.39 m, confidence 6.03; 0 blobs
+  pano   7: room Other, yaw 208.0, cam 1.39 m, confidence 5.45; 0 blobs
+  pano   8: room Other, yaw  35.0, cam 1.35 m, confidence 5.31; 0 blobs
+  pano   9: room Other, yaw 179.5, cam 1.4 m, confidence 3.85; 0 blobs
+  pano  10: room Office, yaw 135.0, cam 1.38 m, confidence 4.25; 0 blobs
+  pano  11: room Office, yaw 227.0, cam 1.39 m, confidence 5.21; 0 blobs
+  pano  12: room Other, yaw 182.5, cam 1.35 m, confidence 2.95; 0 blobs
+  pano  13: room Other, yaw 194.5, cam 1.35 m, confidence 2.03; 1 blobs
+  pano  14: room Other, yaw 272.0, cam 1.4 m, confidence 3.5; 0 blobs
+
+4 objects -> pano_zKgykpJUQ69/objects.json, overview.png, crops/, debug/
+Check debug/*.jpg first: red = predicted floor line, blue = ceiling line, green = detected furniture.
+[5/12] pipeline finished in 38s
+
+[6/12] meshdiff ...
+   furnished: full-quality mesh (furnished_mesh.obj); empty: 001_obj_50k_defurnished_50k.obj
+   $ C:\Users\dmsch\AppData\Local\Python\pythoncore-3.14-64\python.exe C:\Users\dmsch\Documents\GitHub\hackprinceton26\Code\mesh_furniture.py --furnished C:\Users\dmsch\Documents\GitHub\hackprinceton26\assets_zKgykpJUQ69\tiles\furnished_mesh.obj --empty C:\Users\dmsch\Documents\GitHub\hackprinceton26\assets_zKgykpJUQ69\matterport\meshes\001_obj_50k_defurnished_50k.obj --pano-dir C:\Users\dmsch\Documents\GitHub\hackprinceton26\pano_zKgykpJUQ69 --tol 0.12 --cluster-radius 0.2
+furnished: C:\Users\dmsch\Documents\GitHub\hackprinceton26\assets_zKgykpJUQ69\tiles\furnished_mesh.obj 
+empty    : C:\Users\dmsch\Documents\GitHub\hackprinceton26\assets_zKgykpJUQ69\matterport\meshes\001_obj_50k_defurnished_50k.obj
+loading meshes ...
+  empty     :   2073 verts    691 tris
+  furnished : 161670 verts 222123 tris
+  floor z = 0.029 m   ceiling z ~ 3.06 m
+  furnished samples: 322539  not in empty mesh: 19577 (6.1%)
+  evidence points kept: 7298
+  mesh clusters: 3 kept, 21 dropped (too small/thin/large)
+  pano-only boxes rejected (mesh support < 12% of footprint and < 30 points): 0  ids []
+  pano-only boxes whose evidence is all inside a confirmed object (marked duplicate_of_): []
+
+objects: {'pano+mesh': 1, 'pano': 3, 'mesh': 2}
+
+written to C:\Users\dmsch\Documents\GitHub\hackprinceton26\pano_zKgykpJUQ69\mesh_diff
+[6/12] meshdiff finished in 4s
+
+[7/12] prepare ...
+   prepared C:\Users\dmsch\Documents\GitHub\hackprinceton26\pano_zKgykpJUQ69\mesh_diff
+[7/12] prepare finished in 0s
+
+[8/12] tileobjects ...
+   $ C:\Users\dmsch\AppData\Local\Python\pythoncore-3.14-64\python.exe C:\Users\dmsch\Documents\GitHub\hackprinceton26\Code\segment_furniture.py --model zKgykpJUQ69 --tol 0.1
+furnished 222123 tris | empty 691 tris | floor 0.029  ceiling 3.10
+furniture triangles: 23448
+connected pieces: 193
+pieces after neck split: 23 (0 connected pieces were split)
+filled inside outlines: 252 triangles
+grown back: 14112 trimmed triangles
+tables split from chairs: 0
+objects: 21 (dropped 2 small pieces)
+wrote pano_zKgykpJUQ69\mesh_diff/objects.json, scene_tiles.json, objects_tiles/seg_*.glb
+[8/12] tileobjects finished in 11s
+
+[9/12] bake ...
+   $ C:\Users\dmsch\AppData\Local\Python\pythoncore-3.14-64\python.exe C:\Users\dmsch\Documents\GitHub\hackprinceton26\Code\texture_bake.py --pano-dir C:\Users\dmsch\Documents\GitHub\hackprinceton26\pano_zKgykpJUQ69 --edge 0.09 --obj-edge 0.06 --pano-width 4096
+panorama faces from assets_zKgykpJUQ69\matterport
+15 defurnished / 15 furnished panoramas with poses
+house mesh subdivided to 314538 triangles (0s)
+refining panorama headings against the mesh ...
+   pano   0: yaw  192.5 -> 194.75  conf 2.35
+   pano   1: yaw  126.5 -> 128.00  conf 4.44
+   pano   2: yaw  205.5 -> 207.00  conf 5.42
+   pano   3: yaw  313.0 -> 314.25  conf 3.43
+   pano   4: yaw  302.0 -> 301.75  conf 3.06
+   pano   5: yaw  104.0 -> 105.00  conf 3.78
+   pano   6: yaw  120.0 -> 121.00  conf 3.82
+   pano   7: yaw  208.0 -> 210.50  conf 3.07
+   pano   8: yaw   35.0 ->  36.25  conf 3.51
+   pano   9: yaw  179.5 -> 180.00  conf 3.25
+   pano  10: yaw  135.0 -> 136.75  conf 3.32
+   pano  11: yaw  227.0 -> 229.00  conf 3.14
+   pano  12: yaw  182.5 -> 184.50  conf 2.18
+   pano  13: yaw  194.5 -> 197.75  conf 1.53
+   pano  14: yaw  272.0 -> 273.00  conf 2.09
+   global mirror -1 (votes 35 / 48)
+  saved C:\Users\dmsch\Documents\GitHub\hackprinceton26\pano_zKgykpJUQ69/poses_refined.json (14s)
+  coloured 100% of vertices directly (22s)
+exported 15 panoramas (4096 px) -> C:\Users\dmsch\Documents\GitHub\hackprinceton26\pano_zKgykpJUQ69\mesh_diff\panos
+16 furniture models written (86s) -> C:\Users\dmsch\Documents\GitHub\hackprinceton26\pano_zKgykpJUQ69\mesh_diff
+[9/12] bake finished in 86s
+
+[10/12] carve ...
+   $ C:\Users\dmsch\AppData\Local\Python\pythoncore-3.14-64\python.exe C:\Users\dmsch\Documents\GitHub\hackprinceton26\Code\shape_carve.py --pano-dir C:\Users\dmsch\Documents\GitHub\hackprinceton26\pano_zKgykpJUQ69 --mask-mode both --voxel 0.03 --debug
+13 objects, loading 15 panoramas + masks ...
+  building both masks ...
+  ready (15s)
+  obj   0 Cabinet      box (carving not trusted)  views=0 kept=0.96 tris=331832
+  obj   1 Dresser 1    box (carving not trusted)  views=0 kept=0.86 tris=6196
+  obj   2 Stool 1      box (carving not trusted)  views=0 kept=0.79 tris=1468
+  obj   3 Stool 2      box (carving not trusted)  views=0 kept=0.79 tris=5948
+  obj   5 Dresser 2    box (carving not trusted)  views=0 kept=0.87 tris=2852
+  obj   6 Dresser 3    box (carving not trusted)  views=0 kept=0.91 tris=4076
+  obj   8 Stool 3      box (carving not trusted)  views=0 kept=0.82 tris=2808
+  obj  10 Dresser 4    box (carving not trusted)  views=0 kept=0.85 tris=8276
+  obj  12 Shelf 3      carved                     views=4 kept=0.49 tris=11612
+  obj  14 Stool 4      box (carving not trusted)  views=0 kept=0.75 tris=1044
+  obj  15 Shelf 4      box (carving not trusted)  views=0 kept=0.73 tris=2344
+  obj  16 Stool 5      box (carving not trusted)  views=0 kept=0.81 tris=3596
+  obj  17 Decor 2      box (carving not trusted)  views=0 kept=0.69 tris=524
+done in 23s -> C:\Users\dmsch\Documents\GitHub\hackprinceton26\pano_zKgykpJUQ69\mesh_diff\objects_shape
+[10/12] carve finished in 23s
+
+[11/12] sdk ...
+   wrote C:\Users\dmsch\Documents\GitHub\hackprinceton26\Code\showcase\config.js (defurnished view: rzf6d8c7f0zgy8kzq0uusqaid)
+[11/12] sdk finished in 0s
+
+[12/12] serve ...
+   studio : http://localhost:8000/Code/studio.html   (the page title shows its version)
+   editor : http://localhost:8000/Code/editor3d.html  (choose the folder C:\Users\dmsch\Documents\GitHub\hackprinceton26\pano_zKgykpJUQ69\mesh_diff)
+   serving - press Ctrl+C to stop

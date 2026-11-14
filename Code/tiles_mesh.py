@@ -293,7 +293,7 @@ def write_obj(path, V, F):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--model", default="zvKHR9DHNjJ")
+    ap.add_argument("--model", default="Jxmnkp6KpJN")
     ap.add_argument("--labels", nargs="*", default=["furnished", "defurnished"])
     ap.add_argument("--reference", default=None, help="OBJ in our model frame (default: the defurnished OBJ in assets_<sid>/matterport/meshes)")
     a = ap.parse_args()

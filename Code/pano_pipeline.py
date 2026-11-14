@@ -13,9 +13,9 @@ the floor plan (wall graph + rooms) and each panorama in its FURNISHED and DEFUR
   7. label       crop per object; optional vision-model label (ANTHROPIC_API_KEY), or edit labels.json
 
   $env:MATTERPORT_API_KEY="..."; $env:MATTERPORT_API_TOKEN="..."
-  python pano_pipeline.py                       # model zvKHR9DHNjJ
+  python pano_pipeline.py                       # model Jxmnkp6KpJN
   python pano_pipeline.py --label               # + label each object with Claude (needs ANTHROPIC_API_KEY)
-  python pano_pipeline.py --labels pano_zvKHR9DHNjJ/labels.json   # merge hand-edited labels
+  python pano_pipeline.py --labels pano_Jxmnkp6KpJN/labels.json   # merge hand-edited labels
 
 Check debug/*.jpg first: the red (floor) and blue (ceiling) lines must sit on the room's edges.
 If they don't, calibration failed for that pano and its objects are misplaced.
@@ -661,7 +661,7 @@ def overview(path, plan, panos, cals, objects):
 def main():
     global DIFF_THRESH
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--model", default="zvKHR9DHNjJ")
+    ap.add_argument("--model", default="Jxmnkp6KpJN")
     ap.add_argument("--res", default="high", choices=["low", "high", "2k", "4k"], help="skybox face size")
     ap.add_argument("--max-panos", type=int, default=0, help="0 = all; use 3-5 for a quick test")
     ap.add_argument("--diff-thresh", type=int, default=DIFF_THRESH)

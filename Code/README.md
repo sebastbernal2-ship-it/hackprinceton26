@@ -13,7 +13,7 @@ Run from the repo root:
 
 ```powershell
 $env:MATTERPORT_API_KEY="..."; $env:MATTERPORT_API_TOKEN="..."
-python Code\pano_pipeline.py                 # writes pano_zvKHR9DHNjJ\
+python Code\pano_pipeline.py                 # writes pano_Jxmnkp6KpJN\
 python Code\pano_pipeline.py --wall-items    # also keep art / mirrors / TVs
 ```
 

@@ -10,7 +10,7 @@ Nothing is generated or processed: files are saved exactly as served.
   Vexcel (optional)       orthophoto of the lot (needs VEXCEL_API_KEY; Houston/LA only)
 
   $env:MATTERPORT_API_KEY="..."; $env:MATTERPORT_API_TOKEN="..."
-  python Code\\download_assets.py                         # model zvKHR9DHNjJ, safe defaults
+  python Code\\download_assets.py                         # model Jxmnkp6KpJN, safe defaults
   python Code\\download_assets.py --everything            # + full splat, all drone photos, MatterPak, 4k panos
   python Code\\download_assets.py --list                  # show what exists and how big, download nothing
 
@@ -269,7 +269,7 @@ def vexcel(lat, lon, root, half_m, list_only):
 # ---------------------------------------------------------------- main
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--model", default="zvKHR9DHNjJ")
+    ap.add_argument("--model", default="Jxmnkp6KpJN")
     ap.add_argument("--out")
     ap.add_argument("--res", default="2k", choices=["low", "high", "2k", "4k"], help="panorama face size")
     ap.add_argument("--splat", action="store_true", help="download the full exterior splat.ply (~550 MB)")

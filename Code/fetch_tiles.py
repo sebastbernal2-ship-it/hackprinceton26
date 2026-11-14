@@ -185,7 +185,7 @@ def download_tileset(f, max_tiles, log):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--model", default="zvKHR9DHNjJ")
+    ap.add_argument("--model", default="Jxmnkp6KpJN")
     ap.add_argument("--list", action="store_true")
     ap.add_argument("--max-tiles", type=int, default=0)
     a = ap.parse_args()

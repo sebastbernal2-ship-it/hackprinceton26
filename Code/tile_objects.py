@@ -225,7 +225,7 @@ def annotation_frame(anns, objs):
 # ------------------------------------------------------------------ main
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--model", default="zvKHR9DHNjJ")
+    ap.add_argument("--model", default="Jxmnkp6KpJN")
     ap.add_argument("--ids", type=int, nargs="*")
     ap.add_argument("--pad", type=float, default=0.12, help="grow each object box by this much (m)")
     ap.add_argument("--tol", type=float, default=0.06, help="triangles closer than this to the empty house are house")

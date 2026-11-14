@@ -67,5 +67,5 @@ def download_floorplan(model_id, out_dir="floorplans"):
         print(f"  saved {folder / name}")
 
 if __name__ == "__main__":
-    model_id = "zvKHR9DHNjJ"  # default for testing
+    model_id = "Jxmnkp6KpJN"  # default for testing
     download_floorplan(model_id)
