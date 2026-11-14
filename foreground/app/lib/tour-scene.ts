@@ -14,6 +14,10 @@ export type StagedPiece = {
   stem: Vec3;
   /** Screen placement for the live ghost overlay, as percentages of the tour viewport. */
   screen: { x: number; y: number };
+  /** Concept-layout fields: assumed footprint in meters and the room the piece was staged in. */
+  width?: number;
+  depth?: number;
+  room?: string;
 };
 
 function yawRadians(rotationY: number) {
