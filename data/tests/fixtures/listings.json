@@ -1,0 +1,51 @@
+[
+ {
+  "propertyId": 9001,
+  "listingStatus": 1,
+  "listingType": 1,
+  "forLeaseSummary": {
+   "spaces": [
+    {
+     "propertyId": 9001,
+     "squareFeetMin": 1500,
+     "squareFeetMax": 2000
+    },
+    {
+     "propertyId": 9001,
+     "squareFeetMin": 800,
+     "isLeasePending": true
+    },
+    {
+     "propertyId": 9999,
+     "squareFeetMin": 700
+    },
+    {
+     "squareFeetMax": 600
+    }
+   ]
+  }
+ },
+ {
+  "propertyId": 9001,
+  "listingStatus": 2,
+  "listingType": 1,
+  "forLeaseSummary": {
+   "spaces": [
+    {
+     "squareFeetMin": 3000
+    }
+   ]
+  }
+ },
+ {
+  "propertyId": 9002,
+  "listingStatus": 5,
+  "forLeaseSummary": {
+   "spaces": [
+    {
+     "squareFeetMin": 3000
+    }
+   ]
+  }
+ }
+]
