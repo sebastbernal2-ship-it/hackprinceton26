@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { monthlyRent, type Match } from "../lib/matches";
 import EvidenceReadiness from "./evidence-readiness";
 import FactorCards from "./factor-cards";
+import Projections from "./projections";
 import SpaceChat from "./space-chat";
 
 const number = new Intl.NumberFormat("en-US");
@@ -136,6 +137,8 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
         </div>
 
         <FactorCards factors={match.factors ?? []} demo={match.demo} />
+
+        {!match.demo && <Projections listingId={match.listingId} />}
 
         <p className="mt-5 text-xs text-foreground/40">
           From the CoStar listing and the Matterport model on file.
