@@ -9,6 +9,7 @@ from .costs_routes import router as costs_router
 from .triage_routes import router as triage_router
 from .lineage_routes import router as lineage_router
 from .concepts_routes import router as concepts_router
+from .finance_routes import router as finance_router
 from .loader import load_matches
 from .models import (
     AssessRequest, ProjectionsResponse, ReplanRequest, ReplanResponse, ScenarioAssessment,
@@ -19,6 +20,7 @@ from .models import (
 app = FastAPI(title="Site evidence API")
 app.include_router(inspection_routes.router)
 app.include_router(costs_router)
+app.include_router(finance_router)
 app.include_router(assets_router)
 app.include_router(assets_ingest_router)
 app.include_router(triage_router)
