@@ -127,3 +127,27 @@ def test_crime_adapter_fills_only_when_no_houston_aggregate():
     rows = build_with({("S2", "crime_safety"): [c]})
     assert pick(rows, "S2", "crime_safety")["value"] == "12"
     assert pick(rows, "S1", "crime_safety")["status"] == "unknown"
+
+
+def test_all_candidates_flag_selects_candidate_sites(tmp_path, monkeypatch):
+    def w(name, ids):
+        p = tmp_path / name
+        p.write_text("property_id,city\n" + "".join(f"{i},Houston\n" for i in ids))
+        return p
+
+    with (FIXTURES / "factors.csv").open(newline="") as f:
+        factors_src = f.read()
+    reg = tmp_path / "reg"
+    reg.mkdir()
+    (reg / "factors.csv").write_text(factors_src)
+    monkeypatch.setattr(bfc, "REG", reg)
+    monkeypatch.setattr(bfc, "QUEUE", w("q.csv", ["A"]))
+    monkeypatch.setattr(bfc, "CANDIDATES", w("c.csv", ["A", "B"]))
+    for n in ("EVIDENCE", "OPERATOR", "CONTEXT"):
+        monkeypatch.setattr(bfc, n, w(n + ".csv", []))
+    monkeypatch.setattr(bfc, "DERIVED", tmp_path / "none")
+    monkeypatch.setattr(bfc, "OUT", tmp_path / "out.csv")
+    bfc.main()
+    assert {r["property_id"] for r in csv.DictReader((tmp_path / "out.csv").open())} == {"A"}
+    bfc.main(["--all-candidates"])
+    assert {r["property_id"] for r in csv.DictReader((tmp_path / "out.csv").open())} == {"A", "B"}
