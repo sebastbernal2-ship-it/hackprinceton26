@@ -409,7 +409,8 @@ def place(lab, k, cal, pano, dtab, step, jump=0.5, D=None, wall_items=False):
         cmask = np.isin(cols, np.arange(c.min(), c.max() + 1))
         r0, r1 = int(trow.min()), int(brow.max())
         dets.append({"pano": pano["id"], "pano_label": pano["label"], "pano_xy": np.array(pano["position"][:2]),
-                     "cam_h": h, "ceiling": cal["ceiling_m"], "xy": xy, "distance_m": dref,
+                     "cam_h": h, "ceiling": cal["ceiling_m"], "floor_z": cal.get("floor_z", 0.0),
+                     "xy": xy, "distance_m": dref,
                      "ray_theta": th, "ray_top_lat": top,
                      "z_bottom": float(max(0.0, h + dref * np.tan(np.median(bot)))) if is_elev else 0.0,
                      "elevated": bool(is_elev), "pixels": int(cmask.sum()),
@@ -538,6 +539,41 @@ def solidify(o, min_depth=0.6):
     return centre, size, yaw, z_bot, z_top, flags
 
 
+LAYERS = {"floor_covering": "rugs, mats - flat on the floor; never collide",
+          "furniture": "stands on the floor; collides with walls and other furniture",
+          "surface": "small item standing on a piece of furniture (lamp, decor)",
+          "wall": "wall-mounted: art, mirrors, TVs, shelves",
+          "ceiling": "hanging from or fixed to the ceiling"}
+
+
+def layer_of(elevated, z_bot, z_top, ceiling):
+    if elevated:
+        return "ceiling" if z_top > ceiling - 0.3 and z_bot > 1.5 else "wall"
+    if z_top - z_bot < 0.12:
+        return "floor_covering"
+    return "furniture"
+
+
+def assign_surfaces(objects):
+    """Small floor objects whose footprint centre lies inside a bigger furniture box are items standing
+    on it (a lamp on a nightstand): move them to the 'surface' layer, sitting on that furniture's top."""
+    furn = [o for o in objects if o["layer"] == "furniture"]
+    for o in furn:
+        L, W = o["box"]["size_lwh_m"][:2]
+        if L * W > 0.35:
+            continue
+        for f in furn:
+            if f is o or f["box"]["size_lwh_m"][0] * f["box"]["size_lwh_m"][1] < 2.5 * L * W:
+                continue
+            c, fc, t = np.array(o["box"]["centre"][:2]), np.array(f["box"]["centre"][:2]), np.radians(f["box"]["yaw_deg"])
+            loc = np.array([[np.cos(t), np.sin(t)], [-np.sin(t), np.cos(t)]]) @ (c - fc)
+            if abs(loc[0]) <= f["box"]["size_lwh_m"][0] / 2 and abs(loc[1]) <= f["box"]["size_lwh_m"][1] / 2 \
+                    and o["box"]["z_top"] > f["box"]["z_top"] + 0.05:
+                o["layer"] = "surface"
+                o["rests_on"] = f["id"]
+                break
+
+
 # ============================================================================ labelling
 def crop(eq_hi, det, scale, pad=0.15):
     c0, r0, c1, r1 = [v * scale for v in det["bbox_px"]]
@@ -630,7 +666,8 @@ def main():
     ap.add_argument("--max-panos", type=int, default=0, help="0 = all; use 3-5 for a quick test")
     ap.add_argument("--diff-thresh", type=int, default=DIFF_THRESH)
     ap.add_argument("--min-confidence", type=float, default=1.3, help="skip panos calibrated below this")
-    ap.add_argument("--wall-items", action="store_true", help="also keep wall-mounted items (art, mirrors, TVs)")
+    ap.add_argument("--furniture-only", action="store_true",
+                    help="drop wall-mounted items (art, mirrors, TVs); kept by default so they can be removed from a splat")
     ap.add_argument("--label", action="store_true", help="label each object with a vision model")
     ap.add_argument("--vlm", default="claude-haiku-5-5")
     ap.add_argument("--labels", help="hand-edited labels.json to merge in")
@@ -706,7 +743,7 @@ def main():
             continue
         own = room_of(plan, p["position"][:2])
         for k in keep:
-            for d in place(lab, k, cal, p, dtab, step, D=D, wall_items=a.wall_items):
+            for d in place(lab, k, cal, p, dtab, step, D=D, wall_items=not a.furniture_only):
                 r = room_of(plan, d["xy"].mean(0))
                 if own is None or (r is not None and r["id"] == own["id"]):   # each pano reports its own room only
                     dets.append(d)
@@ -724,8 +761,8 @@ def main():
             centre, size, yaw, z_bot, z_top, extra = solidify(o, min_depth=md)
             if o["elevated"] or home is None or (room_of(plan, centre) or {}).get("id") == home["id"]:
                 break
-        if max(size) < 0.25 or (z_top - z_bot) < 0.1:
-            continue                                                  # slivers and flat patches (rugs, shadows)
+        if max(size) < 0.25:
+            continue                                                  # slivers
         probe = centre
         if o["elevated"]:
             v = o["views"][0]["pano_xy"] - centre
@@ -742,14 +779,18 @@ def main():
                        "size_lwh_m": [round(float(size[0]), 2), round(float(size[1]), 2), round(z_top - z_bot, 2)],
                        "yaw_deg": round(float(yaw), 1), "z_bottom": round(z_bot, 2), "z_top": round(z_top, 2)},
                "on_floor": not o["elevated"],
+               "layer": layer_of(o["elevated"], z_bot, z_top, o["views"][0]["ceiling"]),
+               "floor_z": round(float(np.median([v["floor_z"] for v in o["views"]])), 3),
+               "confirmed": len(o["views"]) >= 2,
                "seen_from_panos": sorted({v["pano_label"] for v in o["views"]}, key=str),
                "primary_view": {"pano": primary["pano"], "pano_label": primary["pano_label"],
+                                "pano_xy": [round(float(v), 3) for v in primary["pano_xy"]],
                                 "distance_m": round(primary["distance_m"], 2), "bbox_px_at_1024": primary["bbox_px"]},
                "flags": extra}
         if len(o["views"]) == 1:
             rec["flags"].append("seen from one pano only")
         if o["elevated"]:
-            rec["flags"].append("not touching the floor: wall-mounted, hanging or on a counter")
+            rec["flags"].append("wall-mounted (bottom above the floor/wall line)")
         if any(v["wraps"] for v in o["views"]):
             rec["flags"].append("crosses the panorama seam: may be split in two")
         pid = primary["pano"]
@@ -768,7 +809,9 @@ def main():
                 rec["flags"].append(f"labelling failed: {e}"[:120])
         objects.append(rec)
 
+    assign_surfaces(objects)
     json.dump({"model": a.model, "units": "metres, Matterport model frame, z up, heights above floor",
+               "layers": LAYERS, "box_heights": "z_bottom/z_top are above the object's floor_z (world z = floor_z + h)",
                "method": "furnished minus defurnished panoramas, placed with plan-calibrated pano poses",
                "calibration": cals, "objects": objects}, open(out / "objects.json", "w"), indent=1)
     if not (out / "labels.json").exists() or a.labels or a.label:
