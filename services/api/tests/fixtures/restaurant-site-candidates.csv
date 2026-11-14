@@ -1,0 +1,3 @@
+property_id,property_type,property_subtype_code,address,city,state,postal_code,latitude,longitude,gross_building_area_sqft,rentable_area_sqft,retail_gla_sqft,has_sprinklers,matched_model_count,accessible_model_count,candidate_basis
+900001,Retail,RET,1 Example St,Springfield,ZZ,00001,10.0,20.0,5000,2500,,true,1,1,synthetic basis A
+900002,Retail,RET,2 Example St,Shelbyville,ZZ,00002,11.0,21.0,4000,,1800,,0,0,synthetic basis B

@@ -1,0 +1,7 @@
+site_id,property_id,city,factor_id,factor_name,status,value,unit,source,record_id,retrieved_or_observed_date,geography,time_window,method,coverage,uncertainty,unknown_reason,interpretation
+s1,900001,Springfield,property_market,Market,observed,Active,codes,Synthetic,900001,2000-01-01,parcel,,,,,,
+s1,900001,Springfield,spatial_interior,Interior,observed,MODEL123,model IDs,Synthetic,MODEL123,2000-01-01,parcel,,,,,,
+s1,900001,Springfield,crime_safety,Crime,unknown,,,,,,,,,,,not loaded,
+s1,900001,Springfield,labor_supply,Labor,estimated,5,idx,Synthetic,x,2000-01-01,city,,,,rough,,
+s2,900002,Shelbyville,property_market,Market,observed,Active,codes,Synthetic,900002,2000-01-01,parcel,,,,,,
+s2,900002,Shelbyville,crime_safety,Crime,unknown,,,,,,,,,,,not loaded,
