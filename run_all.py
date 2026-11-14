@@ -171,7 +171,12 @@ def step_meshdiff():
 def step_prepare():
     """Make mesh_diff/ a complete folder for planner.html and editor3d.html."""
     MD.mkdir(parents=True, exist_ok=True)
-    shutil.copyfile(MD / "objects_fused.json", MD / "objects.json")
+    # tileobjects rewrites objects.json to match scene_tiles.json; once it has run, don't clobber its output
+    # (it is skipped as "done" on later runs, so the overwritten objects.json would never be fixed)
+    if (MD / "scene_tiles.json").exists() and (MD / "objects.json").exists():
+        print("   objects.json comes from the tileobjects step - keeping it")
+    else:
+        shutil.copyfile(MD / "objects_fused.json", MD / "objects.json")
     for f in ("plan.json", "labels.json", "panos.json"):
         if (PANO / f).exists():
             shutil.copyfile(PANO / f, MD / f)
