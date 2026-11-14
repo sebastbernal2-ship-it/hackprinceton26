@@ -88,7 +88,8 @@ def create_variant(assetId: str, req: VariantRequest):
     if not f:
         raise HTTPException(status_code=404, detail="asset not found")
     parent = f[0]
-    pid = req.profileId or parent.profileId
+    # Never write generated files into the tracked library: no profile means the gitignored "scratch" profile.
+    pid = req.profileId or parent.profileId or "scratch"
     try:
         v = make_variant(parent, req.kind, req.params)
         v = v.model_copy(update={"profileId": pid})
