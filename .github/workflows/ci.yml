@@ -44,7 +44,7 @@ jobs:
       # Synthetic fixtures only; no sponsor data or secrets.
       - run: python -m pytest forecasting -q
       - run: python -m pytest -c planning/pytest.ini planning -q
-      - run: python -m pytest integration/constraint_filter -q
+      - run: python -m pytest integration -q
 
   foreground-build:
     runs-on: ubuntu-latest
