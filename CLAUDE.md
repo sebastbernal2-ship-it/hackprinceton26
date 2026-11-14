@@ -8,6 +8,9 @@ Evidence-first site-selection tool for an independent food-business owner (worki
 - `.env`, `data/raw/`, `data/normalized/`, pilot property IDs and sponsor data stay local/uncommitted (see `.gitignore`). `.pi/` and `.hippo/` are local agent state, not part of the product.
 - Work flow: `tools/board unread` → claim issue → short-lived branch → stage only owned paths → PR. Never commit to `main` or merge without explicit approval.
 
+## Repo map
+`foreground/` Next.js UI (frontend teammate); `modeling/` Matterport 3D pipeline (modeling teammate, README stale); `data/` evidence pipeline; `data_scripts/` one-off scripts; `services/api/` to be added; `docs/` scope and contracts. `costar-hackathon-kit-hackPrinceton/`, `reports/`, `*.jsonl` are gitignored.
+
 ## Checks
 `python3 data/test_diligence_scores.py` and `python3 data/test_factor_cards.py` (use `.venv` if deps are missing); tests also in `tests/`.
 
