@@ -1,0 +1,113 @@
+#!/usr/bin/env python3
+"""Read/post/wait on this repository's pinned GitHub coordination issue."""
+import argparse
+import base64
+import json
+import os
+import pathlib
+import subprocess
+import sys
+import time
+
+
+def gh(*args, capture=True):
+    result = subprocess.run(["gh", *args], text=True, capture_output=capture)
+    if result.returncode:
+        if result.stderr:
+            print(result.stderr, file=sys.stderr, end="")
+        raise SystemExit(result.returncode)
+    return result.stdout.strip() if capture else ""
+
+
+def context():
+    repo = gh("repo", "view", "--json", "nameWithOwner", "-q", ".nameWithOwner")
+    login = gh("api", "user", "-q", ".login")
+    issue = os.environ.get("BOARD_ISSUE", "1")
+    if not issue.isdigit():
+        raise SystemExit("BOARD_ISSUE must be a numeric issue number")
+    return repo, login, issue
+
+
+def comments(repo, issue):
+    raw = gh("api", "--paginate", "-q", ".[] | @base64", f"repos/{repo}/issues/{issue}/comments?per_page=100")
+    return [json.loads(base64.b64decode(line)) for line in raw.splitlines() if line]
+
+
+def display(items, login=None):
+    for c in items:
+        author = c.get("user", {}).get("login", "unknown")
+        tagged = "  ← tagged you" if login and f"@{login}" in c.get("body", "") else ""
+        print(f"[{c['created_at']}] {author}{tagged}\n{c.get('body','')}\n")
+
+
+def cursor_path(login):
+    git_path = pathlib.Path(subprocess.check_output(["git", "rev-parse", "--git-path", "board-state"], text=True).strip())
+    if not git_path.is_absolute():
+        git_path = pathlib.Path.cwd() / git_path
+    return git_path.resolve() / f"{login}.json"
+
+
+def unread(repo, issue, login):
+    path = cursor_path(login)
+    try:
+        last_id = int(json.loads(path.read_text()).get("last_id", 0))
+    except FileNotFoundError:
+        last_id = 0
+    all_comments = comments(repo, issue)
+    fresh = [c for c in all_comments if int(c["id"]) > last_id and c.get("user", {}).get("login") != login]
+    if all_comments:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        temp = path.with_suffix(".tmp")
+        temp.write_text(json.dumps({"last_id": max(int(c["id"]) for c in all_comments)}))
+        temp.replace(path)
+    return fresh
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    subs = parser.add_subparsers(dest="command", required=True)
+    subs.add_parser("whoami", help="show GitHub identity and board issue")
+    post = subs.add_parser("post", help="post one attributed handoff comment")
+    post.add_argument("message", nargs="+")
+    read = subs.add_parser("read", help="show recent board posts")
+    read.add_argument("-n", type=int, default=20)
+    subs.add_parser("unread", help="show posts since your last unread check")
+    wait = subs.add_parser("wait", help="foreground wait for a new post")
+    wait.add_argument("--interval", type=int, default=10)
+    wait.add_argument("--timeout", type=int, default=0, help="seconds; 0 waits until interrupted")
+    args = parser.parse_args()
+    repo, login, issue = context()
+    url = f"https://github.com/{repo}/issues/{issue}"
+    if args.command == "whoami":
+        print(f"GitHub: {login}\nRepository: {repo}\nCoordination issue: {url}")
+    elif args.command == "post":
+        body = " ".join(args.message).strip()
+        if not body:
+            raise SystemExit("message must not be empty")
+        agent = os.environ.get("BOARD_AGENT", "Pi")
+        gh("issue", "comment", issue, "--repo", repo, "--body", f"[{login}'s {agent}] {body}", capture=False)
+    elif args.command == "read":
+        if args.n < 1:
+            raise SystemExit("-n must be positive")
+        display(comments(repo, issue)[-args.n:], login)
+    elif args.command == "unread":
+        items = unread(repo, issue, login)
+        if not items:
+            print("No new board posts.")
+        else:
+            display(items, login)
+    elif args.command == "wait":
+        started = time.monotonic()
+        while True:
+            items = unread(repo, issue, login)
+            if items:
+                display(items, login)
+                return
+            if args.timeout and time.monotonic() - started >= args.timeout:
+                print("Timed out with no new board posts.")
+                return
+            time.sleep(max(1, args.interval))
+
+
+if __name__ == "__main__":
+    main()

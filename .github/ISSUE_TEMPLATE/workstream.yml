@@ -1,0 +1,41 @@
+name: Workstream deliverable
+description: Track one independently deliverable workstream component
+title: "[stream] "
+labels: []
+body:
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Outcome
+      description: State the decision or evidence artifact this issue will produce.
+      placeholder: One measurable result, not an activity list.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Current evidence and unknowns
+      description: Separate observed, derived, estimated, and unknown. Link sources and record dates.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance checks
+      description: List measurable checks, commands, and coverage requirements.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Owned paths and dependencies
+      description: List exact paths and only genuine prerequisites. Independent streams remain parallel.
+    validations:
+      required: true
+  - type: textarea
+    id: blockers
+    attributes:
+      label: Blockers and owner needed
+      description: Name the access, license, operator, sponsor, or expert decision needed; do not guess.
+    validations:
+      required: false
