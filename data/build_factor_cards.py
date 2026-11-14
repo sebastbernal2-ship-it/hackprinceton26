@@ -21,11 +21,10 @@ OUT=ROOT/'data/normalized/costar/factor-cards.csv'
 
 def rows(path):
     with path.open(newline='',encoding='utf-8') as f:return list(csv.DictReader(f))
-def main():
-    factors=rows(REG/'factors.csv')
-    sites=rows(QUEUE); evidence={r['property_id']:r for r in rows(EVIDENCE)}
-    operator={r['property_id']:r for r in rows(OPERATOR)}; context={r['property_id']:r for r in rows(CONTEXT)}
-    fields=['site_id','property_id','city','factor_id','factor_name','status','value','unit','source','record_id','retrieved_or_observed_date','geography','time_window','method','coverage','uncertainty','unknown_reason','interpretation']
+FIELDS=['site_id','property_id','city','factor_id','factor_name','status','value','unit','source','record_id','retrieved_or_observed_date','geography','time_window','method','coverage','uncertainty','unknown_reason','interpretation']
+OTHER_FACTORS=['schools_education','traffic_access','income_demographics','signage_visibility','climate_weather','natural_hazards','mobility_tourism','aerial_site','infrastructure_permits','costs_timeline','labor_supply']
+def build_cards(factors,sites,evidence,operator,context):
+    """One card per site and factor. Unknown cards never carry a value; blank is not zero."""
     out=[]
     for site in sites:
         pid=site['property_id'];ev=evidence.get(pid,{});op=operator.get(pid,{});ctx=context.get(pid,{})
@@ -40,10 +39,16 @@ def main():
         crime=ctx.get('reported_incidents_0_5mi','')
         add('crime_safety','observed' if crime else 'unknown',crime,'reported incidents (raw aggregate; not a rate)','Houston PD NIBRS public view',pid,ctx.get('crime_source_retrieved_at',''),'0.5-mile point buffer',crime_time_window(ctx),'partial-year incident aggregate','Houston subset only; LA unavailable','Partial-year counts; not rate, safety score, probability, or cross-city comparison.')
         # Other factors remain explicit null/unknown with registry blocker summaries.
-        for fid in ['schools_education','traffic_access','income_demographics','signage_visibility','climate_weather','natural_hazards','mobility_tourism','aerial_site','infrastructure_permits','costs_timeline','labor_supply']:
+        for fid in OTHER_FACTORS:
             factor=next(f for f in factors if f['factor_id']==fid)
             add(fid,reason=factor.get('notes') or factor.get('preliminary_status') or 'No verified site-level evidence.')
+    return out
+def main():
+    factors=rows(REG/'factors.csv')
+    sites=rows(QUEUE); evidence={r['property_id']:r for r in rows(EVIDENCE)}
+    operator={r['property_id']:r for r in rows(OPERATOR)}; context={r['property_id']:r for r in rows(CONTEXT)}
+    out=build_cards(factors,sites,evidence,operator,context)
     with OUT.open('w',newline='',encoding='utf-8') as f:
-        w=csv.DictWriter(f,fieldnames=fields);w.writeheader();w.writerows(out)
+        w=csv.DictWriter(f,fieldnames=FIELDS);w.writeheader();w.writerows(out)
     print(f'Wrote {len(out)} factor cards for {len(sites)} sites; unknown values remain blank.')
 if __name__=='__main__':main()
