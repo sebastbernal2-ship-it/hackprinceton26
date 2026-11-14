@@ -26,6 +26,13 @@ const MATCHES = [
       card("foot_traffic", "unknown", null, null),
     ],
   },
+  {
+    listingId: 900002, address: "2 Mock Avenue", detail: "", city: "Testville, TX",
+    blurb: "MOCK listing with no stated rent and no photo, like the real API returns.", photo: "",
+    squareFeet: 2400, rentPerSquareFootYear: null, tourId: "mock-tour-2", evidenceReadiness: 25,
+    facts: { photos: [], property: [{ label: "Space Available", value: "2,400 sq ft" }], location: [] },
+    factors: [card("asking_rent", "unknown", null, null)],
+  },
 ];
 
 // Projection mock. MOCK_PROJ=none -> empty/unknown. Fake numbers for UI testing only.

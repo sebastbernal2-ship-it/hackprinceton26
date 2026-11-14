@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { monthlyRent, type Match } from "../lib/matches";
+import { rentLabel, type Match } from "../lib/matches";
 
 type Message = { role: "agent" | "user"; text: string };
 
@@ -15,12 +15,13 @@ function fact(match: Match, label: string) {
 
 function answer(match: Match, question: string) {
   const q = question.toLowerCase();
-  const rent = `$${number.format(monthlyRent(match))}/mo`;
+  const rent = rentLabel(match);
   const space = fact(match, "Space Available") ?? `${number.format(match.squareFeet)} sq ft`;
   const neighborhood = fact(match, "Neighborhood");
   const availability = fact(match, "Availability") ?? "Immediately";
 
   if (/rent|cost|price|month|afford/.test(q)) {
+    if (match.rentPerSquareFootYear === null) return `${match.detail || match.address}: the listing states no rent, so I cannot say what it costs.`;
     return `${match.detail || match.address} is listed at ${rent}, about $${match.rentPerSquareFootYear} per square foot per year.`;
   }
   if (/size|big|square|sq|foot|sf|seat/.test(q)) {

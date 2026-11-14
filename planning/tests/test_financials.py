@@ -131,3 +131,32 @@ def test_estimated_inputs_appear_in_flip_analysis():
     knobs = {fl.knob: fl for fl in res.flips}
     assert "quantity:equipment_install_allowance" in knobs and "quantity:repair:plumbing" in knobs
     assert knobs["budget"].flips
+
+
+def test_assessment_buildout_bounds_and_override():
+    from planning import assessment as a
+    lo, hi = a.buildout_bounds()
+    assert 0 < lo < hi
+    r = a.assess(budget=1.0, equipment=["hand_sink"], price_overrides={"hand_sink": 1000.0}, n=300, seed=1)
+    assert r["pOverBudgetBuildout"] == 1.0 and r["analysisBasis"] == "buildout_only"
+    assert a.assess(budget=None, n=300)["pOverBudgetBuildout"] is None
+    assert a.assess(budget=5.0, equipment=[], n=300)["buildout"] is None  # nothing selected: unknown, not zero
+
+
+def test_cost_lines_scale_with_chosen_equipment_quantity():
+    from planning import assessment as a
+    d = a.pc.load_financial_json(None)
+    eid = d["equipment"][0]["id"]
+    dq = d["equipment"][0].get("defaultQuantity", 1)
+    one = next(l for l in a.cost_lines(None, None, [{"id": eid, "quantity": dq}], None, None) if l["itemId"] == f"equip:{eid}")
+    three = next(l for l in a.cost_lines(None, None, [{"id": eid, "quantity": dq * 3}], None, None) if l["itemId"] == f"equip:{eid}")
+    assert three["quantity"] == dq * 3
+    assert abs(three["expected"] - 3 * one["expected"]) < 0.02
+    assert abs(three["low"] - 3 * one["low"]) < 0.02 and abs(three["high"] - 3 * one["high"]) < 0.02
+
+
+def test_buildout_bounds_include_contingency():
+    from planning import assessment as a
+    t = a.financials.totals(a.cost_lines(None, None, None, None, None))["totals"]["oneTime"]
+    lo, hi = a.buildout_bounds()
+    assert lo > t["low"] and hi > t["high"]

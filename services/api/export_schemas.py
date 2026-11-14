@@ -2,7 +2,10 @@
 import json
 from pathlib import Path
 
-from app.models import AssumptionInput, FactorCard, Match, ProjectionCard, ScenarioAssessment
+from app.models import (
+    AssessRequest, AssumptionInput, FactorCard, Match, MatchesResponse, ProjectionCard, ReplanRequest, ReplanResponse,
+    ScenarioAssessment,
+)
 
 OUT = Path(__file__).resolve().parents[2] / "contracts"
 
@@ -14,6 +17,9 @@ def schemas() -> dict[str, dict]:
         "projection-card.schema.json": ProjectionCard.model_json_schema(),
         "assumption-input.schema.json": AssumptionInput.model_json_schema(),
         "scenario-assessment.schema.json": ScenarioAssessment.model_json_schema(),
+        "matches-response.schema.json": MatchesResponse.model_json_schema(),
+        "assess-request.schema.json": AssessRequest.model_json_schema(),
+        "replan.schema.json": {"request": ReplanRequest.model_json_schema(), "response": ReplanResponse.model_json_schema()},
     }
 
 

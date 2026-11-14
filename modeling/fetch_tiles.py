@@ -8,9 +8,9 @@ These are the GraphQL fields Showcase itself requests (found in the SDK bundle):
     model.objectAnnotations { id label confidence region anchorPosition ... }
 
 Run from the repo root (keys come from .env):
-    python Code\fetch_tiles.py                  # list + download everything
-    python Code\fetch_tiles.py --list           # only show what exists
-    python Code\fetch_tiles.py --max-tiles 50   # quick test
+    python modeling/fetch_tiles.py                  # list + download everything
+    python modeling/fetch_tiles.py --list           # only show what exists
+    python modeling/fetch_tiles.py --max-tiles 50   # quick test
 
 Output: assets_<sid>/tiles/<furnished|defurnished>/...  (tileset.json + every tile, same relative paths)
         assets_<sid>/object_annotations.json

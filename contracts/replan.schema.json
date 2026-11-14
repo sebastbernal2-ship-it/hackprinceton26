@@ -1,0 +1,422 @@
+{
+  "request": {
+    "$defs": {
+      "AssessInputs": {
+        "description": "User assumptions for the scenario. Unset stays unknown; nothing here is observed evidence.",
+        "properties": {
+          "budget": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Budget"
+          },
+          "delayCostPerMonth": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Delaycostpermonth"
+          },
+          "draws": {
+            "default": 5000,
+            "maximum": 50000,
+            "minimum": 200,
+            "title": "Draws",
+            "type": "integer"
+          },
+          "equipment": {
+            "anyOf": [
+              {
+                "items": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "$ref": "#/$defs/EquipmentChoice"
+                    }
+                  ]
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Equipment"
+          },
+          "leaseStartDelayMonths": {
+            "default": 0.0,
+            "title": "Leasestartdelaymonths",
+            "type": "number"
+          },
+          "monthlyRent": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Monthlyrent"
+          },
+          "plannedOpenMonths": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Plannedopenmonths"
+          },
+          "rentFreeMonths": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Rentfreemonths"
+          },
+          "repairs": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "default": {},
+            "title": "Repairs",
+            "type": "object"
+          },
+          "seed": {
+            "default": 0,
+            "title": "Seed",
+            "type": "integer"
+          },
+          "unitPriceOverrides": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "$ref": "#/$defs/PriceOverride"
+                }
+              ]
+            },
+            "default": {},
+            "title": "Unitpriceoverrides",
+            "type": "object"
+          }
+        },
+        "title": "AssessInputs",
+        "type": "object"
+      },
+      "EquipmentChoice": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "quantity": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Quantity"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "title": "EquipmentChoice",
+        "type": "object"
+      },
+      "Exchange": {
+        "properties": {
+          "answer": {
+            "title": "Answer",
+            "type": "string"
+          },
+          "question": {
+            "title": "Question",
+            "type": "string"
+          }
+        },
+        "required": [
+          "question",
+          "answer"
+        ],
+        "title": "Exchange",
+        "type": "object"
+      },
+      "ParsedProfile": {
+        "description": "Operator profile as read from the brief (null = not stated, constraint not applied).",
+        "properties": {
+          "budget": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Budget"
+          },
+          "cities": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Cities"
+          },
+          "matchedText": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "default": {},
+            "title": "Matchedtext",
+            "type": "object"
+          },
+          "maxAreaSqft": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Maxareasqft"
+          },
+          "maxSeats": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Maxseats"
+          },
+          "minAreaSqft": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Minareasqft"
+          },
+          "minSeats": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Minseats"
+          },
+          "requireActiveListing": {
+            "default": false,
+            "title": "Requireactivelisting",
+            "type": "boolean"
+          },
+          "requireRestaurantUse": {
+            "default": false,
+            "title": "Requirerestaurantuse",
+            "type": "boolean"
+          },
+          "requireScanModel": {
+            "default": false,
+            "title": "Requirescanmodel",
+            "type": "boolean"
+          }
+        },
+        "title": "ParsedProfile",
+        "type": "object"
+      },
+      "PriceOverride": {
+        "properties": {
+          "high": {
+            "title": "High",
+            "type": "number"
+          },
+          "low": {
+            "title": "Low",
+            "type": "number"
+          }
+        },
+        "required": [
+          "low",
+          "high"
+        ],
+        "title": "PriceOverride",
+        "type": "object"
+      }
+    },
+    "description": "profileChange keys: cities, minAreaSqft, maxAreaSqft, minSeats, maxSeats, budget, requireActiveListing,\nrequireScanModel, requireRestaurantUse; plus assessment keys (see AssessInputs).",
+    "properties": {
+      "assess": {
+        "$ref": "#/$defs/AssessInputs",
+        "default": {
+          "budget": null,
+          "delayCostPerMonth": null,
+          "draws": 5000,
+          "equipment": null,
+          "leaseStartDelayMonths": 0.0,
+          "monthlyRent": null,
+          "plannedOpenMonths": null,
+          "rentFreeMonths": null,
+          "repairs": {},
+          "seed": 0,
+          "unitPriceOverrides": {}
+        }
+      },
+      "brief": {
+        "default": [],
+        "items": {
+          "$ref": "#/$defs/Exchange"
+        },
+        "title": "Brief",
+        "type": "array"
+      },
+      "listingId": {
+        "anyOf": [
+          {
+            "type": "integer"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Listingid"
+      },
+      "profile": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/ParsedProfile"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "profileChange": {
+        "additionalProperties": true,
+        "title": "Profilechange",
+        "type": "object"
+      }
+    },
+    "required": [
+      "profileChange"
+    ],
+    "title": "ReplanRequest",
+    "type": "object"
+  },
+  "response": {
+    "properties": {
+      "change": {
+        "additionalProperties": true,
+        "title": "Change",
+        "type": "object"
+      },
+      "changed": {
+        "items": {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        "title": "Changed",
+        "type": "array"
+      },
+      "countsAfter": {
+        "additionalProperties": {
+          "type": "integer"
+        },
+        "title": "Countsafter",
+        "type": "object"
+      },
+      "countsBefore": {
+        "additionalProperties": {
+          "type": "integer"
+        },
+        "title": "Countsbefore",
+        "type": "object"
+      },
+      "dataAvailable": {
+        "title": "Dataavailable",
+        "type": "boolean"
+      },
+      "label": {
+        "const": "scenario analysis, not a forecast",
+        "default": "scenario analysis, not a forecast",
+        "title": "Label",
+        "type": "string"
+      },
+      "note": {
+        "default": "",
+        "title": "Note",
+        "type": "string"
+      },
+      "pOverBudget": {
+        "additionalProperties": true,
+        "title": "Poverbudget",
+        "type": "object"
+      }
+    },
+    "required": [
+      "dataAvailable",
+      "change",
+      "changed",
+      "countsBefore",
+      "countsAfter",
+      "pOverBudget"
+    ],
+    "title": "ReplanResponse",
+    "type": "object"
+  }
+}

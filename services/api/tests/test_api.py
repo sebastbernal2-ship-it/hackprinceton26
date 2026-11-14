@@ -37,7 +37,7 @@ def test_readiness_counts_only_observed():
 def test_health_and_missing_data(nodata):
     assert client.get("/api/health").json() == {"status": "ok", "dataAvailable": False, "modelsAvailable": False}
     r = client.post("/api/matches", json={"brief": []}).json()
-    assert r == {"dataAvailable": False, "matches": []}
+    assert r["dataAvailable"] is False and r["matches"] == []
     assert client.get("/api/property/900001").status_code == 404
 
 
@@ -78,6 +78,15 @@ def test_tour_agent_stub():
     assert r["action"] == {"type": "move", "direction": "left", "meters": 2.0}
 
 
+def _normalize(node):
+    """Drop the redundant `additionalProperties: true` (the JSON Schema default) that some pydantic versions emit."""
+    if isinstance(node, dict):
+        return {k: _normalize(v) for k, v in node.items() if not (k == "additionalProperties" and v is True)}
+    if isinstance(node, list):
+        return [_normalize(v) for v in node]
+    return node
+
+
 def test_schemas_committed_and_current():
     for name, s in schemas().items():
-        assert json.loads((OUT / name).read_text()) == s
+        assert _normalize(json.loads((OUT / name).read_text())) == _normalize(s)

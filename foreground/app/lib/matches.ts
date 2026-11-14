@@ -35,7 +35,7 @@ export type Match = {
   photo: string;
   squareFeet: number;
   /** Asking rent in dollars per square foot per year, triple net. */
-  rentPerSquareFootYear: number;
+  rentPerSquareFootYear: number | null;
   /** Matterport model id for Open Tour. */
   tourId: string;
   /**
@@ -49,6 +49,17 @@ export type Match = {
   demo?: boolean;
 };
 
-export function monthlyRent(match: Pick<Match, "squareFeet" | "rentPerSquareFootYear">): number {
-  return Math.round((match.squareFeet * match.rentPerSquareFootYear) / 12);
+/** Monthly rent in dollars, or null when the listing states no rent. Unknown is never shown as $0. */
+export function monthlyRent(match: Pick<Match, "squareFeet" | "rentPerSquareFootYear">): number | null {
+  const rate = match.rentPerSquareFootYear;
+  if (rate === null || rate === undefined || !Number.isFinite(rate) || rate <= 0 || !(match.squareFeet > 0)) return null;
+  return Math.round((match.squareFeet * rate) / 12);
+}
+
+const usd = new Intl.NumberFormat("en-US");
+
+/** "$7,500/mo", or "Rent not listed". */
+export function rentLabel(match: Pick<Match, "squareFeet" | "rentPerSquareFootYear">): string {
+  const rent = monthlyRent(match);
+  return rent === null ? "Rent not listed" : `$${usd.format(rent)}/mo`;
 }

@@ -9,7 +9,7 @@ Evidence-first site-selection tool for an independent food-business owner (worki
 - Work flow: `tools/board unread` → claim issue → short-lived branch → stage only owned paths → PR. Never commit to `main` or merge without explicit approval.
 
 ## Repo map
-`foreground/` Next.js UI (frontend teammate); `modeling/` Matterport 3D pipeline (modeling teammate, README stale); `data/` evidence pipeline; `data_scripts/` one-off scripts; `services/api/` to be added; `docs/` scope and contracts. `costar-hackathon-kit-hackPrinceton/`, `reports/`, `*.jsonl` are gitignored.
+`foreground/` Next.js UI (frontend teammate); `modeling/` Matterport 3D pipeline (modeling teammate, README stale); `services/api/` FastAPI (reads local CSVs, port 8000); `data/` evidence pipeline and `data/factors/*` adapters (`data/run_factor_adapters.py`, `data/build_factor_cards.py`); `planning/` cost and financial scenario code; `inspection/` vision and geometry findings; `integration/` constraint filter; `forecasting/`; `contracts/`, `config/`; `tools/` board and codex-delegate; `data_scripts/` one-off scripts; `docs/` scope and contracts (demo runbook: `docs/DEMO.md`; ownership: `docs/development/workflow.md`). `costar-hackathon-kit-hackPrinceton/`, `reports/`, `*.jsonl` are gitignored.
 
 ## Checks
 `python3 data/test_diligence_scores.py` and `python3 data/test_factor_cards.py` (use `.venv` if deps are missing); tests also in `tests/`.
