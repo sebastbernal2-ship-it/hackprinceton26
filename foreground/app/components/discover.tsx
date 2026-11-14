@@ -3,14 +3,16 @@
 import Image from "next/image";
 import { useState } from "react";
 import { monthlyRent, type Match } from "../lib/matches";
-import { useMatches } from "../lib/discover";
+import { useMatches, type MatchesState } from "../lib/discover";
+import EvidenceReadiness from "./evidence-readiness";
 import PropertyInfo from "./property-info";
 import TourOverlay from "./tour-overlay";
 
 const number = new Intl.NumberFormat("en-US");
 
 export default function Discover() {
-  const matches = useMatches();
+  const state = useMatches();
+  const matches = state.status === "ready" ? state.matches : [];
   const [tour, setTour] = useState<Match | null>(null);
   const [info, setInfo] = useState<Match | null>(null);
 
@@ -18,8 +20,30 @@ export default function Discover() {
     <>
       <header className="animate-rise">
         <h1 className="text-[clamp(1.6rem,4vw,2.5rem)] font-medium leading-tight tracking-tight">Discover</h1>
-        <p className="mt-2 text-foreground/50">{matches.length} spaces, best fit first.</p>
+        <p className="mt-2 text-foreground/50">{subtitle(state)}</p>
       </header>
+
+      {state.status === "loading" && <p className="mt-10 text-foreground/50">Loading spaces…</p>}
+      {state.status === "error" && (
+        <Notice title="Could not reach the data service">
+          {state.message} Start the API (or <code>npm run mock-api</code>) and reload.
+        </Notice>
+      )}
+      {state.status === "ready" && !state.dataAvailable && !state.demo && (
+        <Notice title="No data loaded">
+          The API has no candidate registry loaded, so there is nothing to show. Build it with the data scripts
+          (local, ignored files) and restart the API. No placeholder spaces are shown.
+        </Notice>
+      )}
+      {state.status === "ready" && state.dataAvailable && matches.length === 0 && (
+        <Notice title="No spaces matched">The registry is loaded, but no candidate matched this brief.</Notice>
+      )}
+      {state.status === "ready" && state.demo && (
+        <Notice title="Demo data">
+          NEXT_PUBLIC_DEMO_FALLBACK=1 is set and the API has no data, so these are hand-typed sample spaces. They are
+          not evidence and are not ranked by any validated model.
+        </Notice>
+      )}
 
       <ul className="mt-10 grid grid-cols-1 gap-x-10 gap-y-14 md:grid-cols-2">
         {matches.map((match, index) => (
@@ -44,9 +68,7 @@ export default function Discover() {
                   </p>
                   <p className="mt-1 text-sm text-foreground/50">{match.city}</p>
                 </div>
-                <span className="shrink-0 rounded-full bg-match-soft px-3 py-1 text-sm font-medium tabular-nums text-match">
-                  {match.confidence}% match
-                </span>
+                <EvidenceReadiness match={match} />
               </div>
 
               <p className="mt-4 text-[0.95rem] leading-relaxed text-foreground/55">{match.blurb}</p>
@@ -94,6 +116,20 @@ export default function Discover() {
         />
       )}
     </>
+  );
+}
+
+function subtitle(state: MatchesState) {
+  if (state.status !== "ready" || state.matches.length === 0) return "Spaces from the candidate registry.";
+  return `${state.matches.length} candidate spaces, shown in the order the service returned them.`;
+}
+
+function Notice({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div role="status" className="mt-10 max-w-xl rounded-2xl border border-foreground/15 p-6">
+      <p className="font-medium">{title}</p>
+      <p className="mt-2 text-sm leading-relaxed text-foreground/60">{children}</p>
+    </div>
   );
 }
 
