@@ -103,7 +103,7 @@ def test_subagent_is_pinned_to_its_listing(tmp_path):
     r, evs = run(tmp_path, env, planner, sub)
     assert [a["listingId"] for n, a in env.calls if n == "costs"] == [9001]
     v = [e for e in evs if e["type"] == "subagent_finish"][0]["verdict"]
-    assert v["verified"] and v["verdict"] == "strong"
+    assert v["verified"] and v["verdict"] == "workable" and v["verdictCapped"]  # unpriced roof line caps "strong"
     assert evs[-1]["type"] == "final"  # planner never saved: composed from verified verdicts only
 
 
@@ -202,3 +202,16 @@ def test_derived_layer_reads_the_producers_actual_paths(tmp_path, monkeypatch):
     assert env.t_derived_layer("lineage", 1)["data"]["tenants"] == 3
     assert env.t_derived_layer("aerial", 99)["status"] == "unavailable"
     assert env.t_derived_layer("presence", 99)["status"] == "unavailable"
+
+
+def test_replay_route_streams_lazily(tmp_path, monkeypatch):
+    """The replay must not sleep through the whole trace before the first byte (browsers would see nothing for ~15 s)."""
+    from app import agent_routes
+    from app.main import app
+    monkeypatch.setenv("DERIVED_DIR", str(tmp_path))
+    import asyncio
+    import time
+    t0 = time.monotonic()
+    resp = agent_routes.agent_replay(delay=0.5)
+    first = asyncio.run(resp.body_iterator.__anext__())
+    assert "replay_info" in first and time.monotonic() - t0 < 0.3
