@@ -27,7 +27,7 @@ function fanCrownGeometry(seed, R = 1.0) {
     const elev = 1.05 - (f % 3) * 0.45 - r() * 0.35;          // upper, level and drooping fronds
     const L = 0.55 + r() * 0.3;                                  // petiole length
     const age = Math.max(0, -elev) * 0.9 + r() * 0.15;          // lower fronds older / yellower
-    const g = [0.30 + age * 0.25, 0.43 + age * 0.08, 0.20 - age * 0.06];
+    const g = [0.17 + age * 0.22, 0.27 + age * 0.07, 0.11 - age * 0.03];
     const rot = new THREE.Matrix4().makeRotationZ(az).multiply(new THREE.Matrix4().makeRotationY(-elev));
     const add = (x, y, z, c) => { const v = V3(x, y, z).applyMatrix4(rot); pos.push(v.x, v.y, v.z); col.push(...c); return pos.length / 3 - 1; };
     // petiole: thin flat strip along +x
@@ -75,7 +75,7 @@ function paintGround(L) {
     const a = n1(i / 96, j / 96), b = n2(i / 20, j / 20), e = n3(i / 3, j / 3);
     const dry = Math.max(0, a - 0.6) * 2.4;
     const t = 0.55 * b + 0.45 * e;
-    let r = 84 + 30 * t, gg = 106 + 26 * t, bb = 56 + 12 * t;
+    let r = 90 + 28 * t, gg = 104 + 24 * t, bb = 60 + 12 * t;
     r += dry * 40; gg += dry * 16; bb += dry * 14;
     const k = (j * N + i) * 4, jit = (R() - 0.5) * 16;
     d[k] = r + jit; d[k + 1] = gg + jit; d[k + 2] = bb + jit * 0.6; d[k + 3] = 255;
@@ -235,12 +235,12 @@ export function buildSite(ctx) {
     const s = 1.0 + R2() * 0.25; cr.scale.set(s, s, s);
   };
   // big-leaf tropicals (banana / bird of paradise clumps seen along the front on the drone photo)
-  const paddleGeo = (() => { const s = new THREE.Shape(); s.moveTo(0, 0); s.quadraticCurveTo(0.2, 0.35, 0.02, 1.0); s.quadraticCurveTo(-0.2, 0.35, 0, 0);
+  const paddleGeo = (() => { const s = new THREE.Shape(); s.moveTo(0, 0); s.bezierCurveTo(0.32, 0.2, 0.3, 0.8, 0.02, 1.0); s.bezierCurveTo(-0.3, 0.8, -0.32, 0.2, 0, 0);
     const g = new THREE.ShapeGeometry(s, 6); g.rotateX(Math.PI / 2); return g; })();
-  const paddleM = new THREE.MeshStandardMaterial({ color: 0x4f7a34, roughness: 0.7, side: THREE.DoubleSide });
+  const paddleM = new THREE.MeshStandardMaterial({ color: 0x3a6128, roughness: 0.8, side: THREE.DoubleSide });
   const tropical = (x, y, h, seed) => {
     const R2 = rng(seed), G = new THREE.Group(); G.position.set(x, y, G0); group.add(G);
-    for (let k = 0; k < 9; k++) {
+    for (let k = 0; k < 7; k++) {
       const az = R2() * Math.PI * 2, el = 0.35 + R2() * 0.7, len = h * (0.55 + R2() * 0.45);
       const st = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.03, len * 0.55, 5).rotateX(Math.PI / 2), paddleM);
       const dir = V3(Math.cos(az) * Math.cos(el), Math.sin(az) * Math.cos(el), Math.sin(el));
@@ -257,7 +257,7 @@ export function buildSite(ctx) {
   // front yard: lush beds along the sidewalk, cypress screen and a fan palm by the driveway (drone photo)
   for (let x = LOT.x0 + 0.8; x < ctx.porchX - 1.8; x += 0.9 + R() * 0.5) shrub(x, LOT.y0 + 0.4 + R() * 0.6, 0.35 + R() * 0.3, leaves[Math.floor(R() * 5)], Math.floor(R() * 999));
   for (let x = ctx.porchX + 1.8; x < ex1 + 0.4; x += 0.9 + R() * 0.5) shrub(x, LOT.y0 + 0.4 + R() * 0.6, 0.35 + R() * 0.3, leaves[Math.floor(R() * 5)], Math.floor(R() * 999));
-  tropical(LOT.x0 + 3.2, LOT.y0 + 0.9, 2.0, 5); tropical(ex1 - 0.8, LOT.y0 + 0.8, 2.2, 6); tropical(ctx.porchX + 3.4, LOT.y0 + 1.0, 1.7, 7);
+  tropical(LOT.x0 + 3.2, LOT.y0 + 0.9, 1.8, 5); tropical(ex1 - 0.8, LOT.y0 + 0.8, 1.6, 6); tropical(ctx.porchX + 3.4, LOT.y0 + 1.0, 1.3, 7);
   cypress(ex1 + 4.8, LOT.y0 - 0.2, 8.5, 0.75); cypress(ex1 + 5.6, LOT.y0 + 1.0, 7.6, 0.7); cypress(ex1 + 5.0, LOT.y0 + 2.4, 8.0, 0.72);
   palm(ex1 + 4.9, ey1 - 1.5, 7.5, 3, 0.05, 1.0);
   hedge(ex1 + 4.3, ex1 + 5.4, LOT.y0 + 3.5, ey1 - 2.5, 1.6, hedgeM, 4);

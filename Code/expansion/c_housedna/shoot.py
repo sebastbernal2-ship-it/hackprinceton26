@@ -1,19 +1,21 @@
 """Render the deliverable screenshots with headless Chrome (server must run on PORT from the repo root).
-python Code/expansion/c_housedna/shoot.py [main_aerial main_plan ...]"""
+python Code/expansion/c_housedna/shoot.py [main_aerial main_plan ...]
+env: SHOOT_PORT (default 8103), SHOOT_OUT (default <here>/shots)"""
 import os, subprocess, sys, tempfile, time
 
-PORT = 8103
+PORT = int(os.environ.get('SHOOT_PORT', 8103))
 HERE = os.path.dirname(os.path.abspath(__file__))
 CHROME = r'C:/Program Files/Google/Chrome/Application/chrome.exe'
 SHOTS = [('main', v) for v in ('aerial', 'backyard', 'interior', 'front', 'plan')] + [('side', 'aerial')]
 want = sys.argv[1:]
-os.makedirs(os.path.join(HERE, 'shots'), exist_ok=True)
+OUT = os.environ.get('SHOOT_OUT') or os.path.join(HERE, 'shots')
+os.makedirs(OUT, exist_ok=True)
 for case, view in SHOTS:
     name = f'{case}_{view}'
     if want and name not in want:
         continue
-    out = os.path.join(HERE, 'shots', name + '.png')
-    url = f'http://localhost:{PORT}/Code/expansion/c_housedna/index.html?case={case}&view={view}'
+    out = os.path.join(OUT, name + '.png')
+    url = f'http://127.0.0.1:{PORT}/Code/expansion/c_housedna/index.html?case={case}&view={view}'
     with tempfile.TemporaryDirectory() as prof:
         cmd = [CHROME, '--headless=new', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--hide-scrollbars',
                '--window-size=1600,900', '--virtual-time-budget=60000', f'--user-data-dir={prof}',

@@ -20,6 +20,7 @@
   .rule .why { color: #555; font-size: 12px; }
   .sw { display: inline-block; width: 11px; height: 11px; border-radius: 2px; border: 1px solid #0003; vertical-align: -1px; margin-right: 3px; }
   #hint { font-size: 11px; color: #777; margin-top: 8px; }
+  .sl { display: flex; align-items: center; gap: 6px; margin: 3px 0; } .sl label { width: 46px; color: #555; } .sl input { flex: 1; } .sl span { width: 52px; text-align: right; font-variant-numeric: tabular-nums; }
 </style>
 </head>
 <body>
@@ -29,19 +30,21 @@
   <div class="row" id="cases"></div>
   <div class="row" id="views"></div>
   <div class="row"><button id="tRoof" class="on">roof</button><button id="tEdit">drag addition</button></div>
+  <div class="sl"><label>Depth</label><input id="depth" type="range" min="2.2" max="7" step="0.05"><span id="depthv"></span></div>
+  <div class="sl"><label>Width</label><input id="width" type="range" min="2" max="7" step="0.05"><span id="widthv"></span></div>
+  <div class="sl"><label>Offset</label><input id="offset" type="range" min="-4" max="4" step="0.05"><span id="offsetv"></span></div>
   <div id="rules"></div>
-  <div id="hint">Orbit: left-drag · pan: right-drag · zoom: wheel. "drag addition": drag the new room along the house wall; shift-drag changes its depth.</div>
+  <div id="hint">Orbit: left-drag · pan: right-drag · zoom: wheel. The sliders or the orange ground handle resize / move the new room and regenerate it live. "drag addition": drag the room itself along the house wall; shift-drag changes its depth.</div>
 </div>
 <script type="module">
 import * as THREE from '../../vendor/three.module.min.js';
-import { makeSpec, rectSides, pointInPoly } from './dna_rules.js';
-import * as B from './build.js';
-import { buildSite } from './site.js';
-import { stuccoTex } from './site_tex.js';
+import { loadExtensionKit } from './extension.js';
 
+// All generation (house shell, roof, site, the addition itself, plan overlay) lives in extension.js, which editor3d.html
+// uses too. This page is the standalone viewer: test-case cameras, live sliders / drag handle, rules panel.
 const qs = new URLSearchParams(location.search);
 const VIEW = qs.get('view'); let CASE = qs.get('case') || 'main';
-const [dna, tc, meshMeta, plan] = await Promise.all(['house_dna.json', '../test_case.json', 'assets/house_mesh.json', '../../../pano_zvKHR9DHNjJ/mesh_diff/plan.json'].map(u => fetch(u).then(r => r.json())));
+const tc = await fetch('../test_case.json').then(r => r.json());
 const additions = Object.fromEntries(tc.additions.map(a => [a.id, structuredClone(a)]));
 
 // ------------------------------------------------------------------------------------------ renderer / scene
@@ -54,455 +57,29 @@ renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadow
 renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.0;
 document.body.appendChild(renderer.domElement);
 const scene = new THREE.Scene();
-const HORIZON = new THREE.Color('#dfe7ec');
-scene.fog = new THREE.Fog(HORIZON, 45, 150);
 
-// sky dome
-const skyMat = new THREE.ShaderMaterial({ side: THREE.BackSide, depthWrite: false, fog: false,
-  uniforms: { top: { value: new THREE.Color('#6f9fd0') }, hor: { value: HORIZON } },
-  vertexShader: 'varying vec3 vP; void main(){ vP = normalize(position); gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.); }',
-  fragmentShader: 'uniform vec3 top; uniform vec3 hor; varying vec3 vP; void main(){ float t = clamp(vP.z*1.6,0.,1.); gl_FragColor = vec4(mix(hor, top, pow(t,0.7)),1.); }' });
-const sky = new THREE.Mesh(new THREE.SphereGeometry(400, 32, 16), skyMat); scene.add(sky);
-{ const pm = new THREE.PMREMGenerator(renderer); const es = new THREE.Scene(); es.add(new THREE.Mesh(new THREE.SphereGeometry(10, 32, 16), skyMat.clone()));
-  const g = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), new THREE.MeshBasicMaterial({ color: '#6b7457' })); g.position.z = -1; es.add(g);
-  scene.environment = pm.fromScene(es, 0.02).texture; }
+const kit = await loadExtensionKit(new URL('./', import.meta.url), { planUrl: '../../../pano_zvKHR9DHNjJ/mesh_diff/plan.json', scan: true });
+const { dna } = kit, { ex0, ex1, ey0, ey1, ground_z: G0 } = kit.bounds;
+const { sky } = kit.createEnvironment(renderer, scene);
+scene.add(kit.scanGroup);
 
-// lights: LA afternoon sun from the south-west, sky fill
-const sun = new THREE.DirectionalLight('#fff3e2', 2.6);
-sun.position.set(-14, -18, 26); sun.target.position.set(-5, 1, 0); scene.add(sun, sun.target);
-sun.castShadow = true; sun.shadow.mapSize.set(4096, 4096);
-Object.assign(sun.shadow.camera, { left: -24, right: 24, top: 24, bottom: -24, near: 1, far: 90 });
-sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.03;
-scene.add(new THREE.HemisphereLight('#cfe0f2', '#77705f', 1.15));
-
-// ------------------------------------------------------------------------------------------ materials
-const tl = new THREE.TextureLoader();
-const loadTex = (u, rep) => new Promise(res => tl.load(u, t => { t.colorSpace = THREE.SRGBColorSpace; if (rep) t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 8; res(t); }, undefined, () => res(null)));
-const ex = dna.exterior;
-const M = {
-  siding: new THREE.MeshStandardMaterial({ color: new THREE.Color(ex.cladding.colour).lerp(new THREE.Color('#c9d4d6'), 0.35), map: B.sidingTex(), roughness: 0.85 }),
-  trim: new THREE.MeshStandardMaterial({ color: '#f3f1ec', roughness: 0.55 }),
-  sash: new THREE.MeshStandardMaterial({ color: '#f6f4ef', roughness: 0.5 }),
-  fascia: new THREE.MeshStandardMaterial({ color: '#f1efe9', roughness: 0.6 }),
-  gutter: new THREE.MeshStandardMaterial({ color: '#e9e7e1', roughness: 0.35, metalness: 0.1 }),
-  soffit: new THREE.MeshStandardMaterial({ color: '#ecebe6', roughness: 0.9, side: THREE.DoubleSide }),
-  glass: new THREE.MeshStandardMaterial({ color: '#27343c', roughness: 0.04, metalness: 0.0, envMapIntensity: 1.6, transparent: true, opacity: 0.38 }),
-  glassHouse: new THREE.MeshStandardMaterial({ color: '#1f2a31', roughness: 0.05, metalness: 0.2, envMapIntensity: 1.4 }),
-  found: new THREE.MeshStandardMaterial({ color: ex.foundation.colour, map: B.concreteTex('#c9c5bd', false), roughness: 0.95 }),
-  vent: new THREE.MeshStandardMaterial({ color: '#2c2c2c', roughness: 0.8 }),
-  chimney: new THREE.MeshStandardMaterial({ color: '#a5a39d', map: B.concreteTex('#d0cdc6', false), roughness: 0.95 }),
-  grass: new THREE.MeshStandardMaterial({ map: B.grassTex(), roughness: 1 }),
-  concrete: new THREE.MeshStandardMaterial({ map: B.concreteTex(), roughness: 0.9 }),
-  asphalt: new THREE.MeshStandardMaterial({ map: B.asphaltTex(), roughness: 0.95 }),
-  fence: new THREE.MeshStandardMaterial({ map: B.fenceTex(), roughness: 0.9 }),
-  shrub: new THREE.MeshStandardMaterial({ color: '#4d6b33', roughness: 1, flatShading: true }),
-  shrub2: new THREE.MeshStandardMaterial({ color: '#5f7d3a', roughness: 1, flatShading: true }),
-  bark: new THREE.MeshStandardMaterial({ color: '#5a4636', roughness: 1 }),
-  mulch: new THREE.MeshStandardMaterial({ map: B.mulchTex(), roughness: 1 }),
-  pavers: new THREE.MeshStandardMaterial({ map: B.concreteTex('#b9ab98'), roughness: 0.9 }),
-  pochet: new THREE.MeshBasicMaterial({ color: '#2b2b2e' }), planWin: new THREE.MeshBasicMaterial({ color: '#8fd3ff' }), planNew: new THREE.MeshBasicMaterial({ color: '#c0392b' }),
-  plate: new THREE.MeshStandardMaterial({ color: '#f4f2ec', roughness: 0.4 }), grille: new THREE.MeshStandardMaterial({ color: '#3a3631', roughness: 0.6, metalness: 0.4 }),
-  knob: new THREE.MeshStandardMaterial({ color: '#b08d57', roughness: 0.3, metalness: 0.8 }),
-  frontDoor: new THREE.MeshStandardMaterial({ color: '#6b4a2f', roughness: 0.6 }),
-};
-for (const m of Object.values(M)) m.shadowSide = THREE.DoubleSide;
-const shingle = await loadTex(ex.roof.texture || 'assets/roof_shingles.jpg', true);
-// darker, neutral charcoal than the raw drone crop: the sky fill + env light made it read light and blue (A's tone is closer)
-M.roof = new THREE.MeshStandardMaterial({ map: shingle, color: '#a39a90', roughness: 0.97, envMapIntensity: 0.35, shadowSide: THREE.DoubleSide });
-M.acBody = new THREE.MeshStandardMaterial({ color: '#b8bab8', roughness: 0.55, metalness: 0.3 });
-
-// ------------------------------------------------------------------------------------------ scanned house mesh
-const scanGroup = new THREE.Group(); scene.add(scanGroup);
-const scan = { pos: null, groups: [] };
-{
-  const buf = await fetch('assets/house_mesh.bin').then(r => r.arrayBuffer());
-  const nv = meshMeta.nv, ni = meshMeta.ni;
-  const pos = new Float32Array(buf, 0, nv * 3), uv = new Float32Array(buf, nv * 12, nv * 2), idx = new Uint32Array(buf, nv * 20, ni);
-  scan.pos = pos;
-  const texs = await Promise.all(meshMeta.groups.map(g => loadTex(meshMeta.tex_dir + g.tex)));
-  meshMeta.groups.forEach((g, i) => {
-    const geo = new THREE.BufferGeometry();
-    geo.setAttribute('position', new THREE.BufferAttribute(pos.subarray(g.v0 * 3, (g.v0 + g.nv) * 3), 3));
-    geo.setAttribute('uv', new THREE.BufferAttribute(uv.subarray(g.v0 * 2, (g.v0 + g.nv) * 2), 2));
-    const full = idx.slice(g.i0, g.i0 + g.ni);
-    geo.setIndex(new THREE.BufferAttribute(full, 1));
-    if (texs[i]) texs[i].flipY = false;
-    const mat = new THREE.MeshBasicMaterial({ map: texs[i], toneMapped: false });
-    const m = new THREE.Mesh(geo, mat); m.frustumCulled = false;
-    scanGroup.add(m); scan.groups.push({ geo, full, pos: geo.attributes.position.array });
-  });
-}
-// cut a doorway (box in wall coords) out of the scan surface
-function cutScan(box) {
-  for (const g of scan.groups) {
-    const P = g.pos, I = g.full, keep = [];
-    for (let i = 0; i < I.length; i += 3) {
-      let cx = 0, cy = 0, cz = 0;
-      for (let k = 0; k < 3; k++) { const v = I[i + k] * 3; cx += P[v]; cy += P[v + 1]; cz += P[v + 2]; }
-      cx /= 3; cy /= 3; cz /= 3;
-      let inside = false;
-      if (box) {
-        const s = (cx - box.o[0]) * box.u[0] + (cy - box.o[1]) * box.u[1], d = (cx - box.o[0]) * box.n[0] + (cy - box.o[1]) * box.n[1];
-        inside = s > box.s0 && s < box.s1 && Math.abs(d) < box.d && cz < box.z1 && cz > -0.05;
-      }
-      if (!inside) keep.push(I[i], I[i + 1], I[i + 2]);
-    }
-    g.geo.setIndex(new THREE.BufferAttribute(new Uint32Array(keep), 1));
-  }
-}
-
-// ------------------------------------------------------------------------------------------ static site (ground etc.)
-const G0 = dna.levels.ground_z, EAVE = ex.roof.eave_z, K = Math.tan(ex.roof.pitch_deg * Math.PI / 180), OV = ex.roof.overhang_m;
-const T_EXT = dna.walls.exterior_thickness;
-const env = dna.envelope_outer;                  // outer face of the existing exterior walls (CCW)
-const ex0 = Math.min(...env.map(p => p[0])), ex1 = Math.max(...env.map(p => p[0])), ey0 = Math.min(...env.map(p => p[1])), ey1 = Math.max(...env.map(p => p[1]));
-const site = new THREE.Group(); scene.add(site);
-function flat(mat, x0, y0, x1, y1, z, rep) {
-  const b = new B.Batch(); const P = (x, y) => new THREE.Vector3(x, y, z);
-  b.quad(P(x0, y0), P(x1, y0), P(x1, y1), P(x0, y1), [[x0 / rep, y0 / rep], [x1 / rep, y0 / rep], [x1 / rep, y1 / rep], [x0 / rep, y1 / rep]], new THREE.Vector3(0, 0, 1));
-  const m = b.mesh(mat, false); site.add(m); return m;
-}
-const LOT = { x0: -19.5, x1: ex1 + 4.2, y0: ey0 - 6.5, y1: 17.5 };
-// front porch: recessed south edge between two projecting wings (static: derived from the envelope)
-let porch = null;
-env.forEach((a, i) => {
-  const b = env[(i + 1) % env.length]; const L = Math.hypot(b[0] - a[0], b[1] - a[1]);
-  if (Math.abs(a[1] - b[1]) < 0.01 && b[0] > a[0] && L > 2.5) {        // south-facing edge (CCW: west->east on the south side)
-    const prev = env[(i - 1 + env.length) % env.length], next = env[(i + 2) % env.length];
-    if (prev[1] < a[1] - 0.5 && next[1] < b[1] - 0.5 && (!porch || a[1] > porch.y)) porch = { x0: a[0], x1: b[0], y: a[1], depth: a[1] - Math.max(prev[1], next[1]) };
-  }
-});
-// fences (side + back lot lines), vertical boards
-function fence(x0, y0, x1, y1) {
-  const L = Math.hypot(x1 - x0, y1 - y0), u = [(x1 - x0) / L, (y1 - y0) / L];
-  const Gf = new THREE.Group(); Gf.position.set(x0, y0, 0); Gf.rotation.z = Math.atan2(u[1], u[0]); site.add(Gf);
-  const b = new B.Batch(); B.wallFace(b, [0, 0], [1, 0], [0, -1], 0.01, 0, L, G0, G0 + 1.8, [], 1.6, 1.8);
-  B.wallFace(b, [0, 0], [1, 0], [0, 1], 0.01, 0, L, G0, G0 + 1.8, [], 1.6, 1.8);
-  Gf.add(b.mesh(M.fence));
-  for (let s = 0; s <= L; s += 2.4) B.box(Gf, M.bark, s - 0.05, s + 0.05, -0.06, 0.06, G0, G0 + 1.85);
-}
-let seed = 12345; const rnd = () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296);
-// neighbourhood (street, sidewalks, parkway palms, planting, neighbours): ported from d_roofshell/site.js, see site.js
-const tileMap = (() => {           // clay barrel tile (Spanish revival neighbours), tile = 1.7 m x 0.85 m like the shingles
-  const c = document.createElement('canvas'); c.width = 256; c.height = 128; const g = c.getContext('2d');
-  g.fillStyle = '#a86a4a'; g.fillRect(0, 0, 256, 128);
-  for (let r = 0; r < 4; r++) for (let k = 0; k < 10; k++) { const x = k * 25.6 + (r % 2) * 12.8, y = r * 32;
-    const gr = g.createLinearGradient(x, 0, x + 25.6, 0); gr.addColorStop(0, '#7d4630'); gr.addColorStop(0.5, '#d9997a'); gr.addColorStop(1, '#7d4630');
-    g.fillStyle = gr; g.fillRect(x, y, 25.6, 30); g.fillStyle = 'rgba(40,20,10,0.5)'; g.fillRect(x, y + 28, 25.6, 4); }
-  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; return t; })();
-const stucco = stuccoTex([238, 236, 232]).map;
-const sctx = { G0, env, ex0, ex1, ey0, ey1, LOT, M, B, porchX: porch ? (porch.x0 + porch.x1) / 2 : -5, porchY: porch ? porch.y - porch.depth - 0.65 : ey0 - 0.6,
-  roofMat: M.roof, soffitMat: M.soffit, sidingMap: M.siding.map, stuccoMap: stucco, tileMap,
-  buildFences: fs => fs.forEach(f => fence(...f)) };
-site.add(buildSite(sctx));
-const shrubSpots = [];
-for (let x = ex0 + 0.6; x < ex1 - 0.5; x += 1.3 + rnd()) shrubSpots.push([x, ey0 - 0.75]);
-function shrub(x, y, r) { return sctx.shrub(x, y, r, sctx.leaves[Math.floor(rnd() * sctx.leaves.length)], Math.floor(rnd() * 999)); }
+// ------------------------------------------------------------------------------------------ parametric addition (from a_parametric)
+// Each case is re-expressed as {a, d, n, width, depth, offset}: a = start of the connect wall, d = along the house wall,
+// n = away from the house. Sliders, the ground handle and the drag-the-room tool all edit these and regenerate.
+const PARAM = {};
+function initParams(id) { PARAM[id] = kit.paramsFromAddition(tc.additions.find(a => a.id === id)); }
+function applyParams(id) { kit.additionFromParams(PARAM[id], additions[id]); }
 
 // ------------------------------------------------------------------------------------------ per-case build
-let caseGroup = null, roofGroup = null, spec = null, off_c = 0;
+let built = null, caseGroup = null, roofGroup = null, spec = null;
 function buildCase() {
-  if (caseGroup) { scene.remove(caseGroup); caseGroup.traverse(o => o.geometry && o.geometry.dispose()); }
-  caseGroup = new THREE.Group(); scene.add(caseGroup);
-  roofGroup = new THREE.Group(); caseGroup.add(roofGroup);
-  const add = additions[CASE];
-  spec = makeSpec(dna, add);
-  const R = spec.rect, t = spec.tExt, h = t / 2;
-  const sh = spec.sides[spec.shared];
-  const shL = Math.hypot(sh.p1[0] - sh.p0[0], sh.p1[1] - sh.p0[1]); const shU = [(sh.p1[0] - sh.p0[0]) / shL, (sh.p1[1] - sh.p0[1]) / shL];
-  // addition outer extents (for removing the house shell where the new room attaches)
-  const AO = { x0: R.x0 - h, x1: R.x1 + h, y0: R.y0 - h, y1: R.y1 + h };
-
-  // ---------------- existing house shell
-  const sid = new B.Batch(), fnd = new B.Batch();
-  const ZS = -0.14;                               // siding starts a little below the finished floor
-  env.forEach((a, i) => {
-    const b = env[(i + 1) % env.length]; const L = Math.hypot(b[0] - a[0], b[1] - a[1]); const u = [(b[0] - a[0]) / L, (b[1] - a[1]) / L];
-    const n = [u[1], -u[0]];                        // outward for CCW
-    // span covered by the addition (collinear with its shared face)
-    let cut = null;
-    const fl = { S: ['y', R.y0 + h], N: ['y', R.y1 - h], E: ['x', R.x1 - h], W: ['x', R.x0 + h] }[spec.shared];
-    const onLine = fl[0] === 'y' ? (Math.abs(u[1]) < 0.01 && Math.abs(a[1] - fl[1]) < 0.05) : (Math.abs(u[0]) < 0.01 && Math.abs(a[0] - fl[1]) < 0.05);
-    if (onLine) {
-      const proj = (x, y) => (x - a[0]) * u[0] + (y - a[1]) * u[1];
-      const c = [proj(AO.x0, AO.y0), proj(AO.x1, AO.y1), proj(AO.x0, AO.y1), proj(AO.x1, AO.y0)];
-      const c0 = Math.max(0, Math.min(...c)), c1 = Math.min(L, Math.max(...c));
-      if (c1 > c0) cut = { s0: c0, s1: c1, z0: -5, z1: 50 };
-    }
-    const holes = cut ? [cut] : [];
-    B.wallFace(sid, a, u, n, 0, 0, L, ZS, EAVE, holes, 1, 0.96);
-    B.wallFace(fnd, a, u, n, -0.015, 0, L, G0 - 0.05, ZS, holes, 1.5, 1.5);
-    // crawlspace vents every ~2.4 m, corner boards
-    const Gw = new THREE.Group(); Gw.position.set(a[0], a[1], 0); Gw.rotation.z = Math.atan2(u[1], u[0]); caseGroup.add(Gw);
-    for (let s = 1.2; s < L - 0.6; s += 2.4) if (!cut || s < cut.s0 - 0.4 || s > cut.s1 + 0.4) B.box(Gw, M.vent, s - 0.2, s + 0.2, -0.005, -0.0, G0 + 0.12, G0 + 0.3, false);
-    if (!cut || cut.s0 > 0.05) B.box(Gw, M.trim, 0, 0.1, -0.025, 0, ZS, EAVE - 0.02);
-    if (!cut || cut.s1 < L - 0.05) B.box(Gw, M.trim, L - 0.1, L, -0.025, 0, ZS, EAVE - 0.02);
-    B.box(Gw, M.trim, cut ? 0 : 0, L, -0.02, 0, ZS - 0.02, ZS + 0.06, false);  // water table board
-    // measured windows on this edge
-    dna.windows.forEach(w => {
-      const c = [w.centre[0] + w.outward[0] * w.wall_thickness / 2, w.centre[1] + w.outward[1] * w.wall_thickness / 2];
-      const s = (c[0] - a[0]) * u[0] + (c[1] - a[1]) * u[1], d = (c[0] - a[0]) * n[0] + (c[1] - a[1]) * n[1];
-      if (Math.abs(d) > 0.12 || s < 0 || s > L) return;
-      if (w.outward[0] * n[0] + w.outward[1] * n[1] < 0.9) return;
-      if (cut && s > cut.s0 - 0.3 && s < cut.s1 + 0.3) return;    // window now faces into the addition
-      const unit = Math.min(Math.max(w.width - 0.2, 0.55), 2.2), nUnits = unit > 1.25 ? 2 : 1;
-      const sill = Math.max(w.sill, 0.6), head = Math.min(Math.max(w.head, 1.9), 2.1);
-      for (let k = 0; k < nUnits; k++) {
-        const uw = unit / nUnits, s0 = s - unit / 2 + k * uw;
-        const Gx = new THREE.Group(); Gx.position.set(a[0] + n[0] * -t / 2, a[1] + n[1] * -t / 2, 0); Gx.rotation.z = Math.atan2(u[1], u[0]); caseGroup.add(Gx);
-        B.craftsmanWindow(Gx, { ...M, glass: M.glassHouse }, s0 + 0.01, s0 + uw - 0.01, sill, head, t, { ns: -1, casing: 0.1, lites: 3 });
-      }
-    });
-  });
-  caseGroup.add(sid.mesh(M.siding), fnd.mesh(M.found));
-
-  if (porch) {
-    const P = porch, zt = -0.05;
-    B.box(caseGroup, M.concrete, P.x0, P.x1, P.y - P.depth - 0.05, P.y, G0, zt);
-    for (let k = 1; k <= 2; k++) B.box(caseGroup, M.concrete, (P.x0 + P.x1) / 2 - 1.1, (P.x0 + P.x1) / 2 + 1.1, P.y - P.depth - 0.05 - k * 0.3, P.y - P.depth - 0.05 - (k - 1) * 0.3, G0, zt - k * (zt - G0) / 3);
-    // pergola (white rafters seen in the drone photo)
-    for (const x of [P.x0 + 0.15, P.x1 - 0.15]) B.box(caseGroup, M.trim, x - 0.09, x + 0.09, P.y - P.depth + 0.05, P.y - P.depth + 0.23, zt, 2.55);
-    B.box(caseGroup, M.trim, P.x0, P.x1, P.y - P.depth + 0.07, P.y - P.depth + 0.21, 2.45, 2.7);
-    for (let x = P.x0 + 0.1; x <= P.x1 - 0.05; x += 0.45) B.box(caseGroup, M.trim, x - 0.03, x + 0.03, P.y - P.depth - 0.25, P.y, 2.7, 2.86);
-    // porch wall windows: the scan elevation shows a mulled pair either side of the door, but the detector rejects this
-    // wall (furniture under the sills) -> filled with the house's window style, centred between door and corners
-    for (const sx of [-1, 1]) {
-      const cx = (P.x0 + P.x1) / 2 + sx * ((P.x1 - P.x0) / 4 + 0.3), uw = 0.62;
-      const Gx = new THREE.Group(); Gx.position.set(P.x0, P.y + t / 2, 0); caseGroup.add(Gx);
-      for (const k of [-1, 0]) B.craftsmanWindow(Gx, { ...M, glass: M.glassHouse }, cx - P.x0 + k * uw + 0.01, cx - P.x0 + (k + 1) * uw - 0.01, dna.window_stats.sill, 2.05, t, { ns: -1, casing: 0.1, lites: 3 });
-    }
-    // front door (glazed, centred on the porch wall: scan elevation of the dining-room south wall)
-    const xc = (P.x0 + P.x1) / 2, y = P.y;
-    B.box(caseGroup, M.trim, xc - 0.62, xc + 0.62, y - 0.03, y + 0.001, 0, 2.2);
-    B.box(caseGroup, M.frontDoor, xc - 0.48, xc + 0.48, y - 0.04, y - 0.02, 0.01, 2.06);
-    B.box(caseGroup, M.glassHouse, xc - 0.36, xc + 0.36, y - 0.045, y - 0.035, 0.95, 1.9);
-  }
-  // chimney at the measured fireplace
-  const fc = ex.fireplace_chimney;
-  const houseRects = ex.roof.rects.map(r => ({ x0: r[0] - OV, y0: r[1] - OV, x1: r[2] + OV, y1: r[3] + OV }));
-  if (fc) {
-    const o = fc.outward, c = [fc.centre[0] + o[0] * 0.3, fc.centre[1] + o[1] * 0.3];
-    const top = B.roofHeightAt(houseRects, EAVE, K, fc.centre[0] - o[0] * 0.5, fc.centre[1] - o[1] * 0.5) + 0.9;
-    const wx = Math.abs(o[0]) > 0.5 ? 0.3 : 0.55, wy = Math.abs(o[0]) > 0.5 ? 0.55 : 0.3;
-    B.box(caseGroup, M.chimney, c[0] - wx, c[0] + wx, c[1] - wy, c[1] + wy, G0, top);
-    B.box(caseGroup, M.chimney, c[0] - wx - 0.04, c[0] + wx + 0.04, c[1] - wy - 0.04, c[1] + wy + 0.04, top - 0.12, top);
-    const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.25, 16), M.vent); cap.rotation.x = Math.PI / 2; cap.position.set(c[0], c[1], top + 0.12); caseGroup.add(cap);
-  }
-  seed = 777; shrubSpots.forEach(([x, y]) => { if (!porch || x < porch.x0 - 0.3 || x > porch.x1 + 0.3) caseGroup.add(shrub(x, y, 0.45 + rnd() * 0.25)); });
-
-  // ---------------- roof: existing hip solids + addition hip solid
-  const allRects = [...houseRects, spec.roof.rect];
-  const rb = new B.Batch(), sb = new B.Batch();
-  allRects.forEach(r => B.hipRoof(rb, sb, r, EAVE, K));
-  roofGroup.add(rb.mesh(M.roof), sb.mesh(M.soffit, false));
-  B.fasciaAndGutter(roofGroup, M, allRects, EAVE, ex.roof.fascia_depth_m);
-  roofDetails(roofGroup, houseRects, allRects);
-
-  // ---------------- the addition
-  const A = new THREE.Group(); caseGroup.add(A);
-  const paint = new THREE.MeshStandardMaterial({ color: spec.paint, roughness: 0.92, shadowSide: THREE.DoubleSide });
-  const trimIn = new THREE.MeshStandardMaterial({ color: spec.trim, roughness: 0.5 });
-  const ceilM = new THREE.MeshStandardMaterial({ color: spec.ceilingColour, roughness: 0.95, shadowSide: THREE.DoubleSide });
-  const floorTex = tl.load(spec.floor.tex); floorTex.colorSpace = THREE.SRGBColorSpace; floorTex.wrapS = floorTex.wrapT = THREE.RepeatWrapping; floorTex.anisotropy = 8;
-  const floorM = new THREE.MeshStandardMaterial({ map: floorTex, roughness: 0.42, envMapIntensity: 0.35 });
-  const Min = { ...M, trimIn, glass: M.glass };
-  const inner = { x0: R.x0 + h, x1: R.x1 - h, y0: R.y0 + h, y1: R.y1 - h };
-  // the shared wall face sits on the house's outer face: centreline +- h
-  const winBySide = k => spec.windows.filter(w => w.side === k);
-  const outB = new B.Batch(), inB = new B.Batch(), fdB = new B.Batch();
-  for (const k of ['S', 'E', 'N', 'W']) {
-    const s = spec.sides[k]; const L = Math.hypot(s.p1[0] - s.p0[0], s.p1[1] - s.p0[1]); const u = [(s.p1[0] - s.p0[0]) / L, (s.p1[1] - s.p0[1]) / L];
-    const n = s.out;
-    const holes = winBySide(k).map(w => ({ s0: w.s0, s1: w.s1, z0: w.sill, z1: w.head }));
-    if (k === spec.shared) {
-      const d = spec.door;
-      B.wallFace(inB, s.p0, u, [-n[0], -n[1]], h, h, L - h, 0, spec.ceiling, [{ s0: d.s0, s1: d.s1, z0: -1, z1: d.head }], 1, 1);
-      continue;
-    }
-    // exterior face (siding) runs from corner to corner of the outer outline; inner face (paint) between inner corners
-    const sideIsHouseAdjacent = (kk) => kk === spec.shared;
-    const prevK = { S: 'W', E: 'S', N: 'E', W: 'N' }[k], nextK = { S: 'E', E: 'N', N: 'W', W: 'S' }[k];
-    const sa = sideIsHouseAdjacent(prevK) ? h : -h, sbb = sideIsHouseAdjacent(nextK) ? L - h : L + h;
-    B.wallFace(outB, s.p0, u, n, h, sa, sbb, ZS, EAVE, holes, 1, 0.96);
-    B.wallFace(fdB, s.p0, u, n, h - 0.015, sa, sbb, G0 - 0.05, ZS, [], 1.5, 1.5);
-    B.wallFace(inB, s.p0, u, [-n[0], -n[1]], h, h, L - h, 0, spec.ceiling, holes, 1, 1);
-    const Gw = new THREE.Group(); Gw.position.set(s.p0[0], s.p0[1], 0); Gw.rotation.z = Math.atan2(u[1], u[0]); A.add(Gw);
-    // local +y = left of u = inward (rect sides are CCW) -> outward = -y -> ns = -1
-    winBySide(k).forEach(w => B.craftsmanWindow(Gw, Min, w.s0, w.s1, w.sill, w.head, t, { ns: -1, hole: true, interior: true, casing: 0.1, lites: 3 }));
-    // corner boards, water table, vents
-    if (!sideIsHouseAdjacent(nextK)) B.box(Gw, M.trim, L + h - 0.1, L + h + 0.025, -h - 0.025, -h, ZS, EAVE - 0.02);
-    if (!sideIsHouseAdjacent(prevK)) B.box(Gw, M.trim, -h - 0.025, -h + 0.1, -h - 0.025, -h, ZS, EAVE - 0.02);
-    B.box(Gw, M.trim, sa, sbb, -h - 0.02, -h, ZS - 0.02, ZS + 0.06, false);
-    for (let x = 1.0; x < L - 0.6; x += 2.4) B.box(Gw, M.vent, x - 0.2, x + 0.2, -h - 0.016, -h - 0.01, G0 + 0.12, G0 + 0.3, false);
-    // baseboard + crown on the inside
-    B.box(Gw, trimIn, h, L - h, h, h + 0.018, 0, spec.baseboard, false);
-  }
-  A.add(outB.mesh(M.siding), fdB.mesh(M.found));
-  const inMesh = inB.mesh(paint); A.add(inMesh);
-  // shared wall: baseboards either side of the door, door jambs, casings, leaf
-  {
-    const s = sh, L = shL, u = shU, d = spec.door, n = s.out;
-    const Gw = new THREE.Group(); Gw.position.set(s.p0[0], s.p0[1], 0); Gw.rotation.z = Math.atan2(u[1], u[0]); A.add(Gw);
-    // local +y = inward into the addition (left of CCW edge); the house is at -y
-    B.box(Gw, trimIn, h, d.s0 - d.casing, h, h + 0.018, 0, spec.baseboard, false);
-    B.box(Gw, trimIn, d.s1 + d.casing, L - h, h, h + 0.018, 0, spec.baseboard, false);
-    const cw = d.casing, jy0 = -h - 0.12, jy1 = h;      // jamb lining runs from the new face into the old wall
-    B.box(Gw, trimIn, d.s0 - 0.02, d.s0, jy0, jy1, 0, d.head); B.box(Gw, trimIn, d.s1, d.s1 + 0.02, jy0, jy1, 0, d.head);
-    B.box(Gw, trimIn, d.s0 - 0.02, d.s1 + 0.02, jy0, jy1, d.head, d.head + 0.02);
-    for (const [y0, y1] of [[h, h + 0.022], [-h - 0.14, -h - 0.118]]) {
-      B.box(Gw, trimIn, d.s0 - cw, d.s0, y0, y1, 0, d.head); B.box(Gw, trimIn, d.s1, d.s1 + cw, y0, y1, 0, d.head);
-      B.box(Gw, trimIn, d.s0 - cw - 0.012, d.s1 + cw + 0.012, y0, y1 + 0.004, d.head, d.head + cw + 0.03);
-      B.box(Gw, trimIn, d.s0 - cw - 0.03, d.s1 + cw + 0.03, y0, y1 + 0.03, d.head + cw + 0.03, d.head + cw + 0.055);
-    }
-    // threshold strip of floor through the wall
-    B.box(Gw, floorM, d.s0, d.s1, jy0, h, -0.02, 0.004, false);
-    // door leaf, hinged on the corner side, swung open ~95 deg into the new room against the side wall
-    const leaf = B.doorLeaf(trimIn, new THREE.MeshStandardMaterial({ color: spec.trim, roughness: 0.6 }), M.knob, d.width + 0.02, d.head - 0.01);
-    const hinge = d.hingeEnd === 0 ? d.s0 : d.s1;
-    leaf.position.set(hinge, h + 0.03, 0);
-    // open ~105 deg towards the near side wall (the leaf is wider than the corner return, so it stops short of it)
-    const maxOpen = Math.asin(Math.min(1, Math.max(0, (off_c = (d.hingeEnd === 0 ? d.s0 - h : shL - h - d.s1) - 0.04) / (d.width + 0.02))));
-    const ang = Math.PI / 2 + Math.min(0.26, maxOpen);
-    leaf.rotation.z = d.hingeEnd === 0 ? ang : -ang;
-    if (d.hingeEnd === 1) leaf.scale.x = -1;
-
-    Gw.add(leaf);
-    // scan cut: the old exterior wall between the bedroom and the new room
-    cutScan({ o: s.p0, u, n, s0: d.s0 - 0.01, s1: d.s1 + 0.01, d: 0.3, z1: d.head + 0.015 });
-  }
-  // floor + ceiling + crown
-  {
-    const fb = new B.Batch(), cb = new B.Batch(); const z = 0.003, S = spec.floor.size;
-    const P = (x, y, zz) => new THREE.Vector3(x, y, zz);
-    const uvF = (x, y) => spec.floor.axis === 'x' ? [y / S, x / S] : [x / S, y / S];
-    fb.quad(P(inner.x0, inner.y0, z), P(inner.x1, inner.y0, z), P(inner.x1, inner.y1, z), P(inner.x0, inner.y1, z),
-      [uvF(inner.x0, inner.y0), uvF(inner.x1, inner.y0), uvF(inner.x1, inner.y1), uvF(inner.x0, inner.y1)], new THREE.Vector3(0, 0, 1));
-    cb.quad(P(inner.x0, inner.y0, spec.ceiling), P(inner.x1, inner.y0, spec.ceiling), P(inner.x1, inner.y1, spec.ceiling), P(inner.x0, inner.y1, spec.ceiling),
-      [[0, 0], [1, 0], [1, 1], [0, 1]], new THREE.Vector3(0, 0, -1));
-    const fm = fb.mesh(floorM, false); A.add(fm);
-    const cm = cb.mesh(ceilM, false); cm.userData.ceiling = true; A.add(cm);
-    if (spec.crown > 0.03) {
-      const c = spec.crown, zc = spec.ceiling;
-      const cr = new THREE.Group(); cr.userData.ceiling = true; A.add(cr);
-      B.box(cr, trimIn, inner.x0, inner.x1, inner.y0, inner.y0 + 0.02, zc - c, zc, false); B.box(cr, trimIn, inner.x0, inner.x1, inner.y1 - 0.02, inner.y1, zc - c, zc, false);
-      B.box(cr, trimIn, inner.x0, inner.x0 + 0.02, inner.y0, inner.y1, zc - c, zc, false); B.box(cr, trimIn, inner.x1 - 0.02, inner.x1, inner.y0, inner.y1, zc - c, zc, false);
-      B.box(cr, trimIn, inner.x0, inner.x1, inner.y0, inner.y0 + c * 0.7, zc - 0.02, zc, false); B.box(cr, trimIn, inner.x0, inner.x1, inner.y1 - c * 0.7, inner.y1, zc - 0.02, zc, false);
-      B.box(cr, trimIn, inner.x0, inner.x0 + c * 0.7, inner.y0, inner.y1, zc - 0.02, zc, false); B.box(cr, trimIn, inner.x1 - c * 0.7, inner.x1, inner.y0, inner.y1, zc - 0.02, zc, false);
-    }
-    // ceiling fixture + its light (like the semi-flush fixtures in the scan)
-    const cx = (inner.x0 + inner.x1) / 2, cy = (inner.y0 + inner.y1) / 2;
-    const fx = new THREE.Mesh(new THREE.SphereGeometry(0.17, 24, 12, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2), new THREE.MeshStandardMaterial({ color: '#fffaf0', emissive: '#fff1d6', emissiveIntensity: 0.35 }));
-    fx.position.set(cx, cy, spec.ceiling - 0.01); fx.userData.ceiling = true; A.add(fx);
-    const pl = new THREE.PointLight('#ffe9c9', 6, 9, 1.4); pl.position.set(cx, cy, spec.ceiling - 0.35); A.add(pl);
-  }
-  // shrubs next to the addition's outer walls
-  for (const k of ['S', 'E', 'N', 'W']) if (k !== spec.shared) {
-    const s = spec.sides[k]; const L = Math.hypot(s.p1[0] - s.p0[0], s.p1[1] - s.p0[1]); const u = [(s.p1[0] - s.p0[0]) / L, (s.p1[1] - s.p0[1]) / L];
-    for (let x = 0.5; x < L - 0.3; x += 1.6) caseGroup.add(shrub(s.p0[0] + u[0] * x + s.out[0] * 0.65, s.p0[1] + u[1] * x + s.out[1] * 0.65, 0.42 + rnd() * 0.2));
-  }
-  // electrical + HVAC details copied from the scan's rooms: switch by the latch side, outlets, floor register
-  {
-    const d = spec.door, s = sh, u = shU;
-    const Gw = new THREE.Group(); Gw.position.set(s.p0[0], s.p0[1], 0); Gw.rotation.z = Math.atan2(u[1], u[0]); A.add(Gw);
-    const latch = d.hingeEnd === 0 ? d.s1 + d.casing + 0.12 : d.s0 - d.casing - 0.12;
-    B.box(Gw, M.plate, latch - 0.035, latch + 0.035, h, h + 0.008, 1.17, 1.29, false);
-    B.box(Gw, M.plate, (d.s1 + shL) / 2 + 0.6 - 0.035, (d.s1 + shL) / 2 + 0.6 + 0.035, h, h + 0.008, 0.3, 0.41, false);
-    for (const k of ['S', 'E', 'N', 'W']) if (k !== spec.shared) {
-      const q = spec.sides[k]; const L = Math.hypot(q.p1[0] - q.p0[0], q.p1[1] - q.p0[1]); const uu = [(q.p1[0] - q.p0[0]) / L, (q.p1[1] - q.p0[1]) / L];
-      const Gq = new THREE.Group(); Gq.position.set(q.p0[0], q.p0[1], 0); Gq.rotation.z = Math.atan2(uu[1], uu[0]); A.add(Gq);
-      const ws = winBySide(k); let x = L * 0.3; if (ws.some(w => x > w.s0 - 0.2 && x < w.s1 + 0.2)) x = L * 0.5;
-      if (!ws.some(w => x > w.s0 - 0.2 && x < w.s1 + 0.2)) B.box(Gq, M.plate, x - 0.035, x + 0.035, h, h + 0.008, 0.3, 0.41, false);
-      if (ws.length && k === { S: 'N', N: 'S', E: 'W', W: 'E' }[spec.shared]) { const w = ws[0], c = (w.s0 + w.s1) / 2; B.box(Gq, M.grille, c - 0.15, c + 0.15, h + 0.08, h + 0.2, 0.0, 0.006, false); }
-    }
-  }
-  // downspouts at the addition's free corners, mulch beds, back patio
-  {
-    const free = { S: [[R.x0, R.y0], [R.x1, R.y0]], N: [[R.x0, R.y1], [R.x1, R.y1]], E: [[R.x1, R.y0], [R.x1, R.y1]], W: [[R.x0, R.y0], [R.x0, R.y1]] }[{ S: 'N', N: 'S', E: 'W', W: 'E' }[spec.shared]];
-    free.forEach(([x, y]) => { const sx = Math.sign(x - (R.x0 + R.x1) / 2), sy = Math.sign(y - (R.y0 + R.y1) / 2);
-      const px = x + sx * (h + 0.05), py = y + sy * (h + 0.05);
-      B.box(caseGroup, M.gutter, px - 0.035, px + 0.035, py - 0.035, py + 0.035, G0 + 0.05, EAVE - 0.05);
-      B.box(caseGroup, M.concrete, px - 0.15 + sx * 0.25, px + 0.15 + sx * 0.25, py - 0.15 + sy * 0.25, py + 0.15 + sy * 0.25, G0, G0 + 0.03, false); });
-    caseGroup.add(B.flatPoly(B.offsetPoly(env, 0.85), G0 + 0.006, M.mulch, 1.5));
-    caseGroup.add(B.flatPoly(B.offsetPoly([[AO.x0, AO.y0], [AO.x1, AO.y0], [AO.x1, AO.y1], [AO.x0, AO.y1]], 0.85), G0 + 0.007, M.mulch, 1.5));
-    const pat = { x0: ex1 - 4.0, x1: ex1, y0: ey1, y1: ey1 + 3.2 };
-    if (!(pat.x0 < AO.x1 + 0.3 && pat.x1 > AO.x0 - 0.3 && pat.y0 < AO.y1 && pat.y1 > AO.y0)) {
-      const pm = flat(M.pavers, pat.x0, pat.y0, pat.x1, pat.y1, G0 + 0.04, 0.6); caseGroup.add(pm);
-      B.box(caseGroup, M.concrete, pat.x0, pat.x1, pat.y0, pat.y1, G0, G0 + 0.035, false);
-    }
-  }
-  buildPlanOverlay();
+  if (built) built.dispose();
+  built = kit.build({ additions: [additions[CASE]], site: true });
+  scene.add(built.group);
+  caseGroup = built.group; roofGroup = built.roof; spec = built.specs[0];
   renderRules();
 }
 
-// ------------------------------------------------------------------------------------------ roof details from the drone photo
-// _0830 shows (1) a small Dutch gablet with white rake trim where the main ridge meets its west hip, (2) a rooftop AC
-// condenser on a stand on the south slope, (3) a few plumbing vents. Positions are read off the drone frame.
-function roofDetails(G, houseRects, allRects) {
-  const R = houseRects[0], W = R.x1 - R.x0, D = R.y1 - R.y0;
-  if (W > D) {
-    const yr = (R.y0 + R.y1) / 2, xa = R.x0 + D / 2, zt = EAVE + D / 2 * K, g0 = 0.85, xg = xa - g0, zb = zt - K * g0;
-    const rb = new B.Batch(), fb = new B.Batch(), V = (x, y, z) => new THREE.Vector3(x, y, z);
-    const uv = p => [p.x / 1.7, (p.y + p.z) / 0.85];
-    for (const sgn of [1, -1]) {           // side-slope extensions above the hip face
-      const A = V(xg - 0.12, yr, zt), Bp = V(xa, yr, zt), C = V(xg - 0.12, yr + sgn * (g0 + 0.12), zt - K * (g0 + 0.12));
-      if (sgn > 0) rb.tri(A, C, Bp, [uv(A), uv(C), uv(Bp)]); else rb.tri(A, Bp, C, [uv(A), uv(Bp), uv(C)]);
-    }
-    G.add(rb.mesh(M.roof));
-    // gable face (louvred vent in white trim) and the white rake boards that read as the "V" on the drone photo
-    const A = V(xg, yr, zt), P = V(xg, yr - g0, zb), Q = V(xg, yr + g0, zb);
-    fb.tri(A, P, Q, [[0.5, 1], [0, 0], [1, 0]]); G.add(fb.mesh(M.trim));
-    const vent = new B.Batch(); const h = (zt - zb) * 0.5;
-    vent.tri(V(xg - 0.01, yr, zb + h * 1.3), V(xg - 0.01, yr - h * 0.9, zb + 0.08), V(xg - 0.01, yr + h * 0.9, zb + 0.08), [[0.5, 1], [0, 0], [1, 0]]);
-    const vm = vent.mesh(M.vent); vm.geometry.computeVertexNormals(); G.add(vm);
-    for (const sgn of [1, -1]) {
-      const a = V(xg - 0.13, yr, zt + 0.03), b = V(xg - 0.13, yr + sgn * (g0 + 0.14), zt - K * (g0 + 0.14) + 0.03);
-      const len = a.distanceTo(b), m = new THREE.Mesh(new THREE.BoxGeometry(0.05, len, 0.16), M.fascia);
-      m.position.copy(a).add(b).multiplyScalar(0.5); m.position.z -= 0.06; m.rotation.x = -sgn * Math.atan(K); m.castShadow = true; G.add(m);
-    }
-  }
-  // AC condenser on a levelled stand
-  const ac = [-9.2, -2.3], hs = 0.5;
-  const hz = [[-hs, -hs], [hs, -hs], [hs, hs], [-hs, hs]].map(([dx, dy]) => B.roofHeightAt(allRects, EAVE, K, ac[0] + dx, ac[1] + dy));
-  const z0 = Math.min(...hz), z1 = Math.max(...hz) + 0.12;
-  B.box(G, M.bark, ac[0] - hs, ac[0] + hs, ac[1] - hs, ac[1] + hs, z1 - 0.06, z1);
-  for (const [dx, dy] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) B.box(G, M.bark, ac[0] + dx * (hs - 0.05) - 0.04, ac[0] + dx * (hs - 0.05) + 0.04, ac[1] + dy * (hs - 0.05) - 0.04, ac[1] + dy * (hs - 0.05) + 0.04, z0 - 0.1, z1);
-  B.box(G, M.acBody, ac[0] - 0.42, ac[0] + 0.42, ac[1] - 0.42, ac[1] + 0.42, z1, z1 + 0.72);
-  const fan = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 0.02, 24), M.grille); fan.rotation.x = Math.PI / 2; fan.position.set(ac[0], ac[1], z1 + 0.73); G.add(fan);
-  for (let k = -3; k <= 3; k++) B.box(G, M.grille, ac[0] + 0.425, ac[0] + 0.43, ac[1] - 0.38, ac[1] + 0.38, z1 + 0.1 + (k + 3) * 0.08, z1 + 0.13 + (k + 3) * 0.08, false);
-  // plumbing vents / roof jacks
-  for (const [x, y] of [[-6.2, -1.6], [-3.4, -2.6], [-10.6, 2.4], [0.6, -1.2], [-1.2, 2.9]]) {
-    const z = B.roofHeightAt(allRects, EAVE, K, x, y); if (!isFinite(z)) continue;
-    const v = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.5, 10), M.vent); v.rotation.x = Math.PI / 2; v.position.set(x, y, z + 0.1); v.castShadow = true; G.add(v);
-  }
-}
-
-// ------------------------------------------------------------------------------------------ plan overlay (section cut)
-function buildPlanOverlay() {
-  const P = new THREE.Group(); P.name = 'plan'; P.visible = curView === 'plan'; caseGroup.add(P);
-  const z = 2.1;
-  const strip = (a, u, s0, s1, t, mat, dz = 0) => {
-    if (s1 - s0 < 0.01) return; const Gw = new THREE.Group(); Gw.position.set(a[0], a[1], 0); Gw.rotation.z = Math.atan2(u[1], u[0]); P.add(Gw);
-    B.box(Gw, mat, s0, s1, -t / 2, t / 2, z + dz, z + dz + 0.02, false);
-  };
-  const sh = spec.sides[spec.shared]; const shL = Math.hypot(sh.p1[0] - sh.p0[0], sh.p1[1] - sh.p0[1]); const shU = [(sh.p1[0] - sh.p0[0]) / shL, (sh.p1[1] - sh.p0[1]) / shL];
-  plan.walls.forEach((w, i) => {
-    const a = w.a, b = w.b, L = Math.hypot(b[0] - a[0], b[1] - a[1]); if (L < 0.05) return; const u = [(b[0] - a[0]) / L, (b[1] - a[1]) / L];
-    const pr = p => (p[0] - a[0]) * u[0] + (p[1] - a[1]) * u[1];
-    const gaps = dna.doors.filter(d => d.wall === i).map(d => [pr(d.centre) - d.width / 2, pr(d.centre) + d.width / 2]);
-    // new doorway in the shared wall
-    const dp = [sh.p0[0] + shU[0] * (spec.door.s0 + spec.door.s1) / 2, sh.p0[1] + shU[1] * (spec.door.s0 + spec.door.s1) / 2];
-    const off = Math.abs((dp[0] - a[0]) * -u[1] + (dp[1] - a[1]) * u[0]);
-    if (off < 0.1 && pr(dp) > 0 && pr(dp) < L) gaps.push([pr(dp) - spec.door.width / 2, pr(dp) + spec.door.width / 2]);
-    gaps.sort((p, q) => p[0] - q[0]);
-    let s = 0; gaps.forEach(([g0, g1]) => { strip(a, u, s, g0, w.thickness, M.pochet); s = Math.max(s, g1); }); strip(a, u, s, L, w.thickness, M.pochet);
-    dna.windows.filter(x => x.wall === i).forEach(x => strip(a, u, pr(x.centre) - x.width / 2, pr(x.centre) + x.width / 2, w.thickness * 0.45, M.planWin, 0.005));
-  });
-  for (const k of ['S', 'E', 'N', 'W']) if (k !== spec.shared) {
-    const q = spec.sides[k]; const L = Math.hypot(q.p1[0] - q.p0[0], q.p1[1] - q.p0[1]); const u = [(q.p1[0] - q.p0[0]) / L, (q.p1[1] - q.p0[1]) / L];
-    strip(q.p0, u, -spec.tExt / 2, L + spec.tExt / 2, spec.tExt, M.planNew);
-    spec.windows.filter(w => w.side === k).forEach(w => strip(q.p0, u, w.s0, w.s1, spec.tExt * 0.45, M.planWin, 0.005));
-  }
-}
 
 // ------------------------------------------------------------------------------------------ cameras / views
 const camP = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, 0.05, 900); camP.up.set(0, 0, 1);
@@ -517,9 +94,17 @@ function setView(v) {
   caseGroup && caseGroup.traverse(o => { if (o.userData.ceiling) o.visible = true; });
   const pg0 = caseGroup && caseGroup.getObjectByName('plan'); if (pg0) pg0.visible = false;
   if (V.type === 'orthographic_topdown') {
-    const w = V.width_m / 2, hh = w * innerHeight / innerWidth;
+    // Plan override (c_housedna only, test_case.json untouched): its plan camera (centre [-5,1.5], 26 m wide -> 14.6 m
+    // tall at 16:9) cuts off the north end of the main addition (y up to 8.9 + wall). Fit the house + addition instead:
+    // keep the test case's x centre and minimum width, re-centre y on the union's extents and widen until it fits.
+    const pa = additions[CASE].polygon, m = 0.9;
+    const fx0 = Math.min(ex0, ...pa.map(q => q[0])) - m, fx1 = Math.max(ex1, ...pa.map(q => q[0])) + m;
+    const fy0 = Math.min(ey0, ...pa.map(q => q[1])) - m, fy1 = Math.max(ey1, ...pa.map(q => q[1])) + m;
+    const asp = innerWidth / innerHeight;
+    const cx = Math.min(Math.max(V.center[0], fx1 - V.width_m / 2), fx0 + V.width_m / 2), cy = (fy0 + fy1) / 2;
+    const w = Math.max(V.width_m, (fy1 - fy0) * asp, 2 * Math.max(fx1 - cx, cx - fx0)) / 2, hh = w / asp;
     Object.assign(camO, { left: -w, right: w, top: hh, bottom: -hh }); camO.updateProjectionMatrix();
-    camO.position.set(V.center[0], V.center[1], 60); camO.lookAt(V.center[0], V.center[1], 0);
+    camO.position.set(cx, cy, 60); camO.lookAt(cx, cy, 0);
     cam = camO;
     renderer.clippingPlanes = [clipPlan];             // floor-plan cut: roofs and ceilings removed
     roofGroup.visible = false;
@@ -562,23 +147,79 @@ function renderRules() {
 if (!VIEW) {
   document.getElementById('ui').style.display = '';
   const cs = document.getElementById('cases'), vs = document.getElementById('views');
-  for (const id of Object.keys(additions)) { const b = document.createElement('button'); b.textContent = 'case: ' + id; b.onclick = () => { CASE = id; buildCase(); refreshVis(); mark(); }; b.dataset.c = id; cs.appendChild(b); }
+  for (const id of Object.keys(additions)) { const b = document.createElement('button'); b.textContent = 'case: ' + id; b.onclick = () => { CASE = id; applyParams(CASE); buildCase(); refreshVis(); window._placeHandle(); window._sync(); if (curView === 'plan') setView('plan'); mark(); }; b.dataset.c = id; cs.appendChild(b); }
   for (const v of Object.keys(tc.views).filter(k => k !== 'size')) { const b = document.createElement('button'); b.textContent = v; b.dataset.v = v; b.onclick = () => { setView(v); mark(); }; vs.appendChild(b); }
   const mark = () => { cs.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.c === CASE)); vs.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === curView)); };
   window._mark = mark;
   document.getElementById('tRoof').onclick = e => { e.target.classList.toggle('on'); roofGroup.visible = e.target.classList.contains('on'); };
   const tEdit = document.getElementById('tEdit'); tEdit.onclick = () => tEdit.classList.toggle('on');
+  // live regeneration, coalesced to one rebuild per frame
+  let pending = false;
+  const regen = () => { if (pending) return; pending = true; requestAnimationFrame(() => { pending = false; applyParams(CASE); buildCase(); refreshVis(); placeHandle(); syncSliders(); if (curView === 'plan') setView('plan'); }); };
+  const syncSliders = () => { const P0 = PARAM[CASE];
+    document.getElementById('offset').min = P0.lo.toFixed(2); document.getElementById('offset').max = (P0.hi - 2).toFixed(2);
+    for (const k of ['depth', 'width', 'offset']) { document.getElementById(k).value = P0[k]; document.getElementById(k + 'v').textContent = (+P0[k]).toFixed(2) + ' m'; } };
+  window._sync = syncSliders;
+  for (const k of ['depth', 'width', 'offset']) document.getElementById(k).addEventListener('input', e => { PARAM[CASE][k] = +e.target.value; regen(); });
+  // orange ground handle beyond the far wall (a_parametric): drag it to slide the room along the house
+  const handle = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.08, 28), new THREE.MeshBasicMaterial({ color: 0xff8a1e }));
+  handle.rotation.x = Math.PI / 2; scene.add(handle);
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(0.42, 0.04, 8, 32), new THREE.MeshBasicMaterial({ color: 0xffffff })); ring.rotation.x = Math.PI / 2; handle.add(ring);
+  function placeHandle() { const P0 = PARAM[CASE], q = additions[CASE].polygon; const c = q.reduce((o, p) => [o[0] + p[0] / 4, o[1] + p[1] / 4], [0, 0]);
+    handle.position.set(c[0] + P0.n[0] * (P0.depth / 2 + 1.7), c[1] + P0.n[1] * (P0.depth / 2 + 1.7), G0 + 0.06); }
+  window._placeHandle = placeHandle;
   // orbit + drag-the-addition
   let drag = null; const el = renderer.domElement; el.oncontextmenu = e => e.preventDefault();
-  const ray = new THREE.Raycaster(); const ground = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
-  const hitGround = e => { ray.setFromCamera(new THREE.Vector2(e.clientX / innerWidth * 2 - 1, -e.clientY / innerHeight * 2 + 1), cam); const p = new THREE.Vector3(); return ray.ray.intersectPlane(ground, p) ? p : null; };
+  const ray = new THREE.Raycaster(); const ground = new THREE.Plane(new THREE.Vector3(0, 0, 1), -G0);
+  const ndc = e => new THREE.Vector2(e.clientX / innerWidth * 2 - 1, -e.clientY / innerHeight * 2 + 1);
+  const hitGround = e => { ray.setFromCamera(ndc(e), cam); const p = new THREE.Vector3(); return ray.ray.intersectPlane(ground, p) ? p : null; };
+  const hitHandle = e => { ray.setFromCamera(ndc(e), cam); return ray.intersectObject(handle, true).length > 0; };
   el.onpointerdown = e => {
-    if (tEdit.classList.contains('on') && e.button === 0) { const p = hitGround(e); if (p) { drag = { mode: 'edit', p0: p, poly: structuredClone(additions[CASE].polygon), cw: structuredClone(additions[CASE].connect_wall), shift: e.shiftKey }; return; } }
+    if (e.button === 0 && hitHandle(e)) { drag = { mode: 'handle' }; return; }
+    if (tEdit.classList.contains('on') && e.button === 0) { const p = hitGround(e); if (p) { const P0 = PARAM[CASE]; drag = { mode: 'edit', p0: p, off0: P0.offset, dep0: P0.depth, shift: e.shiftKey }; return; } }
     drag = { mode: e.button === 2 ? 'pan' : 'orbit', x: e.clientX, y: e.clientY };
     if (cam === camP && curView) { curView = null; mark(); }
   };
   addEventListener('pointerup', () => { drag = null; });
   addEventListener('pointermove', e => {
     if (!drag) return;
-    if (drag.mode === 'edit') {
-      const p = 
+    if (drag.mode === 'handle' || drag.mode === 'edit') {
+      const p = hitGround(e); if (!p) return; const P0 = PARAM[CASE];
+      if (drag.mode === 'handle') P0.offset = Math.round(((p.x - P0.a[0]) * P0.d[0] + (p.y - P0.a[1]) * P0.d[1] - P0.width / 2) / 0.05) * 0.05;
+      else { const dv = [p.x - drag.p0.x, p.y - drag.p0.y];
+        if (!drag.shift) P0.offset = drag.off0 + Math.round((dv[0] * P0.d[0] + dv[1] * P0.d[1]) / 0.05) * 0.05;     // slide along the house wall
+        else P0.depth = drag.dep0 + Math.round((dv[0] * P0.n[0] + dv[1] * P0.n[1]) / 0.05) * 0.05; }             // depth away from the house
+      regen(); return;
+    }
+    const dx = e.clientX - drag.x, dy = e.clientY - drag.y; drag.x = e.clientX; drag.y = e.clientY;
+    if (drag.mode === 'orbit') { ctl.az -= dx * 0.005; ctl.el = Math.max(-0.2, Math.min(1.5, ctl.el + dy * 0.005)); }
+    else { const s = ctl.r * 0.0015; const ax = new THREE.Vector3(-Math.sin(ctl.az), Math.cos(ctl.az), 0);
+      ctl.target.addScaledVector(ax, -dx * s); ctl.target.z += dy * s; }
+    if (cam === camP) applyOrbit(); else { camO.position.x -= dx * 0.03; camO.position.y += dy * 0.03; }
+  });
+  el.onwheel = e => { if (cam === camP) { ctl.r *= Math.exp(e.deltaY * 0.001); applyOrbit(); } else { camO.zoom *= Math.exp(-e.deltaY * 0.001); camO.updateProjectionMatrix(); } };
+  addEventListener('resize', () => { renderer.setSize(innerWidth, innerHeight); camP.aspect = innerWidth / innerHeight; camP.updateProjectionMatrix(); if (curView === 'plan') setView('plan'); });
+}
+
+for (const id of Object.keys(additions)) initParams(id);
+buildCase();
+setView(curView);
+if (!VIEW) { window._mark(); window._placeHandle(); window._sync(); }
+let frames = 0;
+renderer.setAnimationLoop(() => {
+  renderer.render(scene, cam);
+  if (VIEW && ++frames === 3) {
+    document.title = 'READY';
+    if (qs.get('pick')) {      // debug: what is under pixel x,y
+      const out = []; const rc = new THREE.Raycaster();
+      for (const q of qs.get('pick').split(';')) { const [px, py] = q.split(',').map(Number);
+        rc.setFromCamera(new THREE.Vector2(px / innerWidth * 2 - 1, -py / innerHeight * 2 + 1), cam);
+        const hit = rc.intersectObjects(scene.children, true).filter(h => h.object !== sky)[0];
+        out.push(hit ? { q, p: hit.point.toArray().map(v => +v.toFixed(2)), mat: hit.object.material.color && hit.object.material.color.getHexString(), geo: hit.object.geometry.type } : q + ':none'); }
+      document.body.dataset.pick = JSON.stringify(out).replace(/"/g, "'");
+    }
+  }
+});
+</script>
+</body>
+</html>

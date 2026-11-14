@@ -71,3 +71,40 @@ To re-run: `python analyse_house.py`, then serve the repo root and open `index.h
 connect_to_room_label})` is pure JS and can sit behind a "draw a new room" tool in `editor3d.html`. The viewer
 already regenerates live while you drag or resize the rectangle. `build.js` builds the geometry. In studio,
 the same group can be added to the overlay scene with the Showcase transform (x, z, −y).
+
+## Merged from A/B/D (consolidation pass)
+- **Roof tone (from A).** The drone-crop shingle texture is kept but tinted `#b8ab9f` with low env reflection, so the
+  roof renders as neutral charcoal (aerial roof pixels ≈ 78/81/86, the same as A's) instead of light blue-grey.
+  New roof details read off drone `_0830`: a Dutch **gablet** with white rake trim at the west end of the main ridge
+  (the white "V"), a **rooftop AC condenser** on a levelling curb on the south slope, and five plumbing vents
+  (`roofDetails()` in `index.html`).
+- **Controls (from A).** Live Depth / Width / Offset sliders and an orange ground handle beyond the far wall. They are
+  merged with C's "drag addition" tool (slide along the wall; shift-drag for depth). All three edit one parametric
+  model `{a, d, n, width, depth, offset}` (`initParams`/`applyParams`). The offset is clamped to the house edge the
+  room is attached to, the neighbour room is re-detected, and the rule engine re-runs, so the room type, finishes and
+  rules panel update live. With `?view` there is no UI, no handle, and the test-case polygon is used verbatim; the title
+  still goes to READY.
+- **Interior (from B).** The inside of each new window is B's rectified photo of the real bedroom window (Matterport
+  photo 020: casing, stool, iron rod, curtains, daylight). It is re-keyed (`assets/interior/window_int_c.png`) so B's
+  beige wall becomes transparent and C's measured paint shows around the curtains. The photo is scaled to C's measured
+  window unit (0.75 × 1.25 m) and cropped at the corners and between neighbouring windows. The exterior keeps C's
+  craftsman window geometry. Baseboards and crown use B's scan strips, neutralised to greyscale and tinted with the
+  measured trim colour (`baseboard_c.jpg`, `crown_c.jpg`). The paint, oak floor and rules panel are unchanged. B's
+  `door_casing.png` is not used, because C has a real cut doorway with 3D casings through which you see the scan.
+- **Site (from D).** `site.js` ports D's painted-ground canvas with its grass/concrete detail shader, curbs, gutter pans,
+  parkway strips, both sidewalks, the neighbour massing grid with instanced canopy trees, textured hedges and shrubs,
+  and the cypress (D's texture helpers are copied to `site_tex.js`). It is re-dressed for this LA block:
+  - **Layout.** The street is south and the driveway east, as in the test case and the drone photo.
+  - **Planting.** New procedural fan palms (pleated fans, dead-frond skirt) along the parkway, in the yards and as an
+    instanced palm skyline. Lush front beds, big-leaf tropicals and a cypress screen by the driveway.
+  - **Neighbours.** Muted stucco and siding neighbours with dark shingle or clay-tile hip roofs. D's white stucco and
+    white roofs are not used.
+- **Plan view override.** The test case's plan camera (centre [-5, 1.5], 26 m wide, so 14.6 m tall at 16:9) cuts off the
+  north end of the main addition (y to 8.9 m plus the wall). `test_case.json` is NOT edited. Instead `setView('plan')` in
+  this viewer keeps the x centre and the minimum 26 m width, re-centres y on the house plus addition extents
+  (+0.9 m margin), and widens the frame until the height fits. For `main` that gives centre y ≈ 2.0 and a width of
+  about 28 m.
+- **Doorway fragments (item 6).** Checked with `?pick`. The only artefact still visible through the new doorway is the
+  smeared north end panel of the bedroom's bookcase. It is real furniture, not a loose fragment, so it was left in place.
+
+Screenshots from before this pass are in `shots_before/`.
