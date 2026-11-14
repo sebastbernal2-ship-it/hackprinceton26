@@ -127,27 +127,31 @@ Writes `mesh_diff/objects.json` (source `mesh_segment`), `objects_tiles/seg_###.
 nightstands. Still merged: pieces welded in the scan with no neck, seat or bed top to split on (e.g. a bed-end bench).
 Tuning: `--neck`, `--voxel`, `--grow`, `--no-tables`, `--no-fill`.
 
-## Cleanup + predicting the unseen parts (`Code/refine_objects.py`, step `refine`)
-Runs after `tileobjects` (and again automatically whenever the cuts are newer). numpy + scipy + scikit-image
-(`pip install scikit-image`, for marching cubes), ~50 s for 120 objects.
-1. cleanup: degenerate/duplicate triangles, stretched "curtain" slivers; boundary loops < 40 cm are closed (textured when
-   the loop lies in one texture); light Taubin smoothing
-2. shape prior by `kind` as an occupancy volume: solids (sofa, bed, cabinet, wardrobe, dresser, nightstand, shelf …) =
-   footprint filled up to the scanned top, with free space the cameras saw under overhangs carved away; legged pieces
-   (tables, chairs, stools) = top/seat slab + legs (missing legs mirrored from scanned ones, or a pedestal / corner legs
-   guessed); scanner webbing between legs removed
-3. the volume is blurred and meshed (marching cubes) -> a smooth closed surface with rounded edges; only its unseen parts
-   are kept: a patch is dropped when real surface (this piece's or a neighbour's) lies along its normal within 10 cm (no
-   doubled surfaces) or when ≥ 2 of the 39 scan positions had a clear view of the spot and saw nothing (plan walls and the
-   pieces block views; the tripod blind cone below each camera never counts)
-4. `--mirror` (off by default) also copies the mirrored real surface into gaps; scans are only roughly symmetric, so the
-   copy lands a few cm beside the real surface and reads as a duplicate
+## Closed, tear-free furniture models (`Code/complete_objects.py`, step `refine`)
+The scan cuts are open shells (backs against walls, undersides and hidden sides were never scanned). Four approaches were
+built in `Code/variants/` and scored with `Code/eval_models.py`: 25 views per piece from above the floor; a ray whose first
+surface is a back face = tear / open side, two front faces in a row = doubled surface. Test set (12 pieces), open rays:
 
-Writes `objects_refined/*.glb` (predicted surfaces in a primitive whose material is `predicted`, vertex-coloured from the
-nearby texture) and `scene_refined.json` (per object: what was cleaned/mirrored/predicted, scanned share, confidence).
-Studio: "Complete unseen parts" switches between refined and raw cuts, "Highlight predicted" tints predicted surfaces
-orange; the selection panel shows "N% scanned, M% predicted". Tuning: `--gap`, `--min-views`, `--nadir`, `--sym`,
-`--smooth`, `--vox`, `--sigma`, `--reach`, `--no-predict`, `--mirror`.
+| model | open % | see-through % | doubled % | open edges |
+|---|---|---|---|---|
+| raw cuts | 31.1 | 26.4 | 5.9 | 28.6 m |
+| old refine_objects.py patches | 25.0 | 19.4 | 6.6 | 65.4 m |
+| **A** rebuild (`variant_a_poisson.py`) | **8.6** | 5.1 | 3.6 | 0 |
+| **D** templates (`variant_d_template.py`) | 8.7 | 5.6 | 3.3 | 0 |
+| C fusion + panorama colour (`variant_c_fusion.py`) | 10.8 | 5.6 | 5.4 | 0 |
+| **shipped: A + D for tables** | **8.7** | 5.2 | 3.6 | 0 |
+
+(A perfect closed box already scores ~3–10 % from silhouette pixels.) B (stitch-and-fair repair of the scan) was stopped.
+- **A** rebuilds each piece as ONE closed surface: signed distance near the scan, solid pieces filled to the floor, space
+  the 39 scan cameras saw empty carved away (per-camera depth maps), marching cubes, colour from the scan texture. Closest
+  to the real piece (upright piano with a closed flat back, mantel, sofas, beds).
+- **D** fits per-kind templates; used only where its legged template fits (tables, coffee/side tables, stools, the pouf):
+  it is the only method that rebuilds legs the segmentation cut off.
+- `complete_objects.py` builds A and D (when older than `scene_tiles.json`), picks per piece, decimates to
+  `--max-tris` (40k, fast-simplification) and writes `objects_complete/*.glb` + `scene_refined.json` (studio: "Closed
+  models" toggles them vs the raw cuts). Needs `pip install scikit-image fast-simplification`. ~6–8 min for 120 pieces.
+- Known weak spots: chairs stay blobby (~16–18 % open), clutter on top of a piece is fused into it, unseen backs are flat
+  with soft vertex colour. `refine_objects.py` (separate predicted patches) is superseded: its patches left cracks.
 
 ## MatterPak (best source of furniture models)
 `run_all.py` step `matterpak` (`Code/matterpak.py`, based on Model_download_test.py) downloads the MatterPak if it is unlocked

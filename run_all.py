@@ -48,12 +48,9 @@ SETTINGS = {
     "tileobj_tol": 0.06,             # m: closer than this to the empty house = house, not furniture
     "tileobj_tol_coarse": 0.10,      # ...used instead when the empty house is only the coarse 50k defurnished OBJ
 
-    # 4c. clean the furniture models + predict the parts the scan never saw (refine_objects.py)
+    # 4c. closed, tear-free furniture models (complete_objects.py: rebuild A + legged templates D, decimated)
     "refine": True,
-    "refine_predict": True,          # False = cleanup only (no symmetry / shape-prior completion)
-    "refine_smooth": 2,              # Taubin smoothing iterations (0 = off)
-    "refine_gap": 0.045,             # m: a spot farther than this from the scan counts as missing
-    "refine_min_views": 2,           # scan positions that must see a spot empty to veto a prediction there
+    "refine_max_tris": 40000,        # triangles per piece after decimation (studio load time)
 
     # 5. texture bake (texture_bake.py)
     "bake_edge": 0.09,               # house mesh triangle size (m): smaller = sharper colours, bigger file
@@ -203,11 +200,8 @@ def step_refine():
         print("   refine disabled in SETTINGS"); return
     if not (MD / "scene_tiles.json").exists():
         print("   no scene_tiles.json - skipping"); return
-    cmd = [PY, script("refine_objects.py"), "--model", SID, "--smooth", S["refine_smooth"], "--gap", S["refine_gap"],
-           "--min-views", S["refine_min_views"]]
-    if not S["refine_predict"]:
-        cmd.append("--no-predict")
-    run(cmd, fatal=False)
+    # builds variant A (closed rebuild) + D (templates), picks per piece, writes scene_refined.json for the studio
+    run([PY, script("complete_objects.py"), "--model", SID, "--max-tris", S["refine_max_tris"]], fatal=False)
 
 
 def refine_done():
