@@ -1,4 +1,2 @@
 # uploaded images and generative-3D weights/outputs stay local
 .uploads/
-gen3d/.cache/
-gen3d/out/
