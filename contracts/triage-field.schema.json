@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "TriageField",
+  "description": "One reconciled field of a CoStar property record. Screening triage, not an engineering assessment. confidence is a rule-based label, not a probability. Unknown is null, never 0.",
+  "type": "object",
+  "required": ["field", "status", "valueStatus", "scope", "confidence", "evidenceRefs", "rule", "reviewScore"],
+  "properties": {
+    "field": {"enum": ["clear_height_ft", "floors", "area_sqft", "restroom_count", "kitchen_present", "use_hint", "parking_spaces", "rooftop_units", "loading_docks"]},
+    "status": {"enum": ["filled", "confirmed", "conflicting", "blank-unfillable", "unverified"]},
+    "costarValue": {"type": ["number", "string", "boolean", "null"]},
+    "scanValue": {"type": ["number", "string", "boolean", "null"]},
+    "aerialValue": {"type": ["number", "string", "boolean", "null"]},
+    "value": {"type": ["number", "string", "boolean", "null"], "description": "Resolved value; null when conflicting or unknown."},
+    "valueStatus": {"enum": ["observed", "derived", "estimated", "unknown"]},
+    "unit": {"type": "string"},
+    "scope": {"enum": ["suite", "building", "room", "indeterminate", "unknown"]},
+    "confidence": {"enum": ["high", "medium", "low", "none"]},
+    "evidenceRefs": {"type": "array", "items": {"type": "object", "required": ["source", "ref"],
+      "properties": {"source": {"enum": ["costar", "matterport", "vexcel"]}, "ref": {"type": "string"}, "detail": {"type": "string"}}}},
+    "rule": {"type": "string"},
+    "note": {"type": "string"},
+    "reviewScore": {"type": "number"}
+  }
+}
