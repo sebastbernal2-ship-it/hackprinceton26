@@ -178,7 +178,7 @@ def main(data_root=None):
         w.writeheader(); w.writerows(monthly)
     cards = []
     for s in sites:
-        cards += observations(s, fetch(s))
+        cards += [{**c, "propertyId": str(s.get("property_id", ""))} for c in observations(s, fetch(s))]
     (outdir / "observations.json").write_text(json.dumps(cards))
     la = [c for c in cards if c["status"] != "unknown"]
     print(f"sites={len(sites)} cards={len(cards)} derived={len(la)} unknown={len(cards) - len(la)} "
