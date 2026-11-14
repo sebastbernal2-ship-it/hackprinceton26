@@ -17,7 +17,7 @@ Adapter: [`data/factors/signage_visibility/adapter.py`](../../../../data/factors
 `fetch(site)` reads the site's `propertyRetail.frontage` from the local CoStar kit and checks (timeouts, retries, 7-day cache in gitignored `data/derived/signage_visibility/cache`) that the cited ordinance sources are reachable. `observations(site, raw)` returns factor-card dicts: recorded frontage (observed), LA combined sign-area ceiling and projecting-sign eligibility (derived from frontage), and unknowns for Houston sign allowance, overlays, and sightline.
 
 ### Coverage over the 65 candidate sites (41 Houston, 24 LA), run 2026-11-14
-- Frontage length usable for rules: 42 of 65 (Houston 27, LA 15). 55 sites have frontage records; 13 of those or empty ones stay unknown because the segments are ambiguous (several unflagged segments, none primary) or have no length. 10 sites have no frontage entries.
+- Frontage length usable for rules: 42 of 65 (Houston 27, LA 15). 55 sites have frontage records; 13 of those stay unknown (several segments with no single primary, or no length). 10 sites have no frontage entries.
 - LA derived rows: 15 sites got a combined sign-area ceiling and projecting eligibility; 9 unknown.
 - Houston: 0 derived rows by design. Houston limits depend on right-of-way category and wall area, which are not in the data.
 - Overlay and sightline: unknown for all 65 (no lookup performed, no imagery).
