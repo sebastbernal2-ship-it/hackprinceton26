@@ -82,8 +82,20 @@ export async function listAssets(opts: { profileId?: string | null; category?: A
 }
 export const patchAsset = (id: string, patch: Partial<Asset>) => call<Asset>(`/${encodeURIComponent(id)}`, json("PATCH", patch));
 export const createAsset = (asset: Partial<Asset>) => call<Asset>("", json("POST", asset));
-export const makeVariant = (id: string, kind: Exclude<VariantKind, "base">, params: Record<string, number>) =>
-  call<Asset>(`/${encodeURIComponent(id)}/variants`, json("POST", { kind, params }));
+/** The service already saves the variant (as a draft) in `profileId`'s profile; confirm it with patchAsset, never createAsset. */
+export const makeVariant = (id: string, kind: Exclude<VariantKind, "base">, params: Record<string, number>, profileId?: string | null) =>
+  call<Asset>(`/${encodeURIComponent(id)}/variants`, json("POST", { kind, params, ...(profileId ? { profileId } : {}) }));
+
+/** Closed rectangle ring in the asset-local frame (last point equals the first, as the service requires). */
+export const rectFootprint = (w: number, d: number): [number, number][] => [[0, 0], [w, 0], [w, d], [0, d], [0, 0]];
+
+/** Change one dimension; rectangular footprints (open or closed four-corner rings) are regenerated closed from w and d. */
+export function editDims(asset: Asset, axis: keyof Dims, value: number): Asset {
+  const dims = { ...asset.dims, [axis]: value };
+  const n = asset.footprint.length;
+  const rectangular = n === 4 || n === 5;
+  return { ...asset, dims, footprint: rectangular ? rectFootprint(dims.w, dims.d) : asset.footprint };
+}
 
 export function ingestImages(files: File[], opts: { profileId?: string | null; referenceScale?: string }): Promise<IngestResponse> {
   const form = new FormData();
