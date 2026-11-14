@@ -33,7 +33,7 @@ export default function DashboardShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="relative min-h-dvh flex-1 font-sans">
-      <div className="fixed left-4 top-4 z-30 flex items-center gap-2">
+      <div className="fixed left-3 top-4 z-30 flex items-center gap-2">
         <button
           type="button"
           onClick={() => setOpen((current) => !current)}
@@ -115,7 +115,7 @@ export default function DashboardShell({ children }: { children: ReactNode }) {
       </aside>
 
       <div className={`transition-[padding] ${SLIDE} ${open ? "md:pl-64" : ""}`}>
-        {fullBleed ? children : <main className="mx-auto w-full max-w-6xl px-6 pb-20 pt-24 md:px-10">{children}</main>}
+        {fullBleed ? children : <main className="mx-auto w-full max-w-[86rem] pb-16 pl-16 pr-6 pt-20 md:pl-24 md:pr-10">{children}</main>}
       </div>
     </div>
   );

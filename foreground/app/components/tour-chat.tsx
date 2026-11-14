@@ -216,7 +216,7 @@ export default function TourChat({ sdk, open, onOpenChange, pieces, onPiecesChan
             <button
               type="button"
               onClick={() => inputRef.current?.focus()}
-              className="shrink-0 rounded-full bg-foreground px-3.5 py-2 text-sm text-background"
+              className="shrink-0 rounded-full bg-[#d5d0c6] px-3.5 py-2 text-sm text-foreground"
             >
               Edit
             </button>
@@ -235,16 +235,6 @@ export default function TourChat({ sdk, open, onOpenChange, pieces, onPiecesChan
             >
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
                 <path d="M8 13V3M4.5 6.5 8 3l3.5 3.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </button>
-            <button
-              type="button"
-              aria-label="Latest message"
-              onClick={() => listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" })}
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-foreground text-background"
-            >
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden>
-                <path d="M2.5 4.5 6 8l3.5-3.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </button>
           </div>

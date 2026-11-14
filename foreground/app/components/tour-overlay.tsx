@@ -9,16 +9,17 @@ type TourOverlayProps = {
   tourId: string;
   title: string;
   detail?: string;
+  openChat?: boolean;
   onClose: () => void;
 };
 
-export default function TourOverlay({ tourId, title, detail, onClose }: TourOverlayProps) {
+export default function TourOverlay({ tourId, title, detail, openChat = false, onClose }: TourOverlayProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const labelId = useId();
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [error, setError] = useState<string | null>(null);
   const [sdk, setSdk] = useState<MpSdk | null>(null);
-  const [chatOpen, setChatOpen] = useState(false);
+  const [chatOpen, setChatOpen] = useState(openChat);
   const [pieces, setPieces] = useState<StagedPiece[]>([]);
 
   useEffect(() => {

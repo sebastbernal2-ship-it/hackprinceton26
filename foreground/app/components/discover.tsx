@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { monthlyRent, type Match } from "../lib/matches";
 import { useMatches } from "../lib/discover";
+import PropertyInfo from "./property-info";
 import TourOverlay from "./tour-overlay";
 
 const number = new Intl.NumberFormat("en-US");
@@ -11,6 +12,7 @@ const number = new Intl.NumberFormat("en-US");
 export default function Discover() {
   const matches = useMatches();
   const [tour, setTour] = useState<Match | null>(null);
+  const [info, setInfo] = useState<Match | null>(null);
 
   return (
     <>
@@ -19,7 +21,7 @@ export default function Discover() {
         <p className="mt-2 text-foreground/50">{matches.length} spaces, best fit first.</p>
       </header>
 
-      <ul className="mt-12 grid grid-cols-1 gap-x-10 gap-y-16 md:grid-cols-2">
+      <ul className="mt-10 grid grid-cols-1 gap-x-10 gap-y-14 md:grid-cols-2">
         {matches.map((match, index) => (
           <li key={`${match.listingId}-${match.detail}`} className="animate-rise" style={{ animationDelay: `${100 + index * 90}ms` }}>
             <article className="group">
@@ -47,23 +49,40 @@ export default function Discover() {
                 </span>
               </div>
 
-              <p className="mt-4 max-w-md text-[0.95rem] leading-relaxed text-foreground/55">{match.blurb}</p>
+              <p className="mt-4 text-[0.95rem] leading-relaxed text-foreground/55">{match.blurb}</p>
               <p className="mt-2 text-sm text-foreground/40">
                 {match.address}
                 {match.detail ? ` · ${match.detail}` : ""} · {number.format(match.squareFeet)} sq ft
               </p>
 
-              <button
-                type="button"
-                onClick={() => setTour(match)}
-                className="mt-6 inline-flex items-center rounded-full bg-foreground px-5 py-2.5 text-sm font-medium text-background transition-[transform,opacity] duration-300 hover:opacity-90 active:scale-[0.98]"
-              >
-                Open Tour
-              </button>
+              <div className="mt-6 flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => setTour(match)}
+                  className="inline-flex items-center rounded-full bg-foreground px-5 py-2.5 text-sm font-medium text-background transition-[transform,opacity] duration-300 hover:opacity-90 active:scale-[0.98]"
+                >
+                  Open Tour
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setInfo(match)}
+                  className="inline-flex items-center rounded-full border border-foreground/15 px-5 py-2.5 text-sm font-medium transition-[transform,opacity] duration-300 hover:opacity-70 active:scale-[0.98]"
+                >
+                  View Info
+                </button>
+              </div>
             </article>
           </li>
         ))}
       </ul>
+
+      {info && !tour && (
+        <PropertyInfo
+          match={info}
+          onBack={() => setInfo(null)}
+          onTour={() => setTour(info)}
+        />
+      )}
 
       {tour && (
         <TourOverlay

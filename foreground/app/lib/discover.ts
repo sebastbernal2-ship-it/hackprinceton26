@@ -1,6 +1,6 @@
-import { useSyncExternalStore } from "react";
+import { useEffect, useState } from "react";
 import type { Exchange } from "./next-question";
-import { rankMatches, type Match } from "./matches";
+import { MATCH_POOL, rankMatches, type Match } from "./matches";
 
 const KEY = "foreground.matches";
 const CHANGE = "foreground-matches";
@@ -45,13 +45,32 @@ function subscribe(onChange: () => void) {
   };
 }
 
-/** Current Discover results for this tab. Falls back to an unbriefed ranking until intake seeds one. */
-export function useMatches(): Match[] {
-  const stored = useSyncExternalStore(subscribe, read, () => null);
+function loadMatches(): Match[] {
+  const stored = read();
   if (!stored) return rankMatches([]);
   try {
-    return JSON.parse(stored) as Match[];
+    const parsed = JSON.parse(stored) as Match[];
+    if (!Array.isArray(parsed)) return rankMatches([]);
+    return parsed.map((match) => {
+      if (match.facts) return match;
+      const source = MATCH_POOL.find((space) => space.address === match.address && space.detail === match.detail);
+      return source ? { ...match, facts: source.facts } : match;
+    });
   } catch {
     return rankMatches([]);
   }
+}
+
+/** Current Discover results for this tab. Falls back to an unbriefed ranking until intake seeds one. */
+export function useMatches(): Match[] {
+  // Session storage is read after mount so the first paint matches the server.
+  const [matches, setMatches] = useState<Match[]>(() => rankMatches([]));
+
+  useEffect(() => {
+    const apply = () => setMatches(loadMatches());
+    apply();
+    return subscribe(apply);
+  }, []);
+
+  return matches;
 }
