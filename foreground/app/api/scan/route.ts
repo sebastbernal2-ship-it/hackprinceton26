@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import { failureStatus } from "../../lib/server-env";
 import { loadScan } from "../../lib/matterport-scan";
+import { rateLimited } from "../../lib/guard";
 
 export async function GET(request: Request) {
+  if (rateLimited("scan", request, 40)) return NextResponse.json({ error: "Too many requests; try again in a minute." }, { status: 429 });
   const url = new URL(request.url);
   const modelId = url.searchParams.get("modelId") || "";
   if (!/^[A-Za-z0-9_-]{4,40}$/.test(modelId)) {

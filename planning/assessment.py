@@ -81,6 +81,7 @@ def cost_lines(city, state, equipment, price_overrides, repairs, path=None) -> l
     """financials.all_lines restricted to the chosen equipment, with user price overrides and a rescaled install line."""
     d, items, _ = build(equipment, price_overrides, repairs, path)
     eq_ids = {i for i in items if i in {e["id"] for e in d["equipment"]}}
+    qty = {e["id"]: q for e, q in _chosen(d, equipment)}
     ia_id = d["installAllowance"]["id"]
     out = []
     for ln in financials.all_lines(city, state, repairs, path):
@@ -95,6 +96,14 @@ def cost_lines(city, state, equipment, price_overrides, repairs, path=None) -> l
             ln = dict(ln, low=round(it.price_low * q, 2), expected=round((it.price_low + it.price_high) / 2 * q, 2),
                       high=round(it.price_high * q, 2), status="estimated", source="user://override",
                       rationale="User-supplied unit price override (assumption, not observed).")
+        elif eid in qty and (base == "equip" or base.startswith("util_")) and ln.get("quantity"):
+            # financials.all_lines uses defaultQuantity; rescale to the chosen quantity so display matches the simulation
+            f = qty[eid] / ln["quantity"]
+            if f != 1:
+                ln = dict(ln, quantity=qty[eid])
+                for k in ("low", "expected", "high"):
+                    if ln.get(k) is not None:
+                        ln[k] = round(ln[k] * f, 2)
         if iid == ia_id:
             if ia_id not in items:
                 continue
@@ -106,10 +115,11 @@ def cost_lines(city, state, equipment, price_overrides, repairs, path=None) -> l
 
 
 def buildout_bounds(path=None) -> tuple[float, float]:
-    """(low, high) of default equipment + install one-time cost, no repairs: the interval the budget filter tests.
+    """(low, high) of default equipment + install one-time cost with contingency, no repairs: the interval the budget filter tests.
     Excludes repairs and hidden defects, so 'high' is not a true upper bound."""
     t = financials.totals(cost_lines(None, None, None, None, None, path))["totals"]
-    return t["oneTime"]["low"], t["oneTime"]["high"]
+    # same uniform contingency the Monte Carlo applies, so a budget PASS here is not easier than the simulation
+    return t["oneTime"]["low"] * (1 + CONTINGENCY[0]), t["oneTime"]["high"] * (1 + CONTINGENCY[1])
 
 
 def _scenario(items, lines, budget, *, tasks, rent, rent_free, delay_cost, planned) -> Scenario:
