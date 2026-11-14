@@ -1,0 +1,102 @@
+"""Local OpenAI-compatible model hardening: thinking off, JSON repair, bounded retry, goal numbers, recording metadata."""
+import json
+import sys
+from pathlib import Path
+
+import httpx
+
+ROOT = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT))
+from agent import guard, runner  # noqa: E402
+from agent.fixture_env import ScriptedEnv  # noqa: E402
+from agent.providers import OpenAICompatProvider, repair_json  # noqa: E402
+from agent.scripted import ScriptedInspector, ScriptedPlanner  # noqa: E402
+
+TOOLS = [{"name": "shortlist", "description": "d", "input_schema": {"type": "object", "properties": {}}}]
+MSGS = [{"role": "user", "content": "GOAL"}]
+
+
+def provider(responses, bodies=None):
+    it = iter(responses)
+
+    def handler(req):
+        if bodies is not None:
+            bodies.append(json.loads(req.content))
+        return httpx.Response(200, json=next(it))
+    return OpenAICompatProvider("m", "http://x/v1", httpx.MockTransport(handler))
+
+
+def resp(msg, finish="stop", pt=5, ct=7):
+    return {"choices": [{"message": msg, "finish_reason": finish}], "usage": {"prompt_tokens": pt, "completion_tokens": ct}}
+
+
+def call(args, cid="c1"):
+    return {"id": cid, "type": "function", "function": {"name": "shortlist", "arguments": args}}
+
+
+def test_repair_json():
+    assert repair_json('{"a": 1,}') == {"a": 1}
+    assert repair_json('```json\n{"a": [1, 2,]}\n```') == {"a": [1, 2]}
+    assert repair_json('{"a": "x", "b": 2') == {"a": "x", "b": 2}
+    assert repair_json("{'a': 1}") == {"a": 1}
+    assert repair_json("not json") is None and repair_json("[1]") is None
+
+
+def test_thinking_disabled_by_default_and_flag_sent():
+    bodies = []
+    provider([resp({"content": "hi"})], bodies).step("s", MSGS, TOOLS)
+    assert bodies[0]["chat_template_kwargs"] == {"enable_thinking": False}
+
+
+def test_malformed_arguments_repaired_without_extra_call():
+    bodies = []
+    t = provider([resp({"content": "", "tool_calls": [call('{"goal": "g",}')]})], bodies).step("s", MSGS, TOOLS)
+    assert t.tool_calls[0]["args"] == {"goal": "g"} and len(bodies) == 1
+
+
+def test_unrepairable_arguments_retry_then_give_up_bounded():
+    bodies = []
+    bad = resp({"content": "", "tool_calls": [call("<<garbage")]})
+    t = provider([bad, bad, bad, bad], bodies).step("s", MSGS, TOOLS)
+    assert len(bodies) == 3  # 1 try + 2 retries, bounded
+    assert t.tool_calls == [] and "malformed" in t.text and t.input_tokens == 15 and t.output_tokens == 21
+
+
+def test_retry_succeeds_and_tokens_accumulate():
+    t = provider([resp({"content": "", "tool_calls": [call("<<garbage")]}),
+                  resp({"content": "", "tool_calls": [call('{"goal":"g"}')]})]).step("s", MSGS, TOOLS)
+    assert t.tool_calls[0]["args"] == {"goal": "g"} and t.input_tokens == 10
+
+
+def test_truncated_empty_reply_retries_with_more_tokens():
+    bodies = []
+    t = provider([resp({"content": "", "reasoning_content": "thinking..."}, finish="length"),
+                  resp({"content": "ok"})], bodies).step("s", MSGS, TOOLS, 100)
+    assert t.text == "ok" and bodies[1]["max_tokens"] == 200
+
+
+def test_inline_tool_call_tags_and_think_blocks():
+    txt = '<think>hm</think>sure <tool_call>{"name": "shortlist", "arguments": {"goal": "g"}}</tool_call>'
+    t = provider([resp({"content": txt})]).step("s", MSGS, TOOLS)
+    assert t.text == "sure" and t.tool_calls[0]["name"] == "shortlist" and t.tool_calls[0]["args"] == {"goal": "g"}
+
+
+def test_missing_tool_call_id_is_synthesised():
+    c = call("{}")
+    del c["id"]
+    t = provider([resp({"content": "", "tool_calls": [c]})]).step("s", MSGS, TOOLS)
+    assert t.tool_calls[0]["id"]
+
+
+def test_goal_numbers_are_allowed_in_claims_but_others_are_not():
+    res = {"r1": {"p": 0.18}}
+    g = "Italian in Houston, 40 seats, under 250k"
+    assert guard.check_claim({"text": "fits 40 seats and 250k", "cites": ["r1"]}, res, goal=g)[0]
+    assert not guard.check_claim({"text": "fits 40 seats and 300k", "cites": ["r1"]}, res, goal=g)[0]
+    assert not guard.check_claim({"text": "fits 40 seats", "cites": ["r1"]}, res)[0]
+
+
+def test_events_carry_model_and_recording_date(tmp_path):
+    r = runner.Run("g", ScriptedEnv(), ScriptedPlanner(), ScriptedInspector(), mode="SCRIPTED", derived_dir=tmp_path)
+    evs = r.run()
+    assert all("model" in e and len(e["date"]) == 10 for e in evs)

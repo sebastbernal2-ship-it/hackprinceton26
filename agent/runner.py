@@ -104,7 +104,8 @@ class Run:
 
     # events ---------------------------------------------------------------
     def emit(self, type_, **kw):
-        e = {"type": type_, "mode": self.mode, "provider": getattr(self.planner, "name", "?"), "runId": self.run_id,
+        e = {"type": type_, "mode": self.mode, "provider": getattr(self.planner, "name", "?"),
+             "model": getattr(self.planner, "model", None) or self.mode.lower(), "date": time.strftime("%Y-%m-%d", time.gmtime()), "runId": self.run_id,
              "t": round(time.time(), 3), **kw}
         self.trace.append(e)
         self.q.put(e)
@@ -205,7 +206,7 @@ class Run:
              "headline": str(raw.get("headline", "")), "topRisk": str(raw.get("topRisk", "")),
              "risks": [str(x) for x in raw.get("risks", [])][:5], "unknowns": [str(x) for x in raw.get("unknowns", [])][:5],
              "cites": [c for c in raw.get("cites", mine) if c in self.results] or mine}
-        ok, why = guard.check_claim({"text": v["headline"], "cites": v["cites"]}, self.results)
+        ok, why = guard.check_claim({"text": v["headline"], "cites": v["cites"]}, self.results, self.goal)
         v["verified"] = ok
         if not ok:
             v["headline"] = f"[claim removed: {why}]"
@@ -262,7 +263,7 @@ class Run:
     def save_brief(self, a) -> dict:
         ok, rejected = [], []
         for cl in a.get("claims", []) if isinstance(a.get("claims"), list) else []:
-            good, why = guard.check_claim(cl if isinstance(cl, dict) else {}, self.results)
+            good, why = guard.check_claim(cl if isinstance(cl, dict) else {}, self.results, self.goal)
             (ok if good else rejected).append({**(cl if isinstance(cl, dict) else {"text": str(cl)}), **({} if good else {"rejected": why})})
         unknowns = [{"listingId": lid, "unknowns": v["unknowns"], "cites": v["cites"]} for lid, v in self.verdicts.items() if v["unknowns"]]
         brief = {"runId": self.run_id, "mode": self.mode, "goal": self.goal, "label": LABEL,
