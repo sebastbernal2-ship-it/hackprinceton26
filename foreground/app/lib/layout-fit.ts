@@ -1,4 +1,4 @@
-import { CATALOG, type CatalogItem, money } from "./layout-catalog";
+import type { CatalogItem } from "./layout-catalog";
 
 export type RoomMeasure = {
   id: string;
@@ -51,7 +51,7 @@ export function pieceFits(room: RoomMeasure, item: CatalogItem, already: PlacedF
 }
 
 export function catalogPrompt(): string {
-  return CATALOG.map((item) => `${item.id}: ${item.label}, ${item.width} m by ${item.depth} m, ${money(item.price)}`).join("\n");
+  return "No fixed catalog here: sizes for named pieces are assumed nominal footprints, not measurements.";
 }
 
 export function labelsMatch(label: string, query: string) {
