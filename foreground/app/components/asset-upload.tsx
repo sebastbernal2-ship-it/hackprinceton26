@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { AssetApiError, CATEGORIES, createAsset, ingestImages, type Asset, type AssetCategory, type IngestResponse } from "../lib/assets";
+import { AssetApiError, CATEGORIES, createAsset, editDims, ingestImages, type Asset, type AssetCategory, type IngestResponse } from "../lib/assets";
 import { AssetFacts, DraftBadge, FootprintSvg } from "./asset-bits";
 
 type Props = { profileId: string | null; onClose: () => void; onConfirmed: (asset: Asset) => void };
@@ -85,11 +85,7 @@ export default function AssetUpload({ profileId, onClose, onConfirmed }: Props) 
                         {(["w", "d", "h"] as const).map((k) => (
                           <label key={k} className="text-xs">{k} (m){" "}
                             <input type="number" step={0.05} min={0.05} value={d.dims[k]} disabled={saved.includes(d.assetId)}
-                              onChange={(e) => edit(d.assetId, (a) => {
-                                const dims = { ...a.dims, [k]: Number(e.target.value) };
-                                const footprint = a.footprint.length === 4 ? ([[0, 0], [dims.w, 0], [dims.w, dims.d], [0, dims.d]] as [number, number][]) : a.footprint;
-                                return { ...a, dims, footprint };
-                              })}
+                              onChange={(e) => edit(d.assetId, (a) => editDims(a, k, Number(e.target.value)))}
                               className="w-20 rounded border border-foreground/20 bg-background px-2 py-1" />
                           </label>
                         ))}
