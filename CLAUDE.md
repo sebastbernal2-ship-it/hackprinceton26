@@ -16,3 +16,9 @@ Evidence-first site-selection tool for an independent food-business owner (worki
 
 ## Codex
 Codex CLI (`codex`, configured in `~/.codex`) is available as a delegate: use the `codex` skill / `tools/codex-delegate`. Claude is the lead: plans, owns commits/PRs/board posts, and verifies Codex output. The pi harness is a separate repo (`~/code/pi-harness`); this repo is only the project it runs on. Do not edit harness code from here.
+
+## Working with agents and browsers
+- Project agents live in `.claude/agents/` (`verifier`, `reviewer`); the reusable `slice-and-verify` workflow is in `.claude/workflows/`. Run project work from a session started in this repo so worktree creation and merges are not blocked by cross-repo rules.
+- Python runs through `uv run --no-project --with pytest ...` (no system pip).
+- UI QA: use `chrome-devtools-axi` (open, snapshot, screenshot, click, fill) against `npm run dev` rather than headless Chromium screenshots.
+- Handoffs: post concise progress with `tools/board post`; PRs should say `Closes #N` only for issues whose acceptance is actually met.
