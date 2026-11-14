@@ -1,0 +1,169 @@
+{
+  "id": "indian",
+  "name": "Indian restaurant (North/South mix)",
+  "equipment": [
+    {
+      "assetId": "tandoor_32",
+      "qty": {
+        "perSeats": 80,
+        "min": 1
+      },
+      "role": "breads/kebabs",
+      "specific": true
+    },
+    {
+      "assetId": "kadhai_range_2burner",
+      "qty": {
+        "perSeats": 40,
+        "min": 1
+      },
+      "role": "curries",
+      "specific": true
+    },
+    {
+      "assetId": "dosa_griddle_36",
+      "qty": {
+        "fixed": 1
+      },
+      "role": "dosa",
+      "specific": true
+    },
+    {
+      "assetId": "chutney_station_cold_48",
+      "qty": {
+        "fixed": 1
+      },
+      "role": "chutneys",
+      "specific": true
+    },
+    {
+      "assetId": "lassi_dispenser_counter",
+      "qty": {
+        "fixed": 1
+      },
+      "role": "drinks",
+      "specific": true
+    },
+    {
+      "assetId": "rice_cooker_warmer_cabinet",
+      "qty": {
+        "perSeats": 60,
+        "min": 1
+      },
+      "role": "rice",
+      "specific": false
+    },
+    {
+      "assetId": "steam_table_4well",
+      "qty": {
+        "fixed": 1
+      },
+      "role": "hot hold",
+      "specific": false
+    },
+    {
+      "assetId": "naan_warmer_cabinet",
+      "qty": {
+        "fixed": 1
+      },
+      "role": "bread hold",
+      "specific": true
+    }
+  ],
+  "adjacency": [
+    {
+      "a": "tandoor_32",
+      "b": "kadhai_range_2burner",
+      "maxGapM": 3.0,
+      "why": "tandoor and curry line pass together",
+      "status": "assumption",
+      "basis": "analyst workflow assumption (line flow), not a code requirement"
+    },
+    {
+      "a": "dosa_griddle_36",
+      "b": "chutney_station_cold_48",
+      "maxGapM": 2.0,
+      "why": "dosa served with chutneys",
+      "status": "assumption",
+      "basis": "analyst workflow assumption (line flow), not a code requirement"
+    },
+    {
+      "a": "tandoor_32",
+      "b": "naan_warmer_cabinet",
+      "maxGapM": 1.5,
+      "why": "bread hold next to tandoor",
+      "status": "assumption",
+      "basis": "analyst workflow assumption (line flow), not a code requirement"
+    }
+  ],
+  "loads": [
+    {
+      "kind": "ventilation",
+      "note": "Tandoor (clay, gas-fired ~55,000 BTU/h class per listing) radiates heavy heat and may need a heavy-duty hood or different hood class than a pizza deck: verify with inspector",
+      "status": "assumption",
+      "basis": "analyst assumption from typical equipment class; confirm with equipment spec sheet and a licensed MEP engineer"
+    },
+    {
+      "kind": "gas",
+      "note": "Tandoor + kadhai burners + dosa griddle: new/larger gas line likely: verify with inspector and gas utility",
+      "status": "assumption",
+      "basis": "analyst assumption from typical equipment class; confirm with equipment spec sheet and a licensed MEP engineer"
+    },
+    {
+      "kind": "water",
+      "note": "Rice/dal prep needs prep sink capacity (assumed)",
+      "status": "assumption",
+      "basis": "analyst assumption from typical equipment class; confirm with equipment spec sheet and a licensed MEP engineer"
+    },
+    {
+      "kind": "electrical",
+      "note": "Lassi dispenser and cold rail on standard circuits (assumed)",
+      "status": "assumption",
+      "basis": "analyst assumption from typical equipment class; confirm with equipment spec sheet and a licensed MEP engineer"
+    }
+  ],
+  "materials": {
+    "wall": {
+      "name": "saffron/turmeric paint",
+      "hex": "#D99A1E"
+    },
+    "floor": {
+      "name": "patterned encaustic-look tile",
+      "hex": "#7A3B2E"
+    },
+    "ceiling": {
+      "name": "deep maroon painted",
+      "hex": "#4E1F26"
+    },
+    "accent": {
+      "name": "teal accent",
+      "hex": "#1F6F6B"
+    }
+  },
+  "decor": [
+    "carved screens (jali)",
+    "brass lamps",
+    "textile wall hangings",
+    "open tandoor view"
+  ],
+  "signage": "Devanagari/English dual wordmark (assumption)",
+  "permits": [
+    {
+      "item": "Hood class and make-up air review for tandoor",
+      "status": "assumption",
+      "source": "none fetched: ask the local building/fire/health authority"
+    },
+    {
+      "item": "Gas line sizing/pressure test for added BTU load",
+      "status": "assumption",
+      "source": "none fetched: ask the local building/fire/health authority"
+    },
+    {
+      "item": "Health review: halal/vegetarian segregation not required by code but a common practice (assumption)",
+      "status": "assumption",
+      "source": "none fetched: ask the local building/fire/health authority"
+    }
+  ],
+  "seatsPerUnitNote": "qty.perSeats = one unit per N seats, ceil, at least min (default 1); a scaling ASSUMPTION, not a code figure",
+  "status": "draft concept profile: assumptions, not an engineering or code determination"
+}

@@ -1,0 +1,146 @@
+{
+  "id": "coffee_bakery",
+  "name": "Coffee shop and bakery",
+  "equipment": [
+    {
+      "assetId": "espresso_machine_2group",
+      "qty": {
+        "perSeats": 40,
+        "min": 1
+      },
+      "role": "espresso",
+      "specific": true
+    },
+    {
+      "assetId": "coffee_grinder_on_demand",
+      "qty": {
+        "perSeats": 40,
+        "min": 1
+      },
+      "role": "grinder",
+      "specific": true
+    },
+    {
+      "assetId": "drip_brewer_station",
+      "qty": {
+        "fixed": 1
+      },
+      "role": "batch brew",
+      "specific": true
+    },
+    {
+      "assetId": "bakery_display_case_48",
+      "qty": {
+        "fixed": 1
+      },
+      "role": "pastry case",
+      "specific": true
+    },
+    {
+      "assetId": "convection_oven_full",
+      "qty": {
+        "fixed": 1
+      },
+      "role": "bake",
+      "specific": true
+    },
+    {
+      "assetId": "bake_rack_speed_rack",
+      "qty": {
+        "fixed": 2
+      },
+      "role": "racks",
+      "specific": true
+    },
+    {
+      "assetId": "bakery_work_table_72",
+      "qty": {
+        "fixed": 1
+      },
+      "role": "bench",
+      "specific": true
+    }
+  ],
+  "adjacency": [
+    {
+      "a": "espresso_machine_2group",
+      "b": "coffee_grinder_on_demand",
+      "maxGapM": 0.5,
+      "why": "grinder feeds machine",
+      "status": "assumption",
+      "basis": "analyst workflow assumption (line flow), not a code requirement"
+    },
+    {
+      "a": "convection_oven_full",
+      "b": "bake_rack_speed_rack",
+      "maxGapM": 2.0,
+      "why": "racks load the oven",
+      "status": "assumption",
+      "basis": "analyst workflow assumption (line flow), not a code requirement"
+    }
+  ],
+  "loads": [
+    {
+      "kind": "ventilation",
+      "note": "Electric convection oven: Type II hood requirement for heat/steam depends on jurisdiction: verify with inspector",
+      "status": "assumption",
+      "basis": "analyst assumption from typical equipment class; confirm with equipment spec sheet and a licensed MEP engineer"
+    },
+    {
+      "kind": "gas",
+      "note": "None required if all-electric (assumption)",
+      "status": "assumption",
+      "basis": "analyst assumption from typical equipment class; confirm with equipment spec sheet and a licensed MEP engineer"
+    },
+    {
+      "kind": "water",
+      "note": "Espresso machine plumbed fill/drain (assumed)",
+      "status": "assumption",
+      "basis": "analyst assumption from typical equipment class; confirm with equipment spec sheet and a licensed MEP engineer"
+    },
+    {
+      "kind": "electrical",
+      "note": "Espresso 2-group and oven typically 208/240V (assumed): verify panel capacity",
+      "status": "assumption",
+      "basis": "analyst assumption from typical equipment class; confirm with equipment spec sheet and a licensed MEP engineer"
+    }
+  ],
+  "materials": {
+    "wall": {
+      "name": "matte cream/sage paint",
+      "hex": "#D8DCC4"
+    },
+    "floor": {
+      "name": "herringbone oak look",
+      "hex": "#B58E5E"
+    },
+    "ceiling": {
+      "name": "white painted",
+      "hex": "#F7F5EF"
+    },
+    "accent": {
+      "name": "matte black fixtures",
+      "hex": "#222222"
+    }
+  },
+  "decor": [
+    "pendant lights",
+    "plants",
+    "chalkboard menu"
+  ],
+  "signage": "Hanging wooden blade sign (assumption)",
+  "permits": [
+    {
+      "item": "Health review for pastry display and handwashing",
+      "status": "assumption",
+      "source": "none fetched: ask the local building/fire/health authority"
+    },
+    {
+      "item": "Electrical load review for espresso + oven",
+      "status": "assumption",
+      "source": "none fetched: ask the local building/fire/health authority"
+    }
+  ],
+  "seatsPerUnitNote": "qty.perSeats = one unit per N seats, ceil, at least min (default 1); a scaling ASSUMPTION, not a code figure",
+  "status": "draft concept profile: assumptions, not an engineering or code determination"
+}

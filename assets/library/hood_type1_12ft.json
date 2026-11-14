@@ -41,7 +41,10 @@
     "back": 0.0
   },
   "clearanceBasis": "ASSUMPTION (not a code determination): none (overhead; the cooking line below carries the aisle). Aisle widths commonly cited for commercial kitchens are ~0.9-1.1 m (36-42 in; 36 in / 0.915 m is the ADA minimum clear width), dining chair pull-out ~0.45 m; confirm with the local health/building authority.",
-  "model": null,
+  "model": {
+    "uri": "assets/library/models/hood_type1_12ft.glb",
+    "format": "glb"
+  },
   "imageRefs": [],
   "profileId": null,
   "tags": [
