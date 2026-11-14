@@ -41,7 +41,7 @@ def secret(name):
 
 
 S = requests.Session()
-S.auth = (secret("MATTERPORT_API_KEY"), secret("MATTERPORT_API_TOKEN"))
+# credentials are attached in main(), after argument parsing, so --help works without keys
 
 
 def gql(query, **v):
@@ -189,6 +189,7 @@ def main():
     ap.add_argument("--list", action="store_true")
     ap.add_argument("--max-tiles", type=int, default=0)
     a = ap.parse_args()
+    S.auth = (secret("MATTERPORT_API_KEY"), secret("MATTERPORT_API_TOKEN"))
     root = Path(f"assets_{a.model}")
     (root / "tiles").mkdir(parents=True, exist_ok=True)
     lines = []
