@@ -46,7 +46,7 @@ export const postExpansion = (listingId: number, plan: Plan, baseRoomIds: string
 
 const bundles = new Map<number, Promise<{ s: StructureResponse | null; c: ScenarioResponse | null }>>();
 /**
- * One structure fetch per listing, shared across remounts (React strict mode double-runs effects). Scenarios are only
+ * One structure fetch per listing, shared across remounts (React strict mode double-runs effects) and evicted if it failed. Scenarios are only
  * requested when the structure snapshot answered, so a missing snapshot (503/404) costs one request, not four.
  */
 export function loadStructure(id: number): Promise<{ s: StructureResponse | null; c: ScenarioResponse | null }> {
@@ -57,6 +57,9 @@ export function loadStructure(id: number): Promise<{ s: StructureResponse | null
       () => ({ s: null, c: null }),
     );
     bundles.set(id, p);
+    // Share only while the request is in flight or when it fully succeeded: a transient failure must not hide evidence
+    // for the rest of the session, so evict it and let the next mount retry.
+    p.then((r) => { if ((r.s === null || r.c === null) && bundles.get(id) === p) bundles.delete(id); });
   }
   return p;
 }
