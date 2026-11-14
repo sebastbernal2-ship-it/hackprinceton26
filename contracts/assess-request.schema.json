@@ -1,0 +1,247 @@
+{
+  "$defs": {
+    "AssumptionInput": {
+      "properties": {
+        "key": {
+          "title": "Key",
+          "type": "string"
+        },
+        "note": {
+          "default": "",
+          "title": "Note",
+          "type": "string"
+        },
+        "unit": {
+          "default": "",
+          "title": "Unit",
+          "type": "string"
+        },
+        "value": {
+          "title": "Value",
+          "type": "number"
+        }
+      },
+      "required": [
+        "key",
+        "value"
+      ],
+      "title": "AssumptionInput",
+      "type": "object"
+    },
+    "EquipmentChoice": {
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "quantity": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Quantity"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "title": "EquipmentChoice",
+      "type": "object"
+    },
+    "Exchange": {
+      "properties": {
+        "answer": {
+          "title": "Answer",
+          "type": "string"
+        },
+        "question": {
+          "title": "Question",
+          "type": "string"
+        }
+      },
+      "required": [
+        "question",
+        "answer"
+      ],
+      "title": "Exchange",
+      "type": "object"
+    },
+    "PriceOverride": {
+      "properties": {
+        "high": {
+          "title": "High",
+          "type": "number"
+        },
+        "low": {
+          "title": "Low",
+          "type": "number"
+        }
+      },
+      "required": [
+        "low",
+        "high"
+      ],
+      "title": "PriceOverride",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "assumptions": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/AssumptionInput"
+      },
+      "title": "Assumptions",
+      "type": "array"
+    },
+    "brief": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/Exchange"
+      },
+      "title": "Brief",
+      "type": "array"
+    },
+    "budget": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Budget"
+    },
+    "delayCostPerMonth": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Delaycostpermonth"
+    },
+    "draws": {
+      "default": 5000,
+      "maximum": 50000,
+      "minimum": 200,
+      "title": "Draws",
+      "type": "integer"
+    },
+    "equipment": {
+      "anyOf": [
+        {
+          "items": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "$ref": "#/$defs/EquipmentChoice"
+              }
+            ]
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Equipment"
+    },
+    "leaseStartDelayMonths": {
+      "default": 0.0,
+      "title": "Leasestartdelaymonths",
+      "type": "number"
+    },
+    "listingId": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Listingid"
+    },
+    "monthlyRent": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Monthlyrent"
+    },
+    "plannedOpenMonths": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Plannedopenmonths"
+    },
+    "rentFreeMonths": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Rentfreemonths"
+    },
+    "repairs": {
+      "additionalProperties": {
+        "type": "number"
+      },
+      "default": {},
+      "title": "Repairs",
+      "type": "object"
+    },
+    "seed": {
+      "default": 0,
+      "title": "Seed",
+      "type": "integer"
+    },
+    "unitPriceOverrides": {
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "$ref": "#/$defs/PriceOverride"
+          }
+        ]
+      },
+      "default": {},
+      "title": "Unitpriceoverrides",
+      "type": "object"
+    }
+  },
+  "title": "AssessRequest",
+  "type": "object"
+}
