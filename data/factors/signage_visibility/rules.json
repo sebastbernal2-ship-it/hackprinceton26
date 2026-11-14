@@ -1,0 +1,58 @@
+{
+  "factorId": "signage_visibility",
+  "retrievedOn": "2026-11-14",
+  "note": "Hand-extracted from the cited texts on the retrieval date. Not legal advice and not a permit determination; confirm with the city before relying on any limit.",
+  "cities": {
+    "Houston": {
+      "jurisdiction": "City of Houston, TX (Chapter 46 Houston Sign Code, part of the city Building Code)",
+      "primarySource": {
+        "title": "Houston Sign Code, Chapter 46, compiled by City Legal Department, current through Ord. 2020-669, effective 2020-07-29",
+        "url": "https://www.houstonpermittingcenter.org/media/5591/download",
+        "asOf": "2020-07-29",
+        "access": "Fetched and read directly (PDF, 126 pages)."
+      },
+      "secondarySources": [
+        {"title": "Sign Administration FAQ, Form CE-1422, revised Oct 2025", "url": "https://www.houstonpermittingcenter.org/media/10866/download"},
+        {"title": "Informational Letter 0021-2025 Awning and Canopy-type Signs, eff. 2025-12-01", "url": "https://www.houstonpermittingcenter.org/media/11026/download"}
+      ],
+      "rules": [
+        {"id": "HOU-4611-b1a", "section": "4611(b)(1)a", "topic": "count", "summary": "Max one on-premise ground or projecting sign per frontage; two if the business has more than 350 ft of frontage, spaced at least 350 ft apart; never more than two ground/projecting signs per business.", "limits": {"maxGroundOrProjectingPerFrontage": 1, "frontageForTwoSignsFt": 350, "maxGroundOrProjectingPerBusiness": 2}},
+        {"id": "HOU-4611-b1", "section": "4611(b)(1)", "topic": "count", "summary": "No business may have more than five on-premise signs in total.", "limits": {"maxSignsPerBusiness": 5}},
+        {"id": "HOU-4611-b1b", "section": "4611(b)(1)b", "topic": "count", "summary": "Max four roof and/or wall signs per business.", "limits": {"maxWallSignsPerBusiness": 4}},
+        {"id": "HOU-4611-i4a", "section": "4611(i)(4)a", "topic": "wall_area", "summary": "For signs first permitted after 2009-09-01, aggregate wall sign area may not exceed 25 percent of the wall area or 1000 sq ft, whichever is smaller. Older text in 4611(b)(1)c allows up to 50 percent of the wall surface; the stricter applies.", "limits": {"maxWallSignShareOfWall": 0.25, "maxWallSignAreaSqFt": 1000}},
+        {"id": "HOU-4611-i4c", "section": "4611(i)(4)c", "topic": "wall_height", "summary": "A wall sign may not extend above the supporting wall (unless on a mansard or facade) and never more than 10 ft above the roof line.", "limits": {"maxAboveRoofLineFt": 10}},
+        {"id": "HOU-4611-i5", "section": "4611(i)(5)", "topic": "projecting", "summary": "Projecting signs may not extend above the roof line of the supporting wall; counted as ground signs under 4611(i)(2)b.", "limits": {}},
+        {"id": "HOU-4611-i3", "section": "4611(i)(3)", "topic": "prohibited", "summary": "Roof signs are prohibited for new on-premise signs.", "limits": {}},
+        {"id": "HOU-T4611", "section": "Table 4611", "topic": "ground_area", "summary": "On-premise ground sign max height (ft) / size (sq ft) by sign type and right-of-way category. Single business: Cat A (scenic/historic ROW, Airport Corridor major thoroughfares) 14/100; Cat B (major thoroughfares incl. collectors) 20/150; Cat C (freeways/highways) 42.5/225; Cat D (local streets) 8/60; Cat E (Airport Corridor freeways) 31/150. Multi-tenant 2-3 businesses: A 19/200, B 26/300, C 42.5/450, D 10/120, E 31/300. Multi-tenant 4+: A 24/300, B 31/450, C 42.5/600, D 12/180, E 31/450. PDF text extraction scrambled the column order; values were matched to the category definitions and should be re-checked against the PDF.", "limits": {"singleBusiness": {"A": [14, 100], "B": [20, 150], "C": [42.5, 225], "D": [8, 60], "E": [31, 150]}}, "verification": "column order inferred"},
+        {"id": "HOU-4610", "section": "4610", "topic": "overlay", "summary": "Scenic or historical rights-of-way and districts are designated under Section 4610 and use Category A limits for ground signs. A City Code Chapter 33 historic district designation is NOT a Section 4610 designation (4610(k)).", "limits": {}},
+        {"id": "HOU-FAQ-window", "section": "Sign Administration FAQ Q10", "topic": "window", "summary": "Paint or vinyl advertising applied directly to storefront glass is limited to 20 percent or less coverage of the glass area; no permit required. City FAQ, not code text.", "limits": {"maxWindowCoverage": 0.20}},
+        {"id": "HOU-FAQ-variance", "section": "Sign Administration FAQ Q27", "topic": "process", "summary": "The Houston Sign Code has no variance; rejections can be appealed to the General Appeals Board within 10 business days.", "limits": {}}
+      ]
+    },
+    "Los Angeles": {
+      "jurisdiction": "City of Los Angeles, CA (LAMC Chapter I, Article 4.4 Sign Regulations, sections 14.4.1 to 14.4.20)",
+      "primarySource": {
+        "title": "LAMC Chapter I Article 4.4 (official host, American Legal Publishing)",
+        "url": "https://codelibrary.amlegal.com/codes/los_angeles/latest/lamc/0-0-0-199408",
+        "asOf": "unknown",
+        "access": "Official host returned HTTP 403 to automated requests on 2026-11-14 and was not read directly. Text below was read from the third-party mirror and must be re-checked against the official host."
+      },
+      "secondarySources": [
+        {"title": "gocodebook mirror of LAMC 14.4 (text actually read)", "url": "https://gocodebook.com/library/us/ca/los-angeles-planning/chapter-i-general-provisions-and-zoning/article-4.4-sign-regulations/14.4"},
+        {"title": "LADBS Sign Manual (excluding off-site signs)", "url": "https://dbs.lacity.gov/sites/default/files/efs/forms/pc17/sign-manual-%28excluding-off-site-signs%29.pdf"}
+      ],
+      "rules": [
+        {"id": "LA-14.4.8-A", "section": "14.4.8 A", "topic": "combined_area", "summary": "Combined area of monument, projecting, wall, illuminated architectural canopy, pole, roof and window signs may not exceed 4 sq ft per foot of street frontage. Repeated in 14.4.9 B, 14.4.10 A and 14.4.14 B.", "limits": {"combinedSqFtPerFtFrontage": 4}},
+        {"id": "LA-14.4.8-B", "section": "14.4.8", "topic": "monument", "summary": "Monument sign area up to 1.5 sq ft per foot of street frontage, max 75 sq ft per visible face; max height 8 ft; at least 7.5 ft from interior lot lines.", "limits": {"sqFtPerFtFrontage": 1.5, "maxSqFt": 75, "maxHeightFt": 8}},
+        {"id": "LA-14.4.9-A", "section": "14.4.9 A", "topic": "projecting_permitted", "summary": "Projecting signs not permitted on a lot portion with less than 50 ft of street frontage; lots with 50 ft or more may have one per 200 ft (or fraction) of frontage.", "limits": {"minFrontageFt": 50, "frontageFtPerSign": 200}},
+        {"id": "LA-14.4.9-B", "section": "14.4.9 B", "topic": "projecting_area", "summary": "Projecting sign area per visible direction: 25 sq ft plus 1.5 sq ft per foot of street frontage, max 300 sq ft.", "limits": {"baseSqFt": 25, "sqFtPerFtFrontage": 1.5, "maxSqFt": 300}},
+        {"id": "LA-14.4.9-CE", "section": "14.4.9 C-E", "topic": "projecting_geometry", "summary": "Projecting sign at least 8 ft above sidewalk grade, not above top of wall, at least 7.5 ft from interior lot lines, max projection 8 ft from building face.", "limits": {"minHeightAboveGradeFt": 8, "maxProjectionFt": 8}},
+        {"id": "LA-14.4.10-A", "section": "14.4.10 A", "topic": "wall_area", "summary": "Wall sign area facing a street up to 2 sq ft per foot of street frontage plus 1 sq ft per foot of building frontage (single story); +10 percent per additional story, capped at +50 percent; +20 percent for individual letters on a uniform wall.", "limits": {"sqFtPerFtStreetFrontage": 2, "sqFtPerFtBuildingFrontage": 1}},
+        {"id": "LA-14.4.10-D", "section": "14.4.10 D", "topic": "wall_projection", "summary": "Wall sign may not project more than 24 in from the building face; a message on the edge is regulated as a projecting sign.", "limits": {"maxProjectionIn": 24}},
+        {"id": "LA-14.4.14-A", "section": "14.4.14 A", "topic": "window", "summary": "Total window sign area may not exceed 10 percent of the window area.", "limits": {"maxWindowShare": 0.10}},
+        {"id": "LA-14.4.19", "section": "14.4.19", "topic": "awning", "summary": "Awning signs only on the valance, max 12 in tall; not allowed on awnings with valance above 14 ft.", "limits": {"maxValanceSignHeightIn": 12}},
+        {"id": "LA-overlay-hollywood", "section": "Hollywood Signage Supplemental Use District", "topic": "overlay", "summary": "A Hollywood Signage SUD exists with its own combined sign area provision superseding citywide limits in that district. Its text was NOT read; Historic Preservation Overlay Zones and Specific Plans may also add sign rules and were not researched.", "limits": {}, "verification": "existence only, from search result; url https://planning.lacity.gov/Code_Studies/Billboards/HollywoodSignDistrict.pdf"}
+      ]
+    }
+  }
+}
