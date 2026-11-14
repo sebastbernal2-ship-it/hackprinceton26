@@ -5,9 +5,11 @@ import type { CostLineItem } from "../lib/costs";
 import type { DefectFinding } from "../lib/inspection";
 import ActChecklist from "./act-checklist";
 import CostPanel from "./cost-panel";
+import ListingPhoto from "./listing-photo";
+import LayoutPanel from "./layout-panel";
 import InspectionPanel from "./inspection-panel";
 import Stepper from "./stepper";
-import { monthlyRent, type Match } from "../lib/matches";
+import { rentLabel, type Match } from "../lib/matches";
 import EvidenceReadiness from "./evidence-readiness";
 import FactorCards from "./factor-cards";
 import Projections from "./projections";
@@ -31,7 +33,8 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
     ],
     location: [{ label: "Matterport", value: `Model ${match.tourId}` }],
   };
-  const photos = facts.photos.length > 0 ? facts.photos : [match.photo];
+  const listed = (facts.photos.length > 0 ? facts.photos : [match.photo]).filter((url) => typeof url === "string" && url.length > 0);
+  const photos = listed.length > 0 ? listed : [""];
   const [index, setIndex] = useState(0);
   const [askOpen, setAskOpen] = useState(false);
   const [findings, setFindings] = useState<DefectFinding[]>([]);
@@ -70,9 +73,7 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
         <div className="mb-5"><Stepper active={2} /></div>
         <div className="grid items-stretch gap-4 lg:grid-cols-[1.65fr_0.72fr]">
           <div className="relative aspect-[16/10] self-start overflow-hidden rounded-[1.35rem] bg-foreground/5">
-            {/* CoStar CDN blocks the Next optimizer. */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={hero} alt={`${match.address} ${match.detail}`} className="absolute inset-0 h-full w-full object-cover" />
+            <ListingPhoto src={hero} alt={`${match.address} ${match.detail}`} className="absolute inset-0 h-full w-full" />
             {photos.length > 1 && (
               <>
                 <button
@@ -113,8 +114,7 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
                   onClick={() => setIndex(photoIndex)}
                   className="relative aspect-[16/9] min-h-0 overflow-hidden rounded-[1.1rem] bg-foreground/5 lg:aspect-auto"
                 >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={photo} alt="" className="absolute inset-0 h-full w-full object-cover" />
+                  <ListingPhoto src={photo} alt="" className="absolute inset-0 h-full w-full" />
                   <span className="sr-only">Show photo {thumbIndex + 1}</span>
                 </button>
               );
@@ -133,8 +133,7 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
           </div>
           <div className="flex items-center gap-3">
             <p className="text-[clamp(1.6rem,2.6vw,2rem)] font-medium tracking-tight tabular-nums">
-              ${number.format(monthlyRent(match))}
-              <span className="text-[0.55em] font-normal text-foreground/45">/mo</span>
+              {rentLabel(match)}
             </p>
             <EvidenceReadiness match={match} />
           </div>
@@ -150,6 +149,8 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
         {!match.demo && <Projections listingId={match.listingId} />}
 
         {!match.demo && <InspectionPanel listingId={match.listingId} onData={setFindings} />}
+        <LayoutPanel match={match} />
+
         {!match.demo && <CostPanel listingId={match.listingId} onData={setLines} />}
         {!match.demo && <ActChecklist findings={findings} factors={match.factors ?? []} lines={lines} />}
 
