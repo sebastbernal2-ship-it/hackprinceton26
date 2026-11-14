@@ -1,0 +1,59 @@
+{
+  "assetId": "sink_hand_17",
+  "name": "Wall-mount hand sink 17 x 15 in",
+  "category": "sink",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 0.4318,
+    "d": 0.381,
+    "h": 0.3556
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      0.4318,
+      0.0
+    ],
+    [
+      0.4318,
+      0.381
+    ],
+    [
+      0.0,
+      0.381
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.6,
+    "sides": 0.0,
+    "back": 0.0
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 1.0 m working aisle, 0 at sides/back (wall-adjacent allowed). Aisle widths commonly cited for commercial kitchens are ~0.9-1.1 m (36-42 in; 36 in / 0.915 m is the ADA minimum clear width), dining chair pull-out ~0.45 m; confirm with the local health/building authority.",
+  "model": null,
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "kitchen",
+    "sink",
+    "hand_wash"
+  ],
+  "priceRef": "hand_sink",
+  "provenance": {
+    "origin": "https://www.webstaurantstore.com/regency-17-x-15-wall-mounted-hand-sink-with-8-gooseneck-faucet-1-2-gpm-aerator-and-side-splashes/600HS17SPC.html",
+    "retrievedAt": "2026-11-14",
+    "notes": "Width/depth from the financial-catalog label (Regency 600HS17SPC, 17x15 in); height is a typical bowl+faucet envelope (estimated). Wall-mounted: mounting height is a separate install detail."
+  },
+  "status": "confirmed"
+}

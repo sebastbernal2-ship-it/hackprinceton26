@@ -1,0 +1,58 @@
+{
+  "assetId": "range_6burner_36",
+  "name": "6-burner gas range with oven, 36 in",
+  "category": "range",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 0.9144,
+    "d": 0.7874,
+    "h": 0.9144
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      0.9144,
+      0.0
+    ],
+    [
+      0.9144,
+      0.7874
+    ],
+    [
+      0.0,
+      0.7874
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 1.0,
+    "sides": 0.15,
+    "back": 0.15
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 1.0 m; 0.15 m side/back air gap before combustibles (check manufacturer install manual). Aisle widths commonly cited for commercial kitchens are ~0.9-1.1 m (36-42 in; 36 in / 0.915 m is the ADA minimum clear width), dining chair pull-out ~0.45 m; confirm with the local health/building authority.",
+  "model": null,
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "kitchen",
+    "cooking"
+  ],
+  "priceRef": "range_6_burner",
+  "provenance": {
+    "origin": "https://www.webstaurantstore.com/cooking-performance-group-s36-n-natural-gas-6-burner-36-range-with-standard-oven-210-000-btu/351S36N.html",
+    "retrievedAt": "2026-11-14",
+    "notes": "Width 36 in from the financial-catalog label (CPG S36-N); depth ~31 in and 36 in cooktop height are typical for this class, not read from the product page (backguard adds height)."
+  },
+  "status": "confirmed"
+}

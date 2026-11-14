@@ -149,7 +149,7 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
         {!match.demo && <Projections listingId={match.listingId} />}
 
         {!match.demo && <InspectionPanel listingId={match.listingId} onData={setFindings} />}
-        <LayoutPanel match={match} />
+        <LayoutPanel match={match} lines={lines} />
 
         {!match.demo && <CostPanel listingId={match.listingId} onData={setLines} />}
         {!match.demo && <ActChecklist findings={findings} factors={match.factors ?? []} lines={lines} />}
