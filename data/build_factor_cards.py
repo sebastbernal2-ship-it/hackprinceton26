@@ -1,0 +1,49 @@
+#!/usr/bin/env python3
+"""Build a non-ranking, one-row-per-site/factor evidence card inventory."""
+import csv, json, pathlib
+ROOT=pathlib.Path(__file__).resolve().parent.parent
+
+
+def evidence_as_of(record):
+    return str(record.get('evidence_as_of') or '').strip()
+
+
+def crime_time_window(context):
+    start=str(context.get('crime_source_date_start') or '').strip()
+    end=str(context.get('crime_source_date_end') or '').strip()
+    return f'{start} to {end}' if start and end else ''
+REG=ROOT/'data/registry'
+QUEUE=ROOT/'data/normalized/costar/human-review-queue.csv'
+EVIDENCE=ROOT/'data/normalized/costar/restaurant-site-evidence.csv'
+OPERATOR=ROOT/'data/normalized/costar/operator-review-detail.csv'
+CONTEXT=ROOT/'data/normalized/costar/local-context.csv'
+OUT=ROOT/'data/normalized/costar/factor-cards.csv'
+
+def rows(path):
+    with path.open(newline='',encoding='utf-8') as f:return list(csv.DictReader(f))
+def main():
+    factors=rows(REG/'factors.csv')
+    sites=rows(QUEUE); evidence={r['property_id']:r for r in rows(EVIDENCE)}
+    operator={r['property_id']:r for r in rows(OPERATOR)}; context={r['property_id']:r for r in rows(CONTEXT)}
+    fields=['site_id','property_id','city','factor_id','factor_name','status','value','unit','source','record_id','retrieved_or_observed_date','geography','time_window','method','coverage','uncertainty','unknown_reason','interpretation']
+    out=[]
+    for site in sites:
+        pid=site['property_id'];ev=evidence.get(pid,{});op=operator.get(pid,{});ctx=context.get(pid,{})
+        def add(fid,status='unknown',value='',unit='',source='',record='',date='',geo='',period='',method='',coverage='',uncertainty='',reason='Not fetched, verified, or applicable evidence unavailable.',note='Context only; not a suitability or prediction score.'):
+            factor=next(f for f in factors if f['factor_id']==fid)
+            out.append({'site_id':'site-costar-'+pid,'property_id':pid,'city':site.get('city',''),'factor_id':fid,'factor_name':factor['folder'].replace('-',' '),'status':status,'value':value,'unit':unit,'source':source,'record_id':record,'retrieved_or_observed_date':date,'geography':geo,'time_window':period,'method':method,'coverage':coverage,'uncertainty':uncertainty,'unknown_reason':reason if status=='unknown' else '', 'interpretation':note})
+        # An observed source status does not establish current availability.
+        stat=';'.join(x for x in ev.get('listing_statuses','').split(';') if x)
+        add('property_market','observed' if stat else 'unknown',stat,'source status codes','CoStar local snapshot',pid,evidence_as_of(ev),'property / listing grain','snapshot','source status only; no broker confirmation','candidate has linked listing records' if stat else 'no linked listing record', 'Snapshot status only; no current availability claim.')
+        add('operator_preferences',reason='Operator has not answered the intake; Italian restaurant with gelato is the concept only.')
+        add('spatial_interior','observed' if op.get('matterport_model_ids') else 'unknown',op.get('matterport_model_ids',''),'model IDs','Matterport local lookup',op.get('matterport_model_ids',''),evidence_as_of(op),'property association; suite identity unresolved','','property-level association; not suite match or dimension validation','model association record present' if op.get('matterport_model_ids') else 'no model evidence','User-selected tour does not verify marketed suite identity or dimensions.')
+        crime=ctx.get('reported_incidents_0_5mi','')
+        add('crime_safety','observed' if crime else 'unknown',crime,'reported incidents (raw aggregate; not a rate)','Houston PD NIBRS public view',pid,ctx.get('crime_source_retrieved_at',''),'0.5-mile point buffer',crime_time_window(ctx),'partial-year incident aggregate','Houston subset only; LA unavailable','Partial-year counts; not rate, safety score, probability, or cross-city comparison.')
+        # Other factors remain explicit null/unknown with registry blocker summaries.
+        for fid in ['schools_education','traffic_access','income_demographics','signage_visibility','climate_weather','natural_hazards','mobility_tourism','aerial_site','infrastructure_permits','costs_timeline','labor_supply']:
+            factor=next(f for f in factors if f['factor_id']==fid)
+            add(fid,reason=factor.get('notes') or factor.get('preliminary_status') or 'No verified site-level evidence.')
+    with OUT.open('w',newline='',encoding='utf-8') as f:
+        w=csv.DictWriter(f,fieldnames=fields);w.writeheader();w.writerows(out)
+    print(f'Wrote {len(out)} factor cards for {len(sites)} sites; unknown values remain blank.')
+if __name__=='__main__':main()

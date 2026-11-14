@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tools/board:*)",
+      "Bash(tools/codex-delegate review:*)",
+      "Bash(tools/codex-delegate ask:*)",
+      "Bash(python3 data/test_*.py)",
+      "Bash(python3 -m pytest:*)",
+      "Bash(git status:*)", "Bash(git diff:*)", "Bash(git log:*)", "Bash(git branch:*)",
+      "Bash(gh-axi issue list:*)", "Bash(gh-axi issue view:*)", "Bash(gh-axi pr view:*)"
+    ],
+    "deny": ["Read(./.env)", "Read(./.env.*)", "Read(./data/raw/**)", "Bash(git push --force:*)"]
+  }
+}

@@ -1,0 +1,23 @@
+# Local credentials and downloaded sponsor data
+.env
+.env.*
+!.env.example
+data/raw/
+data/normalized/
+data/derived/
+# Populated registries can contain sponsor IDs or credential metadata.
+data/registry/sites.csv
+data/registry/sources.csv
+
+# Local development and interpreter artifacts
+.venv/
+venv/
+node_modules/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Local agent memory and task state
+.hippo/
+.pi/decisions.md
+.pi/task-control/
