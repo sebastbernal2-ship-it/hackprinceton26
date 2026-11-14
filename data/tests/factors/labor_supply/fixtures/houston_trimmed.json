@@ -1,0 +1,66 @@
+{
+ "metro": {
+  "cbsa": "26420",
+  "state": "48",
+  "name": "Houston metro area (CBSA 26420)"
+ },
+ "series": {
+  "OEUM002642000000035302303": [
+   {
+    "year": "2025",
+    "period": "A01",
+    "periodName": "Annual",
+    "latest": "true",
+    "value": "13.29",
+    "footnotes": [
+     {}
+    ]
+   }
+  ],
+  "OEUM002642000000035302301": [
+   {
+    "year": "2025",
+    "period": "A01",
+    "periodName": "Annual",
+    "latest": "true",
+    "value": "105810",
+    "footnotes": [
+     {}
+    ]
+   }
+  ],
+  "SMU48264207072200001": [
+   {
+    "year": "2026",
+    "period": "M07",
+    "periodName": "July",
+    "value": "-",
+    "footnotes": [
+     {}
+    ]
+   },
+   {
+    "year": "2026",
+    "period": "M08",
+    "periodName": "August",
+    "value": "305.0",
+    "footnotes": [
+     {}
+    ]
+   },
+   {
+    "year": "2026",
+    "period": "M09",
+    "periodName": "September",
+    "latest": "true",
+    "value": "298.8",
+    "footnotes": [
+     {
+      "code": "P",
+      "text": "Preliminary"
+     }
+    ]
+   }
+  ]
+ }
+}
