@@ -17,6 +17,26 @@ PROPERTY={'200','220','23A','23B','23C','23D','23E','23F','23G','23H','240','250
 def miles(a,b):
  r=3958.8;p1,p2=math.radians(a[0]),math.radians(b[0]);dp=p2-p1;dl=math.radians(b[1]-a[1]);h=math.sin(dp/2)**2+math.cos(p1)*math.cos(p2)*math.sin(dl/2)**2
  return 2*r*math.asin(math.sqrt(h))
+def classify_incident(code):
+ """Return the aggregate buckets a NIBRS class code counts toward (besides 'incidents')."""
+ return [k for k,codes in (('violent',VIOLENT),('property',PROPERTY)) if code in codes]
+def add_incident(counter,code,n):
+ """Add n offenses with NIBRS class `code` to a per-site counter."""
+ counter['incidents']+=n;counter['geocoded_incidents']+=n
+ for k in classify_incident(code):counter[k]+=n
+def count_nearby(site_coords,incident_coord,code,n,near,radius=0.5):
+ """Credit an incident to every site within `radius` miles (inclusive) by haversine."""
+ for pid,coord in site_coords.items():
+  if miles(coord,incident_coord)<=radius:add_incident(near[pid],code,n)
+def site_count(near,site_coords,police_loaded,pid):
+ """Per-site incident counters. A geocoded Houston site with police data loaded and no nearby
+ incidents is a real zero; an unlocatable site or missing police file stays blank (unknown)."""
+ if police_loaded and pid in site_coords:
+  return {'incidents':0,'geocoded_incidents':0,'violent':0,'property':0,**near.get(pid,{})}
+ return {}
+def peers_within(coord,pid,props,radius=1.0):
+ """Other commercial properties within `radius` miles of coord; none if coord is unknown."""
+ return [p for p in props if p['id']!=pid and coord and miles(coord,(p['lat'],p['lon']))<=radius]
 def main():
  props=[]
  with (KIT/'data/commercial-property.jsonl').open() as f:
@@ -43,8 +63,14 @@ def main():
    if tid in tenant_food:food_by_property[str(x['propertyId'])].add(tid)
  candidates=list(csv.DictReader(CANDIDATES.open(newline='',encoding='utf-8')))
  target={r['property_id']:r for r in candidates}
+ site_coords={}
+ for pid,site in target.items():
+  if site['city'].casefold()!='houston':continue
+  try:site_coords[pid]=(float(site['latitude']),float(site['longitude']))
+  except (TypeError,ValueError):continue
  citycrime=collections.defaultdict(collections.Counter); near=collections.defaultdict(collections.Counter); date_range={}
- if POLICE.exists():
+ police_loaded=POLICE.exists()
+ if police_loaded:
   with POLICE.open(newline='',encoding='utf-8-sig',errors='replace') as f:
    for r in csv.DictReader(f):
     city=str(r.get('City') or '').strip().casefold()
@@ -60,22 +86,14 @@ def main():
     c['geocoded_incidents']+=n
     if code in VIOLENT:c['violent']+=n
     if code in PROPERTY:c['property']+=n
-    for pid,site in target.items():
-     if site['city'].casefold()!='houston':continue
-     try:coord=(float(site['latitude']),float(site['longitude']))
-     except (TypeError,ValueError):continue
-     if miles(coord,pt)<=0.5:
-      z=near[pid];z['incidents']+=n
-      if code in VIOLENT:z['violent']+=n
-      if code in PROPERTY:z['property']+=n
-      z['geocoded_incidents']+=n
+    count_nearby(site_coords,pt,code,n,near)
  outrows=[]
  for pid,row in target.items():
   try:coord=(float(row['latitude']),float(row['longitude']))
   except (TypeError,ValueError):coord=None
-  peers=[p for p in props if p['id']!=pid and coord and miles(coord,(p['lat'],p['lon']))<=1.0]
+  peers=peers_within(coord,pid,props)
   food_history=len(food_by_property.get(pid,set()))
-  outrows.append({'property_id':pid,'city':row['city'],'peer_radius_miles':1.0,'nearby_commercial_property_count':len(peers),'nearby_general_retail_count':sum(p['type']==6 for p in peers),'nearby_hospitality_count':sum(p['type']==1 for p in peers),'nearby_food_service_historic_tenant_property_count':sum(bool(food_by_property.get(p['id'])) for p in peers),'site_historic_food_service_tenant_locations':food_history,'crime_source':'Houston Police Department NIBRS public view','crime_source_date_start':(date_range.get('houston') or ['',''])[0],'crime_source_date_end':(date_range.get('houston') or ['',''])[1],'crime_radius_miles':0.5 if row['city'].casefold()=='houston' else '', 'reported_incidents_0_5mi':near.get(pid,{}).get('incidents','') if row['city'].casefold()=='houston' else '', 'geocoded_incidents_0_5mi':near.get(pid,{}).get('geocoded_incidents','') if row['city'].casefold()=='houston' else '', 'violent_classified_incidents_0_5mi':near.get(pid,{}).get('violent','') if row['city'].casefold()=='houston' else '', 'property_classified_incidents_0_5mi':near.get(pid,{}).get('property','') if row['city'].casefold()=='houston' else '', 'crime_method_note':'Raw HPD NIBRS incident counts within 0.5 mi; not population-adjusted, not an official rate, not a safety score. Houston only; blank means unavailable/not computed.'})
+  outrows.append({'property_id':pid,'city':row['city'],'peer_radius_miles':1.0,'nearby_commercial_property_count':len(peers),'nearby_general_retail_count':sum(p['type']==6 for p in peers),'nearby_hospitality_count':sum(p['type']==1 for p in peers),'nearby_food_service_historic_tenant_property_count':sum(bool(food_by_property.get(p['id'])) for p in peers),'site_historic_food_service_tenant_locations':food_history,'crime_source':'Houston Police Department NIBRS public view','crime_source_date_start':(date_range.get('houston') or ['',''])[0],'crime_source_date_end':(date_range.get('houston') or ['',''])[1],'crime_radius_miles':0.5 if row['city'].casefold()=='houston' else '', 'reported_incidents_0_5mi':site_count(near,site_coords,police_loaded,pid).get('incidents','') if row['city'].casefold()=='houston' else '', 'geocoded_incidents_0_5mi':site_count(near,site_coords,police_loaded,pid).get('geocoded_incidents','') if row['city'].casefold()=='houston' else '', 'violent_classified_incidents_0_5mi':site_count(near,site_coords,police_loaded,pid).get('violent','') if row['city'].casefold()=='houston' else '', 'property_classified_incidents_0_5mi':site_count(near,site_coords,police_loaded,pid).get('property','') if row['city'].casefold()=='houston' else '', 'crime_method_note':'Raw HPD NIBRS incident counts within 0.5 mi; not population-adjusted, not an official rate, not a safety score. Houston only; blank means unavailable/not computed.'})
  OUT.parent.mkdir(parents=True,exist_ok=True)
  with OUT.open('w',newline='',encoding='utf-8') as f:
   w=csv.DictWriter(f,fieldnames=list(outrows[0]));w.writeheader();w.writerows(outrows)
