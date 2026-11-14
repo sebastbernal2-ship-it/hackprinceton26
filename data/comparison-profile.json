@@ -1,0 +1,31 @@
+{
+  "profile_name": "Italian restaurant + gelato exploratory",
+  "version": 1,
+  "weights_percent": {
+    "listed_space_area_match": 35,
+    "listing_opportunity_signal": 25,
+    "historic_food_service_precedent": 15,
+    "interior_scan_evidence": 25
+  },
+  "hard_filters": {
+    "cities": ["Houston", "Los Angeles"],
+    "min_listed_space_sqft": 1000,
+    "max_listed_space_sqft": 6000,
+    "requires_accessible_matterport_model": true
+  },
+  "policy": {
+    "weights_are_provisional": true,
+    "user_can_change_weights": true,
+    "only_score_observed_evidence": true,
+    "unknown_is_null_not_zero": true,
+    "crime_context_not_scored": true,
+    "score_is_not_probability_or_recommendation": true
+  },
+  "provisional_assumptions": {
+    "target_area_sqft": null,
+    "listing_status_freshness_days": null,
+    "restaurant_use_verified": false,
+    "selected_tour_confirmed_by_user": true,
+    "suite_scan_identity_verified": false
+  }
+}
