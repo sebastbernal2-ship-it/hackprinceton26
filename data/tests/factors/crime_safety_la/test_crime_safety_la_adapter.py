@@ -6,7 +6,7 @@ import urllib.error
 import pytest
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[3] / "factors" / "crime_safety_la"))
-import adapter  # noqa: E402
+from factors.crime_safety_la import adapter  # noqa: E402
 
 HERE = pathlib.Path(__file__).resolve().parent
 ROWS = json.loads((HERE / "fixture_rows.json").read_text())
