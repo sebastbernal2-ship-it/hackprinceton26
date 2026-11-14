@@ -4,7 +4,7 @@ run_all.py - run the whole HackPrinceton pipeline, one step after another, with 
 
     python run_all.py                 # run every step that is not already done
     python run_all.py --force         # redo every step
-    python run_all.py --from bake     # start at a step (download, matterpak, fetch, tiles, pipeline, meshdiff, prepare, tileobjects, bake, carve, walk, sdk, serve)
+    python run_all.py --from bake     # start at a step (download, matterpak, fetch, tiles, pipeline, meshdiff, prepare, tileobjects, bake, carve, walk, catalog, sdk, serve)
     python run_all.py --only meshdiff # run one step
     python run_all.py --list          # show the steps and whether each is done
     python run_all.py --only serve    # just start the local server and open the studio
@@ -214,6 +214,11 @@ def step_carve():
     run(cmd)
 
 
+def step_catalog():
+    """Download the CC0 furniture catalogue (Poly Haven) that walk.html can place into the scene. Once; ~130 MB."""
+    run([PY, script("fetch_catalog.py")], fatal=False)
+
+
 def walk_done():
     """walk.html's pack is current when it is newer than everything it is built from."""
     out = ASSETS / "walk" / "meta.json"
@@ -293,6 +298,7 @@ STEPS = [  # name, function, "done" check
     ("bake",     step_bake,     lambda: (MD / "empty_room_textured.obj").exists() and (MD / "pano_poses.json").exists()),
     ("carve",    step_carve,    lambda: (MD / "scene_shapes.json").exists()),
     ("walk",     step_walk,     walk_done),               # repacks when the mesh / pieces / photos change
+    ("catalog",  step_catalog,  lambda: (ROOT / "assets_catalog" / "catalog.json").exists()),
     ("sdk",      step_sdk,      lambda: False),           # cheap: always refreshes config.js
     ("serve",    step_serve,    lambda: False),
 ]
