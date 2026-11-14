@@ -18,6 +18,10 @@ export type Match = {
   tourId: string;
   /** 0 to 100. Placeholder until the matching agent scores spaces against the brief. */
   confidence: number;
+  /** Why this score fits the restaurant owner's brief. */
+  reason?: string;
+  /** Short implications from the property agent. */
+  notes?: Fact[];
   /** Extra CoStar facts for the info screen. */
   facts: SpaceFacts;
 };

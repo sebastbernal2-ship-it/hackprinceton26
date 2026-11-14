@@ -35,6 +35,17 @@ function subscribe(onChange: () => void) {
   };
 }
 
+export function readBrief(): Exchange[] {
+  const stored = read();
+  if (!stored) return [];
+  try {
+    const parsed = JSON.parse(stored) as Exchange[];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
 /** The intake answers, kept for this browser tab. Empty until the intake has been completed. */
 export function useBrief(): Exchange[] {
   const stored = useSyncExternalStore(subscribe, read, () => null);

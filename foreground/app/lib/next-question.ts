@@ -1,6 +1,6 @@
 export type Exchange = { question: string; answer: string };
 
-export const MAX_QUESTIONS = 3;
+export const MAX_QUESTIONS = 4;
 export const FIRST_QUESTION = "What are you looking for?";
 
 const FOLLOW_UPS: { question: string; covered: (said: string) => boolean }[] = [
@@ -29,10 +29,19 @@ const FOLLOW_UPS: { question: string; covered: (said: string) => boolean }[] = [
  */
 export async function nextQuestion(history: Exchange[]): Promise<string | null> {
   if (history.length >= MAX_QUESTIONS) return null;
+  try {
+    const response = await fetch("/api/intake", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ history }),
+    });
+    const body = (await response.json()) as { question?: string | null };
+    if (response.ok && (body.question === null || typeof body.question === "string")) return body.question ?? null;
+  } catch {
+    // The local follow-ups keep the intake moving if the agent is down.
+  }
   const said = history.map((exchange) => exchange.answer).join(" ");
   const asked = new Set(history.map((exchange) => exchange.question));
   const next = FOLLOW_UPS.find((followUp) => !asked.has(followUp.question) && !followUp.covered(said));
-  // Simulated agent latency, so the thinking state is visible until the real agent is wired in.
-  await new Promise((resolve) => setTimeout(resolve, 600));
   return next?.question ?? null;
 }

@@ -129,10 +129,12 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
             </span>
           </div>
         </div>
+        {match.reason ? <p className="mt-4 max-w-2xl text-[0.95rem] leading-relaxed text-foreground/75">{match.reason}</p> : null}
 
         <div className="mt-8 grid gap-14 border-t border-foreground/10 pt-6 md:grid-cols-2">
           <FactList title="Property Details" rows={facts.property} />
           <FactList title="Location & Area" rows={facts.location} />
+          {match.notes && match.notes.length > 0 ? <FactList title="Restaurant fit" rows={match.notes} /> : null}
         </div>
 
         <p className="mt-5 text-xs text-foreground/40">

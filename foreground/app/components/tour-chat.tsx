@@ -2,8 +2,13 @@
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import type { MpSdk } from "@matterport/sdk";
-import { furnitureTone, tourAgentReply, type TourKind } from "../lib/tour-agent";
-import { moveInTour, nudge, placeInTour, placeOnSurface, pointInFront, readPose, uprightStem, type StagedPiece } from "../lib/tour-scene";
+import type { RoomRect, StructureEdit } from "../lib/floor-layout";
+import type { LayoutDecision } from "../lib/layout-catalog";
+import { money } from "../lib/layout-catalog";
+import { summarizeRooms } from "../lib/layout-fit";
+import { furnitureTone, tourAgentReply, type TourKind, type TourMode } from "../lib/tour-agent";
+import { floorInFront, moveInTour, nudge, placeOnSurface, pointInFront, readPose, uprightStem, type RoomAnchor, type StagedPiece } from "../lib/tour-scene";
+import { furnitureSize } from "../lib/furniture-mesh";
 
 type Message = { role: "agent" | "user"; text: string };
 
@@ -13,9 +18,16 @@ type TourChatProps = {
   onOpenChange: (open: boolean) => void;
   pieces: StagedPiece[];
   onPiecesChange: (next: StagedPiece[] | ((current: StagedPiece[]) => StagedPiece[])) => void;
+  mode: TourMode;
+  freezerRemoved: boolean;
+  hasFreezer: boolean;
+  rooms: RoomRect[];
+  anchors: RoomAnchor[];
+  onStructure: (edit: StructureEdit) => void;
 };
 
-const SUGGESTIONS = ["Add rug", "Move sofa left", "Warm lighting", "Minimal style"];
+const FURNITURE_SUGGESTIONS = ["Add a dining table", "Add a sofa", "Add four chairs"];
+const STRUCTURE_SUGGESTIONS = ["Remove the bathroom", "Extend the kitchen", "Add a dining table"];
 
 const SLOTS = [
   { x: 22, y: 58 },
@@ -25,49 +37,37 @@ const SLOTS = [
   { x: 26, y: 78 },
 ];
 
-export default function TourChat({ sdk, open, onOpenChange, pieces, onPiecesChange }: TourChatProps) {
+export default function TourChat({
+  sdk,
+  open,
+  onOpenChange,
+  pieces,
+  onPiecesChange,
+  mode,
+  freezerRemoved,
+  hasFreezer,
+  rooms,
+  onStructure,
+}: TourChatProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [value, setValue] = useState("");
+  const [total, setTotal] = useState(0);
+  const [busy, setBusy] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const pieceSeq = useRef(0);
 
   useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
-  }, [messages, open]);
+  }, [messages, open, busy]);
 
   useEffect(() => {
     if (open) inputRef.current?.focus();
   }, [open]);
 
   function stage(kind: TourKind, label: string) {
-    const pieceId = `${kind}-${pieceSeq.current++}`;
-    onPiecesChange((current) => {
-      const slot = SLOTS[current.length % SLOTS.length];
-      const piece: StagedPiece = {
-        id: pieceId,
-        kind,
-        label,
-        tagId: null,
-        position: { x: slot.x / 10, y: 0.4, z: slot.y / 10 },
-        stem: uprightStem(kind),
-        screen: slot,
-      };
-      return [...current, piece];
-    });
-    if (!sdk) return;
-    void (async () => {
-      const pose = await readPose(sdk);
-      const frame = document.querySelector("iframe");
-      const surface = frame
-        ? await placeOnSurface(sdk, { x: frame.clientWidth / 2, y: frame.clientHeight * 0.66 }, kind, pose.position)
-        : null;
-      const position = surface?.position ?? pointInFront(pose, kind === "wall" ? 2.8 : 2.1);
-      const stem = surface?.stem ?? uprightStem(kind);
-      const tagId = await placeInTour(sdk, { kind, label, position, stem });
-      if (!tagId) return;
-      onPiecesChange((current) => current.map((item) => (item.id === pieceId ? { ...item, tagId, position, stem } : item)));
-    })();
+    const size = furnitureSize(kind);
+    void spawnPiece({ kind, label, width: size.width, depth: size.depth, room: "" });
   }
 
   function slide(direction: "left" | "right" | "forward" | "back", meters: number) {
@@ -79,17 +79,93 @@ export default function TourChat({ sdk, open, onOpenChange, pieces, onPiecesChan
     };
     const position = nudge(current.position, 0, direction, meters);
     onPiecesChange((list) => list.map((piece) => (piece.id === current.id ? { ...piece, position, screen } : piece)));
-    if (sdk && current.tagId) void moveInTour(sdk, current.tagId, position, current.stem);
   }
 
-  function send(text: string) {
+  function stageFitted(item: { kind: TourKind; label: string; width: number; depth: number }, room: string) {
+    void spawnPiece({
+      kind: item.kind,
+      label: `${item.label} · ${item.width} × ${item.depth} m`,
+      width: item.width,
+      depth: item.depth,
+      room,
+    });
+  }
+
+  async function spawnPiece(item: { kind: TourKind; label: string; width: number; depth: number; room: string }) {
+    const pieceId = `${item.kind}-${pieceSeq.current++}`;
+    let position = { x: 0, y: 0, z: 0 };
+    let yaw = 0;
+    if (sdk) {
+      const pose = await readPose(sdk);
+      yaw = (pose.rotation.y * Math.PI) / 180;
+      const floor = await floorInFront(sdk);
+      const ahead = pointInFront(pose, 2.2);
+      position = floor ?? { x: ahead.x, y: pose.position.y - 1.4, z: ahead.z };
+    }
+    const slot = SLOTS[pieces.length % SLOTS.length];
+    const rightX = Math.cos(yaw);
+    const rightZ = -Math.sin(yaw);
+    onPiecesChange((current) => {
+      const step = current.length * 0.7;
+      const piece: StagedPiece = {
+        id: pieceId,
+        kind: item.kind,
+        label: item.label,
+        tagId: null,
+        position: { x: position.x + rightX * step, y: position.y, z: position.z + rightZ * step },
+        stem: uprightStem(item.kind),
+        screen: slot,
+        width: item.width,
+        depth: item.depth,
+        room: item.room,
+        yaw,
+      };
+      return [...current, piece];
+    });
+  }
+
+  function applyDecision(decision: LayoutDecision) {
+    setTotal(decision.total);
+    if (decision.action.type === "add") stageFitted(decision.action.item, decision.action.room);
+    else if (decision.action.type === "structure" && mode === "foreground") onStructure(decision.action.edit);
+  }
+
+  async function send(text: string) {
     const trimmed = text.trim();
-    if (!trimmed) return;
+    if (!trimmed || busy) return;
     setValue("");
-    const result = tourAgentReply(trimmed, pieces.length);
-    if (result.action.type === "move") slide(result.action.direction, result.action.meters);
-    else if (result.action.type === "add") stage(result.action.kind, result.action.label);
-    setMessages((current) => [...current, { role: "user", text: trimmed }, { role: "agent", text: result.reply }]);
+    setBusy(true);
+    setMessages((current) => [...current, { role: "user", text: trimmed }]);
+    try {
+      const response = await fetch("/api/layout-agent", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          message: trimmed,
+          mode,
+          rooms: summarizeRooms(rooms),
+          placed: pieces.map((piece) => ({
+            item: piece.label,
+            room: piece.room || "",
+            width: piece.width || 1,
+            depth: piece.depth || 1,
+          })),
+          total,
+        }),
+      });
+      const decision = (await response.json()) as LayoutDecision & { error?: string };
+      if (!response.ok || !decision.reply) throw new Error(decision.error || "unavailable");
+      applyDecision(decision);
+      setMessages((current) => [...current, { role: "agent", text: decision.reply }]);
+    } catch {
+      const result = tourAgentReply(trimmed, pieces.length, { mode, freezerRemoved, hasFreezer });
+      if (result.action.type === "structure") onStructure(result.action.edit);
+      else if (result.action.type === "move") slide(result.action.direction, result.action.meters);
+      else if (result.action.type === "add") stage(result.action.kind, result.action.label);
+      setMessages((current) => [...current, { role: "agent", text: result.reply }]);
+    } finally {
+      setBusy(false);
+    }
   }
 
   function submit(event?: FormEvent) {
@@ -145,7 +221,10 @@ export default function TourChat({ sdk, open, onOpenChange, pieces, onPiecesChan
           </span>
           <div className="min-w-0 flex-1 pt-0.5">
             <p className="text-lg leading-tight">Layout agent</p>
-            <p className="mt-0.5 text-sm text-foreground/45">Restage this room live as you type</p>
+            <p className="mt-0.5 text-sm text-foreground/45">
+              {mode === "foreground" ? "Move the walls in Imagine Tour" : "Restage this room live as you type"}
+            </p>
+            <p className="mt-1 text-sm text-foreground/70">Running total {money(total)}</p>
           </div>
           <button
             type="button"
@@ -168,9 +247,13 @@ export default function TourChat({ sdk, open, onOpenChange, pieces, onPiecesChan
                 </svg>
               </span>
               <div>
-                <p className="leading-snug">Describe any furniture or layout changes.</p>
+                <p className="leading-snug">
+                  {mode === "foreground" ? "Tell me which wall should move." : "Describe any furniture or layout changes."}
+                </p>
                 <p className="mt-1 text-sm leading-snug text-foreground/55">
-                  I’ll restage this room in the tour as you type, so you can see updates in real time.
+                  {mode === "foreground"
+                    ? "Removing the freezer or shifting a wall updates this model while you walk through it."
+                    : "I’ll restage this room in the tour as you type, so you can see updates in real time."}
                 </p>
               </div>
             </div>
@@ -189,15 +272,27 @@ export default function TourChat({ sdk, open, onOpenChange, pieces, onPiecesChan
                     <path d="M3 10c0-2 1.6-3.2 3.4-3.2h3.2C11.4 6.8 13 8 13 10v.4H3V10z" />
                   </svg>
                 </span>
-                <div className="max-w-[85%] rounded-2xl bg-panel px-3.5 py-2.5 text-sm leading-snug">{message.text}</div>
+                <div className="max-w-[85%] whitespace-pre-wrap rounded-2xl bg-panel px-3.5 py-2.5 text-sm leading-snug">{message.text}</div>
               </div>
             ),
           )}
 
+          {busy ? (
+            <div className="flex items-start gap-2">
+              <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-foreground/10 text-foreground" aria-hidden>
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4">
+                  <path d="M3 10.5V12h1.2M11.8 12H13v-1.5" strokeLinecap="round" />
+                  <path d="M3 10c0-2 1.6-3.2 3.4-3.2h3.2C11.4 6.8 13 8 13 10v.4H3V10z" />
+                </svg>
+              </span>
+              <div className="max-w-[85%] rounded-2xl bg-panel px-3.5 py-2.5 text-sm leading-snug text-foreground/60">Checking the measurements…</div>
+            </div>
+          ) : null}
+
           <div className="pt-2">
             <p className="mb-2 text-sm text-foreground/60">Try a quick change</p>
             <div className="flex flex-wrap gap-2">
-              {SUGGESTIONS.map((suggestion) => (
+              {(mode === "foreground" ? STRUCTURE_SUGGESTIONS : FURNITURE_SUGGESTIONS).map((suggestion) => (
                 <button
                   key={suggestion}
                   type="button"
@@ -224,12 +319,12 @@ export default function TourChat({ sdk, open, onOpenChange, pieces, onPiecesChan
               ref={inputRef}
               value={value}
               onChange={(event) => setValue(event.target.value)}
-              placeholder="change, like “add a rug”…"
+              placeholder={mode === "foreground" ? "change, like “remove the bathroom”…" : "change, like “add a dining table”…"}
               className="min-w-0 flex-1 bg-transparent px-1.5 text-sm text-foreground outline-none placeholder:text-foreground/35"
             />
             <button
               type="submit"
-              disabled={!value.trim()}
+              disabled={busy || !value.trim()}
               aria-label="Send"
               className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent text-background transition-opacity disabled:opacity-40"
             >

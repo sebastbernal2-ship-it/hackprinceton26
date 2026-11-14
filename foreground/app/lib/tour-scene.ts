@@ -14,6 +14,16 @@ export type StagedPiece = {
   stem: Vec3;
   /** Screen placement for the live ghost overlay, as percentages of the tour viewport. */
   screen: { x: number; y: number };
+  width?: number;
+  depth?: number;
+  room?: string;
+  /** Yaw in radians, so the piece faces the camera that placed it. */
+  yaw?: number;
+};
+
+export type RoomAnchor = {
+  label: string;
+  position: Vec3;
 };
 
 function yawRadians(rotationY: number) {
@@ -118,6 +128,27 @@ export async function placeOnSurface(
     position: add(hit.position, scale(normal, 0.03)),
     stem: scale(normal, clearance),
   };
+}
+
+/** The lowest surface in the lower half of the view, which is the floor in front of the camera. */
+export async function floorInFront(sdk: MpSdk): Promise<Vec3 | null> {
+  const frame = document.querySelector("iframe");
+  if (!frame) return null;
+  const width = frame.clientWidth;
+  const height = frame.clientHeight;
+  const samples = [
+    { x: width * 0.5, y: height * 0.7 },
+    { x: width * 0.36, y: height * 0.78 },
+    { x: width * 0.64, y: height * 0.78 },
+    { x: width * 0.5, y: height * 0.86 },
+  ];
+  const hits: Vec3[] = [];
+  for (const screen of samples) {
+    const hit = await sdk.Renderer.getWorldPositionData(screen);
+    if (hit.position) hits.push(hit.position);
+  }
+  hits.sort((left, right) => left.y - right.y);
+  return hits[0] ?? null;
 }
 
 /** Place a point in front of the camera, shifted by where the pointer sits in the tour view. */

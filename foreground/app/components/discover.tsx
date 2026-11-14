@@ -50,6 +50,7 @@ export default function Discover() {
               </div>
 
               <p className="mt-4 text-[0.95rem] leading-relaxed text-foreground/55">{match.blurb}</p>
+              {match.reason ? <p className="mt-2 text-sm leading-relaxed text-foreground/70">{match.reason}</p> : null}
               <p className="mt-2 text-sm text-foreground/40">
                 {match.address}
                 {match.detail ? ` · ${match.detail}` : ""} · {number.format(match.squareFeet)} sq ft
@@ -90,6 +91,7 @@ export default function Discover() {
           tourId={tour.tourId}
           title={tour.address}
           detail={tour.detail}
+          squareFeet={tour.squareFeet}
           onClose={() => setTour(null)}
         />
       )}

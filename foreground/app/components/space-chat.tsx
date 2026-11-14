@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { monthlyRent, type Match } from "../lib/matches";
+import { readBrief } from "../lib/brief";
 
 type Message = { role: "agent" | "user"; text: string };
 
@@ -56,11 +57,40 @@ export default function SpaceChat({ match, open, onOpenChange }: { match: Match;
     if (open) inputRef.current?.focus();
   }, [open]);
 
-  function send(text: string) {
+  async function send(text: string) {
     const trimmed = text.trim();
     if (!trimmed) return;
     setValue("");
-    setMessages((current) => [...current, { role: "user", text: trimmed }, { role: "agent", text: answer(match, trimmed) }]);
+    setMessages((current) => [...current, { role: "user", text: trimmed }]);
+    let reply = "";
+    try {
+      const response = await fetch("/api/property-agent", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          mode: "ask",
+          brief: readBrief(),
+          question: trimmed,
+          listing: {
+            address: match.address,
+            detail: match.detail,
+            city: match.city,
+            blurb: match.blurb,
+            squareFeet: match.squareFeet,
+            monthlyRent: monthlyRent(match),
+            rentPerSquareFootYear: match.rentPerSquareFootYear,
+            facts: [...(match.facts?.property ?? []), ...(match.facts?.location ?? []), ...(match.notes ?? [])].map(
+              (row) => `${row.label}: ${row.value}`,
+            ),
+          },
+        }),
+      });
+      const body = (await response.json()) as { reply?: string };
+      if (response.ok && body.reply) reply = body.reply;
+    } catch {
+      reply = "";
+    }
+    setMessages((current) => [...current, { role: "agent", text: reply || answer(match, trimmed) }]);
   }
 
   function submit(event?: FormEvent) {
