@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>Renovation Studio v8</title>
-<!-- Served by run_all.py at http://localhost:8000/Code/studio.html (the SDK key only works on localhost) -->
+<!-- Served by run_all.py at http://localhost:8000/modeling/studio.html (the SDK key only works on localhost) -->
 <script src="showcase/config.js"></script>
 <script src="https://static.matterport.com/showcase-sdk/bootstrap/3.1.0-0-g1cd7e0997a/sdk.js"></script>
 <style>
@@ -46,7 +46,7 @@
   <button data-mode="INSIDE">Walk</button><button data-mode="DOLLHOUSE">Dollhouse</button><button data-mode="FLOORPLAN">Floor plan</button><button id="tPlan" class="on" title="Floor plan view: draw our rooms and walls over Matterport's roof/drone image">Our plan</button>
 
   <h2>Furniture</h2>
-  <button id="tEdit">Edit furniture</button><button id="tFurn" class="on">Show</button><button id="tTent" class="on">Tentative</button><button id="tTiles" class="on">Matterport models</button><button id="tShapes">Carved shapes</button><button id="tDoll">Show in dollhouse</button>
+  <button id="tEdit">Edit furniture</button><button id="tFurn" class="on">Show</button><button id="tTent" class="on">Tentative</button><button id="tTiles" class="on">Matterport models</button><button id="tRefined" class="on" title="Closed, tear-free models with the unseen sides rebuilt (complete_objects.py); off = raw scan cuts">Closed models</button><button id="tShapes">Carved shapes</button><button id="tDoll">Show in dollhouse</button>
   <div class="muted" style="font-size:11px;margin:4px 0">"Edit furniture" ON: hover a piece to see its name, drag it to move (snaps to walls; hold <kbd>Alt</kbd> for free),
     click again to pick the piece behind / on top. Wheel or <kbd>Q</kbd>/<kbd>E</kbd> rotate, <kbd>R</kbd> 90°, arrows nudge 5 cm (<kbd>Shift</kbd> 1 cm),
     <kbd>Del</kbd> remove, <kbd>Ctrl+Z</kbd> undo. Away from furniture the mouse still walks around the house.</div>
@@ -87,7 +87,7 @@ if (!C) { status('Missing showcase/config.js - run: python run_all.py --only sdk
 if (!window.MP_SDK) { status('Could not load Matterport sdk.js (blocked by an ad-blocker or offline?)', true); throw new Error('no sdk'); }
 
 // Model API frame (x east, y north, z up) <-> Showcase frame (x east, y up, -z north)
-const S = { useTiles:true, dollhouse:false, sdk:null, plan:null, objData:null, objs:[], sel:null, history:[], showFurn:true, showTent:true, useShapes:false,
+const S = { useTiles:true, useRefined:true, dollhouse:false, sdk:null, plan:null, objData:null, objs:[], sel:null, history:[], showFurn:true, showTent:true, useShapes:false,
             empty:true, edit:false, pose:null, sweeps:{}, floorZ:0, planView:true, hover:null, find:'' };
 const COLORS = { 'pano+mesh':0x3ecf8e, 'mesh_segment':0x3ecf8e, 'mesh':0xf0b429, 'pano':0x6b8cff };
 
@@ -160,7 +160,7 @@ async function getOBJ(f) {
 
 // minimal loader for the GLBs written by tile_objects.py (positions, uv, indices, embedded jpeg, unlit)
 async function getGLB(f) {
-  const r = await fetch(C.dataDir + f); if (!r.ok) return null;
+  const r = await fetch(C.dataDir + f, { cache:'no-cache' }); if (!r.ok) return null;   // revalidate: models are regenerated
   const b = await r.arrayBuffer(), dv = new DataView(b);
   if (dv.getUint32(0, true) !== 0x46546C67) return null;
   let off = 12, js = null, bin = null;
@@ -176,7 +176,9 @@ async function getGLB(f) {
     g.setAttribute('position', new THREE.BufferAttribute(acc(p.attributes.POSITION), 3));
     if (p.attributes.TEXCOORD_0 !== undefined) g.setAttribute('uv', new THREE.BufferAttribute(acc(p.attributes.TEXCOORD_0), 2));
     g.setIndex(new THREE.BufferAttribute(acc(p.indices), 1));
-    const m = js.materials[p.material].pbrMetallicRoughness, mat = new THREE.MeshBasicMaterial({ side:THREE.DoubleSide });
+    const mat = new THREE.MeshBasicMaterial({ side:THREE.DoubleSide });
+    if (p.attributes.COLOR_0 !== undefined) { g.setAttribute('color', new THREE.BufferAttribute(acc(p.attributes.COLOR_0), 3)); mat.vertexColors = true; }
+    const m = js.materials[p.material].pbrMetallicRoughness;
     if (m.baseColorTexture) { const img = js.images[js.textures[m.baseColorTexture.index].source], [o, n] = view(img.bufferView);
       const bmp = await createImageBitmap(new Blob([new Uint8Array(b, o, n)], { type:img.mimeType }));
       const tex = new THREE.Texture(bmp); tex.flipY = false; tex.colorSpace = THREE.SRGBColorSpace; tex.needsUpdate = true; mat.map = tex;
@@ -264,7 +266,13 @@ async function buildObjects() {
   if (S.useShapes) { try { (await getJSON('scene_shapes.json')).objects.forEach(t => { if (t.result === 'carved') models[t.id] = t; }); } catch {} }
   // best source: objects cut from Matterport's own full-quality mesh (tile_objects.py), with Matterport's labels
   const tileModels = {};
-  if (S.useTiles) { try { (await getJSON('scene_tiles.json')).objects.forEach(t => { tileModels[t.id] = t; }); } catch {} }
+  // complete_objects.py output (closed, tear-free models) when present, else the raw cuts
+  if (S.useTiles) {
+    let sc = null;
+    if (S.useRefined) { try { sc = await getJSON('scene_refined.json'); } catch {} }
+    if (!sc) { try { sc = await getJSON('scene_tiles.json'); } catch {} }
+    if (sc) sc.objects.forEach(t => { tileModels[t.id] = t; });
+  }
   const prev = Object.fromEntries(S.objs.map(o => [o.id, o]));
   S.objs = [];
   for (const o of S.objData) {
@@ -277,7 +285,8 @@ async function buildObjects() {
     if (tm && tm.label) ob.label = tm.label;
     const glb = tm && tm.file ? await getGLB(tm.file) : null;
     const g = glb ? null : (models[o.id] ? await getOBJ(models[o.id].file) : null);
-    if (glb) { grp.add(glb); ob.model = 'matterport mesh'; }
+    if (glb) { grp.add(glb); ob.model = 'matterport mesh';
+      if (tm.refine) { ob.refine = tm.refine; ob.model = tm.refine.method || ob.model; } }
     else if (g) {
       grp.add(new THREE.Mesh(g, new THREE.MeshBasicMaterial({ vertexColors: !!g.attributes.color, side:THREE.DoubleSide })));
     } else {
@@ -563,6 +572,7 @@ function showSel() {
   $('sel').innerHTML = `<b>${name(o)}</b> <span class="muted">#${o.id}${o.kind ? ' · ' + o.kind : ''}</span><br>
     ${o.size.map(v => v.toFixed(2)).join(' × ')} m · ${r ? r.label : '—'}${o.model ? ' · ' + o.model : ''}<br>
     <span class="muted">${d > 0.005 ? `moved ${d.toFixed(2)} m · ` : ''}${g < 0.02 ? 'against a wall' : g.toFixed(2) + ' m to the nearest wall'}</span>
+    ${o.refine && o.refine.open_pct != null ? `<br><span class="muted" title="Rays from 25 viewing directions that look through a tear / open side or hit a doubled surface (modeling/eval_models.py); raw scan cuts average ~31%">closed model · ${o.refine.open_pct}% open rays${o.refine.template ? ' · ' + o.refine.template : ''}</span>` : ''}
     <div class="row">Angle <input id="iYaw" type="number" step="5" value="${Math.round(o.yaw)}">°
       <button id="bL">⟲ 90°</button><button id="bR">⟳ 90°</button></div>
     <button id="bDel">Remove</button><button id="bRes">Reset</button><button id="bGo">Go to it</button>`;
@@ -617,6 +627,7 @@ toggle('tFurn', 'showFurn', () => { S.objs.forEach(place); evaluate(); });
 toggle('tTent', 'showTent', () => { S.objs.forEach(place); evaluate(); });
 toggle('tShapes', 'useShapes', () => buildObjects());
 toggle('tTiles', 'useTiles', () => buildObjects());
+toggle('tRefined', 'useRefined', () => buildObjects());
 toggle('tDoll', 'dollhouse', () => {});
 toggle('tPlan', 'planView', () => {});
 $('mEmpty').onclick = () => { if (S.empty) return; S.empty = true; $('mEmpty').classList.add('on'); $('mFull').classList.remove('on'); loadShowcase(); };

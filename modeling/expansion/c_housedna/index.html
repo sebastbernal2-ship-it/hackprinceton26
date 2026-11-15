@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>House DNA addition</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #c9d6e0; font: 13px/1.4 system-ui, -apple-system, Segoe UI, sans-serif; }
+  canvas { display: block; }
+  #ui { position: absolute; left: 12px; top: 12px; width: 360px; max-height: calc(100% - 24px); overflow: auto; background: rgba(250, 249, 246, 0.94);
+        color: #222; border-radius: 10px; box-shadow: 0 4px 24px rgba(0,0,0,.18); padding: 12px 14px; }
+  #ui h1 { font-size: 15px; margin: 0 0 4px; }
+  #ui .sub { color: #666; font-size: 12px; margin-bottom: 8px; }
+  #ui .row { display: flex; flex-wrap: wrap; gap: 4px; margin: 6px 0; }
+  #ui button { border: 1px solid #c8c4bb; background: #fff; border-radius: 6px; padding: 3px 8px; cursor: pointer; font: inherit; }
+  #ui button.on { background: #2f5d8a; color: #fff; border-color: #2f5d8a; }
+  #ui h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: #7a6f60; margin: 12px 0 4px; }
+  .rule { margin: 4px 0 7px; }
+  .rule b { font-weight: 600; } .rule .v { color: #2f5d8a; font-weight: 600; }
+  .rule .why { color: #555; font-size: 12px; }
+  .sw { display: inline-block; width: 11px; height: 11px; border-radius: 2px; border: 1px solid #0003; vertical-align: -1px; margin-right: 3px; }
+  #hint { font-size: 11px; color: #777; margin-top: 8px; }
+  .sl { display: flex; align-items: center; gap: 6px; margin: 3px 0; } .sl label { width: 46px; color: #555; } .sl input { flex: 1; } .sl span { width: 52px; text-align: right; font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+<div id="ui" style="display:none">
+  <h1>House DNA → new room</h1>
+  <div class="sub">Every choice below is inferred from measurements of the scanned house (house_dna.json).</div>
+  <div class="row" id="cases"></div>
+  <div class="row" id="views"></div>
+  <div class="row"><button id="tRoof" class="on">roof</button><button id="tEdit">drag addition</button></div>
+  <div class="sl"><label>Depth</label><input id="depth" type="range" min="2.2" max="7" step="0.05"><span id="depthv"></span></div>
+  <div class="sl"><label>Width</label><input id="width" type="range" min="2" max="7" step="0.05"><span id="widthv"></span></div>
+  <div class="sl"><label>Offset</label><input id="offset" type="range" min="-4" max="4" step="0.05"><span id="offsetv"></span></div>
+  <div id="rules"></div>
+  <div id="hint">Orbit: left-drag · pan: right-drag · zoom: wheel. The sliders or the orange ground handle resize / move the new room and regenerate it live. "drag addition": drag the room itself along the house wall; shift-drag changes its depth.</div>
+</div>
+<script type="module">
+import * as THREE from '../../vendor/three.module.min.js';
+import { loadExtensionKit } from './extension.js';
+
+// All generation (house shell, roof, site, the addition itself, plan overlay) lives in extension.js, which editor3d.html
+// uses too. This page is the standalone viewer: test-case cameras, live sliders / drag handle, rules panel.
+const qs = new URLSearchParams(location.search);
+const VIEW = qs.get('view'); let CASE = qs.get('case') || 'main';
+const tc = await fetch('../test_case.json').then(r => r.json());
+const additions = Object.fromEntries(tc.additions.map(a => [a.id, structuredClone(a)]));
+
+// ------------------------------------------------------------------------------------------ renderer / scene
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(VIEW ? 1 : Math.min(devicePixelRatio, 2));
+const [VW, VH] = VIEW ? tc.views.size : [innerWidth, innerHeight];
+if (VIEW) { Object.defineProperty(window, 'innerWidth', { value: VW }); Object.defineProperty(window, 'innerHeight', { value: VH }); }
+renderer.setSize(innerWidth, innerHeight);
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.0;
+document.body.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+
+const kit = await loadExtensionKit(new URL('./', import.meta.url), { planUrl: '../../../pano_zvKHR9DHNjJ/mesh_diff/plan.json', scan: true });
+const { dna } = kit, { ex0, ex1, ey0, ey1, ground_z: G0 } = kit.bounds;
+const { sky } = kit.createEnvironment(renderer, scene);
+scene.add(kit.scanGroup);
+
+// ------------------------------------------------------------------------------------------ parametric addition (from a_parametric)
+// Each case is re-expressed as {a, d, n, width, depth, offset}: a = start of the connect wall, d = along the house wall,
+// n = away from the house. Sliders, the ground handle and the drag-the-room tool all edit these and regenerate.
+const PARAM = {};
+function initParams(id) { PARAM[id] = kit.paramsFromAddition(tc.additions.find(a => a.id === id)); }
+function applyParams(id) { kit.additionFromParams(PARAM[id], additions[id]); }
+
+// ------------------------------------------------------------------------------------------ per-case build
+let built = null, caseGroup = null, roofGroup = null, spec = null;
+function buildCase() {
+  if (built) built.dispose();
+  built = kit.build({ additions: [additions[CASE]], site: true });
+  scene.add(built.group);
+  caseGroup = built.group; roofGroup = built.roof; spec = built.specs[0];
+  renderRules();
+}
+
+
+// ------------------------------------------------------------------------------------------ cameras / views
+const camP = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, 0.05, 900); camP.up.set(0, 0, 1);
+const camO = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 200); camO.up.set(0, 1, 0);
+let cam = camP;
+const ctl = { target: new THREE.Vector3(-5, 2, 1), r: 25, az: -2.2, el: 0.5 };
+const clipPlan = new THREE.Plane(new THREE.Vector3(0, 0, -1), 2.25);
+function setView(v) {
+  const V = tc.views[v];
+  renderer.clippingPlanes = [];
+  roofGroup && (roofGroup.visible = document.getElementById('tRoof').classList.contains('on') || !!VIEW);
+  caseGroup && caseGroup.traverse(o => { if (o.userData.ceiling) o.visible = true; });
+  const pg0 = caseGroup && caseGroup.getObjectByName('plan'); if (pg0) pg0.visible = false;
+  if (V.type === 'orthographic_topdown') {
+    // Plan override (c_housedna only, test_case.json untouched): its plan camera (centre [-5,1.5], 26 m wide -> 14.6 m
+    // tall at 16:9) cuts off the north end of the main addition (y up to 8.9 + wall). Fit the house + addition instead:
+    // keep the test case's x centre and minimum width, re-centre y on the union's extents and widen until it fits.
+    const pa = additions[CASE].polygon, m = 0.9;
+    const fx0 = Math.min(ex0, ...pa.map(q => q[0])) - m, fx1 = Math.max(ex1, ...pa.map(q => q[0])) + m;
+    const fy0 = Math.min(ey0, ...pa.map(q => q[1])) - m, fy1 = Math.max(ey1, ...pa.map(q => q[1])) + m;
+    const asp = innerWidth / innerHeight;
+    const cx = Math.min(Math.max(V.center[0], fx1 - V.width_m / 2), fx0 + V.width_m / 2), cy = (fy0 + fy1) / 2;
+    const w = Math.max(V.width_m, (fy1 - fy0) * asp, 2 * Math.max(fx1 - cx, cx - fx0)) / 2, hh = w / asp;
+    Object.assign(camO, { left: -w, right: w, top: hh, bottom: -hh }); camO.updateProjectionMatrix();
+    camO.position.set(cx, cy, 60); camO.lookAt(cx, cy, 0);
+    cam = camO;
+    renderer.clippingPlanes = [clipPlan];             // floor-plan cut: roofs and ceilings removed
+    roofGroup.visible = false;
+    caseGroup.traverse(o => { if (o.userData.ceiling) o.visible = false; });
+    const pg = caseGroup.getObjectByName('plan'); if (pg) pg.visible = true;
+  } else {
+    cam = camP; camP.fov = V.fov_v; camP.aspect = innerWidth / innerHeight; camP.updateProjectionMatrix();
+    camP.position.set(...V.pos); camP.lookAt(...V.target);
+    const d = new THREE.Vector3().subVectors(camP.position, new THREE.Vector3(...V.target));
+    ctl.target.set(...V.target); ctl.r = d.length(); ctl.az = Math.atan2(d.y, d.x); ctl.el = Math.asin(d.z / ctl.r);
+  }
+  curView = v;
+}
+let curView = VIEW || 'aerial';
+function refreshVis() {   // after a rebuild keep roof toggle / plan mode consistent
+  const plan = curView === 'plan';
+  roofGroup.visible = !plan && (VIEW ? true : document.getElementById('tRoof').classList.contains('on'));
+  caseGroup.traverse(o => { if (o.userData.ceiling) o.visible = !plan; });
+  const pg = caseGroup.getObjectByName('plan'); if (pg) pg.visible = plan;
+}
+function applyOrbit() {
+  if (cam !== camP) return;
+  const c = Math.cos(ctl.el);
+  camP.position.set(ctl.target.x + ctl.r * c * Math.cos(ctl.az), ctl.target.y + ctl.r * c * Math.sin(ctl.az), ctl.target.z + ctl.r * Math.sin(ctl.el));
+  camP.lookAt(ctl.target);
+}
+
+// ------------------------------------------------------------------------------------------ UI
+function renderRules() {
+  if (VIEW) return;
+  const el = document.getElementById('rules'); let html = ''; let grp = '';
+  html += `<h2>Inferred room</h2><div class="rule"><span class="v">${spec.type}</span>, ${spec.area.toFixed(1)} m², off the ${spec.neighbour.label}</div>`;
+  for (const r of spec.rules) {
+    if (r.group !== grp) { grp = r.group; html += `<h2>${grp}</h2>`; }
+    const sw = /^#[0-9a-f]{6}$/i.test(r.value) ? `<span class="sw" style="background:${r.value}"></span>` : '';
+    html += `<div class="rule"><b>${r.title}:</b> ${sw}<span class="v">${r.value}</span><div class="why">${r.why}</div></div>`;
+  }
+  el.innerHTML = html;
+}
+if (!VIEW) {
+  document.getElementById('ui').style.display = '';
+  const cs = document.getElementById('cases'), vs = document.getElementById('views');
+  for (const id of Object.keys(additions)) { const b = document.createElement('button'); b.textContent = 'case: ' + id; b.onclick = () => { CASE = id; applyParams(CASE); buildCase(); refreshVis(); window._placeHandle(); window._sync(); if (curView === 'plan') setView('plan'); mark(); }; b.dataset.c = id; cs.appendChild(b); }
+  for (const v of Object.keys(tc.views).filter(k => k !== 'size')) { const b = document.createElement('button'); b.textContent = v; b.dataset.v = v; b.onclick = () => { setView(v); mark(); }; vs.appendChild(b); }
+  const mark = () => { cs.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.c === CASE)); vs.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === curView)); };
+  window._mark = mark;
+  document.getElementById('tRoof').onclick = e => { e.target.classList.toggle('on'); roofGroup.visible = e.target.classList.contains('on'); };
+  const tEdit = document.getElementById('tEdit'); tEdit.onclick = () => tEdit.classList.toggle('on');
+  // live regeneration, coalesced to one rebuild per frame
+  let pending = false;
+  const regen = () => { if (pending) return; pending = true; requestAnimationFrame(() => { pending = false; applyParams(CASE); buildCase(); refreshVis(); placeHandle(); syncSliders(); if (curView === 'plan') setView('plan'); }); };
+  const syncSliders = () => { const P0 = PARAM[CASE];
+    document.getElementById('offset').min = P0.lo.toFixed(2); document.getElementById('offset').max = (P0.hi - 2).toFixed(2);
+    for (const k of ['depth', 'width', 'offset']) { document.getElementById(k).value = P0[k]; document.getElementById(k + 'v').textContent = (+P0[k]).toFixed(2) + ' m'; } };
+  window._sync = syncSliders;
+  for (const k of ['depth', 'width', 'offset']) document.getElementById(k).addEventListener('input', e => { PARAM[CASE][k] = +e.target.value; regen(); });
+  // orange ground handle beyond the far wall (a_parametric): drag it to slide the room along the house
+  const handle = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.08, 28), new THREE.MeshBasicMaterial({ color: 0xff8a1e }));
+  handle.rotation.x = Math.PI / 2; scene.add(handle);
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(0.42, 0.04, 8, 32), new THREE.MeshBasicMaterial({ color: 0xffffff })); ring.rotation.x = Math.PI / 2; handle.add(ring);
+  function placeHandle() { const P0 = PARAM[CASE], q = additions[CASE].polygon; const c = q.reduce((o, p) => [o[0] + p[0] / 4, o[1] + p[1] / 4], [0, 0]);
+    handle.position.set(c[0] + P0.n[0] * (P0.depth / 2 + 1.7), c[1] + P0.n[1] * (P0.depth / 2 + 1.7), G0 + 0.06); }
+  window._placeHandle = placeHandle;
+  // orbit + drag-the-addition
+  let drag = null; const el = renderer.domElement; el.oncontextmenu = e => e.preventDefault();
+  const ray = new THREE.Raycaster(); const ground = new THREE.Plane(new THREE.Vector3(0, 0, 1), -G0);
+  const ndc = e => new THREE.Vector2(e.clientX / innerWidth * 2 - 1, -e.clientY / innerHeight * 2 + 1);
+  const hitGround = e => { ray.setFromCamera(ndc(e), cam); const p = new THREE.Vector3(); return ray.ray.intersectPlane(ground, p) ? p : null; };
+  const hitHandle = e => { ray.setFromCamera(ndc(e), cam); return ray.intersectObject(handle, true).length > 0; };
+  el.onpointerdown = e => {
+    if (e.button === 0 && hitHandle(e)) { drag = { mode: 'handle' }; return; }
+    if (tEdit.classList.contains('on') && e.button === 0) { const p = hitGround(e); if (p) { const P0 = PARAM[CASE]; drag = { mode: 'edit', p0: p, off0: P0.offset, dep0: P0.depth, shift: e.shiftKey }; return; } }
+    drag = { mode: e.button === 2 ? 'pan' : 'orbit', x: e.clientX, y: e.clientY };
+    if (cam === camP && curView) { curView = null; mark(); }
+  };
+  addEventListener('pointerup', () => { drag = null; });
+  addEventListener('pointermove', e => {
+    if (!drag) return;
+    if (drag.mode === 'handle' || drag.mode === 'edit') {
+      const p = hitGround(e); if (!p) return; const P0 = PARAM[CASE];
+      if (drag.mode === 'handle') P0.offset = Math.round(((p.x - P0.a[0]) * P0.d[0] + (p.y - P0.a[1]) * P0.d[1] - P0.width / 2) / 0.05) * 0.05;
+      else { const dv = [p.x - drag.p0.x, p.y - drag.p0.y];
+        if (!drag.shift) P0.offset = drag.off0 + Math.round((dv[0] * P0.d[0] + dv[1] * P0.d[1]) / 0.05) * 0.05;     // slide along the house wall
+        else P0.depth = drag.dep0 + Math.round((dv[0] * P0.n[0] + dv[1] * P0.n[1]) / 0.05) * 0.05; }             // depth away from the house
+      regen(); return;
+    }
+    const dx = e.clientX - drag.x, dy = e.clientY - drag.y; drag.x = e.clientX; drag.y = e.clientY;
+    if (drag.mode === 'orbit') { ctl.az -= dx * 0.005; ctl.el = Math.max(-0.2, Math.min(1.5, ctl.el + dy * 0.005)); }
+    else { const s = ctl.r * 0.0015; const ax = new THREE.Vector3(-Math.sin(ctl.az), Math.cos(ctl.az), 0);
+      ctl.target.addScaledVector(ax, -dx * s); ctl.target.z += dy * s; }
+    if (cam === camP) applyOrbit(); else { camO.position.x -= dx * 0.03; camO.position.y += dy * 0.03; }
+  });
+  el.onwheel = e => { if (cam === camP) { ctl.r *= Math.exp(e.deltaY * 0.001); applyOrbit(); } else { camO.zoom *= Math.exp(-e.deltaY * 0.001); camO.updateProjectionMatrix(); } };
+  addEventListener('resize', () => { renderer.setSize(innerWidth, innerHeight); camP.aspect = innerWidth / innerHeight; camP.updateProjectionMatrix(); if (curView === 'plan') setView('plan'); });
+}
+
+for (const id of Object.keys(additions)) initParams(id);
+buildCase();
+setView(curView);
+if (!VIEW) { window._mark(); window._placeHandle(); window._sync(); }
+let frames = 0;
+renderer.setAnimationLoop(() => {
+  renderer.render(scene, cam);
+  if (VIEW && ++frames === 3) {
+    document.title = 'READY';
+    if (qs.get('pick')) {      // debug: what is under pixel x,y
+      const out = []; const rc = new THREE.Raycaster();
+      for (const q of qs.get('pick').split(';')) { const [px, py] = q.split(',').map(Number);
+        rc.setFromCamera(new THREE.Vector2(px / innerWidth * 2 - 1, -py / innerHeight * 2 + 1), cam);
+        const hit = rc.intersectObjects(scene.children, true).filter(h => h.object !== sky)[0];
+        out.push(hit ? { q, p: hit.point.toArray().map(v => +v.toFixed(2)), mat: hit.object.material.color && hit.object.material.color.getHexString(), geo: hit.object.geometry.type } : q + ':none'); }
+      document.body.dataset.pick = JSON.stringify(out).replace(/"/g, "'");
+    }
+  }
+});
+</script>
+</body>
+</html>

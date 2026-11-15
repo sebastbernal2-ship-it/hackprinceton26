@@ -1,12 +1,10 @@
-import re
-
 from fastapi import FastAPI, HTTPException
 
-from . import inspection_routes, projections, stubs
+from . import inspection_routes, pipeline, projections, stubs
 from .costs_routes import router as costs_router
 from .loader import load_matches
 from .models import (
-    AssessRequest, ProjectionsResponse, ScenarioAssessment,
+    AssessRequest, ProjectionsResponse, ReplanRequest, ReplanResponse, ScenarioAssessment,
     Match, MatchesRequest, MatchesResponse, NextQuestionRequest, NextQuestionResponse,
     TourAgentRequest, TourAgentResponse,
 )
@@ -14,7 +12,6 @@ from .models import (
 app = FastAPI(title="Site evidence API")
 app.include_router(inspection_routes.router)
 app.include_router(costs_router)
-LIMIT = 3
 
 
 @app.get("/api/health")
@@ -28,11 +25,13 @@ def matches(req: MatchesRequest):
     pool = load_matches()
     if pool is None:
         return MatchesResponse(dataAvailable=False, matches=[])
-    # No fit ranking: the brief only narrows by an explicitly named city. Stable id order.
-    said = " ".join(e.answer for e in req.brief).lower()
-    named = [c for c in {m.city.split(",")[0].lower() for m in pool} if c and re.search(rf"\b{re.escape(c)}\b", said)]
-    chosen = [m for m in pool if m.city.split(",")[0].lower() in named] if named else pool
-    return MatchesResponse(dataAvailable=True, matches=chosen[:LIMIT])
+    # The brief becomes a profile by keyword/number extraction; sites are tested, never scored.
+    profile, why = pipeline.profile_from_brief(req.brief, pool)
+    shown, counts, excluded, not_shown = pipeline.shortlist(pool, profile)
+    note = ("Ordered by constraint status (PASS, then UNKNOWN by evidence readiness), not by fit. FAIL sites are excluded "
+            "and counted. UNKNOWN means a needed fact is missing, not that the site fails.")
+    return MatchesResponse(dataAvailable=True, matches=shown, profile=pipeline.to_parsed(profile, why), counts=counts,
+                           excludedCount=excluded, notShownCount=not_shown, note=note)
 
 
 @app.get("/api/property/{listing_id}", response_model=Match)
@@ -52,7 +51,25 @@ def property_projections(listing_id: int):
 
 @app.post("/api/assess", response_model=ScenarioAssessment)
 def assess(req: AssessRequest):
-    return projections.assess(req)
+    pool = load_matches()
+    if req.listingId is not None and not any(m.listingId == req.listingId for m in pool or []):
+        raise HTTPException(status_code=404, detail="listing not found or data unavailable")
+    try:
+        return pipeline.assess_response(req, projections.models_available(), pool)
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e))
+
+
+@app.post("/api/replan", response_model=ReplanResponse)
+def replan(req: ReplanRequest):
+    pool = load_matches()
+    if pool is None:
+        raise HTTPException(status_code=404, detail="data unavailable")
+    try:
+        r = pipeline.replan(req, pool)
+    except (ValueError, TypeError) as e:
+        raise HTTPException(status_code=422, detail=str(e))
+    return ReplanResponse(dataAvailable=True, **r)
 
 
 @app.post("/api/next-question", response_model=NextQuestionResponse)

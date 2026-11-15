@@ -241,12 +241,73 @@
     }
   },
   "properties": {
+    "analysisBasis": {
+      "default": "unknown",
+      "title": "Analysisbasis",
+      "type": "string"
+    },
     "assumptions": {
       "default": [],
       "items": {
         "$ref": "#/$defs/AssumptionInput"
       },
       "title": "Assumptions",
+      "type": "array"
+    },
+    "assumptionsUsed": {
+      "default": [],
+      "items": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "title": "Assumptionsused",
+      "type": "array"
+    },
+    "budget": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Budget"
+    },
+    "buildout": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Buildout"
+    },
+    "costLines": {
+      "default": [],
+      "items": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "title": "Costlines",
+      "type": "array"
+    },
+    "draws": {
+      "default": 0,
+      "title": "Draws",
+      "type": "integer"
+    },
+    "excludedLineIds": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Excludedlineids",
       "type": "array"
     },
     "label": {
@@ -267,6 +328,11 @@
       "default": null,
       "title": "Listingid"
     },
+    "method": {
+      "default": "",
+      "title": "Method",
+      "type": "string"
+    },
     "modelsAvailable": {
       "title": "Modelsavailable",
       "type": "boolean"
@@ -276,6 +342,38 @@
       "title": "Note",
       "type": "string"
     },
+    "notes": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Notes",
+      "type": "array"
+    },
+    "pOverBudget": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Poverbudget"
+    },
+    "pOverBudgetBuildout": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Poverbudgetbuildout"
+    },
     "projections": {
       "default": [],
       "items": {
@@ -283,6 +381,24 @@
       },
       "title": "Projections",
       "type": "array"
+    },
+    "seed": {
+      "default": 0,
+      "title": "Seed",
+      "type": "integer"
+    },
+    "sensitivity": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Sensitivity"
     },
     "status": {
       "default": "unknown",
@@ -292,6 +408,43 @@
       ],
       "title": "Status",
       "type": "string"
+    },
+    "total": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Total"
+    },
+    "totals": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Totals"
+    },
+    "totalsStatus": {
+      "default": "",
+      "title": "Totalsstatus",
+      "type": "string"
+    },
+    "unknownInputs": {
+      "additionalProperties": true,
+      "default": {},
+      "title": "Unknowninputs",
+      "type": "object"
     }
   },
   "required": [

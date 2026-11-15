@@ -1,0 +1,423 @@
+{
+  "$defs": {
+    "ConstraintVerdict": {
+      "properties": {
+        "constraint": {
+          "title": "Constraint",
+          "type": "string"
+        },
+        "evidence": {
+          "additionalProperties": true,
+          "default": {},
+          "title": "Evidence",
+          "type": "object"
+        },
+        "missingFields": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Missingfields",
+          "type": "array"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "PASS",
+            "FAIL",
+            "UNKNOWN"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "constraint",
+        "status",
+        "reason"
+      ],
+      "title": "ConstraintVerdict",
+      "type": "object"
+    },
+    "Fact": {
+      "properties": {
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "value": {
+          "title": "Value",
+          "type": "string"
+        }
+      },
+      "required": [
+        "label",
+        "value"
+      ],
+      "title": "Fact",
+      "type": "object"
+    },
+    "FactorCard": {
+      "properties": {
+        "asOf": {
+          "title": "Asof",
+          "type": "string"
+        },
+        "factorId": {
+          "title": "Factorid",
+          "type": "string"
+        },
+        "geography": {
+          "title": "Geography",
+          "type": "string"
+        },
+        "limitations": {
+          "title": "Limitations",
+          "type": "string"
+        },
+        "recordId": {
+          "title": "Recordid",
+          "type": "string"
+        },
+        "source": {
+          "title": "Source",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "observed",
+            "derived",
+            "estimated",
+            "unknown"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "unit": {
+          "title": "Unit",
+          "type": "string"
+        },
+        "value": {
+          "title": "Value",
+          "type": "string"
+        }
+      },
+      "required": [
+        "factorId",
+        "status",
+        "value",
+        "unit",
+        "source",
+        "recordId",
+        "asOf",
+        "geography",
+        "limitations"
+      ],
+      "title": "FactorCard",
+      "type": "object"
+    },
+    "ParsedProfile": {
+      "description": "Operator profile as read from the brief (null = not stated, constraint not applied).",
+      "properties": {
+        "budget": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Budget"
+        },
+        "cities": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cities"
+        },
+        "matchedText": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "default": {},
+          "title": "Matchedtext",
+          "type": "object"
+        },
+        "maxAreaSqft": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Maxareasqft"
+        },
+        "maxSeats": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Maxseats"
+        },
+        "minAreaSqft": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Minareasqft"
+        },
+        "minSeats": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Minseats"
+        },
+        "requireActiveListing": {
+          "default": false,
+          "title": "Requireactivelisting",
+          "type": "boolean"
+        },
+        "requireRestaurantUse": {
+          "default": false,
+          "title": "Requirerestaurantuse",
+          "type": "boolean"
+        },
+        "requireScanModel": {
+          "default": false,
+          "title": "Requirescanmodel",
+          "type": "boolean"
+        }
+      },
+      "title": "ParsedProfile",
+      "type": "object"
+    },
+    "ShortlistMatch": {
+      "description": "A Match plus its hard-constraint verdicts. FAIL sites are never returned. Not a fit score.",
+      "properties": {
+        "address": {
+          "title": "Address",
+          "type": "string"
+        },
+        "blurb": {
+          "title": "Blurb",
+          "type": "string"
+        },
+        "city": {
+          "title": "City",
+          "type": "string"
+        },
+        "constraintStatus": {
+          "enum": [
+            "PASS",
+            "UNKNOWN"
+          ],
+          "title": "Constraintstatus",
+          "type": "string"
+        },
+        "constraints": {
+          "items": {
+            "$ref": "#/$defs/ConstraintVerdict"
+          },
+          "title": "Constraints",
+          "type": "array"
+        },
+        "detail": {
+          "title": "Detail",
+          "type": "string"
+        },
+        "evidenceReadiness": {
+          "title": "Evidencereadiness",
+          "type": "integer"
+        },
+        "factors": {
+          "items": {
+            "$ref": "#/$defs/FactorCard"
+          },
+          "title": "Factors",
+          "type": "array"
+        },
+        "facts": {
+          "$ref": "#/$defs/SpaceFacts"
+        },
+        "listingId": {
+          "title": "Listingid",
+          "type": "integer"
+        },
+        "missingFields": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Missingfields",
+          "type": "array"
+        },
+        "photo": {
+          "title": "Photo",
+          "type": "string"
+        },
+        "rentPerSquareFootYear": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rentpersquarefootyear"
+        },
+        "squareFeet": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Squarefeet"
+        },
+        "tourId": {
+          "title": "Tourid",
+          "type": "string"
+        }
+      },
+      "required": [
+        "listingId",
+        "address",
+        "detail",
+        "city",
+        "blurb",
+        "photo",
+        "tourId",
+        "evidenceReadiness",
+        "facts",
+        "factors",
+        "constraintStatus",
+        "constraints",
+        "missingFields"
+      ],
+      "title": "ShortlistMatch",
+      "type": "object"
+    },
+    "SpaceFacts": {
+      "properties": {
+        "location": {
+          "items": {
+            "$ref": "#/$defs/Fact"
+          },
+          "title": "Location",
+          "type": "array"
+        },
+        "photos": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Photos",
+          "type": "array"
+        },
+        "property": {
+          "items": {
+            "$ref": "#/$defs/Fact"
+          },
+          "title": "Property",
+          "type": "array"
+        }
+      },
+      "required": [
+        "photos",
+        "property",
+        "location"
+      ],
+      "title": "SpaceFacts",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "counts": {
+      "additionalProperties": {
+        "type": "integer"
+      },
+      "default": {},
+      "title": "Counts",
+      "type": "object"
+    },
+    "dataAvailable": {
+      "title": "Dataavailable",
+      "type": "boolean"
+    },
+    "excludedCount": {
+      "default": 0,
+      "title": "Excludedcount",
+      "type": "integer"
+    },
+    "matches": {
+      "items": {
+        "$ref": "#/$defs/ShortlistMatch"
+      },
+      "title": "Matches",
+      "type": "array"
+    },
+    "notShownCount": {
+      "default": 0,
+      "title": "Notshowncount",
+      "type": "integer"
+    },
+    "note": {
+      "default": "",
+      "title": "Note",
+      "type": "string"
+    },
+    "profile": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ParsedProfile"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    }
+  },
+  "required": [
+    "dataAvailable",
+    "matches"
+  ],
+  "title": "MatchesResponse",
+  "type": "object"
+}

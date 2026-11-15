@@ -32,9 +32,13 @@ Rules:
 - modelConfidence is your own 0-1 confidence that the observation is correct; it is NOT a probability.
 - category must be one of: plumbing, electrical, hvac, flooring, ceiling_water_damage, walls_finishes,
   structural, kitchen_infrastructure, egress_accessibility, layout_inefficiency, other.
-- region is the approximate normalized box {"x","y","w","h"} (0-1, origin top-left) or null.
+- box_2d is [ymin, xmin, ymax, xmax] on a 0-1000 grid over the image (origin top-left) tightly around the
+  visible evidence, or null if you cannot localize it.
+- grounding: "observed" only if you can point to a visible element in the image (put it in visibleEvidence);
+  "inferred" if you are reasoning from what is NOT visible or from context (e.g. no hood seen); "unknown" if unsure.
+- Every item is a HYPOTHESIS for an inspector to check, not a confirmed defect.
 Return ONLY a JSON array of objects with keys: category, title, description, severity, modelConfidence,
-region, canConfirmFromImagery, verificationStep. No prose, no code fences."""
+box_2d, grounding, visibleEvidence, canConfirmFromImagery, verificationStep. No prose, no code fences."""
 
 
 class VisionClient(Protocol):
@@ -96,6 +100,27 @@ def parse_findings_json(text: str) -> list[dict]:
     return data if isinstance(data, list) else []
 
 
+def reality_check(f: dict) -> dict:
+    """Post-pass: downgrade what the model claims to what the output actually supports.
+    'observed' is kept only with a localized box AND a stated visible element; absence-type claims
+    (missing hood, no panel seen) and unsupported claims are 'inferred'; empty/very-low-confidence stay 'unknown'.
+    Never upgrades: a model claim of 'inferred' or 'unknown' is kept."""
+    claim = f.get("grounding", "unknown")
+    has_box = (f.get("evidence") or {}).get("region") is not None
+    has_ev = bool(f.get("visibleEvidence"))
+    text = f"{f.get('title', '')} {f.get('description', '')}".lower()
+    absence = bool(re.search(r"\b(no|not|missing|absent|without|lack|lacks|lacking|undersized|old)\b", text)) \
+        and f.get("category") == "kitchen_infrastructure"
+    if claim == "observed" and has_box and has_ev and not absence:
+        g, note = "observed", "Model cites a visible element and a location in the image; still a hypothesis."
+    elif claim == "unknown" or f.get("modelConfidence", 0) < 0.2:
+        g, note = "unknown", "Model did not ground this in the image or confidence is very low."
+    else:
+        g, note = "inferred", "Not tied to a localized visible element (or an absence/age claim); treat as inference."
+    f["grounding"], f["groundingNote"] = g, note
+    return f
+
+
 def analyze_image(client: VisionClient, image: Path, prefix: str = "vis") -> list[dict]:
     if image.stat().st_size > MAX_IMAGE_BYTES:
         raise ValueError(f"{image.name} exceeds {MAX_IMAGE_BYTES} bytes; crop/downscale it first")
@@ -104,7 +129,7 @@ def analyze_image(client: VisionClient, image: Path, prefix: str = "vis") -> lis
     for i, raw in enumerate(parse_findings_json(text)):
         f = coerce_finding(raw, f"{prefix}-{i + 1}", "panorama", image.name)
         if f:
-            out.append(f)
+            out.append(reality_check(f))
     return out
 
 
