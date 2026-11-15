@@ -70,8 +70,32 @@ def test_assess_stub_unknown_and_labelled():
 def test_projections_endpoint(monkeypatch):
     monkeypatch.setenv("COSTAR_NORMALIZED_DIR", str(FIX))
     r = client.get("/api/property/900001/projections").json()
-    assert r["projections"] == [] and r["modelsAvailable"] is False
+    assert r["modelsAvailable"] is False
+    assert len(r["projections"]) == 12  # 4 metrics x 3 horizons
+    assert {c["horizon"] for c in r["projections"]} == {"12 months", "3-5 years", "2030"}
+    assert len({c["metric"] for c in r["projections"]}) == 4
+    for c in r["projections"]:
+        assert c["kind"] == "scenario" and c["status"] == "estimated" and "demo estimate" in c["scenario"]
+        assert c["lower"] <= c["point"] <= c["upper"] and "DEMO ESTIMATE" in c["method"]
+    assert "not a forecast" in r["note"]
     assert client.get("/api/property/1/projections").status_code == 404
     monkeypatch.setenv("MODELS_AVAILABLE", "1")
     assert client.get("/api/health").json()["modelsAvailable"] is True
     assert client.get("/api/property/900001/projections").json()["modelsAvailable"] is True
+
+
+def test_demo_cards_deterministic_and_differ_by_listing_and_size():
+    from app.projections import demo_cards
+    a = [c.model_dump() for c in demo_cards(5, 1200)]
+    assert a == [c.model_dump() for c in demo_cards(5, 1200)]
+    assert a != [c.model_dump() for c in demo_cards(6, 1200)]
+    assert a != [c.model_dump() for c in demo_cards(5, 4000)]
+    assert len(demo_cards(5, None)) == 12
+
+
+def test_horizons_route_carries_demo_forecasts(monkeypatch):
+    monkeypatch.setenv("COSTAR_NORMALIZED_DIR", str(FIX))
+    r = client.get("/api/horizons/900001")
+    assert r.status_code == 200
+    j = r.json()
+    assert len(j["demoForecasts"]) == 12 and "Demo" in j["demoForecastNote"]
