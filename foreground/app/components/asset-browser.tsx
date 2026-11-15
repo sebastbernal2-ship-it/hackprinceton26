@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import {
-  AssetApiError, axisRange, CATEGORIES, createAsset, fmtM, makeVariant, priceFor, VARIANT_KINDS, VARIANT_LABEL,
-  type Asset, type AssetCategory, type Dims, type VariantKind,
+  AssetApiError, axisRange, CATEGORIES, fmtM, makeVariant, patchAsset, priceFor, VARIANT_KINDS, VARIANT_LABEL,
+  type Asset, type AssetCategory, type VariantKind,
 } from "../lib/assets";
+import { defaultControls, variantParams, type Controls } from "../lib/variant-params";
 import type { CostLineItem } from "../lib/costs";
 import { AssetFacts, DraftBadge, FootprintSvg } from "./asset-bits";
 
@@ -73,11 +74,9 @@ export default function AssetBrowser({ assets, profileId, status, error, categor
   );
 }
 
-type Controls = { w: number; d: number; h: number };
-
 function VariantGenerator({ asset, profileId, onAdd, onSaved }: { asset: Asset | null; profileId: string | null; onAdd: (a: Asset) => void; onSaved: (a: Asset) => void }) {
   const [kind, setKind] = useState<Exclude<VariantKind, "base">>("corner_l");
-  const [size, setSize] = useState<Controls>(() => (asset ? { ...asset.dims } : { w: 0, d: 0, h: 0 }));
+  const [size, setSize] = useState<Controls>(() => (asset ? defaultControls(asset) : { w: 0, d: 0, h: 0, armA: 0, armB: 0, depthA: 0, depthB: 0, length: 0 }));
   const [skuIndex, setSkuIndex] = useState(0);
   const [result, setResult] = useState<Asset | null>(null);
   const [message, setMessage] = useState("");
@@ -87,17 +86,20 @@ function VariantGenerator({ asset, profileId, onAdd, onSaved }: { asset: Asset |
     return <aside className="rounded-lg border border-dashed border-foreground/25 p-3 text-sm text-foreground/60">Pick &ldquo;Variants&rdquo; on an asset to generate a corner L, island, wall run, scaled or mirrored version.</aside>;
   }
   const skus = asset.allowedSizes && asset.allowedSizes.length > 0 ? asset.allowedSizes : null;
-  const axes: (keyof Dims)[] = kind === "mirrored" ? [] : kind === "scaled" ? ["w", "d", "h"] : kind === "wall_run" ? ["w"] : ["w", "d"];
+  const fields: { key: keyof Controls; label: string; range: [number, number] | null }[] = kind === "corner_l"
+    ? [{ key: "armA", label: "Arm A length", range: null }, { key: "armB", label: "Arm B length", range: null },
+       { key: "depthA", label: "Arm A depth", range: null }, { key: "depthB", label: "Arm B depth", range: null }]
+    : kind === "wall_run" ? [{ key: "length", label: "Length", range: axisRange(asset, "w") }]
+    : kind === "scaled" ? [{ key: "w", label: "Length", range: axisRange(asset, "w") }, { key: "d", label: "Depth", range: axisRange(asset, "d") }, { key: "h", label: "Height", range: axisRange(asset, "h") }]
+    : [];
 
   async function generate() {
     if (!asset) return;
     setBusy(true);
     setMessage("");
     try {
-      const params: Record<string, number> = {};
-      if (kind === "scaled" && skus) Object.assign(params, { w: skus[skuIndex].w, d: skus[skuIndex].d, h: skus[skuIndex].h });
-      else if (!skus) for (const axis of axes) params[axis] = size[axis];
-      setResult(await makeVariant(asset.assetId, kind, params));
+      const params = variantParams(kind, asset, size, skuIndex);
+      setResult(await makeVariant(asset.assetId, kind, params, profileId));
     } catch (e) {
       setResult(null);
       setMessage(e instanceof AssetApiError ? e.message : "Could not generate the variant.");
@@ -110,7 +112,9 @@ function VariantGenerator({ asset, profileId, onAdd, onSaved }: { asset: Asset |
     if (!result) return;
     setBusy(true);
     try {
-      const saved = await createAsset({ ...result, status: "confirmed", profileId: profileId ?? result.profileId });
+      // The service already stored the variant as a draft when it was generated; confirm that record, do not create it again.
+      const saved = await patchAsset(result.assetId, { status: "confirmed" });
+      setResult(saved);
       onSaved(saved);
       setMessage(`Saved ${saved.name} to the catalog.`);
     } catch (e) {
@@ -135,16 +139,15 @@ function VariantGenerator({ asset, profileId, onAdd, onSaved }: { asset: Asset |
           </select>
         </label>
       )}
-      {skus && kind !== "scaled" && kind !== "mirrored" && <p className="mt-2 text-xs text-foreground/60">This item only exists in fixed SKUs, so size is not adjustable here.</p>}
-      {!skus && axes.map((axis) => {
-        const range = axisRange(asset, axis);
+      {skus && kind === "wall_run" && <p className="mt-2 text-xs text-foreground/60">This item only exists in fixed SKUs, so size is not adjustable here.</p>}
+      {(!skus || kind === "corner_l") && fields.map(({ key, label, range }) => {
         const locked = !!range && range[0] === range[1];
         return (
-          <label key={axis} className="mt-2 block">
-            {axis === "w" ? "Length" : axis === "d" ? (kind === "corner_l" ? "Leg depth" : "Depth") : "Height"} (m)
+          <label key={key} className="mt-2 block">
+            {label} (m)
             {range ? <span className="text-xs text-foreground/55"> allowed {range[0]} to {range[1]}</span> : <span className="text-xs text-foreground/55"> no stated range; the service may refuse</span>}
-            <input type="number" step={0.05} min={range?.[0]} max={range?.[1]} value={size[axis]} disabled={locked}
-              onChange={(e) => setSize((s) => ({ ...s, [axis]: Number(e.target.value) }))}
+            <input type="number" step={0.05} min={range?.[0]} max={range?.[1]} value={size[key]} disabled={locked}
+              onChange={(e) => setSize((s) => ({ ...s, [key]: Number(e.target.value) }))}
               className="ml-2 w-24 rounded border border-foreground/20 bg-background px-2 py-1" />
           </label>
         );
