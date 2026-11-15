@@ -114,4 +114,14 @@ def test_routes(tmp_path, monkeypatch):
 
 def test_routes_no_snapshot(tmp_path, monkeypatch):
     monkeypatch.setenv("STRUCTURE_DIR", str(tmp_path))
-    assert client.get("/api/structure/7").status_code == 404
+    assert client.get("/api/structure/7").status_code == 503  # snapshot not built, not "listing unknown"
+    assert client.get("/api/structure/7/scenarios").status_code == 503
+
+
+def test_expansion_without_snapshot_still_runs_with_unknown_signals(tmp_path, monkeypatch):
+    """The sample-plan simulator must not die because the per-property snapshot is missing or lacks this listing."""
+    monkeypatch.setenv("STRUCTURE_DIR", str(tmp_path))
+    body = {"listingId": 7, "plan": plan(), "baseRoomIds": ["a"]}
+    assert client.post("/api/structure/expansion", json=body).status_code == 200
+    (tmp_path / "properties.json").write_text(json.dumps({"8": HOU}))
+    assert client.post("/api/structure/expansion", json=body).status_code == 200
