@@ -11,6 +11,7 @@ from .lineage_routes import router as lineage_router
 from .concepts_routes import router as concepts_router
 from .finance_routes import router as finance_router
 from .loader import load_matches
+from .structure_routes import router as structure_router
 from .models import (
     AssessRequest, ProjectionsResponse, ReplanRequest, ReplanResponse, ScenarioAssessment,
     Match, MatchesRequest, MatchesResponse, NextQuestionRequest, NextQuestionResponse,
@@ -28,6 +29,7 @@ app.include_router(aerial_router)
 app.include_router(lineage_router)
 app.include_router(agent_router)
 app.include_router(concepts_router)
+app.include_router(structure_router)
 
 
 @app.get("/api/health")
