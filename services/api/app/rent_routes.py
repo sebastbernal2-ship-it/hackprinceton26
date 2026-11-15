@@ -67,6 +67,9 @@ def rent_summary():
 
 @router.get("/api/rent/{listing_id}")
 def rent_for_listing(listing_id: int):
+    from . import demo_fixture
+    if (fx := demo_fixture.get(listing_id)):
+        return demo_fixture.rent_response(fx)
     preds = _load("predictions.json")
     if preds is None:
         return _unknown("rent model artifacts are missing", listing_id)

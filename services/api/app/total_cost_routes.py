@@ -84,7 +84,12 @@ def site_rent(match, sqft: Optional[float], basis: Optional[str]) -> dict:
 def rent_options(match) -> list[dict]:
     """Rate options ($/sf/yr) for this listing, best evidence first. Each one names its source and status."""
     opts: list[dict] = []
-    if match.rentPerSquareFootYear:
+    from . import demo_fixture
+    if match.rentPerSquareFootYear and demo_fixture.has(match.listingId):
+        rl = demo_fixture.get(match.listingId)["rentLease"]
+        opts.append({"id": "listing", "label": "Demo asking rent (NNN)", "rate": _r(rl["askingRentPerSfYear"]), "low": _r(rl["askingRentRange"]["low"]),
+                     "high": _r(rl["askingRentRange"]["high"]), "status": "estimated", "source": rl["source"]})
+    elif match.rentPerSquareFootYear:
         opts.append({"id": "listing", "label": "Listing asking rent", "rate": _r(match.rentPerSquareFootYear),
                      "status": "observed", "source": f"CoStar listing {match.listingId}"})
     try:

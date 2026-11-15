@@ -17,7 +17,7 @@ if str(ROOT) not in sys.path:
 from planning import financials  # noqa: E402
 from structure import expansion, scenarios, screening  # noqa: E402
 
-from . import analyses  # noqa: E402
+from . import analyses, demo_fixture  # noqa: E402
 
 router = APIRouter()
 
@@ -36,7 +36,8 @@ def _load(name):
 
 def _prop(listing_id: int):
     props = _load("properties.json")
-    p = (props or {}).get(str(listing_id))
+    fx = demo_fixture.get(listing_id)
+    p = demo_fixture.structure_props(fx) if fx else (props or {}).get(str(listing_id))
     if p is None:  # a scan the snapshot lacks: demo-labelled props from the linked CoStar record (or the metro alone)
         p = analyses.structure_props(listing_id)
     if p is None and props is None:
@@ -50,9 +51,12 @@ def _prop(listing_id: int):
 def structure(listing_id: int):
     p, props = _prop(listing_id)
     s = screening.screen(p)
+    fx = demo_fixture.get(listing_id)
+    sub = ((f"DEMO DATA: about {p['geotech']['subsidenceInPerYear']} in/yr regional subsidence prior; {p['geotech']['soils']}; no parcel borings")
+           if fx and p.get("geotech") else "unknown: no reachable public Harris County subsidence layer found")
     return {"listingId": listing_id, "kit": {k: p.get(k) for k in ("yearBuilt", "renovatedYear", "material", "buildingClass", "stories", "grossSqFt", "heightFt", "hasSprinklers")},
             "hazards": {"fema": p.get("fema"), "usgs": p.get("usgs"), "elevationFt": p.get("elevationFt"), "retrieved": p.get("retrieved"),
-                        "subsidence": "unknown: no reachable public Harris County subsidence layer found"},
+                        "subsidence": sub},
             "screening": s, "fillRates": screening.fill_rates(props), "label": "screening prior, not an engineering assessment",
             **({"demo": True, "demoNote": p.get("demoNote")} if p.get("demo") else {})}
 
@@ -62,8 +66,13 @@ def structure_scenarios(listing_id: int):
     p, _ = _prop(listing_id)
     reg = screening.region(p.get("city"), p.get("state"))
     fetch = _load("climate_fetch.json")
-    return {"listingId": listing_id, "region": reg, "table": scenarios.table(fetch, reg),
-            "exposure": scenarios.exposure(p, fetch, reg), "climate": scenarios.metrics(listing_id, p, fetch, reg), "label": "scenario analysis, not a forecast"}
+    out = {"listingId": listing_id, "region": reg, "table": scenarios.table(fetch, reg),
+           "exposure": scenarios.exposure(p, fetch, reg), "climate": scenarios.metrics(listing_id, p, fetch, reg), "label": "scenario analysis, not a forecast"}
+    fx = demo_fixture.get(listing_id)
+    if fx:
+        out["climate"] = demo_fixture.climate_metrics(fx, out["climate"])
+        out["demoClimate"] = fx["climate"]
+    return out
 
 
 class ExpansionRequest(BaseModel):

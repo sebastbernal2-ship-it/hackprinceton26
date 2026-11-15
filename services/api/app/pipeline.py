@@ -113,7 +113,7 @@ def shortlist(pool: list[Match], profile: cf.Profile, limit: int | None = None, 
     bounds = assessment.buildout_bounds() if profile.budget is not None else None
     results = {m.listingId: cf.evaluate(profile, site_facts(m, bounds)) for m in pool}
     counts = {s: sum(r.status == s for r in results.values()) for s in (cf.PASS, cf.FAIL, cf.UNKNOWN)}
-    cafe_scan = lambda m: concept == "cafe" and m.listingId in picker.CAFE_IDS and not m.factors  # noqa: E731
+    cafe_scan = lambda m: concept == "cafe" and picker.is_cafe_scan(m)  # noqa: E731
     city_fail = lambda m: any(r.constraint == "city" and r.status == cf.FAIL for r in results[m.listingId].results)  # noqa: E731
     kept = [m for m in pool if results[m.listingId].status != cf.FAIL or (cafe_scan(m) and not city_fail(m))]
     n_pass = lambda m: sum(r.status == cf.PASS for r in results[m.listingId].results)  # noqa: E731

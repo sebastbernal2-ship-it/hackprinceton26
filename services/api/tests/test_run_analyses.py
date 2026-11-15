@@ -9,7 +9,7 @@ from fastapi.testclient import TestClient
 
 ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT))
-from app import analyses, loader, picker  # noqa: E402
+from app import analyses, demo_fixture, loader, picker  # noqa: E402
 from app.main import app  # noqa: E402
 from inspection.demo import build_demo  # noqa: E402
 from inspection.schema import validate_finding  # noqa: E402
@@ -49,6 +49,7 @@ def world(tmp_path, monkeypatch):
     monkeypatch.setattr(loader, "load_matches", lambda *a, **k: list(pool.values()))
     monkeypatch.setattr(analyses, "_kit_record", lambda pid: None)  # no CoStar kit in tests: a linked scan then falls back to metro-only
     monkeypatch.setattr(analyses, "_kit_sites", lambda lid: None)
+    monkeypatch.setattr(demo_fixture, "get", lambda *a, **k: None)  # these tests cover the generated path; the hand-authored fixture has its own tests
     analyses._BIG.clear()
     return derived
 

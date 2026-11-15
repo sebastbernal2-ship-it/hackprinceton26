@@ -181,6 +181,9 @@ def kit_structure_props(pid: int, match) -> dict | None:
 
 def structure_props(lid: int):
     """Structure props for a pool site the snapshot lacks (cached), else None."""
+    from . import demo_fixture
+    if (fx := demo_fixture.get(lid)):
+        return demo_fixture.structure_props(fx)
     def build():
         m = _match(lid)
         if m is None:
@@ -237,6 +240,9 @@ def site_facts(lid: int) -> dict | None:
 # ---------------------------------------------------------------- inspection
 def inspection_for(lid: int, force: bool = False) -> dict | None:
     """Findings for a site, from the inspection dir if one was written (python -m inspection.run, or this tool), else built and cached."""
+    from . import demo_fixture
+    if (fx := demo_fixture.get(lid)):
+        return demo_fixture.inspection(fx)
     p = inspection_dir() / f"{lid}.json"
     if not force and p.is_file():
         d = _read(p)
@@ -323,6 +329,9 @@ def scan_only_triage(f: dict) -> dict:
 
 
 def triage_for(lid: int) -> dict | None:
+    from . import demo_fixture
+    if (fx := demo_fixture.get(lid)):
+        return demo_fixture.triage(fx, real_triage(lid))
     f = site_facts(lid)
     real = real_triage(lid)
     if real:
@@ -353,6 +362,9 @@ def scan_only_aerial(f: dict) -> dict:
 
 
 def aerial_for(lid: int) -> dict | None:
+    from . import demo_fixture
+    if (fx := demo_fixture.get(lid)):
+        return demo_fixture.aerial(fx)
     real = real_aerial(lid)
     if real is not None:
         return real
@@ -477,11 +489,17 @@ def _kit_record_ok(sp: dict) -> bool:
 
 
 def lineage_for_any(lid: int):
+    from . import demo_fixture
+    if (fx := demo_fixture.get(lid)):
+        return demo_fixture.lineage(fx, False)
     real = (_read_big(_lineage_dir() / "lineage.json") or {}).get(str(lid))
     return real if real is not None else lineage_for(lid)
 
 
 def presence_for_any(lid: int):
+    from . import demo_fixture
+    if (fx := demo_fixture.get(lid)):
+        return demo_fixture.presence(fx)
     real = (_read_big(_lineage_dir() / "presence.json") or {}).get(str(lid))
     return real if real is not None else presence_for(lid)
 
