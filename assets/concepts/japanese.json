@@ -1,0 +1,137 @@
+{
+  "id": "japanese",
+  "name": "Japanese ramen / sushi",
+  "equipment": [
+    {
+      "assetId": "sushi_display_case_60",
+      "qty": {
+        "fixed": 1
+      },
+      "role": "sushi case",
+      "specific": true
+    },
+    {
+      "assetId": "sushi_prep_table_72",
+      "qty": {
+        "fixed": 1
+      },
+      "role": "sushi prep",
+      "specific": true
+    },
+    {
+      "assetId": "ramen_noodle_cooker_gas",
+      "qty": {
+        "fixed": 1
+      },
+      "role": "noodles",
+      "specific": true
+    },
+    {
+      "assetId": "wok_range_2hole",
+      "qty": {
+        "fixed": 1
+      },
+      "role": "stir fry",
+      "specific": true
+    },
+    {
+      "assetId": "rice_cooker_warmer_cabinet",
+      "qty": {
+        "perSeats": 40,
+        "min": 1
+      },
+      "role": "rice",
+      "specific": false
+    },
+    {
+      "assetId": "teppanyaki_griddle_48",
+      "qty": {
+        "fixed": 1
+      },
+      "role": "teppan",
+      "specific": true
+    }
+  ],
+  "adjacency": [
+    {
+      "a": "sushi_display_case_60",
+      "b": "sushi_prep_table_72",
+      "maxGapM": 1.5,
+      "why": "case is stocked from prep",
+      "status": "assumption",
+      "basis": "analyst workflow assumption (line flow), not a code requirement"
+    },
+    {
+      "a": "ramen_noodle_cooker_gas",
+      "b": "wok_range_2hole",
+      "maxGapM": 3.0,
+      "why": "noodle and wok line",
+      "status": "assumption",
+      "basis": "analyst workflow assumption (line flow), not a code requirement"
+    }
+  ],
+  "loads": [
+    {
+      "kind": "ventilation",
+      "note": "Wok range and teppanyaki need hood coverage; wok range may need water-cooled apparatus",
+      "status": "assumption",
+      "basis": "analyst assumption from typical equipment class; confirm with equipment spec sheet and a licensed MEP engineer"
+    },
+    {
+      "kind": "gas",
+      "note": "Wok range high BTU: verify line capacity",
+      "status": "assumption",
+      "basis": "analyst assumption from typical equipment class; confirm with equipment spec sheet and a licensed MEP engineer"
+    },
+    {
+      "kind": "water",
+      "note": "Wok range water cooling and noodle cooker fill/drain; sushi prep sink (assumed)",
+      "status": "assumption",
+      "basis": "analyst assumption from typical equipment class; confirm with equipment spec sheet and a licensed MEP engineer"
+    },
+    {
+      "kind": "electrical",
+      "note": "Rice cookers and cold cases (assumed)",
+      "status": "assumption",
+      "basis": "analyst assumption from typical equipment class; confirm with equipment spec sheet and a licensed MEP engineer"
+    }
+  ],
+  "materials": {
+    "wall": {
+      "name": "pale ash/light plaster",
+      "hex": "#EDE3CF"
+    },
+    "floor": {
+      "name": "dark stained oak",
+      "hex": "#4B3A2A"
+    },
+    "ceiling": {
+      "name": "light wood slat",
+      "hex": "#C4A57B"
+    },
+    "accent": {
+      "name": "vermilion accent",
+      "hex": "#C23B22"
+    }
+  },
+  "decor": [
+    "noren curtains",
+    "wood slat screens",
+    "paper lanterns"
+  ],
+  "signage": "Minimal vertical wordmark (assumption)",
+  "permits": [
+    {
+      "item": "Raw fish handling / parasite destruction documentation: ask local health authority",
+      "status": "assumption",
+      "source": "none fetched: ask the local building/fire/health authority"
+    },
+    {
+      "item": "Hood review for wok range",
+      "status": "assumption",
+      "source": "none fetched: ask the local building/fire/health authority"
+    }
+  ],
+  "seatsPerUnitNote": "qty.perSeats = one unit per N seats, ceil, at least min (default 1); a scaling ASSUMPTION, not a code figure",
+  "status": "draft concept profile: assumptions, not an engineering or code determination"
+}

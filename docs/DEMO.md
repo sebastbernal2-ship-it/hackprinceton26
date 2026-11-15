@@ -2,6 +2,35 @@
 
 Goal: a teammate can run the 7-step demo from `docs/product/mvp.md` in about 10 minutes. Commands in sections 2 and 3 were executed as written on 2026-11-14 against the synthetic fixtures in `services/api/tests/fixtures` (not the real CoStar data); anything not run is marked unverified. All evidence is context for a human; nothing here is a ranking, a forecast, or proof about hidden defects.
 
+## Record-Triage-led demo (3 minutes)
+Verified on branch `rt/merged` on 2026-11-14 against the real local kit (API on :8000, `next dev` on :3000 proxying `/api`). No `ANTHROPIC_API_KEY` is set, so the agent runs in REPLAY mode and says so. Setup: gitignored `data/raw|normalized|derived` present; build lineage once with `python -m triage.lineage.build --kit data/raw/costar/full-kit --candidates data/normalized/costar/restaurant-site-candidates.csv --out data/derived/lineage`; run the API from the repo root with `uvicorn --app-dir services/api app.main:app --port 8000`.
+
+| Time | Show | What to say (and not say) |
+|---|---|---|
+| 0:00-0:35 | Dashboard, Mission control: click "Replay recorded run" (about 15 s paced stream, 61 events: plans, tool calls, 3 parallel inspector subagents, findings, actions, cited brief). | "This is a recorded trace of the agent, labelled REPLAY. Plan, tools, parallel inspectors, every number cites a tool result." Do not call it live. |
+| 0:35-1:15 | Open a property, "Record triage" panel (`/api/triage/property/{id}`): CoStar value vs scan vs aerial, status per field. Cohort numbers from `/api/triage/summary`: clear height filled 23.1% (15 of 65) before, 75.4% (49 of 65) after, all scan-derived lower bounds (room scope, low/medium confidence); 6 of 46 tested floors conflict. | "Blank stays blank unless the scan can fill it, and filled values are labelled derived, not CoStar." The top-3 shortlist sites show mostly "cannot say / unverified" (no aerial for them); that is the honest output, not a bug. `use_hint` is low-confidence noise (see caveat in `docs/models/triage.md`). |
+| 1:15-1:45 | Aerial (`/api/aerial/{id}`) and lineage/presence (`/api/lineage/{id}`, `/api/presence/{id}`, `/api/lineage/summary`). | Vehicles in crop: estimated range (cross-validated MAE, n=15 hand-labelled crops). Rooftop units, parking stalls, docks: unknown on purpose (validation failed or no stall-level data). Lineage: observed CoStar tenancy spells, tenant names anonymized; market prior is "exploratory, not a per-site prediction". Presence is a kit-listed lower bound, not foot traffic. |
+| 1:45-2:15 | Reskin: "Turn Italian trattoria / pizzeria into Indian restaurant" (`POST /api/reskin {fromConcept:"italian",toConcept:"indian",seats:40}`): removed 6, added 8, adjacency and feasibility notes, new layout. | The cost delta is UNKNOWN: all 11 delta lines have no sourced price (`totalsStatus: unknown`, nothing counted as 0). Do not claim a dollar delta. The layout is a reference layout generated from the concept profile, not this space's real layout. |
+| 2:15-2:40 | Structure and climate screen. | Without `data/derived/structure` (needs `python -m structure.fetch_sources`, which calls public FEMA/USGS/NOAA endpoints; NOT run in this verification) the screen says "unknown, not low". The expansion graph runs on a labelled sample plan. |
+| 2:40-3:00 | 36-month restaurant scenario (`POST /api/finance/simulate`). | Without a stated rent it returns `status: blocked` with `rent_monthly` unknown. With an explicit assumption (`monthlyRentAssumption: 9000`, 40 seats) it returned `simulated`, 10,000 draws, `pCashShortfall` 0.9366 (an output of stated assumptions). "Scenario analysis, not a forecast", simulated local ledger, nothing sent to Nessie. |
+
+### Real / stub / missing (merged branch)
+| Piece | Status | How checked |
+|---|---|---|
+| Triage reconciliation over the kit (summary, property, queue) | Real, from a prior Matterport fetch cached locally | HTTP 200 on summary/property/queue; cohort numbers above read from the API |
+| Matterport room-label fills | Real but partial (lower bounds, scan scope) | summary statuses |
+| Vexcel aerial vehicle count | Real, 65 crops, estimated range with small validation set (n=15, 27% relative CV error) | `/api/aerial/{id}` 200; validation figures are builder-reported, not re-run |
+| Aerial rooftop units / stalls / docks / roof | Unknown by design | field status `unknown` |
+| Lineage + presence | Real, built from the kit (about 2 s) | build ran; routes 200; only 22 of 65 candidates have kit food history |
+| Agent | REPLAY of a recorded local run; SCRIPTED fixture also in repo; live needs `ANTHROPIC_API_KEY` or `LOCAL_LLM_BASE_URL` | replay stream 200 (61 events); live run not exercised |
+| Reskin / concepts | Real engine, assumption-labelled profiles; prices unknown so cost delta unknown | `/api/concepts` and `/api/reskin` 200 |
+| Structure | Code and tests real; local snapshot missing, so screen shows unknown | `/api/structure/{id}` 404 "snapshot unavailable" |
+| Finance simulate | Real Monte Carlo on stated assumptions; blocked without rent | 200, both cases |
+| CoStar extended / market | Real, read-only kit data | `/api/costar/market` and `/extended` 200 |
+| Asset catalog | Real list, procedural placeholder meshes, no sponsor assets | `/api/assets` 200 |
+| Mock API (`npm run mock-api`) | FAKE numbers, for UI work only | not used in this smoke test |
+| Live Matterport tour | Needs SDK key; not exercised | not run |
+
 ## 0. Prerequisites (local, uncommitted data)
 - Python 3.11+, `uv`, Node 20+.
 - Gitignored local data under `data/normalized/costar/` (CoStar candidate and evidence CSVs); `data/raw/` for the signage adapter and inspection images. Get it from a teammate or the sponsor kit; never commit it.

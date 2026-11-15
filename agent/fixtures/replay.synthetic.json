@@ -1,0 +1,709 @@
+[
+ {
+  "type": "plan",
+  "mode": "SCRIPTED",
+  "provider": "scripted",
+  "runId": "3ddd2bf3",
+  "t": 1794708959.48,
+  "items": [
+   "SCRIPTED plan: shortlist by constraints, inspect each in parallel, re-run with a changed assumption, build a checklist, save a cited brief."
+  ],
+  "kind": "thought",
+  "syntheticFixture": true
+ },
+ {
+  "type": "tool_call",
+  "mode": "SCRIPTED",
+  "provider": "scripted",
+  "runId": "3ddd2bf3",
+  "t": 1794708959.48,
+  "agent": "planner",
+  "tool": "write_plan",
+  "args": {
+   "items": [
+    "Shortlist candidates with the constraint filter",
+    "Inspect each candidate in parallel (facts, findings, costs, assess)",
+    "Re-run the plan with a changed assumption",
+    "Generate verification checklist and landlord questions",
+    "Save a cited decision brief"
+   ]
+  },
+  "syntheticFixture": true
+ },
+ {
+  "type": "plan",
+  "mode": "SCRIPTED",
+  "provider": "scripted",
+  "runId": "3ddd2bf3",
+  "t": 1794708959.48,
+  "items": [
+   "Shortlist candidates with the constraint filter",
+   "Inspect each candidate in parallel (facts, findings, costs, assess)",
+   "Re-run the plan with a changed assumption",
+   "Generate verification checklist and landlord questions",
+   "Save a cited decision brief"
+  ],
+  "syntheticFixture": true
+ },
+ {
+  "type": "tool_result",
+  "mode": "SCRIPTED",
+  "provider": "scripted",
+  "runId": "3ddd2bf3",
+  "t": 1794708959.48,
+  "agent": "planner",
+  "tool": "write_plan",
+  "resultId": "r1",
+  "ok": true,
+  "summary": "{\"ok\": true}",
+  "syntheticFixture": true
+ },
+ {
+  "type": "tool_call",
+  "mode": "SCRIPTED",
+  "provider": "scripted",
+  "runId": "3ddd2bf3",
+  "t": 1794708959.48,
+  "agent": "planner",
+  "tool": "shortlist",
+  "args": {
+   "goal": "Italian restaurant with gelato in Houston, 40 seats, under 250k: find, verify and plan the best candidates"
+  },
+  "syntheticFixture": true
+ },
+ {
+  "type": "tool_result",
+  "mode": "SCRIPTED",
+  "provider": "scripted",
+  "runId": "3ddd2bf3",
+  "t": 1794708959.48,
+  "agent": "planner",
+  "tool": "shortlist",
+  "resultId": "r2",
+  "ok": true,
+  "summary": "{\"counts\": {\"FAIL\": 3, \"PASS\": 1, \"UNKNOWN\": 2}, \"excluded\": 3, \"matches\": [{\"address\": \"SYNTH-1\", \"city\": \"Houston, TX\", \"constraintStatus\": \"PASS\", \"evidenceReadiness\": 4, \"listingId\": 9001, \"missingFields\": [], \"squareFeet\": 2400}, {\"add",
+  "syntheticFixture": true
+ },
+ {
+  "type": "tool_call",
+  "mode": "SCRIPTED",
+  "provider": "scripted",
+  "runId": "3ddd2bf3",
+  "t": 1794708959.48,
+  "agent": "planner",
+  "tool": "asset_catalog",
+  "args": {},
+  "syntheticFixture": true
+ },
+ {
+  "type": "tool_result",
+  "mode": "SCRIPTED",
+  "provider": "scripted",
+  "runId": "3ddd2bf3",
+  "t": 1794708959.48,
+  "agent": "planner",
+  "tool": "asset_catalog",
+  "resultId": "r3",
+  "ok": true,
+  "summary": "{\"assets\": [{\"assetId\": \"synth-range\", \"category\": \"kitchen\", \"dimsStatus\": \"estimated\"}], \"count\": 2}",
+  "syntheticFixture": true
+ },
+ {
+  "type": "plan",
+  "mode": "SCRIPTED",
+  "provider": "scripted",
+  "runId": "3ddd2bf3",
+  "t": 1794708959.48,
+  "items": [
+   "Inspecting the shortlist in parallel."
+  ],
+  "kind": "thought",
+  "syntheticFixture": true
+ },
+ {
+  "type": "tool_call",
+  "mode": "SCRIPTED",
+  "provider": "scripted",
+  "runId": "3ddd2bf3",
+  "t": 1794708959.481,
+  "agent": "planner",
+  "tool": "inspect_sites",
+  "args": {
+   "listingIds": [
+    9001,
+    9002
+   ]
+  },
+  "syntheticFixture": true
+ },
+ {
+  "type": "subagent_start",
+  "mode": "SCRIPTED",
+  "provider": "scripted",
+  "runId": "3ddd2bf3",
+  "t": 1794708959.481,
+  "agent": "inspector-9001",
+  "listingId": 9001,
+  "syntheticFixture": true
+ },
+ {
+  "type": "subagent_start",
+  "mode": "SCRIPTED",
+  "provider": "scripted",
+  "runId": "3ddd2bf3",
+  "t": 1794708959.481,
+  "agent": "inspector-9002",
+  "listingId": 9002,
+  "syntheticFixture": true
+ },
+ {
+  "type": "tool_call",
+  "mode": "SCRIPTED",
+  "provider": "scripted",
+  "runId": "3ddd2bf3",
+  "t": 1794708959.481,
+  "agent": "inspector-9001",
+  "tool": "property_facts",
+  "args": {
+   "listingId": 9001
+  },
+  "syntheticFixture": true
+ },
+ {
+  "type": "tool_result",
+  "mode": "SCRIPTED",
+  "provider": "scripted",
+  "runId": "3ddd2bf3",
+  "t": 1794708959.481,
+  "agent": "inspector-9001",
+  "tool": "property_facts",
+  "resultId": "r4",
+  "ok": true,
+  "summary": "{\"factorCards\": [{\"factorId\": \"seat_capacity\", \"status\": \"unknown\", \"value\": \"\"}], \"listingId\": 9001, \"note\": \"SYNTHETIC FIXTURE: invented values for tests/demo, not real property data\"}",
+  "syntheticFixture": true
+ },
+ {
+  "type": "tool_call",
+  "mode": "SCRIPTED",
+  "provider": "scripted",
+  "runId": "3ddd2bf3",
+  "t": 1794708959.481,
+  "agent": "inspector-9001",
+  "tool": "inspection_findings",
+  "args": {
+   "listingId": 9001
+  },
+  "syntheticFixture": true
+ },
+ {
+  "type": "tool_result",
+  "mode": "SCRIPTED",
+  "provider": "scripted",
+  "runId": "3ddd2bf3",
+  "t": 1794708959.481,
+  "agent": "inspector-9001",
+  "tool": "inspection_findings",
+  "resultId": "r5",
+  "ok": true,
+  "summary": "{\"findings\": [{\"category\": \"ceiling_water_damage\", \"grounding\": \"observed\", \"severity\": \"medium\", \"title\": \"Water stain on ceiling\"}], \"listingId\": 9001, \"mode\": \"fixture\", \"notice\": \"SYNTHETIC FIXTURE: invented values for tests/demo, not r",
+  "syntheticFixture": true
+ },
+ {
+  "type": "tool_call",
+  "mode": "SCRIPTED",
+  "provider": "scripted",
+  "runId": "3ddd2bf3",
+  "t": 1794708959.481,
+  "agent": "inspector-9001",
+  "tool": "costs",
+  "args": {
+   "listingId": 9001
+  },
+  "syntheticFixture": true
+ },
+ {
+  "type": "tool_result",
+  "mode": "SCRIPTED",
+  "provider": "scripted",
+  "runId": "3ddd2bf3",
+  "t": 1794708959.481,
+  "agent": "inspector-9001",
+  "tool": "costs",
+  "resultId": "r6",
+  "ok": true,
+  "summary": "{\"excludedLineIds\": [\"repair.roof\"], \"listingId\": 9001, \"note\": \"SYNTHETIC FIXTURE: invented values for tests/demo, not real property data\", \"totals\": {\"expected\": 90000, \"high\": 140000, \"low\": 60000}}",
+  "syntheticFixture": true
+ },
+ {
+  "type": "tool_call",
+  "mode": "SCRIPTED",
+  "provider": "scripted",
+  "runId": "3ddd2bf3",
+  "t": 1794708959.481,
+  "agent": "inspector-9001",
+  "tool": "assess",
+  "args": {
+   "listingId": 9001,
+   "goal": "Italian restaurant with gelato in Houston, 40 seats, under 250k: find, verify and plan the best candidates"
+  },
+  "syntheticFixture": true
+ },
+ {
+  "type": "tool_result",
+  "mode": "SCRIPTED",
+  "provider": "scripted",
+  "runId": "3ddd2bf3",
+  "t": 1794708959.481,
+  "agent": "inspector-9001",
+  "tool": "assess",
+  "resultId": "r7",
+  "ok": true,
+  "summary": "{\"listingId\": 9001, \"note\": \"SYNTHETIC FIXTURE: invented values for tests/demo, not real property data\", \"pOverBudget\": 0.18, \"pOverBudgetBuildout\": 0.12, \"unknownInputs\": {}}",
+  "syntheticFixture": true
+ },
+ {
+  "type": "tool_call",
+  "mode": "SCRIPTED",
+  "provider": "scripted",
+  "runId": "3ddd2bf3",
+  "t": 1794708959.482,
+  "agent": "inspector-9002",
+  "tool": "property_facts",
+  "args": {
+   "listingId": 9002
+  },
+  "syntheticFixture": true
+ },
+ {
+  "type": "tool_result",
+  "mode": "SCRIPTED",
+  "provider": "scripted",
+  "runId": "3ddd2bf3",
+  "t": 1794708959.482,
+  "agent": "inspector-9002",
+  "tool": "property_facts",
+  "resultId": "r8",
+  "ok": true,
+  "summary": "{\"factorCards\": [{\"factorId\": \"seat_capacity\", \"status\": \"unknown\", \"value\": \"\"}], \"listingId\": 9002, \"note\": \"SYNTHETIC FIXTURE: invented values for tests/demo, not real property data\"}",
+  "syntheticFixture": true
+ },
+ {
+  "type": "tool_call",
+  "mode": "SCRIPTED",
+  "provider": "scripted",
+  "runId": "3ddd2bf3",
+  "t": 1794708959.482,
+  "agent": "inspector-9002",
+  "tool": "inspection_findings",
+  "args": {
+   "listingId": 9002
+  },
+  "syntheticFixture": true
+ },
+ {
+  "type": "tool_result",
+  "mode": "SCRIPTED",
+  "provider": "scripted",
+  "runId": "3ddd2bf3",
+  "t": 1794708959.482,
+  "agent": "inspector-9002",
+  "tool": "inspection_findings",
+  "resultId": "r9",
+  "ok": true,
+  "summary": "{\"findings\": [{\"category\": \"ceiling_water_damage\", \"grounding\": \"observed\", \"severity\": \"medium\", \"title\": \"Water stain on ceiling\"}], \"listingId\": 9002, \"mode\": \"fixture\", \"notice\": \"SYNTHETIC FIXTURE: invented values for tests/demo, not r",
+  "syntheticFixture": true
+ },
+ {
+  "type": "tool_call",
+  "mode": "SCRIPTED",
+  "provider": "scripted",
+  "runId": "3ddd2bf3",
+  "t": 1794708959.482,
+  "agent": "inspector-9002",
+  "tool": "costs",
+  "args": {
+   "listingId": 9002
+  },
+  "syntheticFixture": true
+ },
+ {
+  "type": "tool_result",
+  "mode": "SCRIPTED",
+  "provider": "scripted",
+  "runId": "3ddd2bf3",
+  "t": 1794708959.482,
+  "agent": "inspector-9002",
+  "tool": "costs",
+  "resultId": "r10",
+  "ok": true,
+  "summary": "{\"excludedLineIds\": [\"repair.roof\"], \"listingId\": 9002, \"note\": \"SYNTHETIC FIXTURE: invented values for tests/demo, not real property data\", \"totals\": {\"expected\": 90000, \"high\": 140000, \"low\": 60000}}",
+  "syntheticFixture": true
+ },
+ {
+  "type": "tool_call",
+  "mode": "SCRIPTED",
+  "provider": "scripted",
+  "runId": "3ddd2bf3",
+  "t": 1794708959.482,
+  "agent": "inspector-9002",
+  "tool": "assess",
+  "args": {
+   "listingId": 9002,
+   "goal": "Italian restaurant with gelato in Houston, 40 seats, under 250k: find, verify and plan the best candidates"
+  },
+  "syntheticFixture": true
+ },
+ {
+  "type": "tool_result",
+  "mode": "SCRIPTED",
+  "provider": "scripted",
+  "runId": "3ddd2bf3",
+  "t": 1794708959.482,
+  "agent": "inspector-9002",
+  "tool": "assess",
+  "resultId": "r11",
+  "ok": true,
+  "summary": "{\"listingId\": 9002, \"note\": \"SYNTHETIC FIXTURE: invented values for tests/demo, not real property data\", \"pOverBudget\": 0.18, \"pOverBudgetBuildout\": 0.12, \"unknownInputs\": {}}",
+  "syntheticFixture": true
+ },
+ {
+  "type": "finding",
+  "mode": "SCRIPTED",
+  "provider": "scripted",
+  "runId": "3ddd2bf3",
+  "t": 1794708959.483,
+  "kind": "unknown",
+  "listingId": 9002,
+  "text": "some cost lines have no figure and are excluded from totals (unknown, not zero)",
+  "cites": [
+   "r8",
+   "r9",
+   "r10",
+   "r11"
+  ],
+  "syntheticFixture": true
+ },
+ {
+  "type": "subagent_finish",
+  "mode": "SCRIPTED",
+  "provider": "scripted",
+  "runId": "3ddd2bf3",
+  "t": 1794708959.483,
+  "agent": "inspector-9002",
+  "listingId": 9002,
+  "verdict": {
+   "listingId": 9002,
+   "verdict": "workable",
+   "headline": "Scenario analysis, not a forecast: P(over budget) 0.18. Inspection findings exist; see the checklist.",
+   "topRisk": "some cost lines have no figure and are excluded from totals (unknown, not zero)",
+   "risks": [],
+   "unknowns": [
+    "some cost lines have no figure and are excluded from totals (unknown, not zero)"
+   ],
+   "cites": [
+    "r8",
+    "r9",
+    "r10",
+    "r11"
+   ],
+   "verified": true
+  },
+  "syntheticFixture": true
+ },
+ {
+  "type": "finding",
+  "mode": "SCRIPTED",
+  "provider": "scripted",
+  "runId": "3ddd2bf3",
+  "t": 1794708959.483,
+  "kind": "unknown",
+  "listingId": 9001,
+  "text": "some cost lines have no figure and are excluded from totals (unknown, not zero)",
+  "cites": [
+   "r4",
+   "r5",
+   "r6",
+   "r7"
+  ],
+  "syntheticFixture": true
+ },
+ {
+  "type": "subagent_finish",
+  "mode": "SCRIPTED",
+  "provider": "scripted",
+  "runId": "3ddd2bf3",
+  "t": 1794708959.483,
+  "agent": "inspector-9001",
+  "listingId": 9001,
+  "verdict": {
+   "listingId": 9001,
+   "verdict": "workable",
+   "headline": "Scenario analysis, not a forecast: P(over budget) 0.18. Inspection findings exist; see the checklist.",
+   "topRisk": "some cost lines have no figure and are excluded from totals (unknown, not zero)",
+   "risks": [],
+   "unknowns": [
+    "some cost lines have no figure and are excluded from totals (unknown, not zero)"
+   ],
+   "cites": [
+    "r4",
+    "r5",
+    "r6",
+    "r7"
+   ],
+   "verified": true
+  },
+  "syntheticFixture": true
+ },
+ {
+  "type": "tool_result",
+  "mode": "SCRIPTED",
+  "provider": "scripted",
+  "runId": "3ddd2bf3",
+  "t": 1794708959.483,
+  "agent": "planner",
+  "tool": "inspect_sites",
+  "resultId": "r12",
+  "ok": true,
+  "summary": "{\"verdicts\": [{\"cites\": [\"r4\", \"r5\", \"r6\", \"r7\"], \"headline\": \"Scenario analysis, not a forecast: P(over budget) 0.18. Inspection findings exist; see the checklist.\", \"listingId\": 9001, \"risks\": [], \"topRisk\": \"some cost lines have no figur",
+  "syntheticFixture": true
+ },
+ {
+  "type": "plan",
+  "mode": "SCRIPTED",
+  "provider": "scripted",
+  "runId": "3ddd2bf3",
+  "t": 1794708959.483,
+  "items": [
+   "Acting: what-if budget +20% (scenario), and a verification checklist for the top candidate."
+  ],
+  "kind": "thought",
+  "syntheticFixture": true
+ },
+ {
+  "type": "tool_call",
+  "mode": "SCRIPTED",
+  "provider": "scripted",
+  "runId": "3ddd2bf3",
+  "t": 1794708959.483,
+  "agent": "planner",
+  "tool": "rerun_plan",
+  "args": {
+   "profileChange": {
+    "budget": 300000
+   }
+  },
+  "syntheticFixture": true
+ },
+ {
+  "type": "tool_result",
+  "mode": "SCRIPTED",
+  "provider": "scripted",
+  "runId": "3ddd2bf3",
+  "t": 1794708959.483,
+  "agent": "planner",
+  "tool": "rerun_plan",
+  "resultId": "r13",
+  "ok": true,
+  "summary": "{\"change\": {\"budget\": 300000}, \"changed\": [], \"countsAfter\": {\"FAIL\": 2, \"PASS\": 2, \"UNKNOWN\": 2}, \"countsBefore\": {\"FAIL\": 3, \"PASS\": 1, \"UNKNOWN\": 2}, \"label\": \"scenario analysis, not a forecast\", \"note\": \"SYNTHETIC FIXTURE: invented valu",
+  "syntheticFixture": true
+ },
+ {
+  "type": "action",
+  "mode": "SCRIPTED",
+  "provider": "scripted",
+  "runId": "3ddd2bf3",
+  "t": 1794708959.483,
+  "action": "rerun_plan",
+  "args": {
+   "profileChange": {
+    "budget": 300000
+   }
+  },
+  "resultId": "r13",
+  "ok": true,
+  "summary": "{\"change\": {\"budget\": 300000}, \"changed\": [], \"countsAfter\": {\"FAIL\": 2, \"PASS\": 2, \"UNKNOWN\": 2}, \"countsBefore\": {\"FAIL\": 3, \"PASS\": 1, \"UNKNOWN\": 2}, \"label\": \"scenario analysis, not a forecast\", \"note\": \"SYNTHETIC FIXTURE: invented values for tests/demo, not real property data\", \"pOverBudget\": {}}",
+  "syntheticFixture": true
+ },
+ {
+  "type": "tool_call",
+  "mode": "SCRIPTED",
+  "provider": "scripted",
+  "runId": "3ddd2bf3",
+  "t": 1794708959.483,
+  "agent": "planner",
+  "tool": "make_checklist",
+  "args": {
+   "listingId": 9001
+  },
+  "syntheticFixture": true
+ },
+ {
+  "type": "tool_result",
+  "mode": "SCRIPTED",
+  "provider": "scripted",
+  "runId": "3ddd2bf3",
+  "t": 1794708959.483,
+  "agent": "planner",
+  "tool": "make_checklist",
+  "resultId": "r14",
+  "ok": true,
+  "summary": "{\"landlordQuestions\": [], \"listingId\": 9001, \"verify\": [{\"cite\": \"r4\", \"item\": \"Verify factor 'seat_capacity' (unknown in our data).\"}, {\"cite\": \"r5\", \"item\": \"On-site: check 'Water stain on ceiling' (ceiling_water_damage, severity medium, ",
+  "syntheticFixture": true
+ },
+ {
+  "type": "action",
+  "mode": "SCRIPTED",
+  "provider": "scripted",
+  "runId": "3ddd2bf3",
+  "t": 1794708959.483,
+  "action": "make_checklist",
+  "args": {
+   "listingId": 9001
+  },
+  "resultId": "r14",
+  "ok": true,
+  "summary": "{\"landlordQuestions\": [], \"listingId\": 9001, \"verify\": [{\"cite\": \"r4\", \"item\": \"Verify factor 'seat_capacity' (unknown in our data).\"}, {\"cite\": \"r5\", \"item\": \"On-site: check 'Water stain on ceiling' (ceiling_water_damage, severity medium, grounding observed).\"}, {\"cite\": \"r6\", \"item\": \"Get a contractor/vendor quote for cost line 'repair.roof' (unknown, excluded from totals).\"}]}",
+  "syntheticFixture": true
+ },
+ {
+  "type": "plan",
+  "mode": "SCRIPTED",
+  "provider": "scripted",
+  "runId": "3ddd2bf3",
+  "t": 1794708959.484,
+  "items": [
+   "Saving the decision brief."
+  ],
+  "kind": "thought",
+  "syntheticFixture": true
+ },
+ {
+  "type": "action",
+  "mode": "SCRIPTED",
+  "provider": "scripted",
+  "runId": "3ddd2bf3",
+  "t": 1794708959.484,
+  "action": "save_brief",
+  "ok": true,
+  "savedTo": "data/derived/agent/briefs/3ddd2bf3.json",
+  "claims": 4,
+  "rejected": 0,
+  "syntheticFixture": true
+ },
+ {
+  "type": "final",
+  "mode": "SCRIPTED",
+  "provider": "scripted",
+  "runId": "3ddd2bf3",
+  "t": 1794708959.484,
+  "brief": {
+   "runId": "3ddd2bf3",
+   "mode": "SCRIPTED",
+   "goal": "Italian restaurant with gelato in Houston, 40 seats, under 250k: find, verify and plan the best candidates",
+   "label": "scenario analysis, not a forecast",
+   "recommendation": "Verify listing 9001 first (workable); this is a screening ranking, not a fit score.",
+   "claims": [
+    {
+     "text": "Listing 9001 is workable: Scenario analysis, not a forecast: P(over budget) 0.18. Inspection findings exist; see the checklist.",
+     "cites": [
+      "r4",
+      "r5",
+      "r6",
+      "r7"
+     ]
+    },
+    {
+     "text": "Listing 9002 is workable: Scenario analysis, not a forecast: P(over budget) 0.18. Inspection findings exist; see the checklist.",
+     "cites": [
+      "r8",
+      "r9",
+      "r10",
+      "r11"
+     ]
+    },
+    {
+     "text": "What-if (scenario analysis, not a forecast): PASS sites 1 before and 2 after the budget change.",
+     "cites": [
+      "r13"
+     ]
+    },
+    {
+     "text": "Verification checklist and landlord questions generated for listing 9001 from its findings and unknowns.",
+     "cites": [
+      "r14"
+     ]
+    }
+   ],
+   "rejectedClaims": [],
+   "verdicts": [
+    {
+     "listingId": 9002,
+     "verdict": "workable",
+     "headline": "Scenario analysis, not a forecast: P(over budget) 0.18. Inspection findings exist; see the checklist.",
+     "topRisk": "some cost lines have no figure and are excluded from totals (unknown, not zero)",
+     "risks": [],
+     "unknowns": [
+      "some cost lines have no figure and are excluded from totals (unknown, not zero)"
+     ],
+     "cites": [
+      "r8",
+      "r9",
+      "r10",
+      "r11"
+     ],
+     "verified": true
+    },
+    {
+     "listingId": 9001,
+     "verdict": "workable",
+     "headline": "Scenario analysis, not a forecast: P(over budget) 0.18. Inspection findings exist; see the checklist.",
+     "topRisk": "some cost lines have no figure and are excluded from totals (unknown, not zero)",
+     "risks": [],
+     "unknowns": [
+      "some cost lines have no figure and are excluded from totals (unknown, not zero)"
+     ],
+     "cites": [
+      "r4",
+      "r5",
+      "r6",
+      "r7"
+     ],
+     "verified": true
+    }
+   ],
+   "unknowns": [
+    {
+     "listingId": 9002,
+     "unknowns": [
+      "some cost lines have no figure and are excluded from totals (unknown, not zero)"
+     ],
+     "cites": [
+      "r8",
+      "r9",
+      "r10",
+      "r11"
+     ]
+    },
+    {
+     "listingId": 9001,
+     "unknowns": [
+      "some cost lines have no figure and are excluded from totals (unknown, not zero)"
+     ],
+     "cites": [
+      "r4",
+      "r5",
+      "r6",
+      "r7"
+     ]
+    }
+   ],
+   "note": "Screening evidence, not an engineering assessment or a forecast. Unknown means unknown, not zero."
+  },
+  "usage": {
+   "input": 0,
+   "output": 0,
+   "calls": 8
+  },
+  "syntheticFixture": true
+ }
+]

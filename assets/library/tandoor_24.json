@@ -1,0 +1,64 @@
+{
+  "assetId": "tandoor_24",
+  "name": "Gas tandoor oven, 24 in class (Golden Tandoor GT5100 NG)",
+  "category": "oven",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 0.6096,
+    "d": 0.7112,
+    "h": 0.8636
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      0.6096,
+      0.0
+    ],
+    [
+      0.6096,
+      0.7112
+    ],
+    [
+      0.0,
+      0.7112
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 1.0,
+    "sides": 0.3,
+    "back": 0.3
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front working aisle 1.00 m, sides 0.30 m, back 0.30 m. Aisle widths commonly cited for commercial kitchens are ~0.9-1.1 m (36-42 in; 36 in / 0.915 m is the ADA minimum clear width), dining chair pull-out ~0.45 m; manufacturer rear/side clearances to combustibles vary by model: confirm with the spec sheet and the local health/building/fire authority.",
+  "model": {
+    "uri": "assets/library/models/tandoor_24.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "kitchen",
+    "cooking",
+    "indian",
+    "tandoor",
+    "open_flame"
+  ],
+  "priceRef": null,
+  "provenance": {
+    "origin": "https://www.webstaurantstore.com/golden-tandoor-gt5100-ng-24-natural-gas-tandoor-oven-55-000-btu/10CGT5100N.html",
+    "retrievedAt": "2026-11-14",
+    "notes": "24x28x34 in read in a search-result summary of the listing on 2026-11-14; the product page itself was not opened (fetch tool hit a usage limit), so status stays estimated. 55,000 BTU/h; manufacturer says dimensions are rounded. Price not seen: unknown."
+  },
+  "status": "draft"
+}

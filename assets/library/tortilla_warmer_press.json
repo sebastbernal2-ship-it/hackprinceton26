@@ -1,0 +1,61 @@
+{
+  "assetId": "tortilla_warmer_press",
+  "name": "Tortilla press and warmer station",
+  "category": "other",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 0.6096,
+    "d": 0.6096,
+    "h": 0.6096
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      0.6096,
+      0.0
+    ],
+    [
+      0.6096,
+      0.6096
+    ],
+    [
+      0.0,
+      0.6096
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.9,
+    "sides": 0.1,
+    "back": 0.1
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front working aisle 0.90 m, sides 0.10 m, back 0.10 m. Aisle widths commonly cited for commercial kitchens are ~0.9-1.1 m (36-42 in; 36 in / 0.915 m is the ADA minimum clear width), dining chair pull-out ~0.45 m; manufacturer rear/side clearances to combustibles vary by model: confirm with the spec sheet and the local health/building/fire authority.",
+  "model": {
+    "uri": "assets/library/models/tortilla_warmer_press.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "kitchen",
+    "mexican"
+  ],
+  "priceRef": null,
+  "provenance": {
+    "origin": "standard published/typical dimensions for this equipment class (not read from a specific spec sheet)",
+    "retrievedAt": null,
+    "notes": "Nominal bench station."
+  },
+  "status": "draft"
+}

@@ -68,7 +68,7 @@ function assess(assumptions, listingId) {
 
 // Inspection and cost mocks: FIXTURE data for UI testing, not from any property.
 const FINDINGS = [
-  { id: "f1", roomId: "r1", category: "ceiling_water_damage", title: "Possible ceiling stain", description: "Discoloured patch near the ceiling in the panorama (mock).", severity: "high", modelConfidence: 0.6, evidence: { source: "panorama", ref: "mock-pano-1", region: { x: 0.2, y: 0.1, w: 0.2, h: 0.1 } }, canConfirmFromImagery: false, verificationStep: "Inspect roof and plumbing above; moisture-meter the area.", costLineItemIds: ["c1"] },
+  { id: "f1", roomId: "r1", category: "ceiling_water_damage", title: "Possible ceiling stain", description: "Discoloured patch near the ceiling in the panorama (mock).", severity: "high", modelConfidence: 0.6, evidence: { source: "panorama", ref: "mock-pano-1", region: { x: 0.2, y: 0.1, w: 0.2, h: 0.1 } }, anchor: { x: 1.2, y: 2.2, z: -2.0 }, canConfirmFromImagery: false, verificationStep: "Inspect roof and plumbing above; moisture-meter the area.", costLineItemIds: ["c1"] },
   { id: "f2", roomId: null, category: "layout_inefficiency", title: "Long corridor with little usable area", description: "Floorplan geometry suggests circulation space (mock).", severity: "low", modelConfidence: 0.4, evidence: { source: "floorplan_geometry", ref: "mock-plan", region: null }, canConfirmFromImagery: true, verificationStep: "Measure usable area against the plan.", costLineItemIds: [] },
 ];
 const LINES = [
@@ -80,7 +80,7 @@ const LINES = [
 const sum = (basis, k) => LINES.filter((l) => l.basis === basis && l.expected !== null).reduce((a, l) => a + l[k], 0);
 
 const send = (res, code, body) => {
-  res.writeHead(code, { "content-type": "application/json" });
+  res.writeHead(code, { "content-type": "application/json", "access-control-allow-origin": "*" });
   res.end(JSON.stringify(body));
 };
 
@@ -107,6 +107,8 @@ const ASSETS = [
   mkAsset({ assetId: "mock-fridge", name: "Reach-in refrigerator", category: "fridge", dims: { w: 1.1, d: 0.8, h: 2.0 }, priceRef: "reach_in_refrigerator", allowedSizes: [{ w: 0.8, d: 0.8, h: 2.0, label: "1-door" }, { w: 1.1, d: 0.8, h: 2.0, label: "2-door" }] }),
   mkAsset({ assetId: "mock-sink", name: "Three-compartment sink", category: "sink", dims: { w: 2.1, d: 0.65, h: 0.95 }, priceRef: "three_compartment_sink", dimsStatus: "estimated" }),
   mkAsset({ assetId: "mock-hood", name: "Type I hood", category: "hood", dims: { w: 3.6, d: 1.2, h: 0.6 }, priceRef: "type_i_hood", dimRanges: { w: [1.8, 4.2], d: [1.2, 1.2], h: [0.6, 0.6] } }),
+  mkAsset({ assetId: "mock-tandoor", name: "Tandoor (mock)", category: "range", dims: { w: 0.8, d: 0.8, h: 0.9 }, dimsStatus: "estimated" }),
+  mkAsset({ assetId: "mock-kadhai", name: "Two-burner range (mock)", category: "range", dims: { w: 0.9, d: 0.7, h: 0.9 }, dimsStatus: "catalog" }),
   mkAsset({ assetId: "mock-table", name: "Dining table", category: "table", dims: { w: 1.6, d: 0.9, h: 0.75 }, dimRanges: { w: [0.8, 2.4], d: [0.6, 1.0], h: [0.75, 0.75] }, clearance: { front: 0.6, sides: 0.6, back: 0.6 }, clearanceBasis: "MOCK assumption: chair pull-back space." }),
   mkAsset({ assetId: "mock-chain-counter", name: "Chain counter (uploaded earlier)", category: "counter", source: "uploaded", profileId: "mock-chain", dims: { w: 2.0, d: 0.65, h: 0.92 }, dimsStatus: "measured", dimRanges: { w: [1.0, 3.0], d: [0.6, 0.8], h: [0.92, 0.92] } }),
 ];
@@ -198,8 +200,206 @@ async function assetRoutes(req, res, url) {
   return false;
 }
 
+
+// ---- triage / aerial / lineage / presence / agent / finance mocks (FAKE numbers, shapes follow rt/* routers) ----
+const tf = (field, status, o = {}) => ({ field, status, costarValue: null, scanValue: null, aerialValue: null, value: null, valueStatus: "unknown", scope: "unknown", confidence: "none", evidenceRefs: [], rule: "MOCK rule text.", reviewScore: 1, ...o });
+const TRIAGE = [
+  tf("clear_height_ft", "filled", { scanValue: 14, value: 14, valueStatus: "derived", unit: "ft", scope: "suite", confidence: "medium", reviewScore: 6, evidenceRefs: [{ source: "matterport", ref: "mock-tour/mesh", detail: "ceiling plane from mesh (mock)" }] }),
+  tf("floors", "confirmed", { costarValue: 2, scanValue: 2, value: 2, valueStatus: "observed", scope: "building", confidence: "high", evidenceRefs: [{ source: "costar", ref: "numberOfFloors" }, { source: "matterport", ref: "floors" }] }),
+  tf("area_sqft", "conflicting", { costarValue: 12000, scanValue: 2900, scope: "indeterminate", confidence: "low", reviewScore: 14, note: "Scan covers one suite; CoStar number is the building. Different scopes, so no verdict.", evidenceRefs: [{ source: "costar", ref: "buildingArea" }, { source: "matterport", ref: "floor area" }] }),
+  tf("restroom_count", "filled", { scanValue: 2, value: 2, valueStatus: "derived", scope: "suite", confidence: "medium", reviewScore: 5, note: "Count within the scanned space only (lower bound for the building)." }),
+  tf("kitchen_present", "blank-unfillable", { rule: "No matching room label is NOT zero: stays unknown.", note: "No matching room label; absence of a label is not evidence of absence.", reviewScore: 9 }),
+  tf("use_hint", "conflicting", { costarValue: "office", scanValue: "retail_food", scope: "suite", confidence: "low", reviewScore: 12, note: "Scanned room labels suggest a different use bucket than CoStar's type." }),
+  tf("parking_spaces", "conflicting", { costarValue: 40, aerialValue: 12, scope: "building", confidence: "low", reviewScore: 11, evidenceRefs: [{ source: "vexcel", ref: "vehicles", detail: "vehicle count, not stalls (mock)" }] }),
+  tf("rooftop_units", "blank-unfillable", { reviewScore: 4 }),
+  tf("loading_docks", "unverified", { costarValue: 1, value: 1, valueStatus: "observed", scope: "building", reviewScore: 3 }),
+];
+const AERIAL = { listingId: 900001, imagery: { source: "Vexcel ortho/extract (mock)", fetched: "2026-11-13", capture_date: null, centred_on: "CoStar lat/long" },
+  vehicles: { status: "estimated", low: 8, expected: 14, high: 20, label: "vehicles visible in the crop", rationale: "Mock count; range is +/- a cross-validated MAE." },
+  rooftop_units: { status: "unknown", value: null, reason: "validated count error too high to expose" }, parking_stalls: { status: "unknown", value: null, reason: "no stall-level validation set" },
+  loading_docks: { status: "unknown", value: null, reason: "facade feature, not visible from above" }, roof_area_shape: { status: "unknown", value: null, reason: "no footprint in kit" },
+  provenance: "MOCK. Screening estimate, not an engineering or survey assessment." };
+const LINEAGE = { listingId: 900001, foodHistoryInKit: true, anonymized: true, notice: "MOCK notice: observed CoStar tenancy spells; screening prior.",
+  tenants: [
+    { tenant: "Tenant 1", start: "2009-03-01", end: "2012-06-30", tenureYears: 3.33, ending: "failure", expirationReason: 4, successorWasFood: true },
+    { tenant: "Tenant 2", start: "2012-08-01", end: "2014-02-28", tenureYears: 1.58, ending: "other_exit", expirationReason: 1, successorWasFood: true },
+    { tenant: "Tenant 3", start: "2014-04-01", end: "2019-12-31", tenureYears: 5.75, ending: "failure", expirationReason: 4, successorWasFood: false },
+    { tenant: "Tenant 4", start: null, end: null, tenureYears: null, ending: "open", expirationReason: null, successorWasFood: null },
+    { tenant: "Tenant 5", start: "2022-01-15", end: null, tenureYears: 4.82, ending: "open", expirationReason: null, successorWasFood: null }],
+  counts: { foodTenants: 5, open: 2, ended: 3, clearFailure: 2, otherExit: 1, unknownTenure: 1 }, medianCompletedTenureYears: 3.33,
+  medianTenureBasis: "tenants whose tenancy has ended (n=3); open tenancies excluded, so this is biased short", churnFlag: false, isSecondGenerationSpace: true,
+  marketPrior: { label: "exploratory market prior, not a per-site prediction", nSpells: 400, failureCumulativeIncidence: { "1": null, "2": { expected: 0.12, low: 0.09, high: 0.16 }, "3": null } } };
+const radius = (r, day, night) => ({ radiusMiles: r, kitBuildingsInRadius: 6, shape: day == null ? "unknown" : "day-heavy", dayShare: day,
+  day: { workers: day == null ? null : 5200, status: "observed (kit-listed lower bound)", employeeFillRate: 0.41 },
+  night: { status: "derived", nightPopulation: night ? { low: 1500, expected: 2000, high: 2500 } : null } });
+const PRESENCE = { listingId: 900001, radii: { "0.25mi": radius(0.25, 0.72, true), "0.5mi": radius(0.5, null, false) },
+  assumptions: ["Residents per apartment unit 1.5 / 2.0 / 2.5 (assumption).", "Hotel occupancy 0.5 / 0.65 / 0.8 where the kit has none (assumption).", "Kit buildings are only the Matterport list: every count is a lower bound."],
+  notAFootTrafficMeasure: "Presence index of kit-listed buildings; not foot traffic and not a 24-hour clock." };
+
+const sse = (res, events, delay = 0) => {
+  res.writeHead(200, { "content-type": "text/event-stream", "cache-control": "no-cache" });
+  let i = 0;
+  const tick = () => { if (i >= events.length) return res.end(); const e = events[i++]; res.write(`event: ${e.type}\ndata: ${JSON.stringify(e)}\n\n`); if (delay) setTimeout(tick, delay); else tick(); };
+  tick();
+};
+const agentEvents = (mode) => {
+  const m = { mode, provider: mode === "SCRIPTED" ? "scripted" : "mock", runId: "mock0001", syntheticFixture: true };
+  const r = (id, agent, tool, summary) => ({ type: "tool_result", ...m, agent, tool, resultId: id, ok: true, summary: JSON.stringify(summary) });
+  return [
+    { type: "plan", ...m, items: [`${mode} plan: shortlist, inspect in parallel, re-run with a changed assumption, save a cited brief.`] },
+    { type: "tool_call", ...m, agent: "planner", tool: "shortlist", args: { listingIds: [900001, 900002] } },
+    r("r1", "planner", "shortlist", { pass: 1, unknown: 1 }),
+    { type: "subagent_start", ...m, agent: "inspector-900001", listingId: 900001 },
+    { type: "tool_call", ...m, agent: "inspector-900001", tool: "assess", args: { listingId: 900001 } },
+    r("r2", "inspector-900001", "assess", { listingId: 900001, pOverBudget: 0.18, interval: [0.1, 0.27] }),
+    { type: "finding", ...m, kind: "unknown", listingId: 900001, text: "kitchen presence cannot be determined from the scan (unknown, not zero)", cites: ["r2"] },
+    { type: "subagent_finish", ...m, agent: "inspector-900001", listingId: 900001, verdict: { listingId: 900001, verdict: "workable", headline: "P(over budget) 0.18", cites: ["r2"], verified: true } },
+    { type: "action", ...m, action: "rerun_plan", args: { profileChange: { budget: 300000 } }, resultId: "r3", ok: true, summary: JSON.stringify({ pass: 2, label: "scenario analysis, not a forecast" }) },
+    { type: "final", ...m, brief: { runId: "mock0001", mode, goal: "MOCK goal", label: "scenario analysis, not a forecast", recommendation: "Verify listing 900001 first (workable); a screening ranking, not a fit score.",
+      claims: [{ text: "Listing 900001 has P(over budget) 0.18.", cites: ["r2"] }, { text: "After raising the budget, 2 sites pass.", cites: ["r3"] }, { text: "A 99 percent claim with no source.", cites: ["r1"] }],
+      rejectedClaims: [], verdicts: [{ listingId: 900001, verdict: "workable", headline: "x", topRisk: "kitchen unknown", cites: ["r2"], verified: true }],
+      unknowns: [{ listingId: 900001, unknowns: ["kitchen presence cannot be determined (unknown, not zero)"], cites: ["r2"] }], note: "MOCK trace, fake values." } },
+  ];
+};
+function financeSim(listingId) {
+  const rent = MATCHES.find((m) => m.listingId === listingId)?.rentPerSquareFootYear;
+  if (!rent) return { status: "blocked", label: "scenario analysis, not a forecast", unknownInputs: ["rent_monthly"], note: "Required inputs are unknown; nothing was assumed as zero." };
+  const cash = Array.from({ length: 36 }, (_, i) => Math.round(-60000 + i * 4200 - (i < 6 ? i * 3000 : 0)));
+  const out = { status: "simulated", label: "scenario analysis, not a forecast", seed: 0, nDraws: 10000, months: 36, runId: "mockrun1", notice: "Scenario analysis, not a forecast (MOCK numbers). Ledger records are SIMULATED in a LOCAL SANDBOX.",
+    loan: { name: "sba", principal: 120000, monthlyPayment: 1400 }, pCashShortfall: 0.34, runwayMonths: { pNoShortfall: 0.66, p5: 5, p50: 9, p95: 16 },
+    breakEven: { definition: "first month operating cash flow after debt service >= 0", pReached: 0.81, monthDist: { p5: 4, p50: 9, p95: 21 }, histogram: Object.fromEntries(Array.from({ length: 36 }, (_, k) => [String(k + 1), Math.round(900 * Math.exp(-((k - 8) ** 2) / 40))])) },
+    dscr: { definition: "year-2 EBITDA / annual debt service", p5: 0.7, p50: 1.4, p95: 2.3, "pBelow1.25": 0.41, "pBelow1.0": 0.22 },
+    minCash: { p5: -80000, p50: -52000, p95: -10000 }, endCash: { p5: -40000, p50: 90000, p95: 210000 }, monthly: { cash }, assumptions: {}, limits: ["Taxes, depreciation and owner draws not modelled.", "Build-out covers equipment + install allowance only; repairs unknown, excluded (not zero)."],
+    ledger: { backend: "local-sandbox", tag: "SIMULATED", counts: { deposits: 900 } } };
+  if (process.env.MOCK_BANDS === "1") out.monthlyBands = { cash: { p10: cash.map((c, i) => c - 15000 - i * 1500), p50: cash, p90: cash.map((c, i) => c + 15000 + i * 2500) } };
+  return out;
+}
+const ledgerRows = (table) => Array.from({ length: 12 }, (_, i) => table === "deposits"
+  ? { _id: `local-d-${i}`, transaction_date: `2027-01-${String(i + 2).padStart(2, "0")}`, amount: 1000 + i * 37, description: "SIMULATED: daily sales", simulated: true }
+  : { _id: `local-p-${i}`, purchase_date: `2027-01-${String(i + 2).padStart(2, "0")}`, amount: 300 + i * 11, description: `SIMULATED: ${table} ${i}`, simulated: true });
+
+function layerRoutes(req, res, url) {
+  const p = url.pathname;
+  let m;
+  if (req.method === "GET" && (m = p.match(/^\/api\/triage\/property\/(\d+)$/))) return m[1] === "900001" ? send(res, 200, { notice: "MOCK screening triage.", listingId: m[1], hasScan: true, hasAerial: true, scope: "suite", fields: TRIAGE }) : send(res, 404, { detail: "no triage result for this listing" });
+  if (req.method === "GET" && p === "/api/triage/queue") return send(res, 200, { notice: "MOCK queue. Screening triage.", total: 3, items: TRIAGE.filter((f) => f.status === "conflicting").map((f) => ({ listingId: "900001", field: f.field, status: f.status, score: f.reviewScore, scope: f.scope, confidence: f.confidence, costarValue: f.costarValue, scanValue: f.scanValue, aerialValue: f.aerialValue, note: f.note ?? f.rule })) });
+  if (req.method === "GET" && (m = p.match(/^\/api\/aerial\/(\d+)$/))) return m[1] === "900001" ? send(res, 200, AERIAL) : send(res, 404, { detail: "no aerial analysis for this listing (unknown, not zero)" });
+  if (req.method === "GET" && (m = p.match(/^\/api\/lineage\/(\d+)$/))) return m[1] === "900001" ? send(res, 200, LINEAGE) : send(res, 200, { listingId: Number(m[1]), foodHistoryInKit: false, tenants: [], note: "No food-service tenancy recorded in the CoStar kit for this building. Unknown, not proof of no restaurant history.", notice: "MOCK" });
+  if (req.method === "GET" && (m = p.match(/^\/api\/presence\/(\d+)$/))) return m[1] === "900001" ? send(res, 200, PRESENCE) : send(res, 404, { detail: "listing not found or no coordinates" });
+  if (req.method === "GET" && p === "/api/agent/replay") return sse(res, [{ type: "replay_info", mode: "REPLAY", source: "SYNTHETIC-fixture", note: "Recorded trace replayed; not a live run." }, ...agentEvents("SCRIPTED").map((e) => ({ ...e, mode: "REPLAY", recordedMode: "SCRIPTED" }))], Number(url.searchParams.get("delay") ?? 0) * 1000);
+  if (req.method === "POST" && p === "/api/agent/run") return readJson(req).then(() => process.env.MOCK_AGENT === "error" ? sse(res, [{ type: "error", mode: "NONE", message: "CoStar data unavailable (COSTAR_NORMALIZED_DIR); use GET /api/agent/replay" }]) : sse(res, agentEvents("SCRIPTED"), 150));
+  if (req.method === "POST" && p === "/api/finance/simulate") return readJson(req).then((b) => send(res, 200, financeSim(b.listingId)));
+  if (req.method === "GET" && (m = p.match(/^\/api\/finance\/ledger\/(\w+)$/))) { const t = url.searchParams.get("table") ?? "deposits"; return send(res, 200, { runId: m[1], backend: "local-sandbox", table: t, total: 900, notice: "SIMULATED", records: ledgerRows(t) }); }
+  return false;
+}
+
+// ---- Reskin / agent / structure mocks (rt/reskin, rt/agent, rt/structure contracts). FAKE data for UI testing only. ----
+const CONCEPTS = [
+  { id: "italian", name: "Italian restaurant", equipmentCount: 7, status: "assumption" },
+  { id: "indian", name: "Indian restaurant", equipmentCount: 9, status: "assumption" },
+  { id: "japanese", name: "Japanese izakaya", equipmentCount: 8, status: "assumption" },
+  { id: "mexican", name: "Mexican taqueria", equipmentCount: 8, status: "assumption" },
+];
+const mkLine = (id, label, status, lo, ex, hi) => ({ itemId: `reskin:${id}`, label, category: "equipment", quantity: 1, unit: "each", currency: "USD", basis: "one_time", asOf: "2026-01-01", low: lo, expected: ex, high: hi, status, source: status === "unknown" ? "none" : "mock catalog", rationale: status === "unknown" ? "No sourced price for this asset; unknown, not zero (mock)." : "Mock priced line." });
+const PAL = { wall: "#D99A1E", floor: "#7A3B2E", ceiling: "#4E1F26", accent: "#1F6F6B" };
+function reskinMock(to) {
+  const t = CONCEPTS.find((c) => c.id === to)?.name ?? to;
+  const fromPal = { wall: { name: "warm plaster, terracotta", hex: "#C9805A" }, floor: { name: "terracotta/cement tile", hex: "#B5603A" }, ceiling: { name: "painted white with exposed timber", hex: "#F2EBDD" }, accent: { name: "olive green", hex: "#6B7A3A" } };
+  const toPal = { wall: { name: "saffron paint (mock)", hex: PAL.wall }, floor: { name: "encaustic-look tile (mock)", hex: PAL.floor }, ceiling: { name: "deep maroon (mock)", hex: PAL.ceiling }, accent: { name: "teal accent (mock)", hex: PAL.accent } };
+  return {
+    fromConcept: "italian", toConcept: to, seats: 40, seatsAssumed: true, syntheticSource: true,
+    layoutNote: "The listing's real layout is not known. A reference layout was generated from the fromConcept profile (assumptions) and then reskinned. MOCK.",
+    removed: [{ assetId: "mock-oven", name: "Pizza deck oven (mock)", dimsStatus: "estimated", x: 0.2, y: 0.2 }, { assetId: "mock-pasta", name: "Pasta cooker (mock)", dimsStatus: "estimated", x: 1.8, y: 0.2 }],
+    added: [{ assetId: "mock-tandoor", name: `${t} signature oven (mock)`, dimsStatus: "estimated", x: 0.2, y: 0.2, placement: "took the footprint vacated by removed equipment" }, { assetId: "mock-kadhai", name: "Two-burner range (mock)", dimsStatus: "catalog", x: 1.8, y: 0.2, placement: "free space" }],
+    unplaced: [], keptCount: 2,
+    placements: [{ assetId: "mock-tandoor", x: 0.2, y: 0.2, rot: 0 }, { assetId: "mock-kadhai", x: 1.8, y: 0.2, rot: 0 }, { assetId: "mock-range", x: 4.0, y: 0.2, rot: 0 }, { assetId: "mock-prep", x: 1.0, y: 2.6, rot: 0 }, { assetId: "mock-table", x: 3.0, y: 3.2, rot: 90 }, { assetId: "unknown-size-item", x: 4.6, y: 3.0, rot: 0 }],
+    adjacency: [{ a: "mock-tandoor", b: "mock-kadhai", maxGapM: 3.0, why: "mock", status: "assumption", basis: "analyst workflow assumption, not a code requirement", result: "satisfied", gapM: 0.49 }],
+    costDelta: { lines: [mkLine("add:oven", `Add: ${t} signature oven`, "unknown", null, null, null), mkLine("add:kadhai", "Add: two-burner range", "estimated", 900, 1299, 1700), mkLine("rm:oven", "Remove: pizza deck oven", "unknown", null, null, null), mkLine("paint", "Repaint and floor finish", "estimated", 3000, 5500, 9000)], totals: { low: 3900, expected: 6799, high: 10700 }, totalsStatus: "estimated (priced lines only)", excludedLineIds: ["reskin:add:oven", "reskin:rm:oven"] },
+    feasibility: [{ id: "load:ventilation", topic: "ventilation", status: "verify with inspector", from: "Pizza oven and pasta cooker exhaust.", to: "The new heat-heavy oven may need a different hood class: verify with inspector.", basis: "analyst assumption from typical equipment class (mock)", labelledAs: "assumption" }, { id: "load:gas", topic: "gas load", status: "verify with inspector", from: "", to: "Gas demand may change; confirm service size.", basis: "analyst assumption (mock)", labelledAs: "assumption" }],
+    materials: { from: fromPal, to: toPal, glbPalette: PAL, decor: ["carved screens", "brass lamps"], signage: "dual wordmark (assumption)", note: "Visual restyle spec (mock)." },
+    notice: "MOCK. Scenario analysis, not a forecast or a quote. Unknown prices stay unknown and are excluded from totals (not zero).",
+  };
+}
+const STRUCT = {
+  kit: { yearBuilt: 1960, renovatedYear: null, material: null, buildingClass: null, stories: 1, grossSqFt: 4000, heightFt: null, hasSprinklers: null },
+  hazards: { fema: { zone: "AE" }, usgs: { sdc: "B" }, elevationFt: 47, retrieved: "2026-01-01", subsidence: "unknown: no reachable public subsidence layer found" },
+  screening: {
+    region: "HOU", tier: "elevated", tierByLens: { seismic: "low", flood: "elevated", geotechnical: "moderate" },
+    flags: [
+      { id: "fema_zone", lens: "flood", severity: "elevated", text: "FEMA flood zone AE (mock)", status: "observed", threshold: { id: "flood_sfha", value: "A*/V*", source: "observed-source", note: "FEMA zone prefix A or V = Special Flood Hazard Area" } },
+      { id: "usgs_sdc", lens: "seismic", severity: "low", text: "Seismic Design Category B (mock)", status: "observed" },
+      { id: "hou_era", lens: "flood_wind", severity: null, text: "Construction material unknown; era check not evaluated", status: "unknown" },
+    ],
+    inputsPresent: { yearBuilt: true, material: false }, unknowns: ["material", "buildingClass"],
+    tierRule: "tier = highest severity among evaluated flags; unknown flags never lower it",
+    notice: "Screening prior from public kit fields and hazard layers; NOT an engineering assessment. Verify with a licensed structural engineer. Unknown inputs stay unknown. (mock)",
+  },
+  fillRates: {}, label: "screening prior, not an engineering assessment",
+};
+const sr = (h, scenario, lo, v, hi) => ({ horizon: h, scenario, metric: "relative sea level rise vs 2000 (cm)", low: lo, value: v, high: hi, unit: "cm", station: "Mock gauge (nearest coastal reference)", citation: "https://example.test/mock-noaa", retrieved: "2026-01-01", note: "MOCK values; low/high = published confidence interval" });
+const SCEN = {
+  region: "HOU",
+  table: { rows: [sr(2030, "NOAA Intermediate", 10, 14, 19), sr(2050, "NOAA Intermediate", 22, 30, 41), sr(2070, "NOAA Intermediate", 38, 52, 70), sr(2030, "NOAA High", 12, 17, 23), sr(2050, "NOAA High", 30, 46, 64)],
+    noSourced: [{ metric: "annual mean daily max temperature change (Houston)", result: "no sourced projection", qualitative: "qualitative only in state summary", citation: "https://example.test/mock-summary" }, { metric: "design wind speed change", result: "no sourced projection" }, { metric: "extreme rainfall / pluvial flood depth", result: "no sourced projection" }],
+    notice: "Scenario analysis, not a forecast. 'no sourced projection' means nothing citable was retrieved. (mock)" },
+  exposure: { horizons: [2030, 2050, 2070].map((h) => ({ horizon: h, seaLevel: { upperBoundFt: h === 2070 ? 2.3 : 0.7, siteElevationFt: 47, headroomFt: h === 2070 ? 44.7 : 46.3, reading: "static rise alone does not reach site elevation; says nothing about rainfall/surge flooding" }, femaZoneToday: "AE", femaZoneNote: "Zone is today's map; no sourced projection of future flood zones", heat: "no sourced projection", hvacCapacity: "unknown (not in kit)", wind: "no sourced projection" })), notice: "Scenario analysis, not a forecast." },
+  label: "scenario analysis, not a forecast",
+};
+const EXPANSION = {
+  expansion: { baseRoomIds: ["a"], candidates: [
+    { roomId: "b", label: "Suite B (sample)", areaM2: 16, areaSqFtGained: 172.2, sharedWalls: [{ sharedWallLengthM: 4, wallThicknessM: 0.3, hint: "thick", text: "thick wall: treat as possibly load-bearing" }], openingDifficultyHint: "possible structural wall: engineer review before opening", verifyWithEngineer: ["Is the shared wall load-bearing?", "Header or beam needed for an opening?"] },
+    { roomId: "c", label: "Suite C (sample)", areaM2: 15, areaSqFtGained: 161.5, sharedWalls: [{ sharedWallLengthM: 5, wallThicknessM: 0.1, hint: "thin", text: "thin partition: may be non-structural" }], openingDifficultyHint: "thin partition; still confirm before demolition", verifyWithEngineer: ["Confirm the wall is non-structural."] }],
+    baseAreaSqFt: 215.3,
+    graph: { rooms: { a: { label: "Dining (sample)", areaM2: 20 }, b: { label: "Suite B (sample)", areaM2: 16 }, c: { label: "Suite C (sample)", areaM2: 15 } }, edges: [{ a: "a", b: "b", sharedWallLengthM: 4, wallThicknessM: 0.3, hint: "thick", text: "thick", hintStatus: "estimated (thickness hint only)" }, { a: "a", b: "c", sharedWallLengthM: 5, wallThicknessM: 0.1, hint: "thin", text: "thin", hintStatus: "estimated (thickness hint only)" }] },
+    notice: "Scenario analysis, not a forecast. Wall thickness is a hint, not a structural determination. (mock)" },
+  timeline: { phases: [
+    { phase: "open", label: "Open (core kitchen)", monthOffset: 0, monthOffsetStatus: "assumption (adjustable)", capex: { low: 44645, expected: 53417, high: 75347 }, capexNote: null, unknownCostItems: [], cumulativeCapexKnown: { low: 44645, expected: 53417, high: 75347 }, verifyWithEngineer: [] },
+    { phase: "expand1", label: "Expand into Suite C", monthOffset: 12, monthOffsetStatus: "assumption (adjustable)", capex: { low: 12000, expected: 18000, high: 27000 }, capexNote: null, unknownCostItems: ["hood extension"], cumulativeCapexKnown: { low: 56645, expected: 71417, high: 102347 }, verifyWithEngineer: [] },
+    { phase: "expand2", label: "Expand into Suite B", monthOffset: 24, monthOffsetStatus: "assumption (adjustable)", capex: { low: null, expected: null, high: null }, capexNote: "no sourced price", unknownCostItems: ["structural opening"], cumulativeCapexKnown: { low: 56645, expected: 71417, high: 102347 }, verifyWithEngineer: [] }],
+    cumulativeStatus: "partial: unknown cost items excluded, not zero", label: "scenario analysis, not a forecast", notice: "Scenario analysis, not a forecast." },
+  label: "scenario analysis, not a forecast",
+};
+const sseHead = { "content-type": "text/event-stream", "cache-control": "no-cache" };
+const AGENT_EVENTS = (mode, goal) => [
+  { type: "plan", mode, items: ["MOCK: check the change against the space", "list what to verify"] },
+  { type: "tool_call", mode, agent: "planner", tool: "property_facts", args: {} },
+  { type: "tool_result", mode, agent: "planner", tool: "property_facts", ok: true, summary: "{}" },
+  { type: "final", mode, brief: { note: `MOCK brief for: ${String(goal).slice(0, 60)}` } },
+];
+async function sseSlow(res, events) {
+  res.writeHead(200, sseHead);
+  for (const e of events) { res.write(`event: ${e.type}\ndata: ${JSON.stringify(e)}\n\n`); await new Promise((r) => setTimeout(r, 120)); }
+  res.end();
+}
+async function extraRoutes(req, res, url) {
+  const p = url.pathname;
+  if (req.method === "GET" && p === "/api/concepts") return send(res, 200, CONCEPTS), true;
+  if (req.method === "POST" && p === "/api/reskin") {
+    const b = await readJson(req);
+    if (!CONCEPTS.some((c) => c.id === b.toConcept)) return send(res, 404, { detail: `concept '${b.toConcept}' not found` }), true;
+    return send(res, 200, reskinMock(b.toConcept)), true;
+  }
+  if (req.method === "POST" && p === "/api/agent/run") {
+    const b = await readJson(req);
+    if (process.env.MOCK_AGENT === "none") return await sseSlow(res, [{ type: "error", mode: "NONE", message: "CoStar data unavailable (mock)" }]), true;
+    return await sseSlow(res, AGENT_EVENTS("SCRIPTED", b.goal)), true;
+  }
+  if (req.method === "GET" && p === "/api/agent/replay") {
+    if (process.env.MOCK_AGENT === "dead") return send(res, 500, { detail: "down" }), true;
+    return await sseSlow(res, [{ type: "replay_info", mode: "REPLAY", source: "SYNTHETIC-fixture" }, ...AGENT_EVENTS("REPLAY", "")]), true;
+  }
+  const st = p.match(/^\/api\/structure\/(\d+)$/);
+  if (req.method === "GET" && st) return process.env.MOCK_STRUCTURE === "none" ? send(res, 404, { detail: "structure snapshot unavailable" }) : send(res, 200, { listingId: Number(st[1]), ...STRUCT }), true;
+  const sc = p.match(/^\/api\/structure\/(\d+)\/scenarios$/);
+  if (req.method === "GET" && sc) return process.env.MOCK_STRUCTURE === "none" ? send(res, 404, { detail: "structure snapshot unavailable" }) : send(res, 200, { listingId: Number(sc[1]), ...SCEN }), true;
+  if (req.method === "POST" && p === "/api/structure/expansion") { await readJson(req); return send(res, 200, EXPANSION), true; }
+  return false;
+}
+
 createServer(async (req, res) => {
   const url = new URL(req.url, "http://localhost");
+  if (/^\/api\/(triage|aerial|lineage|presence|agent|finance)/.test(url.pathname)) { const h = layerRoutes(req, res, url); if (h !== false) return; }
+  if (url.pathname.startsWith("/api/concepts") || url.pathname.startsWith("/api/reskin") || url.pathname.startsWith("/api/agent") || url.pathname.startsWith("/api/structure")) { if (await extraRoutes(req, res, url)) return; }
   if (url.pathname.startsWith("/api/assets")) { const handled = await assetRoutes(req, res, url); if (handled !== false) return; }
   if (req.method === "GET" && url.pathname === "/api/health") return send(res, 200, { ok: true, mock: true });
   if (req.method === "POST" && url.pathname === "/api/matches") {

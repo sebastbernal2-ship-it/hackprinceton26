@@ -1,0 +1,60 @@
+{
+  "assetId": "banquette_90",
+  "name": "Wall banquette, 90 in",
+  "category": "seating",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 2.286,
+    "d": 0.5588,
+    "h": 1.0668
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      2.286,
+      0.0
+    ],
+    [
+      2.286,
+      0.5588
+    ],
+    [
+      0.0,
+      0.5588
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.6,
+    "sides": 0.0,
+    "back": 0.0
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front working aisle 0.60 m, sides 0.00 m, back 0.00 m. Aisle widths commonly cited for commercial kitchens are ~0.9-1.1 m (36-42 in; 36 in / 0.915 m is the ADA minimum clear width), dining chair pull-out ~0.45 m; manufacturer rear/side clearances to combustibles vary by model: confirm with the spec sheet and the local health/building/fire authority.",
+  "model": {
+    "uri": "assets/library/models/banquette_90.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "dining"
+  ],
+  "priceRef": null,
+  "provenance": {
+    "origin": "standard published/typical dimensions for this equipment class (not read from a specific spec sheet)",
+    "retrievedAt": null,
+    "notes": "Built-in banquette class."
+  },
+  "status": "draft"
+}
