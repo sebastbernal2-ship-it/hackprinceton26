@@ -1,0 +1,66 @@
+{
+  "assetId": "makeup_air_unit_2000cfm",
+  "name": "Makeup air unit, 2000 cfm",
+  "category": "other",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 1.2192,
+    "d": 0.9144,
+    "h": 0.762
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      1.2192,
+      0.0
+    ],
+    [
+      1.2192,
+      0.9144
+    ],
+    [
+      0.0,
+      0.9144
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.0,
+    "sides": 0.0,
+    "back": 0.0
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.00 m, sides 0.00 m, back 0.00 m. None: overhead or wall-hung; the working line below carries the aisle (stated assumption). Confirm with the manufacturer's spec sheet and the local health, building and fire authority.",
+  "model": {
+    "uri": "assets/library/models/makeup_air_unit_2000cfm.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:boh",
+    "kitchen",
+    "overhead",
+    "utility"
+  ],
+  "priceRef": "makeup_air_unit_2000cfm",
+  "provenance": {
+    "origin": "makeup air unit class (nominal 48 x 36 x 30 in, 1.22 x 0.91 x 0.76 m); not read from a spec sheet",
+    "retrievedAt": null,
+    "notes": "2000 cfm direct-fired makeup air unit for the exhaust hood. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

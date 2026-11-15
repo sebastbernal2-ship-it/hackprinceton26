@@ -1,0 +1,64 @@
+{
+  "assetId": "work_table_overshelf_72",
+  "name": "Stainless work table with overshelf, 72 x 30 in",
+  "category": "counter",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 1.8288,
+    "d": 0.762,
+    "h": 1.524
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      1.8288,
+      0.0
+    ],
+    [
+      1.8288,
+      0.762
+    ],
+    [
+      0.0,
+      0.762
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.91,
+    "sides": 0.0,
+    "back": 0.0
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.91 m, sides 0.00 m, back 0.00 m. Front 0.91 m = 36 in working aisle / customer queue lane (health-code style aisle, stated assumption). Confirm with the manufacturer's spec sheet and the local health, building and fire authority.",
+  "model": {
+    "uri": "assets/library/models/work_table_overshelf_72.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:boh",
+    "kitchen"
+  ],
+  "priceRef": "work_table_overshelf_72",
+  "provenance": {
+    "origin": "NSF stainless work table class (nominal 72 x 30 x 60 in, 1.83 x 0.76 x 1.52 m); not read from a spec sheet",
+    "retrievedAt": null,
+    "notes": "Stainless work table with a 12 in deep wall-height overshelf. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

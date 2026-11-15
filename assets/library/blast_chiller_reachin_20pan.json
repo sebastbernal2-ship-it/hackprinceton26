@@ -1,0 +1,65 @@
+{
+  "assetId": "blast_chiller_reachin_20pan",
+  "name": "Blast chiller, reach-in 20 pan",
+  "category": "fridge",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 0.8382,
+    "d": 0.889,
+    "h": 2.032
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      0.8382,
+      0.0
+    ],
+    [
+      0.8382,
+      0.889
+    ],
+    [
+      0.0,
+      0.889
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.91,
+    "sides": 0.0,
+    "back": 0.05
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.91 m, sides 0.00 m, back 0.05 m. Front 0.91 m = 36 in aisle and door swing; back 0.05 m = 2 in air gap for the condenser (stated assumption). Confirm with the manufacturer's spec sheet and the local health, building and fire authority.",
+  "model": {
+    "uri": "assets/library/models/blast_chiller_reachin_20pan.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:boh",
+    "kitchen",
+    "cold"
+  ],
+  "priceRef": "blast_chiller_reachin_20pan",
+  "provenance": {
+    "origin": "blast chiller class (nominal 33 x 35 x 80 in, 0.84 x 0.89 x 2.03 m); not read from a spec sheet",
+    "retrievedAt": null,
+    "notes": "Reach-in blast chiller / shock freezer for 20 sheet pans. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

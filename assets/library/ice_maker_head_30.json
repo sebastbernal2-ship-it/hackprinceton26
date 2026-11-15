@@ -1,0 +1,66 @@
+{
+  "assetId": "ice_maker_head_30",
+  "name": "Ice maker head, 30 in 500 lb",
+  "category": "other",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 0.762,
+    "d": 0.6096,
+    "h": 0.5842
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      0.762,
+      0.0
+    ],
+    [
+      0.762,
+      0.6096
+    ],
+    [
+      0.0,
+      0.6096
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.91,
+    "sides": 0.0,
+    "back": 0.05
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.91 m, sides 0.00 m, back 0.05 m. Front 0.91 m = 36 in aisle and door swing; back 0.05 m = 2 in air gap for the condenser (stated assumption). Confirm with the manufacturer's spec sheet and the local health, building and fire authority.",
+  "model": {
+    "uri": "assets/library/models/ice_maker_head_30.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:boh",
+    "kitchen",
+    "cold",
+    "ice"
+  ],
+  "priceRef": "ice_maker_head_30",
+  "provenance": {
+    "origin": "modular ice maker head class (nominal 30 x 24 x 23 in, 0.76 x 0.61 x 0.58 m); not read from a spec sheet",
+    "retrievedAt": null,
+    "notes": "30 in modular ice maker head, about 500 lb per day, sits on a bin. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

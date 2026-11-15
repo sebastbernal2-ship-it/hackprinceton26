@@ -1,0 +1,66 @@
+{
+  "assetId": "walkin_cooler_8x10",
+  "name": "Walk-in cooler, 8x10 ft",
+  "category": "storage",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 3.048,
+    "d": 2.4384,
+    "h": 2.1336
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      3.048,
+      0.0
+    ],
+    [
+      3.048,
+      2.4384
+    ],
+    [
+      0.0,
+      2.4384
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.91,
+    "sides": 0.0,
+    "back": 0.0
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.91 m, sides 0.00 m, back 0.00 m. Front 0.91 m = 36 in clear of the door swing and egress aisle (stated assumption). Confirm with the manufacturer's spec sheet and the local health, building and fire authority.",
+  "model": {
+    "uri": "assets/library/models/walkin_cooler_8x10.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:boh",
+    "kitchen",
+    "cold",
+    "walk_in"
+  ],
+  "priceRef": "walkin_cooler_8x10",
+  "provenance": {
+    "origin": "modular walk-in cooler class (nominal 120 x 96 x 84 in, 3.05 x 2.44 x 2.13 m); not read from a spec sheet",
+    "retrievedAt": null,
+    "notes": "8 x 10 ft modular walk-in cooler with floor and remote or top-mount condenser. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

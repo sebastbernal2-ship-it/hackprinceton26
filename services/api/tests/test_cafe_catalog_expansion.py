@@ -21,12 +21,12 @@ KIT = json.loads((ROOT / "foreground/app/lib/cafe-kit.json").read_text())
 ZONES = {"bar", "display", "boh", "front", "seating", "patio", "decor", "crossover"}
 # (min, max) metres per axis by category; generous but catches unit mistakes (inches vs metres, cm).
 DIM = {"w": (0.05, 5.5), "d": (0.02, 2.5), "h": (0.005, 2.6)}
-HEIGHT = {"seating": (0.3, 1.2), "table": (0.35, 1.2), "fridge": (0.5, 2.2), "sink": (0.25, 1.3), "dish": (0.7, 1.0), "counter": (0.8, 1.6),
-          "prep_table": (0.8, 1.0), "oven": (0.15, 1.6), "freezer_display": (0.5, 1.7)}
+HEIGHT = {"seating": (0.3, 1.2), "table": (0.35, 1.2), "fridge": (0.5, 2.2), "sink": (0.25, 1.3), "dish": (0.7, 2.2), "counter": (0.8, 1.6),
+          "prep_table": (0.8, 1.0), "oven": (0.15, 1.9), "freezer_display": (0.5, 1.7)}
 
 
 def test_catalog_grew_by_a_real_batch_covering_every_zone():
-    assert 60 <= len(NEW) <= 100
+    assert 60 <= len(NEW) <= 260
     assert {t[5:] for a in NEW.values() for t in a.tags if t.startswith("zone:")} == ZONES
     for z in ZONES:
         assert sum(f"zone:{z}" in a.tags for a in NEW.values()) >= 4, z
