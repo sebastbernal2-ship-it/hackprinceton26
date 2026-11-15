@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "HorizonTable",
+  "type": "object",
+  "required": ["listingId", "columns", "rows", "counts", "notice"],
+  "properties": {
+    "listingId": {"type": "integer"},
+    "city": {"type": ["string", "null"]},
+    "state": {"type": ["string", "null"]},
+    "columns": {"type": "array", "items": {"enum": ["now", "12m", "3_5y", "2030", "2050", "2070"]}},
+    "counts": {"type": "object", "additionalProperties": {"type": "integer"}},
+    "notice": {"type": "string"},
+    "artifacts": {"type": "object", "additionalProperties": {"enum": ["present", "absent"]}},
+    "rows": {"type": "array", "items": {"type": "object", "required": ["key", "label", "cells"], "properties": {
+      "key": {"type": "string"}, "label": {"type": "string"},
+      "cells": {"type": "object", "additionalProperties": {"$ref": "#/$defs/cell"}}}}}
+  },
+  "$defs": {
+    "cell": {"type": "object", "required": ["state", "cards", "reason"], "properties": {
+      "state": {"enum": ["observed", "fitted", "published", "cannot_say", "pending"]},
+      "cards": {"type": "array", "items": {"$ref": "projection-card.schema.json"}, "description": "ProjectionCards; fitted cells hold only non-hidden cards with all validation passed; published cells carry a citation with asOf."},
+      "reason": {"type": "string", "description": "Required non-empty for cannot_say and pending."},
+      "observed": {"type": "object"}}}
+  }
+}
