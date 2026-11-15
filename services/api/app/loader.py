@@ -134,12 +134,27 @@ def _match(c: dict, cards: list[FactorCard], models: Optional[list[str]] = None)
     )
 
 
+_MATCH_CACHE: dict = {}
+
+
 def load_matches(directory: Optional[Path] = None) -> Optional[list[Match]]:
-    """None when the local data files are absent (dataAvailable=false)."""
+    """None when the local data files are absent (dataAvailable=false). Cached per data folder until the source files change
+    (building the list takes seconds, and every property route calls it)."""
     d = directory or data_dir()
     cand, fac = d / CANDIDATES, d / FACTORS
     if not cand.is_file() or not fac.is_file():
         return None
+    env = tuple(sorted((k, v) for k, v in os.environ.items() if k.endswith(("_DIR", "_PATH")) or k.startswith("DEMO_")))
+    key = (str(d), cand.stat().st_mtime_ns, fac.stat().st_mtime_ns, env)
+    hit = _MATCH_CACHE.get("v")
+    if hit and hit[0] == key:
+        return [m.model_copy() for m in hit[1]]
+    out = _load_matches(d, cand, fac)
+    _MATCH_CACHE["v"] = (key, out)
+    return [m.model_copy() for m in out]
+
+
+def _load_matches(d: Path, cand: Path, fac: Path) -> list[Match]:
     by_prop: dict[str, list[FactorCard]] = {}
     for r in _rows(fac):
         by_prop.setdefault(r.get("property_id", ""), []).append(_card(r))

@@ -50,11 +50,11 @@ export default function Projections({ listingId }: { listingId: number }) {
         </p>
       )}
       {shown.length > 0 && (
-        <ul className="mt-4 grid gap-4 md:grid-cols-2">
-          {shown.map((card, i) => (
-            <Card key={`${card.metric}-${card.scenario}-${i}`} card={card} />
+        <div className="mt-4 grid gap-4 md:grid-cols-2" data-testid="forecast-groups">
+          {groupByMetric(shown).map(([metric, cards]) => (
+            <MetricGroup key={metric} metric={metric} cards={cards} />
           ))}
-        </ul>
+        </div>
       )}
       {hiddenCount > 0 && (
         <p className="mt-3 text-xs text-foreground/40">
@@ -63,6 +63,65 @@ export default function Projections({ listingId }: { listingId: number }) {
       )}
       <AssumptionPanel listingId={listingId} />
       <ReplanPanel listingId={listingId} />
+    </section>
+  );
+}
+
+const isDemo = (c: ProjectionCard) => /^demo estimate/i.test(c.method);
+
+function groupByMetric(cards: ProjectionCard[]): [string, ProjectionCard[]][] {
+  const groups = new Map<string, ProjectionCard[]>();
+  for (const c of cards) groups.set(c.metric, [...(groups.get(c.metric) ?? []), c]);
+  return [...groups.entries()];
+}
+
+function MetricGroup({ metric, cards }: { metric: string; cards: ProjectionCard[] }) {
+  return (
+    <section className="rounded-[1.1rem] border border-foreground/12 p-4" data-testid="forecast-metric">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h3 className="text-sm font-medium">{title(metric)}</h3>
+        <Badge card={cards[0]} />
+      </div>
+      <p className="mt-1 text-xs text-foreground/50">{cards[0].scenario}</p>
+      <ul className="mt-2 space-y-3">
+        {cards.map((c, i) => (
+          <li key={`${c.horizon}-${i}`} data-testid="forecast-cell">
+            <p className="text-xs font-medium text-foreground/70">{c.horizon}</p>
+            {c.status === "unknown" ? <p className="text-sm text-foreground/60">Cannot say</p> : <RangeBar lower={c.lower!} point={c.point!} upper={c.upper!} unit={c.unit} />}
+          </li>
+        ))}
+      </ul>
+      <p className="mt-3 text-xs leading-relaxed text-foreground/55">Method: {cards[0].method}</p>
+    </section>
+  );
+}
+
+/** Compact one-row forecast for the Overview tab: the 12-month point and range of each metric, labelled as demo estimates. */
+export function ForecastRow({ listingId }: { listingId: number }) {
+  const [state, setState] = useState<{ id: number; cards: ProjectionCard[] } | null>(null);
+  useEffect(() => {
+    let live = true;
+    fetchProjections(listingId).then(
+      (d) => live && setState({ id: listingId, cards: d.projections }),
+      () => live && setState({ id: listingId, cards: [] }),
+    );
+    return () => { live = false; };
+  }, [listingId]);
+  const cards = state?.id === listingId ? splitCards(state.cards).shown.filter((c) => c.status === "estimated") : [];
+  if (cards.length === 0) return null;
+  const first = groupByMetric(cards).map(([metric, cs]) => ({ metric, card: cs[0], demo: isDemo(cs[0]) }));
+  return (
+    <section className="mt-8" aria-labelledby="forecast-row-title" data-testid="forecast-row">
+      <h2 id="forecast-row-title" className="text-sm font-medium">Outlook, next 12 months</h2>
+      <p className="mt-1 text-xs text-foreground/50">{BANNER}. {first.some((f) => f.demo) ? "Demo estimates, not observed." : ""} More horizons under Deeper analysis.</p>
+      <ul className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {first.map(({ metric, card }) => (
+          <li key={metric} className="rounded-[1.1rem] border border-foreground/12 p-3" data-testid="forecast-chip">
+            <p className="text-xs text-foreground/55">{title(metric)}</p>
+            <RangeBar lower={card.lower!} point={card.point!} upper={card.upper!} unit={card.unit} />
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }
@@ -160,6 +219,8 @@ function Badge({ card }: { card: ProjectionCard }) {
       <>
         Fitted · backtest {card.validation?.filter((m) => m.passed).length}/{card.validation?.length} passed
       </>
+    ) : isDemo(card) ? (
+      "Scenario · demo estimate"
     ) : (
       KIND_LABEL.scenario
     );
@@ -187,37 +248,6 @@ export function RangeBar({ lower, point, upper, unit }: { lower: number; point: 
         <span>high {formatValue(upper, unit)}</span>
       </div>
     </div>
-  );
-}
-
-function Card({ card }: { card: ProjectionCard }) {
-  return (
-    <li className="rounded-[1.1rem] border border-foreground/12 p-4">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h3 className="text-sm font-medium">{title(card.metric)}</h3>
-        <Badge card={card} />
-      </div>
-      <p className="mt-1 text-xs text-foreground/50">
-        {card.horizon} · {card.scenario}
-      </p>
-      {card.status === "unknown" ? (
-        <p className="mt-3 text-sm font-medium text-foreground/60">Cannot say</p>
-      ) : (
-        <RangeBar lower={card.lower!} point={card.point!} upper={card.upper!} unit={card.unit} />
-      )}
-      <p className="mt-3 text-xs leading-relaxed text-foreground/55">Method: {card.method}</p>
-      {card.kind === "fitted" && card.trainingWindow && (
-        <p className="mt-1 text-xs text-foreground/45">
-          Trained {card.trainingWindow.start} to {card.trainingWindow.end}, {card.trainingWindow.geography}.
-        </p>
-      )}
-      {card.kind === "published" && card.citation && (
-        <p id={`cite-${encodeURIComponent(card.citation.recordId)}`} className="mt-1 text-xs text-foreground/45">
-          {card.citation.source}, record {card.citation.recordId}, as of {card.citation.asOf}, {card.citation.geography}.{" "}
-          {card.citation.limitations}
-        </p>
-      )}
-    </li>
   );
 }
 

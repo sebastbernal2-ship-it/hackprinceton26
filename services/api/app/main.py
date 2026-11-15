@@ -115,9 +115,10 @@ def property_(listing_id: int):
 
 @app.get("/api/property/{listing_id}/projections", response_model=ProjectionsResponse)
 def property_projections(listing_id: int):
-    if not any(m.listingId == listing_id for m in load_matches() or []):
+    m = next((m for m in load_matches() or [] if m.listingId == listing_id), None)
+    if m is None:
         raise HTTPException(status_code=404, detail="listing not found or data unavailable")
-    return projections.projections_for(listing_id)
+    return projections.projections_for(listing_id, m.spaceSquareFeet or m.squareFeet)
 
 
 @app.post("/api/assess", response_model=ScenarioAssessment)

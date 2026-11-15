@@ -13,7 +13,7 @@ import type { Asset } from "../lib/assets";
 import Stepper from "./stepper";
 import { heroPhoto, rentLabel, type FactorCard, type Match } from "../lib/matches";
 import FactorCards from "./factor-cards";
-import Projections from "./projections";
+import Projections, { ForecastRow } from "./projections";
 import SpaceChat from "./space-chat";
 import TriagePanel from "./triage/triage-panel";
 import CompatibilityPill from "./compatibility-pill";
@@ -224,6 +224,7 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
         {tab === "overview" && (
           <>
             {match.costarPropertyId && <CostarBuilding propertyId={match.costarPropertyId} city={match.city} />}
+            {!match.demo && <ForecastRow listingId={match.listingId} />}
             {!match.demo && <DataStreams listingId={match.listingId} />}
             <FactorCards factors={demoFactors ?? match.factors ?? []} demo={match.demo && !demoFactors?.length} />
           </>
