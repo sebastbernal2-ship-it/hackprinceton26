@@ -6,6 +6,7 @@
 <!-- Served by run_all.py at http://localhost:8000/modeling/walk.html?model=<sid>  (needs assets_<sid>/walk/ from modeling/walk_export.py) -->
 <script src="showcase/config.js"></script>
 <script src="floor_reset.js"></script>
+<script src="fio_3d.js"></script>
 <style>
   :root { --text:#e6e8eb; --dim:#9aa0a8; --acc:#4fa3ff; }
   html, body { margin:0; height:100%; overflow:hidden; background:#101114; color:var(--text); font:13px/1.45 system-ui, sans-serif; }
@@ -1715,17 +1716,21 @@ async function fioRun(c) {
   }
   return null;
 }
+// Fio as a little 3D inspector standing in the room (modeling/fio_3d.js): he follows you, and runs each command physically around fioRun
+const fio3d = window.Fio3D && Fio3D.init({ THREE, scene, camera, feet, eye, canvas: renderer.domElement, pieces, sceneTools, groundAt, rayStatic, pushOut, posOf, applyPose, onLevel, distTo,
+  pushUndo, shrinkOut, getYaw: () => yaw, getMode: () => mode, getMoving: () => Math.hypot(vel.x, vel.y) > 0.3, getTarget: () => target, getCarried: () => carried,
+  match: what => fio.matchPieces(what, describeItems()).ids.map(findPiece).filter(Boolean).sort((a, b) => distTo(a) - distTo(b)), log: (k, t) => aiLog(k, t), openAsk: () => toggleAI(true) });
 async function runLocal(c, prompt, status, mark) {
   status.textContent = 'Fio: working…'; mascot('think', 'On it...');
   let reply;
-  try { reply = await fioRun(c); } catch (e) { reply = `I could not do that: ${e.message || e}`; }
+  try { reply = await (fio3d ? fio3d.runCommand(c, () => fioRun(c)) : fioRun(c)); } catch (e) { reply = `I could not do that: ${e.message || e}`; }
   status.remove();
   const batch = undoStack.splice(mark);
   if (batch.length) { undoStack.push({ batch, label: `Fio: ${prompt.slice(0, 40)}` }); }
   aiLog('ai', reply); mascot(/^(I could not|I do not|There is nothing|Designed your place: 0|The room is already|The 3D catalogue|I did not)/.test(reply || '') ? 'shake' : batch.length ? 'cheer' : 'point', reply);
   if (batch.length) aiLog('sys', `${touched.size} piece${touched.size === 1 ? '' : 's'} changed · Ctrl+Z undoes all of it`);
 }
-const mascot = (st, say, ms = 2200) => { const m = $('fioMascot'), b = $('fioBubble'); m.dataset.s = st;
+const mascot = (st, say, ms = 2200) => { const m = $('fioMascot'), b = $('fioBubble'); m.dataset.s = st; fio3d && fio3d.say(st, say);
   if (say != null) { b.textContent = say.length > 150 ? say.slice(0, 147) + '...' : say; b.classList.add('on'); }
   clearTimeout(mascot.t); if (st !== 'think') mascot.t = setTimeout(() => { m.dataset.s = 'idle'; }, ms); if (st !== 'think' && say != null) { clearTimeout(mascot.b); mascot.b = setTimeout(() => b.classList.remove('on'), 9000); } };
 let aiMessages = [], aiBusy = false;
@@ -1851,6 +1856,7 @@ function frame() {
 
   camera.position.copy(eye);
   camera.lookAt(eye.x + Math.cos(pitch) * Math.cos(yaw), eye.y + Math.cos(pitch) * Math.sin(yaw), eye.z + Math.sin(pitch));
+  fio3d && fio3d.update(dt);
   updateFurniture(dt); updateClear(dt);
   renderer.render(scene, camera);
   if (flashTimer > 0 && (flashTimer -= dt) <= 0) hint('');
