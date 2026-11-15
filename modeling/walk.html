@@ -29,6 +29,7 @@
   #ai.open { display:flex; } #ai .row { display:flex; gap:4px; }
   #aiInput { flex:1; background:#0f1013; color:var(--text); border:1px solid #3a3f48; border-radius:6px; padding:6px 8px; font:inherit; }
   #ai button { background:#2a2f37; color:var(--text); border:1px solid #3a3f48; border-radius:6px; padding:4px 10px; cursor:pointer; font:inherit; }
+  #aiChips { display:flex; flex-wrap:wrap; gap:4px; } #aiChips button { font-size:11px; padding:2px 8px; border-radius:12px; }
   #aiLog { max-height:180px; overflow:auto; font-size:12px; display:flex; flex-direction:column; gap:3px; }
   #aiLog .you { color:#9fd0ff; } #aiLog .ai { color:var(--text); } #aiLog .sys { color:var(--dim); } #aiLog .err { color:#ff8a8a; }
   #cat .head { display:flex; align-items:baseline; gap:10px; margin-bottom:8px; } #cat .head b { font-size:15px; }
@@ -50,8 +51,8 @@
   <div class="dim" style="margin-top:4px">Furniture: aim at a piece · <kbd>E</kbd> or click pick up / place · wheel or <kbd>R</kbd> turn ·
     <kbd>X</kbd> remove · <kbd>Ctrl</kbd>+<kbd>Z</kbd> undo · <kbd>C</kbd> catalogue of new furniture</div>
 </div>
-<div id="panel"><span id="edits"></span> <button id="aiBtn">Ask AI (Enter)</button><button id="catBtn">Catalogue (C)</button><button id="exportBtn">Export edits.json</button><button id="resetBtn">Reset all</button></div>
-<div id="ai"><div id="aiLog"></div><div class="row"><input id="aiInput" placeholder="e.g. move the sofa against the left wall and add two armchairs facing it" autocomplete="off"><button id="aiSend">Send</button><button id="aiNew">New chat</button></div></div>
+<div id="panel"><span id="edits"></span> <button id="aiBtn">Ask Fio (Enter)</button><button id="catBtn">Catalogue (C)</button><button id="exportBtn">Export edits.json</button><button id="resetBtn">Reset all</button></div>
+<div id="ai"><div id="aiLog"></div><div id="aiChips"></div><div class="row"><input id="aiInput" placeholder="Ask Fio: cost, seats, hazards, next steps..." autocomplete="off"><button id="aiSend">Send</button><button id="aiNew">New chat</button></div></div>
 <div id="cat"><div class="head"><b>Add furniture</b><span class="dim">Free CC0 models from Poly Haven · lit by the room's own photo</span><button id="catClose">✕</button></div>
   <div id="catTabs"></div><div id="catGrid"></div></div>
 <div id="cross"></div><div id="target" style="opacity:0"></div><div id="hint" style="opacity:0"></div><div id="fade"></div>
@@ -1122,19 +1123,25 @@ const toolLine = (n, a) => ({ move_object: `moving #${a.id}`, move_relative: `mo
   push_against_wall: `pushing #${a.id} ${a.direction}`, rotate_object: `turning #${a.id}`, remove_object: `removing #${a.id}`,
   restore_object: `restoring #${a.id}`, add_from_catalog: `adding ${a.catalog_id}`, list_catalog: 'checking the catalogue',
   describe_scene: 'looking around', get_view: 'checking the view' }[n] || n);
+// The open property, as the app stored it for this tab (same origin as the parent page). The server answers property
+// questions from it when no model key is configured.
+function fioMatch() {
+  try { const st = JSON.parse(sessionStorage.getItem('foreground.matches.v2') || 'null');
+    const m = ((st && st.matches) || []).find(x => x.tourId === SID); return m ? { match: m } : { tourId: SID }; } catch (e) { return { tourId: SID }; }
+}
 async function askAI(prompt) {
   if (aiBusy || !prompt.trim()) return;
   aiBusy = true; $('aiInput').disabled = true; $('aiSend').disabled = true;
   if (carried) cancelCarry(); leavePhoto(true);
   aiLog('you', prompt);
-  const status = aiLog('sys', 'Gemini is thinking…');
+  const status = aiLog('sys', 'Fio is thinking…');
   const mark = undoStack.length, base = aiMessages.length; touched.clear();
   try {
     aiMessages.push({ role: 'user', content: [imageBlock(), { type: 'text', text: `${situation()}\n\nRequest: ${prompt}` }] });
     for (let turn = 0; turn < 20; turn++) {
       // ?agent= may only name a same-origin path (another site must never receive the scene)
       const res = await fetch(/^\/[A-Za-z0-9_\/-]*$/.test(Q.get('agent') || '') ? Q.get('agent') : '/api/agent', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Walk-Agent': '1' },
-                                              body: JSON.stringify({ messages: aiMessages }) });
+                                              body: JSON.stringify({ messages: aiMessages, fio: fioMatch() }) });
       const out = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
       if (!res.ok || out.error) {
         aiMessages.length = base;                      // drop this whole request so the chat stays valid (no dangling tool_use)
@@ -1142,12 +1149,12 @@ async function askAI(prompt) {
       }
       aiMessages.push({ role: 'assistant', content: out.content });
       for (const b of out.content) if (b.type === 'text' && b.text.trim()) aiLog('ai', b.text.trim());
-      if (out.stop_reason === 'refusal') { aiLog('err', 'Gemini declined this request.'); break; }
+      if (out.stop_reason === 'refusal') { aiLog('err', 'Fio declined this request.'); break; }
       const calls = out.content.filter(b => b.type === 'tool_use');
       if (out.stop_reason !== 'tool_use' || !calls.length) { if (out.stop_reason === 'max_tokens') aiLog('err', '(reply was cut off)'); break; }
       const results = [];
       for (const c of calls) {                         // all results go back in one user message
-        status.textContent = `Gemini: ${toolLine(c.name, c.input || {})}…`;
+        status.textContent = `Fio: ${toolLine(c.name, c.input || {})}…`;
         try {
           const fn = sceneTools[c.name]; if (!fn) throw new Error(`unknown tool ${c.name}`);
           const r = await fn(c.input || {});
@@ -1174,6 +1181,8 @@ $('aiInput').addEventListener('keydown', e => {
   if (e.key === 'Escape') { toggleAI(false); }
   e.stopPropagation();
 });
+for (const t of ["Does this fit Sarah's brief?", 'What will it cost to open?', 'How many seats could it hold?', 'Any structure or flood hazards?', 'What happened to past restaurants here?', 'What does the forecast say?', 'What should I do next?']) {
+  const b = document.createElement('button'); b.textContent = t; b.onclick = () => askAI(t); $('aiChips').appendChild(b); }
 $('aiNew').onclick = () => { aiMessages = []; $('aiLog').innerHTML = ''; aiLog('sys', 'New conversation.'); };
 $('aiBtn').onclick = () => toggleAI();
 addEventListener('keydown', e => { if (!typing(e) && (e.code === 'Enter' || e.code === 'Slash')) { e.preventDefault(); toggleAI(true); } });
