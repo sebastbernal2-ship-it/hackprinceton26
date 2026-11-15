@@ -1,53 +1,29 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { rentLabel, type Match } from "../lib/matches";
+import type { Match } from "../lib/matches";
+import { answerFio, FIO_CHIPS, loadFioContext, type FioContext } from "../lib/fio";
 
 type Message = { role: "agent" | "user"; text: string };
-
-const number = new Intl.NumberFormat("en-US");
-const SUGGESTIONS = ["Monthly rent", "Suite size", "The neighborhood", "Is it available?"];
-
-function fact(match: Match, label: string) {
-  const rows = [...(match.facts?.property ?? []), ...(match.facts?.location ?? [])];
-  return rows.find((row) => row.label === label)?.value;
-}
-
-function answer(match: Match, question: string) {
-  const q = question.toLowerCase();
-  const rent = rentLabel(match);
-  const space = fact(match, "Space Available") ?? `${number.format(match.squareFeet)} sq ft`;
-  const neighborhood = fact(match, "Neighborhood");
-  const availability = fact(match, "Availability") ?? "Immediately";
-
-  if (/rent|cost|price|month|afford/.test(q)) {
-    if (match.rentPerSquareFootYear === null) return `${match.detail || match.address}: the listing states no rent, so I cannot say what it costs.`;
-    return `${match.detail || match.address} is listed at ${rent}, about $${match.rentPerSquareFootYear} per square foot per year.`;
-  }
-  if (/size|big|square|sq|foot|sf|seat/.test(q)) {
-    return `The available space is ${space}. The building line is ${fact(match, "Building") ?? "on the CoStar record"}.`;
-  }
-  if (/avail|when|move|open/.test(q)) {
-    return `CoStar lists this space as ${availability}.`;
-  }
-  if (/where|neigh|area|near|traffic|front|park|location/.test(q)) {
-    const bits = [neighborhood, fact(match, "Frontage"), fact(match, "Daily traffic"), fact(match, "Parking")].filter(Boolean);
-    return bits.length > 0 ? bits.join(". ") + "." : `${match.address} is in ${match.city}.`;
-  }
-  if (/built|year|class|renovat|type|restaurant|retail/.test(q)) {
-    return [fact(match, "Property Type"), fact(match, "Built"), fact(match, "Building")].filter(Boolean).join(". ") + ".";
-  }
-  if (/tour|matterport|3d|walk/.test(q)) {
-    return `A Matterport model is on file for this space. Open 3D Tour to walk it.`;
-  }
-  return `${match.blurb} Rent is ${rent}, the suite is ${space}, and availability is ${availability}${neighborhood ? ` in ${neighborhood}` : ""}.`;
-}
 
 export default function SpaceChat({ match, open, onOpenChange }: { match: Match; open: boolean; onOpenChange: (open: boolean) => void }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [value, setValue] = useState("");
+  const [busy, setBusy] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [loaded, setLoaded] = useState<{ id: number; c: FioContext } | null>(null);
+  const ctx = loaded?.id === match.listingId ? loaded.c : null;
+
+  // Fetch the property's evidence once Fio is opened; answers cite it. A failed endpoint is null and Fio says so.
+  useEffect(() => {
+    if (!open || ctx) return;
+    let live = true;
+    loadFioContext(match.listingId).then((c) => live && setLoaded({ id: match.listingId, c }));
+    return () => {
+      live = false;
+    };
+  }, [open, ctx, match.listingId]);
 
   useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
@@ -57,11 +33,16 @@ export default function SpaceChat({ match, open, onOpenChange }: { match: Match;
     if (open) inputRef.current?.focus();
   }, [open]);
 
-  function send(text: string) {
+  async function send(text: string) {
     const trimmed = text.trim();
     if (!trimmed) return;
     setValue("");
-    setMessages((current) => [...current, { role: "user", text: trimmed }, { role: "agent", text: answer(match, trimmed) }]);
+    setMessages((current) => [...current, { role: "user", text: trimmed }]);
+    setBusy(true);
+    const c = ctx ?? (await loadFioContext(match.listingId));
+    setBusy(false);
+    setLoaded({ id: match.listingId, c });
+    setMessages((current) => [...current, { role: "agent", text: answerFio(match, c, trimmed) }]);
   }
 
   function submit(event?: FormEvent) {
@@ -115,7 +96,7 @@ export default function SpaceChat({ match, open, onOpenChange }: { match: Match;
             <div>
               <p className="leading-snug">Ask anything about {match.detail || match.address}.</p>
               <p className="mt-1 text-sm leading-snug text-foreground/55">
-                Rent, size, availability, and the neighborhood all come from the CoStar listing.
+                Answers come from this property&apos;s own data: match facts, estimated seats, costs, structure, tenant history. Figures marked estimated are estimates, not quotes.
               </p>
             </div>
           </div>
@@ -141,10 +122,12 @@ export default function SpaceChat({ match, open, onOpenChange }: { match: Match;
           ),
         )}
 
+        {busy && <p className="px-1 text-sm text-foreground/50">Fio is checking this property&apos;s data…</p>}
+
         <div className="pt-2">
-          <p className="mb-2 text-sm text-foreground/60">Try a quick question</p>
+          <p className="mb-2 text-sm text-foreground/60">Ask Fio</p>
           <div className="flex flex-wrap gap-2">
-            {SUGGESTIONS.map((suggestion) => (
+            {FIO_CHIPS.map((suggestion) => (
               <button
                 key={suggestion}
                 type="button"
@@ -171,7 +154,7 @@ export default function SpaceChat({ match, open, onOpenChange }: { match: Match;
             ref={inputRef}
             value={value}
             onChange={(event) => setValue(event.target.value)}
-            placeholder="rent, size, the block…"
+            placeholder="cost, seats, hazards, next steps…"
             className="min-w-0 flex-1 bg-transparent px-1.5 text-sm text-foreground outline-none placeholder:text-foreground/35"
           />
           <button

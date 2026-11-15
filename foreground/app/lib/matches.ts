@@ -59,6 +59,8 @@ export type Match = {
   rent?: RentEstimate | null;
   /** Requirements the evidence confirms / cannot confirm / contradicts. Absent from older services. Not a fit score. */
   alignment?: import("./alignment").Alignment | null;
+  /** Per-requirement verdicts from /api/matches (city, area, seats, budget, scan). Used by Fio. */
+  constraints?: { constraint: string; status: "PASS" | "FAIL" | "UNKNOWN"; reason: string }[];
 };
 
 export type RentEstimate = {
