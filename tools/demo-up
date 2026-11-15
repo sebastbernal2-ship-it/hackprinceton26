@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Start the demo: API on :8000 and the web app on :3000, both bound to loopback only.
+[ -f "$HOME/.hackprinceton.env" ] && { set -a; . "$HOME/.hackprinceton.env"; set +a; }
 #   tools/demo-up [data-dir] [scan-assets-dir]
 # data-dir: the checkout folder holding data/normalized and data/derived (default ~/code/hackprinceton/data).
 # scan-assets-dir: folder with assets_<id>/walk exports for the editable cafe walk (default ~/code/_work/recon-data).

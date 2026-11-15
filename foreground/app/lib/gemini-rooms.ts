@@ -5,7 +5,7 @@ import path from "node:path";
 import { requireKey } from "./server-env";
 import type { PlanRoomPixels } from "./floor-layout";
 
-const MODELS = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-flash-latest"];
+const MODELS = ["gpt-4o", "gpt-4o-mini"];
 
 const roomsByModel = new Map<string, PlanRoomPixels[]>();
 
@@ -34,16 +34,22 @@ export async function traceFloorplan(
 }
 
 async function requestRooms(bytes: Buffer, mimeType: string, width: number, height: number, retry: boolean): Promise<PlanRoomPixels[]> {
-  const key = requireKey("GEMINI_API_KEY");
+  // The vision call uses the OpenAI key (OPENAI_API_KEY); the file name is historical.
+  const key = requireKey("OPENAI_API_KEY");
   const prompt = roomPrompt(width, height, retry);
-  let lastError = "Gemini did not return room polygons.";
+  let lastError = "The vision model did not return room polygons.";
   for (const model of MODELS) {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
-      headers: { "content-type": "application/json", "x-goog-api-key": key },
+      headers: { "content-type": "application/json", authorization: `Bearer ${key}` },
       body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }, { inlineData: { mimeType, data: bytes.toString("base64") } }] }],
-        generationConfig: { temperature: 0.1, responseMimeType: "application/json" },
+        model,
+        temperature: 0.1,
+        response_format: { type: "json_object" },
+        messages: [{ role: "user", content: [
+          { type: "text", text: prompt },
+          { type: "image_url", image_url: { url: `data:${mimeType};base64,${bytes.toString("base64")}` } },
+        ] }],
       }),
       cache: "no-store",
     });
@@ -51,19 +57,15 @@ async function requestRooms(bytes: Buffer, mimeType: string, width: number, heig
       lastError = `${model} is not available.`;
       continue;
     }
-    const body = (await response.json()) as {
-      error?: { message?: string };
-      candidates?: { content?: { parts?: { text?: string }[] } }[];
-    };
+    const body = (await response.json()) as { error?: { message?: string }; choices?: { message?: { content?: string } }[] };
     if (!response.ok) {
-      lastError = body.error?.message || `Gemini request failed (${response.status}).`;
+      lastError = body.error?.message || `Vision request failed (${response.status}).`;
       if (response.status === 400 || response.status === 401 || response.status === 403) break;
       continue;
     }
-    const text = body.candidates?.[0]?.content?.parts?.map((part) => part.text || "").join("\n") || "";
-    const rooms = parseRooms(text);
+    const rooms = parseRooms(body.choices?.[0]?.message?.content || "");
     if (rooms.length > 0) return rooms;
-    lastError = "Gemini did not name any rooms on this floorplan.";
+    lastError = "The vision model did not name any rooms on this floorplan.";
   }
   throw new Error(lastError);
 }

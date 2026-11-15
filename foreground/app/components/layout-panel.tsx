@@ -244,7 +244,7 @@ export default function LayoutPanel({ match, lines = [], items, onItems: setItem
           {trace.status === "loading" ? "Tracing floorplan." : "Trace Matterport rooms in 3D"}
         </button>
         <p className="mt-2 text-xs text-foreground/50">
-          Needs Matterport and Gemini server keys. A vision model estimates room outlines from the floorplan image; placements are assigned by room type and are not fit-checked or survey measurements.
+          Needs the Matterport server key and the OpenAI key. A vision model estimates room outlines from the floorplan image; placements are assigned by room type and are not fit-checked or survey measurements.
         </p>
         {trace.status === "notConfigured" && <p role="status" className="mt-2 text-sm">Not configured: {trace.message} Showing the concept placement only.</p>}
         {trace.status === "failed" && <p role="alert" className="mt-2 text-sm">Could not trace: {trace.message}</p>}
