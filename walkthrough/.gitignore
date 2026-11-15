@@ -1,0 +1,7 @@
+node_modules/
+dist/
+*.ply
+*.spz
+*.splat
+*.glb
+public/_test/
