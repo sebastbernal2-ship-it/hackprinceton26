@@ -49,17 +49,21 @@ them.
 
 ## Setup
 
-Requirements: Node 24+, Python 3.12 (data scripts only).
+Requirements: Node 20 or newer. Python 3.12 is only for the data scripts.
+
+Download the packages first. `npm ci` installs every dependency in `package-lock.json` and copies the Matterport viewer assets into `public/matterport`.
 
 ```bash
-npm install            # also copies the Matterport viewer assets into public/matterport
+npm ci
 cp .env.example .env.local   # then fill in the keys below
 npm run dev            # http://localhost:3000
 ```
 
+From the repo root, run `npm ci` inside this folder before `npm run dev`.
+
 `.env.local` needs `ANTHROPIC_API_KEY`, `GEMINI_API_KEY`, `MATTERPORT_API_KEY`, `MATTERPORT_API_TOKEN`,
-`MATTERPORT_SDK_KEY` (allowed for localhost), `VEXCEL_API_KEY` and `COSTAR_KIT_DIR` (the CoStar kit folder, needed
-only to rebuild the data).
+`MATTERPORT_SDK_KEY` (allowed for localhost), `NEXT_PUBLIC_MATTERPORT_SDK_KEY` (the same SDK key, read by the
+browser), `VEXCEL_API_KEY`, and `COSTAR_KIT_DIR` (the CoStar kit folder, needed only to rebuild the data).
 `FOREGROUND_REPLAY=1` makes the agent replay recorded runs without calling the API.
 
 Checks: `npm test` (Vitest), `npm run typecheck`, `npm run build`.

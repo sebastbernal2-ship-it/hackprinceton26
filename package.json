@@ -1,0 +1,9 @@
+{
+  "name": "foreground-demo",
+  "private": true,
+  "description": "Installs and starts the Foreground app in foreground_final.",
+  "scripts": {
+    "dev": "node scripts/run-final.mjs",
+    "start": "node scripts/run-final.mjs"
+  }
+}
