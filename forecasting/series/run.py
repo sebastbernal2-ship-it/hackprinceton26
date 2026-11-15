@@ -7,7 +7,7 @@ import sys
 from datetime import date
 from pathlib import Path
 
-from . import published, sources as S
+from . import costar, published, sources as S
 from .cards import finalize
 from .core import Spec, make_card
 
@@ -102,6 +102,16 @@ def run_all():
                                           raw["retrieved"], "Harris County, TX",
                                           "Modeled annual average daily volume on a state-system road, not footfall; gaps are missing, not zero."))
             out.append(("aadt:" + str(a["TRFC_STATN_ID"]), c, r))
+    if costar.CSV.exists():
+        c_cards, report = costar.run_costar()
+        out += c_cards
+        dest = ROOT / "forecasting" / "artifacts"
+        dest.mkdir(parents=True, exist_ok=True)
+        (dest / "costar_series_report.json").write_text(json.dumps(report, indent=1))
+        est = sum(1 for r in report if r["status"] == "estimated")
+        notes.append(f"CoStar kit quarterly series: {len(report)} (series x horizon), estimated {est}; report in forecasting/artifacts/")
+    else:
+        notes.append("CoStar kit series CSV absent (run python -m data.costar.series_fetch); skipped")
     return out, notes
 
 
@@ -121,7 +131,7 @@ def main(argv):
         fitted = [x for x in out if x[1]["status"] == "estimated"]
         print(f"series cards: {len(out)}; estimated: {len(fitted)}; unknown: {len(out) - len(fitted)}; published cite-only: {len(cards) - len(out)}")
         for sid, c, r in out:
-            if not sid.startswith("aadt:"):
+            if not sid.startswith(("aadt:", "costar:")):
                 print(f"  {sid}: {c['status']}" + (f" ({r})" if r else "") + "  " + c["method"].split("Rolling-origin")[1][:200] if "Rolling-origin" in c["method"] else sid)
         for n in notes:
             print("  note:", n)
