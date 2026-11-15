@@ -62,7 +62,7 @@ uv run --python 3.12 --no-project --with requests --with pandas --with numpy pyt
 3. View Info on a cafe now lists the cards under Evidence.
 
 ## What to skip
-- **Open 3D Tour** and **Ask AI About This Space**: not rehearsed.
+- **Open 3D Tour** and **Ask Fio**: not rehearsed.
 - **Add equipment from photos** and "Trace Matterport rooms in 3D": need live credentials; not part of the base case.
 - The **Agent** panel at the bottom of the shortlist: its recorded replay is the earlier **Italian restaurant with gelato** scenario (the button now says so). No verified cafe replay was recorded (the cafe scans are not candidates the agent's tools can inspect, and the local model branch is not in this checkout). Do not narrate it as a cafe run.
 - Seats: the cost model has no seat-dependent cost, so seats are not a replan input here.

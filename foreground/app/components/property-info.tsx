@@ -195,7 +195,7 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
             className="inline-flex items-center gap-2 rounded-full border border-foreground/20 bg-background px-5 py-3 text-sm font-medium transition-opacity hover:opacity-70"
           >
             <Spark />
-            Ask AI About This Space
+            Ask Fio
           </button>
           <p className="text-xs text-foreground/45">
             {match.tourId ? `Matterport model ${match.tourId} (property-level link; may not show this exact suite).` : "No Matterport model on file."}
