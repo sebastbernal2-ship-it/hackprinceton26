@@ -112,6 +112,7 @@ const house = new THREE.Mesh(subGeometry(meta.groups), mats); scene.add(house);
 const groups = meta.textures.map((tex, i) => ({ tex, i, lo: [Infinity, Infinity, Infinity], hi: [-Infinity, -Infinity, -Infinity], low: null, full: null }));
 for (const g of [...meta.groups, ...(meta.pieces || []).flatMap(p => p.groups)]) {
   const t = groups[g.tex];
+  if (!t) continue;   // untextured triangles carry tex -1: they have no texture bounds to grow
   for (let k = g.start; k < g.start + g.count; k++) { const v = IDX[k] * 3;
     for (let a = 0; a < 3; a++) { const x = P[v + a]; if (x < t.lo[a]) t.lo[a] = x; if (x > t.hi[a]) t.hi[a] = x; } }
 }
@@ -647,7 +648,7 @@ function drop(force) {
 function cancelCarry() {
   if (!carried) return;
   setPose(carried, carry.start); undoStack.pop();
-  if (carried.added && carry.fresh) { carried.deleted = true; applyPose(carried); }   // a new item put back = not added
+  if (carried.added && carry.fresh) { carried.deleted = true; applyPose(carried); save(); }   // a new item put back = not added (persist it, or a reload brings it back)
   carried.outline.visible = false; outlineMat.color.set(0x4fa3ff); carried = null; carry = null; fits = true;
 }
 function removePiece(pc) {
@@ -851,9 +852,11 @@ function envFor(s) {
     const bmp = await createImageBitmap(await (await fetch(s.furnished)).blob(),
       { resizeWidth: 1024, resizeHeight: 512, imageOrientation: 'flipY', premultiplyAlpha: 'none' });
     const t = new THREE.Texture(bmp); t.flipY = false; t.colorSpace = THREE.SRGBColorSpace; t.wrapS = THREE.RepeatWrapping; t.needsUpdate = true;
-    envMat.uniforms.pano.value = t; envMat.uniforms.ym.value.set(s.align.yaw, s.align.mirror);
     const rt = new THREE.WebGLCubeRenderTarget(256, { type: THREE.HalfFloatType }), cc = new THREE.CubeCamera(0.1, 10, rt);
-    await nextFrame(); cc.update(renderer, envScene);
+    await nextFrame();
+    // Set the shared uniforms only after the last await and render in the same tick, so concurrent envFor() calls cannot overwrite each other.
+    envMat.uniforms.pano.value = t; envMat.uniforms.ym.value.set(s.align.yaw, s.align.mirror);
+    cc.update(renderer, envScene);
     const env = pmrem.fromCubemap(rt.texture).texture;
     rt.dispose(); t.dispose(); bmp.close();
     return env;
