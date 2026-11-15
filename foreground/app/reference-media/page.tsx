@@ -6,7 +6,7 @@ type Saved = { name: string; kind: "image" | "video"; bytes: number };
 const mb = (n: number) => (n >= 1024 * 1024 ? `${(n / 1024 / 1024).toFixed(1)} MB` : `${Math.max(1, Math.round(n / 1024))} KB`);
 
 export default function ReferenceMediaPage() {
-  const [profileId, setProfileId] = useState("cafe-demo");
+  const [profileId, setProfileId] = useState("fruity-yogurt");
   const [files, setFiles] = useState<File[]>([]);
   const [progress, setProgress] = useState<number | null>(null);
   const [message, setMessage] = useState("");

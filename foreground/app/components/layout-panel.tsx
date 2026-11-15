@@ -51,8 +51,8 @@ type LayoutPanelProps = {
 
 export default function LayoutPanel({ match, lines = [], items, onItems: setItems, area, onArea }: LayoutPanelProps) {
   const [trace, setTrace] = useState<Trace>({ status: "idle" });
-  const [profileDraft, setProfileDraft] = useState("cafe-demo");
-  const [profileId, setProfileId] = useState<string | null>("cafe-demo");
+  const [profileDraft, setProfileDraft] = useState("fruity-yogurt");
+  const [profileId, setProfileId] = useState<string | null>("fruity-yogurt");
   const [category, setCategory] = useState<AssetCategory | "">("");
   const [catalog, setCatalog] = useState<{ status: "loading" | "ok" | "error"; assets: Asset[]; error: string }>({ status: "loading", assets: [], error: "" });
   const [reload, setReload] = useState(0);
