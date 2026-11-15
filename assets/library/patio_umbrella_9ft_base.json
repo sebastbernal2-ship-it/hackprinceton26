@@ -37,10 +37,10 @@
   ],
   "clearance": {
     "front": 0.3,
-    "sides": 0.3,
-    "back": 0.3
+    "sides": 0.1,
+    "back": 0.1
   },
-  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.3 m guest chair pull-out (about 0.45 m for a chair, 0.6 m at a table), sides 0.3 m, back 0.3 m. Keep one 0.91 m (36 in, ADA 403.5.1) accessible route between groups.",
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.3 m, sides 0.1 m, back 0.1 m around the cast base only; the canopy overhangs about 1.14 m each side overhead and must clear the 0.91 m (36 in, ADA 403.5.1) accessible route and any wall or sign (head clearance 2.03 m / 80 in, ADA 307.2).",
   "model": {
     "uri": "assets/library/models/patio_umbrella_9ft_base.glb",
     "format": "glb"

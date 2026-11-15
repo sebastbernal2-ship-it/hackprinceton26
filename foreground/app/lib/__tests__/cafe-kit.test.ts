@@ -1,7 +1,8 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { packAssets } from "../asset-layout";
+import { checkLayout, packAssets } from "../asset-layout";
+import { autoLayout, toPlacements } from "../planner";
 import type { Asset } from "../assets";
 import { buildCafeKit, CAFE_KIT_VARIANTS, cafeKitArea, dedupeAssets, type KitVariant } from "../cafe-demo";
 import { conceptFootprint } from "../concept-layout";
@@ -39,6 +40,8 @@ describe("cafe reference kit", () => {
     const packed = packAssets(floor, kit, true);
     expect(packed.unplaced).toEqual([]);
     expect(packed.issues.filter((i) => i.kind === "overlap" || i.kind === "outside_floor")).toEqual([]);
+    // What the planner's "Load kit" button does: its auto layout must come out with no problems at all.
+    expect(checkLayout(floor, toPlacements(autoLayout(floor, kit))).map((i) => i.message)).toEqual([]);
   });
 
   it("groups placed pieces into quantities for cost lines", () => {
