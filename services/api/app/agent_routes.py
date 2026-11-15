@@ -1,4 +1,5 @@
 """POST /api/agent/run (SSE) and GET /api/agent/replay (SSE). Provider: anthropic | local | scripted | auto."""
+import itertools
 import json
 import os
 import sys
@@ -90,4 +91,4 @@ def agent_replay(delay: float = 0.0, source: str = "auto"):
     events = json.loads(path.read_text())
     note = {"type": "replay_info", "mode": "REPLAY", "source": "local-recorded-run" if use_local else "SYNTHETIC-fixture",
             "note": "Recorded trace replayed; not a live run." + ("" if use_local else " Values are synthetic.")}
-    return StreamingResponse(_sse([note, *runner.replay(events, min(max(delay, 0.0), 2.0))]), media_type="text/event-stream")
+    return StreamingResponse(_sse(itertools.chain([note], runner.replay(events, min(max(delay, 0.0), 2.0)))), media_type="text/event-stream")

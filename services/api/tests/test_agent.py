@@ -176,3 +176,16 @@ def test_anthropic_provider_maps_blocks_with_fake_client():
     t = AnthropicProvider("claude-sonnet-5-5", client).step("sys", [{"role": "user", "content": "x"}], runner.planner_tools())
     assert t.text == "plan" and t.tool_calls == [{"id": "tu1", "name": "shortlist", "args": {"goal": "g"}}]
     assert sent["model"] == "claude-sonnet-5-5" and sent["tools"][0]["input_schema"]["type"] == "object"
+
+
+def test_replay_route_streams_lazily(tmp_path, monkeypatch):
+    """The replay must not sleep through the whole trace before the first byte (browsers would see nothing for ~15 s)."""
+    from app import agent_routes
+    from app.main import app
+    monkeypatch.setenv("DERIVED_DIR", str(tmp_path))
+    import asyncio
+    import time
+    t0 = time.monotonic()
+    resp = agent_routes.agent_replay(delay=0.5)
+    first = asyncio.run(resp.body_iterator.__anext__())
+    assert "replay_info" in first and time.monotonic() - t0 < 0.3
