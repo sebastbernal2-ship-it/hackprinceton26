@@ -48,6 +48,7 @@ def main():
                 if s.get("propertyId") and str(s["propertyId"]) != pid: continue
                 listings[pid].append((l, s))
     columns = ["property_id", "city", "address", "food_service_tenant_location_count", "matterport_model_ids", "matterport_checked_states", "publication_address_match_statuses", "publication_address_token_overlap_count", "defurnished_location_count", "floor_id_count", "listing_ids", "listing_status_codes", "directly_linked_space_count", "suite_codes", "listed_size_min_sqft", "listed_size_max_sqft", "availability_dates_as_listed", "verification_note"]
+    OUT.parent.mkdir(parents=True, exist_ok=True)
     with OUT.open("w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=columns); w.writeheader()
         for q in queue:

@@ -74,6 +74,7 @@ def main():
         "availability_interpretation",
     ]
     as_of = dt.datetime.now(dt.timezone.utc).date().isoformat()
+    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     with OUTPUT.open("w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=fields)
         writer.writeheader()

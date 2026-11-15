@@ -29,7 +29,7 @@ def run(module, sites, outdir, pace=0.0, sleep=time.sleep, reasons=None):
         cards += [{**c, "propertyId": str(s.get("property_id", ""))} for c in obs]
     outdir = pathlib.Path(outdir)
     outdir.mkdir(parents=True, exist_ok=True)
-    (outdir / "observations.json").write_text(json.dumps(cards))
+    (outdir / "observations.json").write_text(json.dumps(cards), encoding="utf-8")
     return len(cards), failures
 
 

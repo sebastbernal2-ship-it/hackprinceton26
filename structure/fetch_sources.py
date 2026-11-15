@@ -43,7 +43,7 @@ def enrich(p):
 
 
 def kit_props(kit: Path, cands: Path):
-    want = {r["property_id"] for r in csv.DictReader(open(cands, encoding="utf-8"))}
+    want = {r["property_id"] for r in csv.DictReader(open(cands, newline="", encoding="utf-8"))}
     out = {}
     for line in open(kit / "data/commercial-property.jsonl", encoding="utf-8"):
         r = json.loads(line)
@@ -99,7 +99,7 @@ def main():
     a = ap.parse_args()
     out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
     props = kit_props(Path(a.kit), Path(a.cands))
-    ll = {r["property_id"]: r for r in csv.DictReader(open(a.cands, encoding="utf-8"))}
+    ll = {r["property_id"]: r for r in csv.DictReader(open(a.cands, newline="", encoding="utf-8"))}
     for k, p in props.items():
         p["lat"], p["lon"] = float(ll[k]["latitude"]), float(ll[k]["longitude"])
         p["city"], p["state"] = ll[k]["city"], ll[k]["state"]
@@ -108,9 +108,9 @@ def main():
     today = dt.date.today().isoformat()
     for p in props.values():
         p["retrieved"] = today
-    (out / "properties.json").write_text(json.dumps(props))
+    (out / "properties.json").write_text(json.dumps(props), encoding="utf-8")
     c = climate(today)
-    (out / "climate_fetch.json").write_text(json.dumps(c))
+    (out / "climate_fetch.json").write_text(json.dumps(c), encoding="utf-8")
     n = len(props)
     fill = lambda f: sum(1 for p in props.values() if f(p))
     print(json.dumps({"n": n, "yearBuilt": fill(lambda p: p["yearBuilt"]), "material": fill(lambda p: p["material"]),

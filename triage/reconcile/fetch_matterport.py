@@ -16,21 +16,19 @@ QUERY = """query($id: ID!) { model(id: $id) { id state
           dimensions(units: imperial) { areaFloor width depth height } } } }"""
 
 
-def load_env(path: Path) -> None:
-    if not path.exists():
+def load_env() -> None:
+    try:
+        from dotenv import load_dotenv
+    except ImportError:
         return
-    for line in path.read_text().splitlines():
-        line = line.strip()
-        if line and not line.startswith("#") and "=" in line:
-            k, _, v = line.partition("=")
-            os.environ.setdefault(k.strip().removeprefix("export ").strip(), v.strip().strip('"').strip("'"))
+    load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 
 
 def property_models(root: Path) -> dict[str, str]:
     """property_id -> first accessible (active) model id, from the existing read-only access log."""
     out: dict[str, str] = {}
     log = root / "data/normalized/matterport/model-access-checks.jsonl"
-    for line in log.open():
+    for line in log.open(encoding="utf-8"):
         try:
             r = json.loads(line)
         except json.JSONDecodeError:
@@ -52,7 +50,7 @@ def main() -> None:
     ap.add_argument("--rate", type=float, default=5.0)
     a = ap.parse_args()
     root = Path(a.data_root)
-    load_env(root / ".env")
+    load_env()
     key, tok = os.environ.get("MATTERPORT_API_KEY"), os.environ.get("MATTERPORT_API_TOKEN")
     if not key or not tok:
         sys.exit("Set MATTERPORT_API_KEY and MATTERPORT_API_TOKEN")
@@ -80,7 +78,7 @@ def main() -> None:
                 print(f"stopping on HTTP {e.code} after {done} fetched"); break
         except Exception as e:  # network
             rec["model"] = None; rec["errors"] = [type(e).__name__]
-        (cache / f"{pid}.json").write_text(json.dumps(rec))
+        (cache / f"{pid}.json").write_text(json.dumps(rec), encoding="utf-8")
         done += 1; err += bool(rec["errors"] and not rec["model"])
         if done % 100 == 0:
             print(f"{done}/{len(todo)} fetched, {err} errors, {time.time()-t0:.0f}s", flush=True)

@@ -79,6 +79,7 @@ def main(argv=()):
     sites=rows(CANDIDATES if '--all-candidates' in argv else QUEUE); evidence={r['property_id']:r for r in rows(EVIDENCE)}
     operator={r['property_id']:r for r in rows(OPERATOR)}; context={r['property_id']:r for r in rows(CONTEXT)}
     out=build_cards(factors,sites,evidence,operator,context,load_adapter_observations(factors))
+    OUT.parent.mkdir(parents=True, exist_ok=True)
     with OUT.open('w',newline='',encoding='utf-8') as f:
         w=csv.DictWriter(f,fieldnames=FIELDS);w.writeheader();w.writerows(out)
     print(f'Wrote {len(out)} factor cards for {len(sites)} sites; unknown values remain blank.')

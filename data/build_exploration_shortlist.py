@@ -12,6 +12,7 @@ selected = [r for r in rows if r["active_listed_min_available_sqft"]
     and 1000 <= float(r["active_listed_min_available_sqft"]) <= 6000
     and int(r["accessible_model_count"]) > 0
     and int(r["explicitly_active_lease_spaces"]) > 0]
+out.parent.mkdir(parents=True, exist_ok=True)
 with out.open("w", newline="", encoding="utf-8") as f:
     fields = ["property_id", "city", "address", "active_listed_min_available_sqft", "gross_building_area_sqft", "accessible_model_count", "listing_statuses", "historic_food_service_tenant_locations", "concept", "review_questions"]
     w = csv.DictWriter(f, fieldnames=fields); w.writeheader()

@@ -1,10 +1,10 @@
 """Score raw OWLv2 detections against hand labels (count level). Writes triage/aerial/validation.json."""
 import json, os, statistics as st
 from pathlib import Path
-ROOT = Path(os.environ.get("HP_ROOT", "/home/vorte/code/hackprinceton"))
+ROOT = Path(os.environ.get("HP_ROOT", str(Path(__file__).resolve().parents[2])))
 HERE = Path(__file__).parent
-raw = json.loads((ROOT / "data/derived/triage/aerial/raw_detections.json").read_text())
-labels = json.loads((HERE / "labels.json").read_text())["labels"]
+raw = json.loads((ROOT / "data/derived/triage/aerial/raw_detections.json").read_text(encoding="utf-8"))
+labels = json.loads((HERE / "labels.json").read_text(encoding="utf-8"))["labels"]
 CLS = {"vehicle": "vehicles", "rooftop_unit": "rooftop_units"}
 THR = [0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.4, 0.5]
 
@@ -29,4 +29,4 @@ for cls, key in CLS.items():
     cvmae = round(st.mean(c["mae"] for c in cv), 2)
     out["classes"][cls] = {"sweep_all": sweep, "cv_folds": cv, "cv_mae": cvmae}
     print(cls, "cv_mae", cvmae, "best sweep", min(sweep, key=lambda s: s["mae"]))
-(HERE / "validation.json").write_text(json.dumps(out, indent=1))
+(HERE / "validation.json").write_text(json.dumps(out, indent=1), encoding="utf-8")
