@@ -26,7 +26,7 @@ Identities marked *inferred* come from git author names and branch names, not fr
 | Frontend (UI, Matterport tour embed) | Afnan Ahmed (*inferred*: git author `aa3533`, branches `frontend_dev`, `final_frontend`) | `foreground/**` | Calls `/api/*` via `foreground/next.config.ts` proxy | Do not edit from other areas |
 | 3D modeling (Matterport pipeline) | Davd (*inferred*: GitHub handle `DMSchell`, branches `Model-testing`, `expansion-model-testing`) | `modeling/**` | Scene/floor-plan exports consumed by inspection/planning | Its README predates the merge; treat as unverified |
 | API service | Sebastian + agents (author `sebastbernal2-ship-it`) | `services/api/**` | `POST /api/matches`, `GET /api/property/{id}`, `/api/health` | Fixtures in `services/api/tests/fixtures`; schemas in `contracts/` are generated (`cd services/api && python export_schemas.py`) |
-| Evidence pipeline core | Sebastian + agents | `data/*.py`, `data/registry/**`, `data/tests/**`, `data_scripts/**` | `data/normalized/costar/factor-cards.csv` | Local data is gitignored |
+| Evidence pipeline core | Sebastian + agents | `data/*.py`, `data/registry/**`, `data/tests/**` | `data/normalized/costar/factor-cards.csv` | Local data is gitignored |
 | Factor stream: climate_weather | Sebastian + agents | `data/factors/climate_weather/**` | `data/derived/climate_weather/observations.json` | Open-Meteo, keyless |
 | Factor stream: income_demographics | Sebastian + agents | `data/factors/income_demographics/**` | `data/derived/income_demographics/observations.json` | Census geocoder + ACS files |
 | Factor stream: labor_supply | Sebastian + agents | `data/factors/labor_supply/**` | `data/derived/labor_supply/observations.json` | BLS public API |
