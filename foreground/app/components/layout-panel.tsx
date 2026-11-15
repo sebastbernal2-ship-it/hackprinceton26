@@ -57,7 +57,11 @@ export default function LayoutPanel({ match, lines = [] }: { match: Match; lines
     return () => { live = false; };
   }, [profileId, category, reload]);
 
-  const footprint = useMemo(() => conceptFootprint(match.squareFeet), [match.squareFeet]);
+  // Demo cafes have no listed area. The person may type an assumed one; it is labelled as theirs, never as listed.
+  const [assumedSqft, setAssumedSqft] = useState("");
+  const listed = match.squareFeet > 0;
+  const sqft = listed ? match.squareFeet : Number(assumedSqft) || 0;
+  const footprint = useMemo(() => conceptFootprint(sqft), [sqft]);
   const result = useMemo(() => (footprint ? packAssets(footprint, items, respect) : null), [footprint, items, respect]);
 
   async function traceFloorplan() {
@@ -152,11 +156,16 @@ export default function LayoutPanel({ match, lines = [] }: { match: Match; lines
       <div className="mt-6 flex flex-wrap items-center gap-3 text-sm">
         <h3 className="font-medium">Placement</h3>
         <label className="flex items-center gap-1.5"><input type="checkbox" checked={respect} onChange={(e) => setRespect(e.target.checked)} /> Space pieces by their clearance assumptions</label>
+        {!listed && (
+          <label className="flex items-center gap-1.5">Assumed floor area (sq ft, yours, not listed)
+            <input type="number" min={1} step={50} value={assumedSqft} onChange={(e) => setAssumedSqft(e.target.value)} className="w-24 rounded border border-foreground/20 bg-background px-2 py-1" />
+          </label>
+        )}
         {items.length > 0 && <button type="button" onClick={() => setItems([])} className="px-2 text-foreground/55 underline">Clear</button>}
       </div>
 
       {!footprint || !result ? (
-        <p className="mt-4 text-sm text-foreground/60">Cannot say: this listing has no usable square footage.</p>
+        <p className="mt-4 text-sm text-foreground/60">Cannot say: this listing has no usable square footage. Enter an assumed floor area above to see pieces placed.</p>
       ) : (
         <div className="mt-3 grid gap-6 md:grid-cols-[2fr_1fr]">
           <figure>
@@ -181,7 +190,7 @@ export default function LayoutPanel({ match, lines = [] }: { match: Match; lines
               })}
             </svg>
             <figcaption className="mt-2 text-xs text-foreground/50">
-              Assumed {footprint.width.toFixed(1)} m x {footprint.depth.toFixed(1)} rectangle ({Math.round(match.squareFeet).toLocaleString("en-US")} sq ft listed, 3:2 shape); catalog footprints and clearances are illustrative.
+              Assumed {footprint.width.toFixed(1)} m x {footprint.depth.toFixed(1)} rectangle ({Math.round(sqft).toLocaleString("en-US")} sq ft {listed ? "listed" : "assumed by you, not listed"}, 3:2 shape); catalog footprints and clearances are illustrative.
             </figcaption>
           </figure>
           <div className="text-sm">
