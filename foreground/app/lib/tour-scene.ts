@@ -124,32 +124,6 @@ export async function placeOnSurface(
   };
 }
 
-/** Place a point in front of the camera, shifted by where the pointer sits in the tour view. */
-export function pointUnderPointer(
-  pose: { position: Vec3; rotation: { x: number; y: number } },
-  view: { left: number; top: number; width: number; height: number },
-  clientX: number,
-  clientY: number,
-): Vec3 {
-  const nx = ((clientX - view.left) / view.width - 0.5) * 2;
-  const ny = ((clientY - view.top) / view.height - 0.5) * 2;
-  const yaw = (pose.rotation.y * Math.PI) / 180;
-  const pitch = (pose.rotation.x * Math.PI) / 180;
-  const forward = {
-    x: -Math.sin(yaw) * Math.cos(pitch),
-    y: Math.sin(pitch),
-    z: -Math.cos(yaw) * Math.cos(pitch),
-  };
-  const right = { x: Math.cos(yaw), z: -Math.sin(yaw) };
-  const distance = 2.4;
-  const spread = 1.6;
-  return {
-    x: pose.position.x + forward.x * distance + right.x * nx * spread,
-    y: pose.position.y + forward.y * distance - ny * 0.9,
-    z: pose.position.z + forward.z * distance + right.z * nx * spread,
-  };
-}
-
 export function nudge(position: Vec3, poseYaw: number, direction: "left" | "right" | "forward" | "back", meters: number): Vec3 {
   const yaw = yawRadians(poseYaw);
   const forward = { x: -Math.sin(yaw), z: -Math.cos(yaw) };

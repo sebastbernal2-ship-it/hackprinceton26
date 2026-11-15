@@ -33,10 +33,6 @@ export function fetchMatches(brief: Exchange[]): Promise<MatchesResponse> {
   return request("/matches", post({ brief }));
 }
 
-export function fetchProperty(listingId: number): Promise<Match> {
-  return request(`/property/${listingId}`);
-}
-
 export function fetchNextQuestion(history: Exchange[]): Promise<NextQuestionResponse> {
   return request("/next-question", post({ history }));
 }
