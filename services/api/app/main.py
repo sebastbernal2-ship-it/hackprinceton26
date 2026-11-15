@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException
 
 from . import inspection_routes, pipeline, projections, stubs
+from .agent_routes import router as agent_router
 from .assets_routes import router as assets_router
 from .aerial_routes import router as aerial_router
 from .assets_ingest_routes import router as assets_ingest_router
@@ -22,6 +23,7 @@ app.include_router(assets_ingest_router)
 app.include_router(triage_router)
 app.include_router(aerial_router)
 app.include_router(lineage_router)
+app.include_router(agent_router)
 
 
 @app.get("/api/health")
