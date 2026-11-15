@@ -121,3 +121,11 @@ def test_routes(derived):
 def test_routes_503_when_unbuilt(tmp_path, monkeypatch):
     monkeypatch.setenv("TRIAGE_DERIVED_DIR", str(tmp_path / "none"))
     assert client.get("/api/triage/summary").status_code == 503
+
+
+def test_reconcile_reads_aerial_from_the_builders_properties_directory(tmp_path):
+    from triage.reconcile.run import load_aerial
+    (tmp_path / "aerial" / "properties").mkdir(parents=True)
+    (tmp_path / "aerial" / "properties" / "7.json").write_text(json.dumps({"listingId": "7", "vehicles": {"expected": 12}}))
+    assert load_aerial(tmp_path, "7")["vehicles"]["expected"] == 12
+    assert load_aerial(tmp_path, "8") is None

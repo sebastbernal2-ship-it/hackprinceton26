@@ -116,8 +116,9 @@ def _pct(a, ps=(5, 50, 95)):
 def _summ(core, n):
     cash = core["cash"]
     neg = cash < 0
-    short = neg.any(axis=1)
-    first_neg = np.where(short, neg.argmax(axis=1) + 1, 0)
+    open_short = core["cash0"] < 0   # cannot fund the opening: shortfall at month 0, whatever month 1 earns
+    short = neg.any(axis=1) | open_short
+    first_neg = np.where(open_short, 0, np.where(neg.any(axis=1), neg.argmax(axis=1) + 1, 0))
     pos = core["cf"] >= 0
     be_ok = pos.any(axis=1)
     be = np.where(be_ok, pos.argmax(axis=1) + 1, 0)
@@ -138,14 +139,14 @@ def simulate(inp: Inputs, seed: int = 0, n: int = 10_000, sensitivity: bool = Tr
     noise = np.exp(rng.normal(-inp.seasonality_sd**2 / 2, inp.seasonality_sd, (n, MONTHS)))
     core = _core(inp, d, noise, terms, principal)
     short, first_neg, be_ok, be, dscr = _summ(core, n)
-    min_cash = core["cash"].min(axis=1)
+    min_cash = np.minimum(core["cash"].min(axis=1), core["cash0"])
     be_hist = {str(k): int((be == k).sum()) for k in range(1, MONTHS + 1)}
     out = {
         "status": "simulated", "label": LABEL, "seed": seed, "nDraws": n, "months": MONTHS,
         "loan": {**terms, "principal": principal, "monthlyPayment": round(core["pmt"], 2),
                  "upfrontFee": round(principal * terms["upfrontFeePct"], 2)},
         "pCashShortfall": float(short.mean()),
-        "runwayMonths": {"note": "first month cash < 0; draws never short within 36 months counted in pNoShortfall",
+        "runwayMonths": {"note": "first month cash < 0 (month 0 = the opening cannot be funded); draws never short within 36 months counted in pNoShortfall",
                          "pNoShortfall": float(1 - short.mean()),
                          **(_pct(first_neg[short]) if short.any() else {})},
         "breakEven": {"definition": "first month operating cash flow after debt service >= 0",
@@ -236,4 +237,6 @@ def representative_path(inp: Inputs, seed: int = 0, n: int = 10_000) -> dict:
     i = int(np.argmin(np.abs(end - np.median(end))))
     return {"index": i, "terms": terms, "principal": principal,
             **{k: (core[k][i] if getattr(core[k], "ndim", 0) >= 2 else core[k]) for k in ("sales", "cogs", "labor", "other", "rent", "util", "cf", "cash")},
-            "cash0": float(core["cash0"][i]), "pmt": float(core["pmt"])}
+            "cash0": float(core["cash0"][i]), "pmt": float(core["pmt"]),
+            "equity": float(inp.equity), "build": float(d["build"][i]), "fee": float(principal * terms["upfrontFeePct"]),
+            "preOpenRent": float(inp.rent_monthly * inp.pre_open_months)}

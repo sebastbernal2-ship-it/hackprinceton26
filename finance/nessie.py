@@ -87,8 +87,17 @@ def post_trail(client, path: dict, open_days: float, start: date = date(2027, 1,
     client.create_loan(aid, {"type": "small business", "status": "approved", "credit_score": 0,
                              "monthly_payment": round(path["pmt"], 2), "amount": round(path["principal"], 2),
                              "description": tag + f"build-out loan {t['name']} rate={t['annualRate']} term={t['termMonths']}m (ASSUMED)"})
+    # Opening funding and spending, so the ledger reproduces the simulated cash path (cash0 = equity + loan - build-out - fee - pre-opening rent).
+    if path.get("equity"):
+        client.create_deposit(aid, {"medium": "balance", "transaction_date": start.isoformat(), "amount": round(path["equity"], 2),
+                                    "status": "executed", "description": tag + "owner equity"})
     client.create_deposit(aid, {"medium": "balance", "transaction_date": start.isoformat(), "amount": round(path["principal"], 2),
                                 "status": "executed", "description": tag + "loan proceeds"})
+    for label, key, merchant in (("build-out contractor (one-time)", "build", wrk), ("loan origination fee", "fee", bank),
+                                 ("pre-opening rent", "preOpenRent", lld)):
+        if path.get(key):
+            client.create_purchase(aid, {"merchant_id": merchant["_id"], "medium": "balance", "purchase_date": start.isoformat(),
+                                         "amount": round(path[key], 2), "status": "executed", "description": tag + label})
     n = 0
     for mi in range(months):
         m0 = _add_months(start, mi)
@@ -105,6 +114,9 @@ def post_trail(client, path: dict, open_days: float, start: date = date(2027, 1,
                                      "amount": round(float(path["labor"][mi]), 2), "status": "executed", "description": tag + f"payroll m{mi+1}"})
         client.create_purchase(aid, {"merchant_id": bank["_id"], "medium": "balance", "purchase_date": (m0 + timedelta(days=27)).isoformat(),
                                      "amount": round(pay, 2), "status": "executed", "description": tag + f"loan payment m{mi+1} (debt service)"})
+        client.create_purchase(aid, {"merchant_id": sup["_id"], "medium": "balance", "purchase_date": (m0 + timedelta(days=20)).isoformat(),
+                                     "amount": round(float(path["other"][mi]), 2), "status": "executed",
+                                     "description": tag + f"other operating expenses m{mi+1}"})
         days = [m0 + timedelta(days=k) for k in range(28)]
         days = [x for x in days if x.weekday() != 0][:int(open_days)]  # closed Mondays
         w = [1.4 if x.weekday() >= 4 else 1.0 for x in days]
