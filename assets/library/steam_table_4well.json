@@ -52,7 +52,7 @@
     "front_of_house",
     "hot_hold"
   ],
-  "priceRef": null,
+  "priceRef": "steam_table_4well",
   "provenance": {
     "origin": "standard published/typical dimensions for this equipment class (not read from a specific spec sheet)",
     "retrievedAt": null,

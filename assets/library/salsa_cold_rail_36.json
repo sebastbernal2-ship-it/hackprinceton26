@@ -52,7 +52,7 @@
     "cold",
     "mexican"
   ],
-  "priceRef": null,
+  "priceRef": "salsa_cold_rail_36",
   "provenance": {
     "origin": "standard published/typical dimensions for this equipment class (not read from a specific spec sheet)",
     "retrievedAt": null,
