@@ -43,6 +43,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ path
 
   if (head === "walk.html" && rest.length === 0) return send(path.join(MODELING, "walk.html"));
   if (head === "fio_commands.js" && rest.length === 0) return send(path.join(MODELING, "fio_commands.js"));
+  if (head === "floor_reset.js" && rest.length === 0) return send(path.join(MODELING, "floor_reset.js"));
   if (head === "vendor" && rest.length === 1) return send(path.join(MODELING, "vendor", rest[0]), "public, max-age=86400");
   if (head === "showcase" && rest[0] === "config.js") {
     return new NextResponse("window.HP_CONFIG = window.HP_CONFIG || {};\n", { headers: { "Content-Type": "text/javascript" } });

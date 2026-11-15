@@ -447,7 +447,7 @@ export default function CafePlanner({ match, kit, onKit, placed, onPlaced, area,
             {scan && phase === "cleared" && (
               <div role="status" className="mt-3 rounded-xl border border-foreground/15 bg-background px-4 py-3 text-sm" data-testid="planner-clear-summary">
                 <p className="font-medium">Space cleared: {scan.objects.length} scanned object{scan.objects.length === 1 ? "" : "s"} removed ({kindCounts(scan.objects).map(([k, n]) => `${n} ${k}`).join(", ")}).</p>
-                <p className="mt-1 text-xs text-foreground/60">The floor where they stood is redrawn as plain floor (dashed outlines mark the patches): an inference, not a measurement. Drag pieces from the tray onto the empty floor. {scan.omitted > 0 ? `${scan.omitted} more objects in the rest of the scan fall outside this floor and are not shown.` : ""}</p>
+                <p className="mt-1 text-xs text-foreground/60">The floor is reset to one plain, flat texture: an inference, not a measurement. Drag pieces from the tray onto the empty floor. {scan.omitted > 0 ? `${scan.omitted} more objects in the rest of the scan fall outside this floor and are not shown.` : ""}</p>
               </div>
             )}
 
@@ -457,8 +457,11 @@ export default function CafePlanner({ match, kit, onKit, placed, onPlaced, area,
                 onPointerDown={() => setSel(null)}>
                 <defs>
                   <pattern id="pl-grid" width={1} height={1} patternUnits="userSpaceOnUse"><path d="M1 0H0V1" fill="none" stroke="currentColor" strokeWidth={0.015} opacity={0.12} /></pattern>
+                  <filter id="pl-concrete" x="0" y="0" width="1" height="1"><feTurbulence type="fractalNoise" baseFrequency="2.4" numOctaves={3} seed={7} stitchTiles="stitch" /><feColorMatrix type="matrix" values="0 0 0 0 0.64  0 0 0 0 0.63  0 0 0 0 0.6  0.5 0 0 0 0.34" /></filter>
                 </defs>
                 <rect x={0} y={0} width={floor.width} height={floor.depth} fill="var(--background)" />
+                {/* cleared: the same simple concrete floor the 3D walk resets to, in place of dashed patches */}
+                {scan && phase === "cleared" && <rect x={0} y={0} width={floor.width} height={floor.depth} fill="#8f8d88" filter="url(#pl-concrete)" data-testid="floor-texture" />}
                 <rect x={0} y={0} width={floor.width} height={floor.depth} fill="url(#pl-grid)" />
                 <rect x={0} y={0} width={floor.width} height={floor.depth} fill="none" stroke="currentColor" strokeWidth={0.14} opacity={0.75} />
                 {/* door: a gap in the front wall with its swing */}
@@ -478,7 +481,7 @@ export default function CafePlanner({ match, kit, onKit, placed, onPlaced, area,
                         <g key={o.id} data-testid="scan-object" data-kind={o.kind}>
                           {/* the hole the scan has under the object, then the floor redrawn over it */}
                           {phase !== "cleared" && <polygon points={pts} fill="#1b1a17" opacity={0.5} />}
-                          {phase !== "shown" && <polygon points={pts} fill="url(#pl-grid)" stroke="currentColor" strokeWidth={0.02} strokeDasharray="0.08 0.06" opacity={0.35} className={phase === "clearing" ? "animate-scan-patch" : ""} style={phase === "clearing" ? { animationDelay: delay } : undefined} data-testid="scan-floor-patch" />}
+                          {phase === "clearing" && <polygon points={pts} fill="url(#pl-grid)" stroke="currentColor" strokeWidth={0.02} strokeDasharray="0.08 0.06" opacity={0.35} className={phase === "clearing" ? "animate-scan-patch" : ""} style={phase === "clearing" ? { animationDelay: delay } : undefined} data-testid="scan-floor-patch" />}
                           {phase !== "cleared" && (
                             <g className={phase === "clearing" ? "animate-scan-out [transform-box:fill-box] [transform-origin:center]" : ""} style={phase === "clearing" ? { animationDelay: delay } : undefined}>
                               <polygon points={pts} className="fill-[#b9a58a]/70 stroke-[#8a7658]" strokeWidth={0.03} />
