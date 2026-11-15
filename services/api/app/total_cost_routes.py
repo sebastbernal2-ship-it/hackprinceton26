@@ -34,6 +34,22 @@ def _r(x):
     return None if x is None else round(float(x), 2)
 
 
+# Stated assumption, not sourced: total restaurant floor area per seat (dining + kitchen + back of house). Used only
+# when a site has no listed space, no measured scan area and the brief gives no size; the label says so.
+SQFT_PER_SEAT = 30.0
+
+
+def brief_size(profile) -> tuple[float | None, str | None]:
+    """Size to fall back on from the brief: the stated area, else seats x SQFT_PER_SEAT (assumption), else none."""
+    lo_a, hi_a = profile.min_area_sqft, profile.max_area_sqft
+    area = (lo_a + hi_a) / 2 if lo_a and hi_a else (lo_a or hi_a)
+    if area:
+        return area, "brief"
+    lo_s, hi_s = profile.min_seats, profile.max_seats
+    seats = (lo_s + hi_s) / 2 if lo_s and hi_s else (lo_s or hi_s)
+    return (seats * SQFT_PER_SEAT, "seats") if seats else (None, None)
+
+
 def site_buildout(sqft: Optional[float], basis: str = "listing") -> dict:
     """Build-out for one site: equipment + install + interior fit-out x an area, with contingency.
     basis says where the area came from: "listing" (listed available space), "brief" (the size the owner stated) or
@@ -45,7 +61,8 @@ def site_buildout(sqft: Optional[float], basis: str = "listing") -> dict:
     if not est.buildout:
         return {"status": "unknown", "low": None, "high": None, "squareFeet": sqft, "basis": basis, "reason": "equipment prices incomplete"}
     where = {"listing": "listed available space", "scan": "the floor area measured from this site's Matterport scan", "brief": "the size in your brief (this site lists no space)",
-             "owner": "the area you entered"}[basis]
+             "owner": "the area you entered",
+             "seats": f"your seat count x {SQFT_PER_SEAT:g} sq ft per seat (an ASSUMPTION, not a measured size)"}[basis]
     return {"status": "estimated", "low": _r(est.buildout[0]), "high": _r(est.buildout[1]), "squareFeet": sqft, "basis": basis,
             "reason": f"equipment + install + interior fit-out per sq ft x {sqft:,.0f} sq ft from {where}, 10-20% contingency (neutral-band-v1)"}
 
@@ -104,7 +121,8 @@ def rent_options(match) -> list[dict]:
 def total_cost(match, sqft: Optional[float], rent_rate: Optional[float], rent_choice: Optional[str], months: int) -> dict:
     lines = financials.all_lines(match.city.split(",")[0], match.city.split(",")[1].strip() if "," in match.city else None, {})
     ops = financials.totals(lines)["totals"]
-    bo = site_buildout(sqft, "owner") if sqft else site_buildout(match.spaceSquareFeet, match.spaceSource or "listing")
+    space, space_src = getattr(match, "spaceSquareFeet", None), getattr(match, "spaceSource", None)  # kit properties have none
+    bo = site_buildout(sqft, "owner") if sqft else site_buildout(space, space_src or "listing")
     parts, excluded = [], []
 
     if bo["status"] == "estimated":
@@ -129,7 +147,7 @@ def total_cost(match, sqft: Optional[float], rent_rate: Optional[float], rent_ch
         chosen = next((o for o in options if o["id"] == rent_choice), None)
     elif options:
         chosen = options[0]
-    rent_sqft = sqft or match.spaceSquareFeet  # owner's area, else the listed / scanned space (never the building)
+    rent_sqft = sqft or space  # owner's area, else the listed / scanned space (never the building)
     if chosen and rent_sqft:
         lo_rate, hi_rate = chosen.get("low") or chosen["rate"], chosen.get("high") or chosen["rate"]
         parts.append({"id": "rent", "label": f"Rent: {chosen['label']} x {rent_sqft:,.0f} sq ft", "basis": "monthly",

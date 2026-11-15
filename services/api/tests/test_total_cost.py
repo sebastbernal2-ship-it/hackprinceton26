@@ -53,3 +53,23 @@ def test_kit_property_outside_the_candidates_gets_a_total(monkeypatch):
     d = client.get("/api/property/777/total-cost?sqft=1000&rent=20").json()
     assert d["listingId"] == 777 and d["buildingSquareFeet"] == 50_000
     assert next(p for p in d["parts"] if p["id"] == "rent")["low"] == round(20 * 1000 / 12, 2)
+
+
+def test_sites_costs_covers_every_candidate():
+    d = client.post("/api/sites/costs", json={"brief": []}).json()
+    assert d["dataAvailable"] is True
+    ids = {s["listingId"] for s in d["sites"]}
+    assert ids == {900001, 900002}  # every fixture candidate, not a shortlist cut
+    for s in d["sites"]:
+        assert set(s["buildout"]) >= {"status", "low", "high"}
+        if s["buildout"]["low"] is None:
+            assert s["buildout"]["status"] == "unknown"  # no size: unknown, never zero
+
+
+def test_brief_size_falls_back_to_seats_as_a_labelled_assumption():
+    from types import SimpleNamespace
+    from app.total_cost_routes import SQFT_PER_SEAT, brief_size
+    p = lambda **k: SimpleNamespace(**{"min_area_sqft": None, "max_area_sqft": None, "min_seats": None, "max_seats": None, **k})  # noqa: E731
+    assert brief_size(p(min_area_sqft=2000, max_area_sqft=3000)) == (2500, "brief")
+    assert brief_size(p(min_seats=40)) == (40 * SQFT_PER_SEAT, "seats")
+    assert brief_size(p()) == (None, None)

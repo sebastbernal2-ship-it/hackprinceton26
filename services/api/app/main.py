@@ -15,7 +15,7 @@ from .horizons_routes import router as horizons_router
 from .loader import load_matches
 from .structure_routes import router as structure_router
 from .rent_routes import router as rent_router
-from .total_cost_routes import router as total_cost_router, site_buildout, site_rent
+from .total_cost_routes import router as total_cost_router, brief_size, site_buildout, site_rent
 from .demo_routes import router as demo_router
 from .models import (
     AssessRequest, ProjectionsResponse, ReplanRequest, ReplanResponse, ScenarioAssessment,
@@ -48,6 +48,27 @@ def health():
             "modelsAvailable": projections.models_available()}
 
 
+@app.post("/api/sites/costs")
+def sites_costs(req: MatchesRequest):
+    """Build-out and rent estimates for EVERY candidate site (the shortlist shows only the first few). Sized like the
+    shortlist: listed space, else the scan's measured floor area, else the size in the brief; unknown when none."""
+    pool = load_matches()
+    if pool is None:
+        return {"dataAvailable": False, "sites": []}
+    profile, _ = pipeline.profile_from_brief(req.brief, pool)
+    brief_sqft, brief_basis = brief_size(profile)
+    sites = []
+    for m in pool:
+        bo = site_buildout(m.spaceSquareFeet, m.spaceSource or "listing") if m.spaceSquareFeet else site_buildout(brief_sqft, basis=brief_basis or "brief")
+        rent = site_rent(m, bo.get("squareFeet"), bo.get("basis"))
+        sites.append({"listingId": m.listingId, "address": m.address, "city": m.city, "tourId": m.tourId,
+                      "spaceSquareFeet": bo.get("squareFeet"), "spaceBasis": bo.get("basis"), "buildout": bo, "rent": rent})
+    sites.sort(key=lambda x: (x["buildout"]["low"] is None, x["buildout"]["low"] or 0, x["listingId"]))
+    return {"dataAvailable": True, "sites": sites,
+            "notice": "Estimates from stated assumptions (equipment, fit-out per sq ft, 10-20% contingency, rent rate x area), "
+                      "not quotes. Scan areas measure the scanned interior, which may not be the suite for lease."}
+
+
 @app.post("/api/matches", response_model=MatchesResponse)
 def matches(req: MatchesRequest):
     pool = load_matches()
@@ -57,13 +78,12 @@ def matches(req: MatchesRequest):
     profile, why = pipeline.profile_from_brief(req.brief, pool)
     shown, counts, excluded, not_shown = pipeline.shortlist(pool, profile)
     # Build-out is sized by the listed space; when a site lists none, by the size stated in the brief (labelled as such).
-    lo_a, hi_a = profile.min_area_sqft, profile.max_area_sqft
-    brief_sqft = (lo_a + hi_a) / 2 if lo_a and hi_a else (lo_a or hi_a)
+    brief_sqft, brief_basis = brief_size(profile)
     for m in shown:
         if m.spaceSquareFeet:
             m.buildout = site_buildout(m.spaceSquareFeet, m.spaceSource or "listing")
         else:
-            m.buildout = site_buildout(brief_sqft, basis="brief")
+            m.buildout = site_buildout(brief_sqft, basis=brief_basis or "brief")
         m.rent = site_rent(m, m.buildout.get("squareFeet"), m.buildout.get("basis"))
     note = ("Ordered by constraint status (PASS, then UNKNOWN by evidence readiness), not by fit. FAIL sites are excluded "
             "and counted. UNKNOWN means a needed fact is missing, not that the site fails.")
