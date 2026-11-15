@@ -362,6 +362,18 @@
           "title": "Photo",
           "type": "string"
         },
+        "pick": {
+          "anyOf": [
+            {
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Pick"
+        },
         "rent": {
           "anyOf": [
             {

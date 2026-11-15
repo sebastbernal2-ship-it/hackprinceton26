@@ -17,6 +17,7 @@ export COSTAR_NORMALIZED_DIR=$D/normalized/costar TRIAGE_DERIVED_DIR=$D/derived/
 for f in "$SCAN_AREAS_PATH" "$DEMO_FACTOR_CARDS"; do [ -e "$f" ] || echo "note: $f is missing (that part of the demo will show 'not built')" >&2; done
 [ -d "$SCAN" ] || echo "note: $SCAN is missing (the cafe walk falls back to the read-only tour)" >&2
 [ -f "$SCAN/assets_catalog/catalog.json" ] || echo "note: $SCAN/assets_catalog is missing (the walk furniture catalogue will be empty): run  cd $ROOT && python modeling/fetch_catalog.py --res 1k  and move assets_catalog/ into $SCAN" >&2
+export SCAN_ASSETS_DIR=$SCAN  # the API also reads it: a scan with a local walk export ranks as an editable candidate
 trap 'kill 0' EXIT INT TERM
 (cd "$ROOT" && uv run --no-project --python 3.12 --with-requirements services/api/requirements.txt --with numpy --with pandas \
   uvicorn services.api.app.main:app --host 127.0.0.1 --port 8000) &

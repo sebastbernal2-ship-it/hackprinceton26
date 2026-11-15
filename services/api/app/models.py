@@ -92,6 +92,8 @@ class ShortlistMatch(Match):
     buildout: Optional[dict] = None
     # Monthly rent estimate {status, low, high, rateLabel, rateStatus, basis, reason}; same area as the build-out.
     rent: Optional[dict] = None
+    # Why the space picker put this site here: concise reasons, and whether it is the labelled demo best match.
+    pick: Optional[dict] = None
 
 
 class ParsedProfile(BaseModel):

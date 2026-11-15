@@ -160,4 +160,5 @@ def _load_matches(d: Path, cand: Path, fac: Path) -> list[Match]:
         by_prop.setdefault(r.get("property_id", ""), []).append(_card(r))
     models = _costar_models(d)
     out = [m for c in _rows(cand) if (m := _match(c, streams.merge(_int(c.get("property_id", "")) or 0, by_prop.get(c.get("property_id", ""), [])), models.get(c.get("property_id", ""))))]
-    return sorted(out, key=lambda m: m.listingId)
+    from . import picker
+    return sorted(out, key=lambda m: m.listingId) + [c for c in picker.cafe_candidates() if picker.walk_ready(c.tourId)]  # only scans with a local walk export

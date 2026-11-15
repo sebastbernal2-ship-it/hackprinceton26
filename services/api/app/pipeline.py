@@ -10,6 +10,8 @@ from integration import intake  # noqa: E402
 from integration.constraint_filter import filter as cf  # noqa: E402
 from planning import assessment  # noqa: E402
 
+from . import picker  # noqa: E402
+
 from .models import (  # noqa: E402
     AssessInputs, AssessRequest, ConstraintVerdict, Match, ParsedProfile, ProjectionCard, ScenarioAssessment,
     Alignment, ShortlistMatch,
@@ -52,8 +54,10 @@ def site_facts(m: Match, cost_bounds: tuple[float, float] | None) -> cf.SiteFact
     if m.spaceSquareFeet:
         # The space you would lease: CoStar's listed available space, else the floor area measured from this site's scan.
         # The building's area (m.squareFeet) is deliberately NOT used: it says nothing about the suite.
-        scan = m.spaceSource == "scan"
-        f["listed_space_area_sqft"] = cf.Fact(m.spaceSquareFeet, "observed", "matterport-scan-area" if scan else SRC, str(m.listingId), "", m.city,
+        scan, est = m.spaceSource == "scan", m.spaceSource == picker.ESTIMATE
+        f["listed_space_area_sqft"] = cf.Fact(m.spaceSquareFeet, "estimated" if est else "observed",
+                                              "estimate://cafe-kit-demo-area" if est else "matterport-scan-area" if scan else SRC, str(m.listingId), "", m.city,
+                                              "assumed demo floor area for this cafe scan, never measured; the scan is not a listing" if est else
                                               "floor area measured from the scan of this model; the scanned space may not be the suite for lease"
                                               if scan else "listed available space; suite identity and freshness unverified")
         # Seats are never listed. ESTIMATE from area using the same stated planning assumptions as the layout and cost tools:
@@ -96,18 +100,23 @@ def alignment(res: cf.SiteResult) -> Alignment:
                      unknownItems=[label(r) for r in res.results if r.status == cf.UNKNOWN])
 
 
-def shortlist(pool: list[Match], profile: cf.Profile, limit: int | None = None):
-    """(shown, counts, excluded, notShown). PASS first, then more confirmed requirements, then evidenceReadiness desc, then listingId."""
+def shortlist(pool: list[Match], profile: cf.Profile, limit: int | None = None, brief_text: str = ""):
+    """(shown, counts, excluded, notShown). PASS first, then the space picker's order (food-service concept, scan, area, seats, budget, city),
+    then more confirmed requirements, evidenceReadiness, listingId. Each row carries `pick` (reasons; best match is labelled demo)."""
     limit = limit or LIMIT
     bounds = assessment.buildout_bounds() if profile.budget is not None else None
     results = {m.listingId: cf.evaluate(profile, site_facts(m, bounds)) for m in pool}
     counts = {s: sum(r.status == s for r in results.values()) for s in (cf.PASS, cf.FAIL, cf.UNKNOWN)}
     kept = [m for m in pool if results[m.listingId].status != cf.FAIL]
     n_pass = lambda m: sum(r.status == cf.PASS for r in results[m.listingId].results)  # noqa: E731
-    kept.sort(key=lambda m: (results[m.listingId].status != cf.PASS, -n_pass(m), -m.evidenceReadiness, m.listingId))
+    concept = picker.detect_concept(brief_text)
+    rows = picker.order(kept, results, profile, concept, picker.wants_prior_food(brief_text), n_pass)
     out = [ShortlistMatch(**m.model_dump(), constraintStatus=results[m.listingId].status,
                           constraints=_verdicts(results[m.listingId]), alignment=alignment(results[m.listingId]),
-                          missingFields=list(results[m.listingId].missing_fields)) for m in kept[:limit]]
+                          missingFields=list(results[m.listingId].missing_fields),
+                          pick={"reasons": why, "bestMatch": best, "concept": concept,
+                                "label": "Best match (demo pick)" if best else None})
+           for m, why, best in rows[:limit]]
     return out, counts, counts[cf.FAIL], max(0, len(kept) - limit)
 
 

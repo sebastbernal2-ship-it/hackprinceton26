@@ -37,7 +37,9 @@ export type Match = {
   /** Listed available space in sq ft (not the building); null when not listed. */
   spaceSquareFeet?: number | null;
   /** "listing" (CoStar available space) or "scan" (floor area measured from the Matterport scan). */
-  spaceSource?: "listing" | "scan" | null;
+  spaceSource?: "listing" | "scan" | "scan-estimate" | null;
+  /** Why the API's space picker placed this site here. `bestMatch` is a labelled demo pick, not a fit score. */
+  pick?: { reasons: string[]; bestMatch: boolean; label: string | null; concept: string | null } | null;
   /** Asking rent in dollars per square foot per year, triple net. */
   rentPerSquareFootYear: number | null;
   /** Matterport model id for Open Tour. */

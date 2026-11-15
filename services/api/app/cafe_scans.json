@@ -1,0 +1,8 @@
+{
+  "note": "Matterport scans of amenity cafes with a local editable walk export (modeling/walk_export.py). They are scans, not CoStar listings: availability and rent are unknown. Floor areas come from foreground/app/lib/cafe-kit.json and are ESTIMATED demo areas, never measured.",
+  "scans": [
+    {"tourId": "w2JcUVybv9c", "listingId": 11104240, "name": "The Preserve · Lobby café", "city": "Los Angeles, CA", "address": "The Preserve, Los Angeles, CA 90028", "photos": 7},
+    {"tourId": "xVKH13z5MJ8", "listingId": -2, "name": "Café", "city": "Houston, TX", "address": "Address not on file (northwest Houston)", "photos": 6},
+    {"tourId": "JAnuRsaVo9M", "listingId": 8035301, "name": "Bayou Café", "city": "Houston, TX", "address": "2107 Tanglewilde St, Houston, TX 77063", "photos": 6}
+  ]
+}
