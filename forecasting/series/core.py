@@ -31,6 +31,8 @@ class Spec:
     inner_min: int = 24
     step: int = 3
     models: tuple = ("ets", "loglin", "seasonal_mean")
+    max_ratio: float = 1.0  # best/baseline MAE must be below this (materiality margin; guards selection among models)
+    also_beat: tuple = ()  # extra baselines (e.g. ("naive",)) the chosen model must also beat on MAE
     min_loglin_points: int = 0  # extra data-sufficiency floor for the trend model (AADT: 5 years)
 
 
@@ -114,6 +116,8 @@ def forecast(model, z, h, spec):
     m = spec.season
     if model == "seasonal_naive":
         return f_baseline(z, h, m)
+    if model == "naive":
+        return np.full(h, z[-1]) if len(z) >= 1 else None
     if model == "seasonal_mean":
         return f_seasonal_mean(z, h, m)
     if model == "loglin":
@@ -158,7 +162,7 @@ class Backtest:
 
 def backtest(y, spec, models=None):
     y = np.asarray(y, float)
-    models = models or ("seasonal_naive",) + tuple(spec.models)
+    models = models or ("seasonal_naive",) + tuple(spec.models) + tuple(spec.also_beat)
     h = spec.horizon
     rows = {m: [] for m in models}
     for o in range(spec.min_train, len(y) - h + 1, spec.step):
@@ -182,19 +186,24 @@ def gate(bt, spec):
     base = "seasonal_naive"
     metrics = [{"name": "backtest_origins", "value": float(bt.n_origins), "threshold": float(MIN_ORIGINS),
                 "passed": bt.n_origins >= MIN_ORIGINS}]
-    cands = [m for m in bt.mae if m != base]
+    cands = [m for m in bt.mae if m != base and m not in spec.also_beat]
     if bt.n_origins < MIN_ORIGINS or not cands or base not in bt.mae:
         return None, metrics, f"only {bt.n_origins} backtest origins (need {MIN_ORIGINS})"
     best = min(cands, key=lambda m: bt.mae[m])
     ratio = bt.mae[best] / bt.mae[base] if bt.mae[base] > 0 else float("inf")
     cov_err = abs(bt.coverage[best] - LEVEL)
     metrics += [
-        {"name": f"mae_ratio_{best}_vs_seasonal_naive", "value": float(ratio), "threshold": 1.0, "passed": ratio < 1.0},
+        {"name": f"mae_ratio_{best}_vs_seasonal_naive", "value": float(ratio), "threshold": spec.max_ratio, "passed": ratio < spec.max_ratio},
         {"name": "abs_error_of_80pct_interval_coverage", "value": float(cov_err), "threshold": COVERAGE_TOL,
          "passed": cov_err <= COVERAGE_TOL},
     ]
     reasons = []
-    if ratio >= 1.0:
+    for b in spec.also_beat:
+        r2 = bt.mae[best] / bt.mae[b] if bt.mae.get(b) else float("inf")
+        metrics.append({"name": f"mae_ratio_{best}_vs_{b}", "value": float(r2), "threshold": spec.max_ratio, "passed": r2 < spec.max_ratio})
+        if r2 >= spec.max_ratio:
+            reasons.append(f"best model {best} does not beat {b} (MAE ratio {r2:.2f})")
+    if ratio >= spec.max_ratio:
         reasons.append(f"best model {best} does not beat seasonal-naive (MAE ratio {ratio:.2f})")
     if cov_err > COVERAGE_TOL:
         reasons.append(f"80% interval coverage {bt.coverage[best]:.2f} outside 0.80 +/- {COVERAGE_TOL}")
@@ -204,7 +213,7 @@ def gate(bt, spec):
 MODEL_TEXT = {
     "ets": "additive Holt-Winters ETS (trend + seasonal) on {t} scale",
     "loglin": "{t}-linear trend with seasonal dummies fitted by OLS",
-    "seasonal_mean": "seasonal mean (same calendar month average)",
+    "seasonal_mean": "seasonal mean (same calendar period average)",
 }
 
 
