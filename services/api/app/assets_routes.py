@@ -41,6 +41,8 @@ def list_assets(profileId: str | None = None, category: str | None = None):
 def create_asset(body: dict = Body(...)):
     try:
         a = Asset.model_validate(body)
+        if a.provenance.origin == "fixture" or a.assetId.startswith("fixture-"):
+            raise HTTPException(status_code=422, detail="sample/fixture proposals are not identifications and cannot be saved")
         if STORE.find(a.assetId):
             raise HTTPException(status_code=409, detail="assetId already exists")
         STORE.save(a)
