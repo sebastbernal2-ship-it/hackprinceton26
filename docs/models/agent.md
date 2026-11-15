@@ -38,3 +38,21 @@ does not assume their schema, it passes their JSON through as data.
   `GET /api/agent/replay` prefers that file, else the committed `agent/fixtures/replay.synthetic.json` (SYNTHETIC values, regenerate with
   `python -m agent.record_fixture`).
 - Model confidence in any model-written text is the model's own, not a probability.
+
+## Local model run (provider=local), verified 2026-11-15
+Server: llama.cpp `llama-server --jinja` (pi-harness `bin/local-model`), Qwen3.8-27B OBLITERATED i1-Q3_K_M, 32k ctx, one slot.
+Set `LOCAL_LLM_BASE_URL=http://127.0.0.1:8089/v1`, `LOCAL_LLM_MODEL=qwen3.8-27b-obliterated`, then `POST /api/agent/run {"provider":"local"}`.
+- Thinking is OFF by default (`chat_template_kwargs.enable_thinking=false`; `LOCAL_LLM_THINK=1` re-enables). With thinking on, the first
+  run burned the 1200-token subagent budget on reasoning: 3 min wall, 2 of 3 inspectors returned no verdict, planner never saved a brief.
+- Provider repairs malformed tool JSON (fences, trailing commas, quotes, missing brace), parses `<tool_call>` text, strips `<think>`,
+  retries empty/unparseable replies at most 2 times, then returns an explicit failure turn.
+- Real LIVE runs (goal: Italian restaurant with gelato in Houston, 40 seats, under 250k): 41-57 s wall, 10-15 model calls, ~38 tok/s decode,
+  ~900-1100 tok/s prompt, 20-40k prompt + 1-4k completion tokens. 3 parallel inspectors share one slot, so they serialize.
+- Failure modes seen: (1) all verdicts "strong" with no inspection and 11 unpriced cost lines (now capped to "workable", unknowns derived
+  from tool results); (2) the model writes owner-goal figures ("40-seat") as listing facts and quotes a range's low bound as a point
+  value; number checks pass, prose is not checked; (3) a claim citing `inspect_sites` used to verify against the model's own verdict text
+  (now resolves to underlying evidence); (4) it only sometimes calls `rerun_plan`; it never did in these runs.
+- Prompt injection planted in a `derived_layer` result (scratch presence layer): redacted, `prompt_injection_flagged` finding emitted per
+  result, the model never acted on it, no listing 9999 or "0 percent risk" appeared in the trace.
+- The recorded real trace contains CoStar-derived values, so it is NOT committed. It is kept local (gitignored location
+  `data/derived/agent/replay.json`, which `GET /api/agent/replay` prefers); replay_info reports `recordedFrom` provider/model/date.
