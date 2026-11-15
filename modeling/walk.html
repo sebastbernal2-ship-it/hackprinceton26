@@ -43,7 +43,7 @@
   #aiLog { max-height:180px; overflow:auto; font-size:12px; display:flex; flex-direction:column; gap:3px; }
   #fioMascot { position:absolute; right:calc(100% + 10px); bottom:0; width:92px; pointer-events:none; }
   #fioMascot svg { width:72px; height:84px; display:block; margin-left:auto; overflow:visible; }
-  #fioBubble { position:absolute; right:78px; bottom:84px; width:max-content; max-width:min(260px, 30vw); background:#fff; color:#15171b; border-radius:10px; padding:6px 9px; font-size:12px; line-height:1.3; opacity:0; transition:opacity .2s; }
+  #fioBubble { position:absolute; left:0; bottom:calc(100% + 8px); max-width:100%; background:#fff; color:#15171b; border-radius:10px; padding:6px 9px; font-size:12px; line-height:1.3; opacity:0; transition:opacity .2s; pointer-events:none; }
   #fioBubble.on { opacity:1; }
   #fioMascot .arm { transform-box:fill-box; transform-origin:50% 0; transition:transform .25s; }
   #fioMascot[data-s=think] .head { animation:fioTilt 1s ease-in-out infinite; } #fioMascot[data-s=think] .dots { opacity:1; }
@@ -72,7 +72,7 @@
     <kbd>X</kbd> remove · <kbd>Ctrl</kbd>+<kbd>Z</kbd> undo · <kbd>C</kbd> catalogue of new furniture</div>
 </div>
 <div id="panel"><span id="edits"></span> <button id="aiBtn">Ask Fio (Enter)</button><button id="catBtn">Catalogue (C)</button><button id="clearBtn" title="Remove the scanned furniture and patch the floor and walls (K)">Clear the space (K)</button><button id="restoreBtn" style="display:none">Restore scan objects</button><button id="exportBtn">Export edits.json</button><button id="resetBtn">Reset all</button></div>
-<div id="ai"><div id="fioMascot" data-s="idle" aria-hidden="true"><div id="fioBubble"></div><svg viewBox="0 0 72 84"><g class="arm armL"><rect x="6" y="46" width="8" height="22" rx="4" fill="#3a6ea5"/></g><g class="arm armR"><rect x="58" y="46" width="8" height="22" rx="4" fill="#3a6ea5"/></g><rect x="16" y="42" width="40" height="30" rx="10" fill="#4f8fd6"/><rect x="22" y="72" width="9" height="10" rx="3" fill="#2d4f78"/><rect x="41" y="72" width="9" height="10" rx="3" fill="#2d4f78"/><g class="head"><line x1="36" y1="6" x2="36" y2="14" stroke="#2d4f78" stroke-width="2"/><circle cx="36" cy="5" r="3.5" fill="#f0b429"/><rect x="12" y="13" width="48" height="32" rx="12" fill="#f2f5f8" stroke="#2d4f78" stroke-width="2"/><circle cx="27" cy="29" r="4" fill="#15171b"/><circle cx="45" cy="29" r="4" fill="#15171b"/><path d="M28 38q8 5 16 0" fill="none" stroke="#15171b" stroke-width="2" stroke-linecap="round"/><g class="dots"><circle cx="24" cy="10" r="2" fill="#f0b429"/><circle cx="36" cy="8" r="2" fill="#f0b429"/><circle cx="48" cy="10" r="2" fill="#f0b429"/></g></g></svg></div><div id="aiLog"></div><div id="aiChips"></div><div class="row"><input id="aiInput" placeholder="Ask Fio, or tell it: clear the room, remove the sofa, add 4 two-tops..." autocomplete="off"><button id="aiSend">Send</button><button id="aiNew">New chat</button></div></div>
+<div id="ai"><div id="fioBubble"></div><div id="fioMascot" data-s="idle" aria-hidden="true"><svg viewBox="0 0 72 84"><g class="arm armL"><rect x="6" y="46" width="8" height="22" rx="4" fill="#3a6ea5"/></g><g class="arm armR"><rect x="58" y="46" width="8" height="22" rx="4" fill="#3a6ea5"/></g><rect x="16" y="42" width="40" height="30" rx="10" fill="#4f8fd6"/><rect x="22" y="72" width="9" height="10" rx="3" fill="#2d4f78"/><rect x="41" y="72" width="9" height="10" rx="3" fill="#2d4f78"/><g class="head"><line x1="36" y1="6" x2="36" y2="14" stroke="#2d4f78" stroke-width="2"/><circle cx="36" cy="5" r="3.5" fill="#f0b429"/><rect x="12" y="13" width="48" height="32" rx="12" fill="#f2f5f8" stroke="#2d4f78" stroke-width="2"/><circle cx="27" cy="29" r="4" fill="#15171b"/><circle cx="45" cy="29" r="4" fill="#15171b"/><path d="M28 38q8 5 16 0" fill="none" stroke="#15171b" stroke-width="2" stroke-linecap="round"/><g class="dots"><circle cx="24" cy="10" r="2" fill="#f0b429"/><circle cx="36" cy="8" r="2" fill="#f0b429"/><circle cx="48" cy="10" r="2" fill="#f0b429"/></g></g></svg></div><div id="aiLog"></div><div id="aiChips"></div><div class="row"><input id="aiInput" placeholder="Ask Fio, or tell it: clear the room, remove the sofa, add 4 two-tops..." autocomplete="off"><button id="aiSend">Send</button><button id="aiNew">New chat</button></div></div>
 <div id="cat"><div class="head"><b>Add furniture</b><span class="dim">Free CC0 models from Poly Haven · lit by the room's own photo</span><button id="catClose">✕</button></div>
   <div id="catTabs"></div><div id="catGrid"></div></div>
 <div id="offer"></div><div id="clearInfo"></div>
@@ -1478,18 +1478,24 @@ async function designMyPlace() {
   if (!fioDesign || !catalog.length) return 'The furniture catalogue is empty on this machine, so I cannot design anything.';
   const fb = floorBounds(), plan = fioDesign.designPlan({ bounds: fb.bounds, catalog, seats: 12, ok: fb.ok });
   if (!plan.pieces.length) return plan.note;
-  let placed = 0, tables = 0, dropped = 0;
+  let placed = 0, tables = 0, dropped = 0, seats = 0; const mascotSay = (t) => mascot('point', t, 1500);
   for (let i = 0; i < plan.pieces.length; i += 3) {
-    const group = [];
+    const [t, c1, c2] = plan.pieces.slice(i, i + 3), group = [];
     try {
-      for (const sp of plan.pieces.slice(i, i + 3)) {
-        const pc = await makeItem(catalog.find(c => c.id === sp.id), { tx: feet.x, ty: feet.y, dz: feet.z, dyaw: 0 }); group.push(pc);
-        setFacing(pc, sp.yaw); if (!(await dropIn(pc, sp.x, sp.y)) || !checkFit(pc)) throw new Error('no fit');
+      const tp = await makeItem(catalog.find(c => c.id === t.id), { tx: feet.x, ty: feet.y, dz: feet.z, dyaw: 0 }); group.push(tp);
+      if (!(await dropIn(tp, t.x, t.y)) || !checkFit(tp)) throw new Error('no fit');
+      mascotSay(`Table ${tables + 1}...`);
+      const eT = extent(tp, 1, 0); let seated = 0;
+      for (const [cs, side] of [[c1, -1], [c2, 1]]) {
+        const cp = await makeItem(catalog.find(c => c.id === cs.id), { tx: feet.x, ty: feet.y, dz: feet.z, dyaw: 0 }); group.push(cp);
+        setFacing(cp, side < 0 ? 0 : 180); const eC = extent(cp, 1, 0);
+        if ((await dropIn(cp, t.x + side * (eT + eC + 0.16), t.y)) && checkFit(cp)) seated++; else { group.pop(); discard(cp); }
       }
-      group.forEach(pc => { undoStack.push([pc, { ...poseOf(pc), deleted: true }]); changed(pc); }); placed += group.length; tables++;
+      if (!seated) throw new Error('no seats');
+      group.forEach(pc => { undoStack.push([pc, { ...poseOf(pc), deleted: true }]); changed(pc); }); placed += group.length; tables++; seats += seated;
     } catch (e) { group.forEach(discard); dropped++; }
   }
-  return `Designed your place: ${tables} two-top${tables === 1 ? '' : 's'} (${plural(placed, 'piece')}, about ${tables * 2} seats) dropped onto the scanned floor, all checked against walls and furniture${dropped ? `; ${dropped} spot${dropped === 1 ? '' : 's'} did not fit and were skipped` : ''}. Ctrl+Z undoes it.`;
+  return `Designed your place: ${tables} two-top${tables === 1 ? '' : 's'} (${plural(placed, 'piece')}, about ${seats} seats) dropped onto the scanned floor, all checked against walls and furniture${dropped ? `; ${dropped} spot${dropped === 1 ? '' : 's'} did not fit and were skipped` : ''}. Ctrl+Z undoes it.`;
 }
 async function fioRun(c) {
   const items = describeItems();
@@ -1549,7 +1555,7 @@ async function runLocal(c, prompt, status, mark) {
   status.remove();
   const batch = undoStack.splice(mark);
   if (batch.length) { undoStack.push({ batch, label: `Fio: ${prompt.slice(0, 40)}` }); }
-  aiLog('ai', reply); mascot(/^(I could not|I do not|There is nothing|The room is already|The 3D catalogue|I did not)/.test(reply || '') ? 'shake' : batch.length ? 'cheer' : 'point', reply);
+  aiLog('ai', reply); mascot(/^(I could not|I do not|There is nothing|Designed your place: 0|The room is already|The 3D catalogue|I did not)/.test(reply || '') ? 'shake' : batch.length ? 'cheer' : 'point', reply);
   if (batch.length) aiLog('sys', `${touched.size} piece${touched.size === 1 ? '' : 's'} changed · Ctrl+Z undoes all of it`);
 }
 const mascot = (st, say, ms = 2200) => { const m = $('fioMascot'), b = $('fioBubble'); m.dataset.s = st;
@@ -1589,7 +1595,7 @@ async function askAI(prompt) {
         throw new Error(res.status === 501 || res.status === 405 ? 'This server has no /api/agent, so I can only run plain commands (clear the room, remove, move, add, rotate).' : out.error);
       }
       aiMessages.push({ role: 'assistant', content: out.content });
-      for (const b of out.content) if (b.type === 'text' && b.text.trim()) { aiLog('ai', b.text.trim()); mascot('point', b.text.trim()); }
+      for (const b of out.content) if (b.type === 'text' && b.text.trim()) { aiLog('ai', b.text.trim()); mascot(/do not know|could not|cannot/i.test(b.text) ? 'shake' : 'point', b.text.trim()); }
       if (out.stop_reason === 'refusal') { aiLog('err', 'Fio declined this request.'); break; }
       const calls = out.content.filter(b => b.type === 'tool_use');
       if (out.stop_reason !== 'tool_use' || !calls.length) { if (out.stop_reason === 'max_tokens') aiLog('err', '(reply was cut off)'); break; }
