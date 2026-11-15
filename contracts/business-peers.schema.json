@@ -1,0 +1,84 @@
+{
+  "properties": {
+    "concept": {
+      "title": "Concept",
+      "type": "string"
+    },
+    "coverage": {
+      "anyOf": [
+        {
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Coverage"
+    },
+    "dataAvailable": {
+      "title": "Dataavailable",
+      "type": "boolean"
+    },
+    "demo": {
+      "title": "Demo",
+      "type": "boolean"
+    },
+    "demoNote": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Demonote"
+    },
+    "knn": {
+      "title": "Knn",
+      "type": "object"
+    },
+    "labels": {
+      "title": "Labels",
+      "type": "object"
+    },
+    "listingId": {
+      "title": "Listingid",
+      "type": "integer"
+    },
+    "neighbourhood": {
+      "anyOf": [
+        {
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Neighbourhood"
+    },
+    "notice": {
+      "title": "Notice",
+      "type": "string"
+    },
+    "site": {
+      "title": "Site",
+      "type": "object"
+    }
+  },
+  "required": [
+    "listingId",
+    "concept",
+    "dataAvailable",
+    "site",
+    "knn",
+    "labels",
+    "demo",
+    "notice"
+  ],
+  "title": "BusinessPeersResponse",
+  "type": "object"
+}

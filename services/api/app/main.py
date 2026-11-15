@@ -14,6 +14,7 @@ from .costar_routes import router as costar_router
 from .costs_routes import router as costs_router
 from .triage_routes import router as triage_router
 from .lineage_routes import router as lineage_router
+from .business_routes import router as business_router
 from .concepts_routes import router as concepts_router
 from .finance_routes import router as finance_router
 from .horizons_routes import router as horizons_router
@@ -48,6 +49,7 @@ app.include_router(assets_ingest_router)
 app.include_router(triage_router)
 app.include_router(aerial_router)
 app.include_router(lineage_router)
+app.include_router(business_router)
 app.include_router(agent_router)
 app.include_router(concepts_router)
 app.include_router(structure_router)

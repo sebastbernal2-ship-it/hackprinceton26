@@ -145,9 +145,13 @@ def weighted_curves(dur: np.ndarray, ev: np.ndarray, w: np.ndarray, horizon: flo
             cif += s * d1 / atrisk
             s *= 1.0 - (d1 + d2) / atrisk
         atrisk -= d1 + d2 + c
-    wr = w[dur >= horizon]
-    n_eff = float(wr.sum() ** 2 / (wr ** 2).sum()) if wr.size and (wr ** 2).sum() > 0 else 0.0
-    return {"survival": float(s), "closure": float(cif), "nEffAtRisk": n_eff, "atRiskShare": float(wr.sum() / total) if total > 0 else 0.0}
+    # support at the horizon: neighbours whose status at `horizon` is known (ended by then, or still under observation at it); those censored
+    # earlier carry no direct information. effective count = (sum of known weights)^2 / (sum of ALL squared weights), so a long tail of
+    # near-zero-weight neighbours cannot make a one-neighbour estimate look well supported
+    known = ((ev != 0) & (dur <= horizon)) | (dur >= horizon)
+    wr = w[known]
+    n_eff = float(wr.sum() ** 2 / (w ** 2).sum()) if wr.size and (w ** 2).sum() > 0 else 0.0
+    return {"survival": float(s), "closure": float(cif), "nEffAtRisk": n_eff, "atRiskShare": float(wr.sum() / total) if total > 0 else 0.0}  # nEffAtRisk = effective neighbours with known status at the horizon
 
 
 def km_median(dur: np.ndarray, ev: np.ndarray, w: np.ndarray) -> float | None:

@@ -11,7 +11,6 @@ Protocol (all declared before looking at held-out numbers; see docs/models/busin
 from __future__ import annotations
 
 import json
-import os
 from datetime import date
 from pathlib import Path
 
@@ -128,22 +127,6 @@ def verdict(ev: dict) -> dict:
                                  f"kNN is WORSE than the market prior for {label}" if worse else
                                  f"kNN is not distinguishable from the market prior for {label} (95% CI of the Brier difference includes 0)")}
     return res
-
-
-def build_index(kit_dir: str | Path, out_dir: str | Path, n_configs: int = DEFAULT_CONFIGS, reps: int = 400) -> dict:
-    """Load the kit, evaluate, write `peers_index.json` (anonymised pool + selected params + evaluation). Idempotent for the same data."""
-    kit = data.load_kit(kit_dir)
-    pool = data.peer_pool(kit["food"])
-    best, ev = run_evaluation(pool, n_configs, reps=reps)
-    idx = {"version": 1, "asOf": data.ASOF.isoformat(), "params": best.metric_dict(), "evaluation": ev,
-           "pool": [_spell_json({k: v for k, v in s.items()}) for s in pool],
-           "note": "Anonymised food-tenancy spells from the local CoStar kit. Local only: never commit."}
-    out = Path(out_dir)
-    out.mkdir(parents=True, exist_ok=True)
-    tmp = out / (INDEX_NAME + f".{os.getpid()}.tmp")
-    tmp.write_text(json.dumps(idx), encoding="utf-8")
-    tmp.replace(out / INDEX_NAME)
-    return idx
 
 
 def load_index(out_dir: str | Path) -> dict | None:

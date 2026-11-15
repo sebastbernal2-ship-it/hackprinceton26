@@ -2,6 +2,7 @@
 import json
 from pathlib import Path
 
+from app.business_routes import BusinessPeersResponse
 from app.models import (
     AssessRequest, AssumptionInput, FactorCard, Match, MatchesResponse, ProjectionCard, ReplanRequest, ReplanResponse,
     ScenarioAssessment,
@@ -19,6 +20,7 @@ def schemas() -> dict[str, dict]:
         "scenario-assessment.schema.json": ScenarioAssessment.model_json_schema(),
         "matches-response.schema.json": MatchesResponse.model_json_schema(),
         "assess-request.schema.json": AssessRequest.model_json_schema(),
+        "business-peers.schema.json": BusinessPeersResponse.model_json_schema(),
         "replan.schema.json": {"request": ReplanRequest.model_json_schema(), "response": ReplanResponse.model_json_schema()},
     }
 
