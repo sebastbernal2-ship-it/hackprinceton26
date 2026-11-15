@@ -48,6 +48,19 @@ Use **Bayou Café** (Houston; building record 8035301) or **The Preserve** (Los 
 6. Re-plan (same screen): enter budget `200000`: P(over budget) 87%. Click **Save as baseline**, set area to `800`: 56%, with the baseline 87% shown beside it. Cleaner flip across 50%: budget `250000`, 1,200 sq ft gives 74%, 800 sq ft gives 27% (API values, 4 priced pieces). Use the "-" beside a piece to change the equipment: removing the espresso machine at 800 sq ft and $200k moved 56% to 52%. The saved brief is just "cafes"; it states no budget, seats or size, and the page says so.
 7. Act checklist (below Re-plan): landlord questions (availability, rent, permitted use, utilities), records (certificate of occupancy, permits, as-builts), inspections, and one itemized-quote request per unpriced piece. Tick one on camera.
 
+## Build the cafe evidence cards
+Without this the Evidence section on View Info says the demo cards are not built. Everything below is local and gitignored (`models_index.csv`, `data/derived/`); never commit it.
+
+1. Create `models_index.csv` at the repo root, columns `sid,lat,lon,address,city,state,postal_code`, one row per demo model (`w2JcUVybv9c`, `xVKH13z5MJ8`, `JAnuRsaVo9M`). Take lat/lon/address from one read-only Matterport GraphQL query per model (`model(id) { address { address locality administrativeArea postalCode } geolocation { lat long } }`, using the `Graph` helper in `modeling/download_assets.py`, which reads the keys from `.env`; do not print them). Leave out any model whose location is not returned; do not guess coordinates.
+2. Build the cards (network: Open-Meteo, BLS, NCES/Urban Institute, state traffic; BLS may fail and stay unknown):
+
+```bash
+uv run --python 3.12 --no-project --with requests --with pandas --with numpy python data/build_demo_factor_cards.py --pace 1.0
+```
+
+   It writes `data/derived/demo/factor-cards.csv`. Start the API as above and check `curl localhost:8000/api/demo/JAnuRsaVo9M/factors` returns about 25 cards, each with status, source and limits. Observed 2026-11-15: spatial interior and traffic (Caltrans/TxDOT AADT) observed; schools derived; climate estimated/derived; income estimated; labor supply (BLS), crime, hazards and the rest unknown.
+3. View Info on a cafe now lists the cards under Evidence.
+
 ## What to skip
 - **Open 3D Tour** and **Ask AI About This Space**: not rehearsed.
 - **Add equipment from photos** and "Trace Matterport rooms in 3D": need live credentials; not part of the base case.
