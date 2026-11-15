@@ -41,10 +41,11 @@ def summary():
 
 @router.get("/api/triage/property/{listing_id}")
 def property_triage(listing_id: str):
-    for r in _need("results.json"):
-        if r["listingId"] == str(listing_id):
-            return {"notice": NOTICE, **r}
-    raise HTTPException(status_code=404, detail="no triage result for this listing")
+    from . import analyses
+    r = analyses.triage_for(int(listing_id)) if str(listing_id).lstrip("-").isdigit() else None
+    if r is None:  # not a site the picker can show
+        raise HTTPException(status_code=404, detail="no triage result for this listing")
+    return {"notice": NOTICE, **r}
 
 
 @router.get("/api/triage/queue")

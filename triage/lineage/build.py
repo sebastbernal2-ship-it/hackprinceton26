@@ -26,8 +26,8 @@ def jl(p):
                 yield json.loads(line)
 
 
-def build(kit: Path, cand_csv: Path, out: Path, asof: date = ASOF, reps: int = 300) -> dict:
-    d = kit / "data"
+def _load(d: Path, asof: date):
+    """(props, food_by_prop) from the kit's data folder; shared by the candidate build and the single-site build."""
     companies = {r["id"]: r for r in jl(d / "company-detail.jsonl")}
     props = {}
     for r in jl(d / "commercial-property.jsonl"):
@@ -53,6 +53,29 @@ def build(kit: Path, cand_csv: Path, out: Path, asof: date = ASOF, reps: int = 3
                 {"tenantLocationId": o["tenantLocationId"], "fromDate": o.get("fromDate"), "toDate": o.get("toDate"),
                  "expirationReason": o.get("expirationReason", 0),
                  "name": (co.get("profile") or {}).get("companyName") or co.get("name")})
+    return props, food_by_prop
+
+
+def build_sites(d: Path, pids: list[int], asof: date = ASOF) -> dict:
+    """Lineage and presence for specific CoStar properties (e.g. a cafe scan linked to a property that is not a candidate row),
+    with the same code and thresholds as build(). Returns {"lineage": {pid: L}, "presence": {pid: P}}; a property with no food
+    tenancy has no lineage entry, one without coordinates has no presence entry."""
+    props, food_by_prop = _load(d, asof)
+    out = {"lineage": {}, "presence": {}}
+    blds = list(props.values())
+    for pid in pids:
+        if pid in food_by_prop:
+            L = core.building_lineage(food_by_prop[pid], asof, names=True)
+            L["market"], L["isCandidate"] = props[pid]["market"], False
+            out["lineage"][str(pid)] = L
+        p = props.get(pid)
+        if p and p["lat"] is not None and p["lon"] is not None:
+            out["presence"][str(pid)] = pcore.presence(float(p["lat"]), float(p["lon"]), blds)
+    return out
+
+
+def build(kit: Path, cand_csv: Path, out: Path, asof: date = ASOF, reps: int = 300) -> dict:
+    props, food_by_prop = _load(kit / "data", asof)
     with open(cand_csv, newline="", encoding="utf-8") as f:
         cands = list(csv.DictReader(f))
     cand_ids = {int(c["property_id"]) for c in cands}

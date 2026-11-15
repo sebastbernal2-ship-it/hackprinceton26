@@ -12,6 +12,7 @@ export default function ScreeningCard({ data }: { data: StructureResponse }) {
         <span className={`rounded-full px-3 py-1 text-sm font-medium ${TIER[s.tier] ?? TIER.unknown}`}>Tier: {s.tier}</span>
         {Object.entries(s.tierByLens).map(([lens, t]) => <span key={lens} className="text-xs text-foreground/60">{lens.replace("_", " + ")}: {t}</span>)}
       </div>
+      {data.demoNote && <p className="mt-2 text-xs font-medium text-foreground/70" data-testid="structure-demo-note">{data.demoNote}</p>}
       <p className="mt-2 text-xs text-foreground/50">{s.tierRule}. The tier ranks where to look first, not whether the building is safe.</p>
       <ul className="mt-3 space-y-2 text-sm">
         {s.flags.map((f) => (

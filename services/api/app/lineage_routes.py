@@ -10,6 +10,8 @@ ROOT = Path(__file__).resolve().parents[3]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from . import analyses  # noqa: E402
+
 router = APIRouter()
 LINEAGE_NOTICE = ("Observed CoStar tenancy spells (kit-listed buildings only). Closure = CoStar's ClosedLocationOrBankrupt label; "
                   "MovingOutNewAddressUnknown and all other exits are NOT counted as failure. Tenants are anonymized unless names=true. "
@@ -47,7 +49,12 @@ def lineage(listing_id: int, names: bool = False):
     if L is None:
         # Known candidate without kit food history: say so (absence in the kit is not proof of no restaurant history).
         if str(listing_id) not in (_load("presence") or {}):
-            raise HTTPException(status_code=404, detail="listing not found")
+            d = analyses.lineage_for(listing_id)  # a scan outside the candidate set: computed from its linked CoStar record, or demo-labelled
+            if d is None:
+                raise HTTPException(status_code=404, detail="listing not found")
+            if d.get("foodHistoryInKit"):
+                d = {**d, "tenants": [{k: v for k, v in t.items() if names or k != "name"} for t in d["tenants"]], "anonymized": not names}
+            return {**d, "marketPrior": summary["marketPrior"], "notice": LINEAGE_NOTICE}
         return {"listingId": listing_id, "foodHistoryInKit": False, "tenants": [],
                 "note": "No food-service tenancy recorded in the CoStar kit for this building. Unknown, not proof of no restaurant history.",
                 "marketPrior": summary["marketPrior"], "notice": LINEAGE_NOTICE}
@@ -64,7 +71,10 @@ def lineage(listing_id: int, names: bool = False):
 
 @router.get("/api/presence/{listing_id}")
 def presence(listing_id: int):
-    P = _need("presence").get(str(listing_id))
+    pres = _load("presence")
+    P = (pres or {}).get(str(listing_id)) or analyses.presence_for(listing_id)
+    if P is None and pres is None:
+        _need("presence")  # artifact not built: 503 as before
     if P is None:
         raise HTTPException(status_code=404, detail="listing not found or no coordinates")
     return {"listingId": listing_id, **P}

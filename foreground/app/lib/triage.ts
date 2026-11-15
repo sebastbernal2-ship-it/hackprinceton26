@@ -18,7 +18,7 @@ export type TriageField = {
   note?: string;
   reviewScore: number;
 };
-export type TriageResult = { notice?: string; listingId: string; hasScan: boolean; hasAerial: boolean; scope: string; fields: TriageField[] };
+export type TriageResult = { notice?: string; demo?: boolean; demoNote?: string; listingId: string; hasScan: boolean; hasAerial: boolean; scope: string; fields: TriageField[] };
 export type QueueItem = {
   listingId: string; field: string; status: TriageStatus; score: number; scope: string; confidence: string;
   costarValue: Scalar; scanValue: Scalar; aerialValue: Scalar; note: string;
@@ -32,6 +32,7 @@ export type AerialResult = {
   vehicles: Estimate;
   rooftop_units: Estimate; parking_stalls: Estimate; loading_docks: Estimate; roof_area_shape: Estimate;
   provenance: string;
+  demo?: boolean;
 };
 
 export type LineageTenant = {
@@ -43,6 +44,7 @@ export type LineageResult = {
   counts?: { foodTenants: number; open: number; ended: number; clearFailure: number; otherExit: number; unknownTenure: number };
   medianCompletedTenureYears?: number | null; medianTenureBasis?: string; churnFlag?: boolean; churnRule?: string;
   isSecondGenerationSpace?: boolean;
+  demo?: boolean;
   marketPrior?: { label: string; nSpells: number; failureCumulativeIncidence?: Record<string, { expected: number; low: number; high: number } | null> };
 };
 export type PresenceRadius = {
@@ -87,13 +89,11 @@ export function demoFillTriage(t: TriageResult | null): TriageResult | null {
   });
   return { ...t, fields };
 }
-import { isScanOnlyId } from "./cafe-demo";
-const unlessScan = <T,>(id: number, f: () => Promise<T | null>): Promise<T | null> => (isScanOnlyId(id) ? Promise.resolve(null) : f());
-export const fetchTriage = (id: number) => unlessScan(id, () => get<TriageResult>(`/triage/property/${id}`)).then(demoFillTriage);
+export const fetchTriage = (id: number) => get<TriageResult>(`/triage/property/${id}`).then(demoFillTriage);
 export const fetchQueue = (limit = 12) => get<QueueResponse>(`/triage/queue?limit=${limit}`);
-export const fetchAerial = (id: number) => unlessScan(id, () => get<AerialResult>(`/aerial/${id}`));
-export const fetchLineage = (id: number) => unlessScan(id, () => get<LineageResult>(`/lineage/${id}`));
-export const fetchPresence = (id: number) => unlessScan(id, () => get<PresenceResult>(`/presence/${id}`));
+export const fetchAerial = (id: number) => get<AerialResult>(`/aerial/${id}`);
+export const fetchLineage = (id: number) => get<LineageResult>(`/lineage/${id}`);
+export const fetchPresence = (id: number) => get<PresenceResult>(`/presence/${id}`);
 
 export const FIELD_LABEL: Record<string, string> = {
   clear_height_ft: "Clear height", floors: "Floors", area_sqft: "Area", restroom_count: "Restrooms",
