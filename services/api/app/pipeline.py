@@ -176,6 +176,13 @@ def assess_response(req: AssessRequest, models_available: bool, pool: list[Match
                                         scenario=r["analysisBasis"], point=iv["p50"], lower=iv["p5"], upper=iv["p95"],
                                         unit=unit, method=r["method"]))
     p = r["pOverBudget"] if r["pOverBudget"] is not None else r["pOverBudgetBuildout"]
+    if p is not None:
+        # The chance of exceeding the stated budget, as its own card so the UI can show it. Full basis (build-out plus
+        # rent and delay) when every input is known, else build-out only; the card says which.
+        full = r["pOverBudget"] is not None
+        cards.append(ProjectionCard(kind="scenario", status="estimated", metric="P(over budget)" if full else "P(over budget), build-out only",
+                                    horizon="pre-opening", scenario=r["analysisBasis"], point=p, lower=0.0, upper=1.0, unit="probability",
+                                    method=r["method"] + (" Full basis." if full else " Build-out only: rent and delay cost excluded because an input is unknown.")))
     if city is None and req.listingId is not None:
         notes.append("listing not found or data unavailable: utility lines use no area (unknown)")
     return ScenarioAssessment(
