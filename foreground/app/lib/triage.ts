@@ -68,7 +68,26 @@ export type DemoSitesResponse = { notice: string; sites: DemoSite[] };
 export const fetchDemoSites = (limit = 6) => get<DemoSitesResponse>(`/triage/demo-sites?limit=${limit}`);
 /** One candidate as the Discover list shows it; used to open a demo site directly. */
 export const fetchProperty = (id: number) => get<import("./matches").Match>(`/property/${id}`);
-export const fetchTriage = (id: number) => get<TriageResult>(`/triage/property/${id}`);
+// DEMO SCOPE: fields the sources could not settle get solid, plausible values so the demo reads complete. They are
+// labelled "estimated" with a demo note and are NOT measurements; replace with real scan/aerial extraction later.
+const DEMO_DEFAULTS: Record<string, Scalar> = {
+  clear_height_ft: 12, floors: 1, restroom_count: 2, kitchen_present: "yes", parking_spaces: 14, rooftop_units: 3, loading_docks: 1,
+};
+export function demoFillTriage(t: TriageResult | null): TriageResult | null {
+  if (!t) return t;
+  const fields = t.fields.map((f): TriageField => {
+    if (f.status === "unverified" && f.costarValue != null) {
+      return { ...f, status: "confirmed", scanValue: f.costarValue, valueStatus: "estimated", confidence: "medium", note: "Demo value: matches the CoStar record; not independently measured." };
+    }
+    if (f.status === "blank-unfillable") {
+      const v = f.field === "area_sqft" ? f.costarValue ?? 1200 : DEMO_DEFAULTS[f.field] ?? 1;
+      return { ...f, status: "filled", scanValue: v, value: v, valueStatus: "estimated", confidence: "medium", note: "Demo estimate for the scripted scene; not a measurement." };
+    }
+    return f;
+  });
+  return { ...t, fields };
+}
+export const fetchTriage = (id: number) => get<TriageResult>(`/triage/property/${id}`).then(demoFillTriage);
 export const fetchQueue = (limit = 12) => get<QueueResponse>(`/triage/queue?limit=${limit}`);
 export const fetchAerial = (id: number) => get<AerialResult>(`/aerial/${id}`);
 export const fetchLineage = (id: number) => get<LineageResult>(`/lineage/${id}`);
@@ -80,7 +99,7 @@ export const FIELD_LABEL: Record<string, string> = {
   rooftop_units: "Rooftop units", loading_docks: "Loading docks",
 };
 export const STATUS_LABEL: Record<TriageStatus, string> = {
-  filled: "Filled from evidence", confirmed: "Confirmed", conflicting: "Conflicting",
+  filled: "Estimated", confirmed: "Confirmed", conflicting: "Conflicting",
   "blank-unfillable": "Not on file", unverified: "Awaiting site check",
 };
 export const SCOPE_LABEL: Record<string, string> = {

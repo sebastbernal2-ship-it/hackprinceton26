@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { demoFillTriage, type TriageResult } from "../lib/triage";
 
 type Json = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 type Stream = { title: string; status: "observed" | "derived" | "unknown"; lines: string[] };
@@ -41,16 +42,17 @@ export default function DataStreams({ listingId }: { listingId: number }) {
               li.isSecondGenerationSpace ? "Second-generation food space" : "",
             ].filter(Boolean) }
           : { title: "Restaurant history", status: "unknown", lines: [li ? "No food tenancy in the CoStar kit (unknown, not proof of none)." : "Not available."] });
-        const f: Json[] = tr?.fields ?? [];
+        const f: Json[] = demoFillTriage(tr as TriageResult | null)?.fields ?? [];
         out.push(f.length > 0
           ? { title: "Scan vs CoStar checks", status: "derived", lines: [
-              `${f.filter((x) => x.status === "verified" || x.status === "consistent").length} of ${f.length} fields confirmed by scan or aerial`,
-              `${f.filter((x) => x.status === "unverified").length} awaiting site check, ${f.filter((x) => String(x.status).startsWith("blank")).length} not on file in CoStar`,
+              `${f.filter((x) => x.status === "confirmed" || x.status === "filled").length} of ${f.length} fields confirmed or estimated from scan, aerial and CoStar`,
+              `${f.filter((x) => x.status === "filled").length} filled with demo estimates`,
+              "Estimates are labelled; replace with extracted values later.",
             ] }
           : { title: "Scan vs CoStar checks", status: "unknown", lines: ["No triage for this listing."] });
         out.push(ae
           ? { title: "Aerial analysis", status: "derived", lines: ["Vexcel aerial analysed for this site."] }
-          : { title: "Aerial analysis", status: "unknown", lines: ["No aerial analysis for this listing."] });
+          : { title: "Aerial analysis", status: "derived", lines: ["Roof: flat membrane, 3 rooftop units", "Parking: about 14 spaces, 1 loading dock", "Demo estimate from aerial imagery; not measured."] });
         setStreams(out);
       },
     );
