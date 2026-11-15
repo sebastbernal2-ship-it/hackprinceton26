@@ -50,7 +50,7 @@ export default function NearbyPeersPanel({ listingId }: { listingId: number }) {
         <>
           {d.demo && (
             <p role="note" className="mt-3 rounded-lg border border-accent/50 bg-accent/10 px-3 py-2 text-sm" data-testid="peers-demo-note">
-              <Tag chip="demo" />{d.demoNote ?? "DEMO DATA: some nearby businesses below are invented for the demo site."}
+              {d.demoNote ?? "DEMO DATA: some nearby businesses below are invented for the demo site."}
             </p>
           )}
 
@@ -107,8 +107,8 @@ export default function NearbyPeersPanel({ listingId }: { listingId: number }) {
                     {nb.drivers.length === 0 && <li className="text-foreground/60">No drivers: no kit data near this site.</li>}
                   </ul>
                   <p className="mt-1 text-xs text-foreground/50">
-                    Direct competitors within {nb.bands["0.25mi"]?.directCompetitorsOpen ?? 0} / {nb.bands["0.5mi"]?.directCompetitorsOpen ?? 0} / {nb.bands["1mi"]?.directCompetitorsOpen ?? 0} (0.25 / 0.5 / 1 mi);
-                    successful non-competing businesses {nb.bands["0.25mi"]?.successfulNonCompeting ?? 0} / {nb.bands["0.5mi"]?.successfulNonCompeting ?? 0} / {nb.bands["1mi"]?.successfulNonCompeting ?? 0}.
+                    Open direct competitors within 0.25 / 0.5 / 1 mi: {nb.bands["0.25mi"]?.directCompetitorsOpen ?? 0} / {nb.bands["0.5mi"]?.directCompetitorsOpen ?? 0} / {nb.bands["1mi"]?.directCompetitorsOpen ?? 0};
+                    successful non-competing businesses: {nb.bands["0.25mi"]?.successfulNonCompeting ?? 0} / {nb.bands["0.5mi"]?.successfulNonCompeting ?? 0} / {nb.bands["1mi"]?.successfulNonCompeting ?? 0}.
                     {nb.nearestDirectCompetitorM != null && <> Nearest open direct competitor {nb.nearestDirectCompetitorM >= 1609 ? `${(nb.nearestDirectCompetitorM / 1609.344).toFixed(1)} mi` : `${nb.nearestDirectCompetitorM} m`}.</>}
                   </p>
                   <details className="mt-2 rounded-lg border border-foreground/15 p-2 text-xs">
@@ -137,16 +137,16 @@ export default function NearbyPeersPanel({ listingId }: { listingId: number }) {
             </p>
             <div className="mt-2 overflow-x-auto">
               <table className="w-full min-w-[26rem] text-left text-sm" data-testid="survival-table">
-                <thead className="text-xs text-foreground/50"><tr><th className="py-1 pr-3 font-normal">Still operating after</th><th className="pr-3 font-normal">Neighbours</th><th className="font-normal">Same-market prior</th></tr></thead>
+                <thead className="text-xs text-foreground/50"><tr><th className="py-1 pr-3 font-normal">Still operating after</th><th className="pr-3 font-normal">{k.mode === "market_prior_only" ? "Same-market average" : "Neighbours"}</th>{k.marketPrior && <th className="font-normal">Same-market prior</th>}</tr></thead>
                 <tbody>
                   {["1", "2", "3", "5"].map((h) => k.survival[h] && (
                     <tr key={h} className="border-t border-foreground/10">
                       <td className="py-1.5 pr-3">{h} year{h === "1" ? "" : "s"}</td>
                       <td className="pr-3 tabular-nums">{intervalText(k.survival[h])}{k.survival[h].source && !k.survival[h].evaluable && <span className="text-xs text-foreground/45"> (prior used: few neighbours observed this long)</span>}</td>
-                      <td className="tabular-nums text-foreground/60">{k.marketPrior ? pct(k.marketPrior.survival[h]) : "-"}</td>
+                      {k.marketPrior && <td className="tabular-nums text-foreground/60">{pct(k.marketPrior.survival[h])}</td>}
                     </tr>
                   ))}
-                  <tr className="border-t border-foreground/10"><td className="py-1.5 pr-3">Closed within 2 years</td><td className="pr-3 tabular-nums">{intervalText(k.closure2y)}</td><td className="tabular-nums text-foreground/60">{k.marketPrior ? pct(k.marketPrior.closure2y) : "-"}</td></tr>
+                  <tr className="border-t border-foreground/10"><td className="py-1.5 pr-3">Closed within 2 years</td><td className="pr-3 tabular-nums">{intervalText(k.closure2y)}</td>{k.marketPrior && <td className="tabular-nums text-foreground/60">{pct(k.marketPrior.closure2y)}</td>}</tr>
                 </tbody>
               </table>
             </div>
@@ -159,7 +159,7 @@ export default function NearbyPeersPanel({ listingId }: { listingId: number }) {
             {k.evaluation && (
               <p role="note" className="mt-2 rounded-lg border border-foreground/25 bg-foreground/5 px-3 py-2 text-xs" data-testid="knn-evaluation">
                 <span className="font-medium">Evaluation, stated plainly.</span> {k.evaluation.plainly} Held-out {k.evaluation.heldOutWindow[0]}-{k.evaluation.heldOutWindow[1]} starts ({k.evaluation.nTargets} tenancies, {k.evaluation.nClosed2y} closures within 2 years):
-                Brier for closure {k.evaluation.closure2y.brierKnn.toFixed(3)} vs prior {k.evaluation.closure2y.brierMarketPrior.toFixed(3)}; for any end within 2 years {k.evaluation.ended2y.brierKnn.toFixed(3)} vs prior {k.evaluation.ended2y.brierMarketPrior.toFixed(3)} (lower is better). {k.evaluation.verdict.join(" ")}
+                Brier for closure {k.evaluation.closure2y.brierKnn.toFixed(3)} vs prior {k.evaluation.closure2y.brierMarketPrior.toFixed(3)}; for any end within 2 years {k.evaluation.ended2y.brierKnn.toFixed(3)} vs prior {k.evaluation.ended2y.brierMarketPrior.toFixed(3)} (lower is better).
               </p>
             )}
           </div>

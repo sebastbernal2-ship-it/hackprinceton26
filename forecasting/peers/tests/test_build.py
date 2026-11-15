@@ -30,7 +30,7 @@ def test_evaluation_runs_and_reports_honestly(kit):
     best, ev = fit.run_evaluation(pool, n_configs=6, reps=30)
     assert ev["heldOut"]["window"] == list(fit.TEST_YEARS) or tuple(ev["heldOut"]["window"]) == fit.TEST_YEARS
     assert set(ev["verdict"]) == {"closure2y", "ended2y"} and "conclusion" in ev["verdict"]["closure2y"]
-    for name in ("spatialOnly", "kindOnly", "selectedExcludingOwnBuilding", "selectedExcludingPeersWithin1mi", "selectedHindsightNotAsOf"):
+    for name in ("spatialOnly", "kindOnly", "buildingTypeAgeOnlyNoGeography", "selectedExcludingOwnBuilding", "selectedExcludingPeersWithin1mi", "selectedHindsightNotAsOf"):
         assert name in ev["heldOut"]["ablations"]
     assert "outcomePermutation" in ev["leakage"] and len(ev["kCurve"]) == 6
     assert best.h_miles < 1e5  # a located model is always selected

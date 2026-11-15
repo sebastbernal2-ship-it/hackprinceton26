@@ -81,7 +81,8 @@ def run_evaluation(pool: list[dict], n_configs: int = DEFAULT_CONFIGS, seed: int
     }
     # Where does the skill (if any) come from? Ablations and exclusions, all on the held-out window.
     abl = {}
-    for name, prm, kw in (("spatialOnly", spatial, {}), ("kindOnly", kind_only, {}), ("selectedExcludingOwnBuilding", best, {"same_building": False}),
+    building_only = K.Params(**{**best.metric_dict(), "h_miles": 1e6})  # selected weights with geography switched off
+    for name, prm, kw in (("spatialOnly", spatial, {}), ("kindOnly", kind_only, {}), ("buildingTypeAgeOnlyNoGeography", building_only, {}), ("selectedExcludingOwnBuilding", best, {"same_building": False}),
                           ("selectedExcludingPeersWithin1mi", best, {"block_miles": 1.0}), ("selectedHindsightNotAsOf", best, {"as_of": False})):
         res = K.evaluate_split(tab, test_idx, prm, **kw)
         abl[name] = {"params": prm.metric_dict(), **_strip(res), "deltaVsMarketPrior": K.cluster_bootstrap_delta(tab, res, reps)}

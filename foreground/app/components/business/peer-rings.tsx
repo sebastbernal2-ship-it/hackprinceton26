@@ -32,7 +32,7 @@ export default function PeerRings({ items, adjacentM }: { items: NearbyFood[]; a
           <text x={C + 3} y={C - ringRadius(m) - 2} fontSize="9" fill="rgba(27,26,23,0.55)">{m} mi</text>
         </g>
       ))}
-      <text x={C + 3} y={C - ringRadius(REGION_MILES) + 10} fontSize="9" fill="rgba(27,26,23,0.55)">{REGION_MILES} mi region</text>
+      <text x={C - 4} y={C - ringRadius(REGION_MILES) + 11} textAnchor="end" fontSize="9" fill="rgba(27,26,23,0.55)">{REGION_MILES} mi region</text>
       {dots.map((d) => <Marker key={d.id} d={d} />)}
       <circle cx={C} cy={C} r={5} fill="var(--foreground)"><title>The site</title></circle>
       <text x={C} y={SIZE - 4} textAnchor="middle" fontSize="9" fill="rgba(27,26,23,0.5)">north up; distance scale is square-root inside 1 mi</text>

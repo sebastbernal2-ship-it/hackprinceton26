@@ -72,6 +72,19 @@ def knn_block(site: dict, tab: K.SpellTable, params: K.Params, evaluation: dict 
     }
 
 
+def _plainly(verdict: dict) -> str:
+    def sentence(key: str, label: str) -> str:
+        d = verdict[key]
+        low, high = d["ci95"]
+        if high < 0:
+            return f"For {label} it was better than the same-market prior, with a wide interval (Brier difference {d['deltaBrier']:+.3f}, 95% CI {low:+.3f} to {high:+.3f})."
+        if low > 0:
+            return f"For {label} it was worse than the same-market prior (Brier difference {d['deltaBrier']:+.3f}, 95% CI {low:+.3f} to {high:+.3f})."
+        return f"For {label} it was not distinguishable from the same-market prior (Brier difference {d['deltaBrier']:+.3f}, 95% CI {low:+.3f} to {high:+.3f})."
+    return ("On held-out recent tenancies: " + sentence("closure2y", "clear closure within 2 years") + " " + sentence("ended2y", "any tenancy end within 2 years")
+            + " Any gain comes mostly from building type and age, not from nearby same-kind peers. Treat the neighbour outcomes as context, not as a prediction.")
+
+
 def evaluation_summary(ev: dict | None) -> dict | None:
     if not ev:
         return None
@@ -82,7 +95,7 @@ def evaluation_summary(ev: dict | None) -> dict | None:
             "ended2y": {"brierKnn": h["main"]["ended2y"]["brier"]["knn"], "brierMarketPrior": h["main"]["ended2y"]["brier"]["marketPrior"],
                         "deltaCI95": h["deltaVsMarketPrior"]["ended2y"], "aucKnn": h["main"]["ended2y"]["auc"]["knn"]},
             "tenureMAE": h["main"]["tenureMAE"], "verdict": [v["conclusion"] for v in ev["verdict"].values()],
-            "plainly": "On held-out recent tenancies the kNN is not shown to be more accurate than the same-market prior. Treat the neighbour outcomes as context, not as a prediction."}
+            "plainly": _plainly(ev["verdict"])}
 
 
 def site_result(site: dict, pool: list[dict], others: list[dict], params: K.Params, evaluation: dict | None = None,

@@ -26,8 +26,8 @@ from . import demo_fixture  # noqa: E402
 
 router = APIRouter()
 NOTICE = ("Observed CoStar tenancy records for kit-listed buildings only (a sparse lower bound; absence is unknown, not zero). Peers are anonymised. "
-          "Neighbour aggregates are estimates with bootstrap intervals; on held-out recent tenancies the kNN is NOT shown to beat the same-market prior "
-          "(see docs/models/business-knn.md). The neighbourhood index is a documented rule with team-chosen thresholds (docs/models/neighbourhood-index.md). "
+          "Neighbour aggregates are estimates with bootstrap intervals; on held-out recent tenancies the kNN is not better than the same-market prior for closures and at most "
+          "modestly better for tenancy ends (see docs/models/business-knn.md). The neighbourhood index is a documented rule with team-chosen thresholds (docs/models/neighbourhood-index.md). "
           "Context only: not a forecast, a fit score or a ranking. Food 'kind' is inferred from company names.")
 
 

@@ -13,7 +13,7 @@ Logic
     decaying to ~0 by 1 mile. A competitor in the 0.5-3 mi region is not penalised.
   * Market validation (V, 0-1): direct competitors that are open >= 2 years in the 0.5-3 mi region. Evidence that the concept sells here
     and a benchmark for performance, never a penalty.
-  * index = 50 + 100*(w_A*(A-0.5) + w_C*((1-C)-0.5) + w_V*V), clipped to 0-100; 50 is neutral. Validation is a one-sided bonus and a component with
+  * index = 50 + 100*(w_A*(A-0.5) - w_C*C + w_V*V), clipped to 0-100; 50 is neutral. Competition is a one-sided penalty, validation a one-sided bonus and a component with
     no data contributes 0 points (unknown is not negative). The index is None when the kit holds nothing within 1 mile.
 """
 from __future__ import annotations
@@ -39,7 +39,7 @@ CONFIG = {
     "band_weight": {0.25: 1.0, 0.5: 0.6, 1.0: 0.3},  # agglomeration weights per band (inner bands count more)
     "success_open_years": 2.0,  # open at least this long = a business that has survived the usual first-years failure window
     "success_ended_years": 3.0,  # or ended without a closure label after at least this long
-    "count_saturation": 8.0,  # weighted draw units at which S_count reaches 1-e^-1 = 0.63
+    "count_full_units": 100.0,  # weighted draw units at which the count score reaches 1; log scale, because kit density varies ~100x between sites
     "tenure_cap_years": 5.0,
     "min_seasoned_for_survival": 5,
     "validation_saturation": 2.0,  # weighted validating competitors at which V reaches 0.63
@@ -164,7 +164,7 @@ def score(site: dict, food: list[dict], others: list[dict], config: dict | None 
             succ_tenures.append(n["years"])
     parts, pw = {}, cfg["agglomeration_parts"]
     if coverage["tenanciesWithin1mi"]:
-        parts["count"] = 1.0 - math.exp(-wsum / cfg["count_saturation"])
+        parts["count"] = min(1.0, math.log1p(wsum) / math.log1p(cfg["count_full_units"]))
         if succ_tenures:
             succ_tenures.sort()
             parts["tenure"] = min(1.0, succ_tenures[len(succ_tenures) // 2] / cfg["tenure_cap_years"])
@@ -174,12 +174,12 @@ def score(site: dict, food: list[dict], others: list[dict], config: dict | None 
 
     w = cfg["weights"]
     covered = bool(coverage["tenanciesWithin1mi"])
-    # points above/below a neutral 50: agglomeration and competition are centred on 0.5, validation is a one-sided bonus (absent = 0, never negative)
+    # points above/below a neutral 50: agglomeration is centred on 0.5; competition is a one-sided penalty and validation a one-sided bonus (absent = 0)
     pts = {}
     if A is not None:
         pts["agglomeration"] = 100.0 * w["agglomeration"] * (A - 0.5)
     if covered:
-        pts["competition"] = 100.0 * w["competition"] * ((1.0 - C) - 0.5)
+        pts["competition"] = -100.0 * w["competition"] * C  # a one-sided penalty: no competitor found is unknown in a sparse kit, not a reward
     if coverage["foodSpellsWithinRegion"]:
         pts["validation"] = 100.0 * w["validation"] * V
     index = None if not covered else max(0.0, min(100.0, 50.0 + sum(pts.values())))

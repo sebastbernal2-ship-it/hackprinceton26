@@ -16,6 +16,9 @@ HTTP JSON under `/api`, served by `services/api` (FastAPI, port 8000). JSON Sche
 - `GET /api/property/{listingId}` -> `Match` (404 if unknown or data absent)
 - `POST /api/next-question {history}` -> `{question|null, stub:true}`
 - `POST /api/tour-agent {message,placedCount,tourId}` -> `{reply, action, stub:true}`
+- `GET /api/property/{listingId}/business-peers[?concept=cafe|bakery|restaurant|bar|quick_service]` -> `BusinessPeersResponse` (`business-peers.schema.json`): kNN peer outcomes with bootstrap intervals and the
+  anonymised neighbours, the neighbourhood context index with drivers and the adjacent-competitor flag, coverage and labels; `demo:true` where a fixture site's invented neighbours
+  are included (tagged). 404 unknown listing, 503 artifacts not built (`tools/run_business_models.py`). Context, not a forecast.
 - `GET /api/property/{listingId}/projections` -> `{listingId, modelsAvailable, projections: ProjectionCard[], note}`
   (404 if unknown). Stub: empty list, never zero-filled.
 - `POST /api/assess {listingId?, budget?, equipment?: [id | {id,quantity}], unitPriceOverrides?: {id: number | {low,high}},
