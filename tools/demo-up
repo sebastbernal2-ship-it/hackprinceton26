@@ -13,7 +13,8 @@ SCAN=${2:-${SCAN_ASSETS_DIR:-$HOME/code/_work/recon-data}}
 export COSTAR_NORMALIZED_DIR=$D/normalized/costar TRIAGE_DERIVED_DIR=$D/derived/triage LINEAGE_DIR=$D/derived/lineage \
   STRUCTURE_DIR=$D/derived/structure AERIAL_DIR=$D/derived/triage/aerial/properties DERIVED_DIR=$D/derived \
   SITE_PHOTO_DIR=$D/derived/site-photos SCAN_AREAS_PATH=$D/derived/scan_areas.json \
-  DEMO_FACTOR_CARDS=$D/derived/demo/factor-cards.csv REFERENCE_MEDIA_DIR=$D/derived/reference-media
+  DEMO_FACTOR_CARDS=$D/derived/demo/factor-cards.csv REFERENCE_MEDIA_DIR=$D/derived/reference-media \
+  ASSET_THUMB_DIR=$D/derived/asset-thumbs
 for f in "$SCAN_AREAS_PATH" "$DEMO_FACTOR_CARDS"; do [ -e "$f" ] || echo "note: $f is missing (that part of the demo will show 'not built')" >&2; done
 [ -d "$SCAN" ] || echo "note: $SCAN is missing (the cafe walk falls back to the read-only tour)" >&2
 [ -f "$SCAN/assets_catalog/catalog.json" ] || echo "note: $SCAN/assets_catalog is missing (the walk furniture catalogue will be empty): run  cd $ROOT && python modeling/fetch_catalog.py --res 1k  and move assets_catalog/ into $SCAN" >&2
@@ -22,5 +23,10 @@ trap 'kill 0' EXIT INT TERM
 (cd "$ROOT" && uv run --no-project --python 3.12 --with-requirements services/api/requirements.txt --with numpy --with pandas \
   uvicorn services.api.app.main:app --host 127.0.0.1 --port 8000) &
 (cd "$ROOT/foreground" && SCAN_ASSETS_DIR=$SCAN API_URL=http://127.0.0.1:8000 npm run dev -- --hostname 127.0.0.1 --port 3000) &
+# Preview PNGs for the asset catalogue (idempotent; only missing ones are rendered, once the API is up).
+if [ -f /tmp/pw/node_modules/playwright-core/package.json ] && [ -x "${CHROMIUM:-/snap/bin/chromium}" ]; then
+  (for _ in $(seq 60); do curl -sf http://127.0.0.1:8000/api/assets -o /dev/null && break; sleep 2; done
+   node "$ROOT/tools/render-asset-thumbs.cjs" --api http://127.0.0.1:8000 --out "$ASSET_THUMB_DIR" >"${TMPDIR:-/tmp}/asset-thumbs.log" 2>&1) &
+else echo "note: playwright-core/chromium not found: asset thumbnails are not generated (run node tools/render-asset-thumbs.cjs)" >&2; fi
 echo "API http://127.0.0.1:8000   app http://localhost:3000   (Ctrl+C stops both)"
 wait

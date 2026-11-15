@@ -1,6 +1,6 @@
 "use client";
 
-import AssetIcon from "./asset-icon";
+import AssetThumb from "./asset-thumb";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import AssetGenerator from "./asset-generator";
 import { checkLayout, frontZone, type Placement, type Rot } from "../lib/asset-layout";
@@ -631,5 +631,5 @@ function Stat({ label, value, id, warn }: { label: string; value: string; id: st
 function Glyph({ asset }: { asset: Asset }) {
   const img = assetImageUrl(asset);
   if (img) return /* eslint-disable-next-line @next/next/no-img-element */ <img src={img} alt="" draggable={false} className="h-11 w-11 shrink-0 rounded border border-foreground/15 object-cover" />;
-  return <AssetIcon asset={asset} size={44} className="shrink-0" />;
+  return <AssetThumb asset={asset} size={44} className="shrink-0" />;
 }
