@@ -21,6 +21,16 @@
   #panel { position:fixed; right:12px; bottom:12px; background:#000a; padding:6px 8px; border-radius:8px; font-size:12px; color:var(--dim); }
   #panel button { background:#2a2f37; color:var(--text); border:1px solid #3a3f48; border-radius:5px; padding:3px 8px; margin-left:4px; cursor:pointer; font:inherit; }
   #panel button:hover { border-color:var(--acc); }
+  #offer, #clearInfo { position:fixed; left:50%; transform:translateX(-50%); width:min(560px, calc(100vw - 32px)); display:none; background:#15171cf2;
+           border:1px solid #2c3038; border-radius:12px; padding:12px 14px; z-index:6; font-size:12.5px; }
+  #offer { bottom:64px; } #clearInfo { top:64px; max-height:calc(100vh - 140px); overflow:auto; }
+  #offer.open, #clearInfo.open { display:block; }
+  #offer b, #clearInfo b { font-size:14px; } #offer p, #clearInfo p { margin:6px 0 0; color:var(--dim); }
+  #offer .row, #clearInfo .row { display:flex; gap:6px; margin-top:10px; flex-wrap:wrap; }
+  #offer button, #clearInfo button { background:#2a2f37; color:var(--text); border:1px solid #3a3f48; border-radius:6px; padding:4px 12px; cursor:pointer; font:inherit; }
+  #offer button.go, #clearInfo button.go { background:var(--acc); color:#000; border-color:var(--acc); } #offer button:hover, #clearInfo button:hover { border-color:var(--acc); }
+  #clearInfo ul { margin:8px 0 0; padding:0; list-style:none; display:flex; flex-wrap:wrap; gap:4px; } #clearInfo li { background:#0f1013; border-radius:10px; padding:1px 8px; }
+  #clearInfo .sw { display:inline-block; width:11px; height:11px; border-radius:3px; vertical-align:-1px; margin-right:5px; border:1px solid #fff3; }
   #cat { position:fixed; left:50%; top:50%; transform:translate(-50%, -50%); width:min(760px, calc(100vw - 32px)); max-height:min(620px, calc(100vh - 32px));
          display:none; flex-direction:column; background:#15171cf2; border:1px solid #2c3038; border-radius:12px; padding:12px; z-index:5; }
   #cat.open { display:flex; }
@@ -51,10 +61,11 @@
   <div class="dim" style="margin-top:4px">Furniture: aim at a piece · <kbd>E</kbd> or click pick up / place · wheel or <kbd>R</kbd> turn ·
     <kbd>X</kbd> remove · <kbd>Ctrl</kbd>+<kbd>Z</kbd> undo · <kbd>C</kbd> catalogue of new furniture</div>
 </div>
-<div id="panel"><span id="edits"></span> <button id="aiBtn">Ask Fio (Enter)</button><button id="catBtn">Catalogue (C)</button><button id="exportBtn">Export edits.json</button><button id="resetBtn">Reset all</button></div>
+<div id="panel"><span id="edits"></span> <button id="aiBtn">Ask Fio (Enter)</button><button id="catBtn">Catalogue (C)</button><button id="clearBtn" title="Remove the scanned furniture and patch the floor and walls (K)">Clear the space (K)</button><button id="restoreBtn" style="display:none">Restore scan objects</button><button id="exportBtn">Export edits.json</button><button id="resetBtn">Reset all</button></div>
 <div id="ai"><div id="aiLog"></div><div id="aiChips"></div><div class="row"><input id="aiInput" placeholder="Ask Fio: cost, seats, hazards, next steps..." autocomplete="off"><button id="aiSend">Send</button><button id="aiNew">New chat</button></div></div>
 <div id="cat"><div class="head"><b>Add furniture</b><span class="dim">Free CC0 models from Poly Haven · lit by the room's own photo</span><button id="catClose">✕</button></div>
   <div id="catTabs"></div><div id="catGrid"></div></div>
+<div id="offer"></div><div id="clearInfo"></div>
 <div id="cross"></div><div id="target" style="opacity:0"></div><div id="hint" style="opacity:0"></div><div id="fade"></div>
 <script type="module">
 import * as THREE from './vendor/three.module.min.js';
@@ -260,7 +271,7 @@ for (let t = 0; t < patchT; t++) {
 }
 const CI = new Uint32Array(HOUSE_END + floorFill.length * 3); CI.set(IDX.subarray(0, HOUSE_END));
 floorFill.forEach((t, k) => { for (let a = 0; a < 3; a++) CI[HOUSE_END + k * 3 + a] = PI_[t * 3 + a] + nV; });
-const STATIC = makeSoup(CP, CI, 0.5);
+let STATIC = makeSoup(CP, CI, 0.5);   // rebuilt (rebuildStatic) when removed pieces leave inferred floor patches to walk on
 
 // highest floor-like surface under (x, y) between zBot and zTop, or -Infinity
 function floorAt(x, y, zTop, zBot) {
@@ -573,10 +584,242 @@ const isEdited = pc => pc.added || pc.deleted || Math.abs(pc.tx) > 0.005 || Math
 function applyPose(pc) {
   pc.pivot.position.set(pc.cx + pc.tx, pc.cy + pc.ty, pc.dz); pc.pivot.rotation.z = pc.dyaw;
   pc.pivot.visible = !pc.deleted;
+  if (!pc.anim) pc.pivot.scale.set(1, 1, 1);
+  syncPatches(pc);
   if (pc.fill) pc.fill.visible = isEdited(pc);
 }
 const poseOf = pc => ({ tx: pc.tx, ty: pc.ty, dz: pc.dz, dyaw: pc.dyaw, deleted: pc.deleted });
 const setPose = (pc, s) => { Object.assign(pc, s); applyPose(pc); };
+
+// ------------------------------------------------------------------ clear the space: remove the scanned objects, patch what was under / behind them
+// Where a scanned piece stood, the scan has a hole (the camera never saw the floor under a sofa or the wall behind a
+// cabinet). Nothing here asks a model: for every piece we render the surrounding floor (top-down) and wall (side-on)
+// with all pieces hidden, then fill the hole from the neighbouring pixels (nearest-colour seed, diffusion, plus grain
+// borrowed from the visible surface). The result is a plausible patch, an ESTIMATE of what is there, not a measurement.
+const PPM = 40;                                       // patch resolution: pixels per metre
+const patchGroup = new THREE.Group(); scene.add(patchGroup);
+let staticDirty = false;
+const anims = []; let wave = null, lastClear = null;
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+function capture(cam, W, H) {                         // render the scene (no pieces, no earlier patches) to RGBA pixels, alpha 0 = nothing there
+  const rt = new THREE.WebGLRenderTarget(W, H); rt.texture.colorSpace = THREE.SRGBColorSpace;
+  const hid = pieces.map(pc => pc.pivot.visible), hp = patchGroup.visible, ph = photo.visible, bg = scene.background;
+  const cc = renderer.getClearColor(new THREE.Color()), ca = renderer.getClearAlpha();
+  pieces.forEach(pc => { pc.pivot.visible = false; }); patchGroup.visible = false; photo.visible = false; scene.background = null;
+  renderer.setClearColor(0x000000, 0); renderer.setRenderTarget(rt); renderer.clear(); renderer.render(scene, cam);
+  const buf = new Uint8Array(W * H * 4); renderer.readRenderTargetPixels(rt, 0, 0, W, H, buf);
+  renderer.setRenderTarget(null); renderer.setClearColor(cc, ca); rt.dispose();
+  pieces.forEach((pc, i) => { pc.pivot.visible = hid[i]; }); patchGroup.visible = hp; photo.visible = ph; scene.background = bg;
+  return buf;
+}
+// Fill every pixel inside the mask that the scan did not cover. Deterministic (no randomness, no model).
+function inpaint(buf, W, H, inMask) {
+  const N = W * H, known = new Uint8Array(N), reg = new Uint8Array(N), col = new Float32Array(N * 3);
+  let nk = 0;
+  for (let i = 0; i < N; i++) {
+    known[i] = buf[i * 4 + 3] >= 200 ? 1 : 0; nk += known[i];
+    reg[i] = inMask(i % W, (i / W) | 0) ? 1 : 0;
+    for (let a = 0; a < 3; a++) col[i * 3 + a] = buf[i * 4 + a];
+  }
+  const un = []; for (let i = 0; i < N; i++) if (reg[i] && !known[i]) un.push(i);
+  const nb = i => { const x = i % W, y = (i / W) | 0, o = []; if (x > 0) o.push(i - 1); if (x < W - 1) o.push(i + 1); if (y > 0) o.push(i - W); if (y < H - 1) o.push(i + W); return o; };
+  let mean = [138, 138, 138];
+  if (un.length && nk) {
+    // nearest known colour, grown outwards (breadth first) as the starting guess
+    const seen = Uint8Array.from(known), q = []; for (let i = 0; i < N; i++) if (known[i]) q.push(i);
+    for (let h = 0; h < q.length; h++) { const i = q[h]; for (const j of nb(i)) if (!seen[j]) { seen[j] = 1; for (let a = 0; a < 3; a++) col[j * 3 + a] = col[i * 3 + a]; q.push(j); } }
+    // smooth it: the hole becomes the average of what surrounds it
+    const inUn = new Uint8Array(N); un.forEach(i => { inUn[i] = 1; });
+    let cur = col, nxt = Float32Array.from(col);
+    for (let it = 0; it < 90; it++) {
+      for (const i of un) { let n = 0, r = 0, g = 0, b = 0;
+        for (const j of nb(i)) if (known[j] || inUn[j]) { n++; r += cur[j * 3]; g += cur[j * 3 + 1]; b += cur[j * 3 + 2]; }
+        if (n) { nxt[i * 3] = r / n; nxt[i * 3 + 1] = g / n; nxt[i * 3 + 2] = b / n; } }
+      [cur, nxt] = [nxt, cur];
+    }
+    for (let i = 0; i < N * 3; i++) col[i] = cur[i];
+    // grain: the visible surface's fine detail (colour minus local average), copied over from a nearby known spot
+    const res = new Float32Array(N * 3), hasRes = new Uint8Array(N);
+    for (let i = 0; i < N; i++) if (known[i]) { const x = i % W, y = (i / W) | 0; let n = 0, r = 0, g = 0, b = 0;
+      for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) { const xx = x + dx, yy = y + dy; if (xx < 0 || yy < 0 || xx >= W || yy >= H) continue;
+        const j = yy * W + xx; if (known[j]) { n++; r += col[j * 3]; g += col[j * 3 + 1]; b += col[j * 3 + 2]; } }
+      if (n >= 12) { hasRes[i] = 1; res[i * 3] = col[i * 3] - r / n; res[i * 3 + 1] = col[i * 3 + 1] - g / n; res[i * 3 + 2] = col[i * 3 + 2] - b / n; } }
+    let x0 = W, x1 = 0, y0 = H, y1 = 0; for (const i of un) { const x = i % W, y = (i / W) | 0; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+    const ox = x1 - x0 + 3, oy = y1 - y0 + 3, offs = [[-ox, 0], [ox, 0], [0, -oy], [0, oy], [-ox, -oy], [ox, oy], [-ox, oy], [ox, -oy], [-13, 0], [13, 0], [0, -13], [0, 13], [-29, 7], [31, -11]];
+    for (const i of un) { const x = i % W, y = (i / W) | 0;
+      for (const [dx, dy] of offs) { const xx = x + dx, yy = y + dy; if (xx < 0 || yy < 0 || xx >= W || yy >= H) continue;
+        const j = yy * W + xx; if (hasRes[j]) { for (let a = 0; a < 3; a++) col[i * 3 + a] += 0.85 * res[j * 3 + a]; break; } } }
+    mean = [0, 0, 0]; for (const i of un) for (let a = 0; a < 3; a++) mean[a] += col[i * 3 + a] / un.length;
+  } else if (un.length) { for (const i of un) for (let a = 0; a < 3; a++) col[i * 3 + a] = 138; }
+  const out = new Uint8Array(N * 4);
+  for (let i = 0; i < N; i++) { if (!reg[i] || known[i]) continue;      // only the gaps are painted: real scan pixels stay untouched
+    for (let a = 0; a < 3; a++) out[i * 4 + a] = clamp(Math.round(col[i * 3 + a]), 0, 255);
+    out[i * 4 + 3] = 255; }
+  return { out, filled: un.length, mean: mean.map(Math.round), weak: !nk, knownFrac: nk / N };
+}
+function patchMesh(out, W, H, w, h) {
+  const tex = new THREE.DataTexture(out, W, H, THREE.RGBAFormat, THREE.UnsignedByteType);
+  tex.colorSpace = THREE.SRGBColorSpace; tex.magFilter = THREE.LinearFilter; tex.minFilter = THREE.LinearFilter; tex.generateMipmaps = false; tex.needsUpdate = true;
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: tex, alphaTest: 0.5, side: THREE.DoubleSide,
+    polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -4 }));
+  m.visible = false; m.raycast = () => {}; patchGroup.add(m); return m;
+}
+// Which wall (if any) is behind this piece? Ray along its four sides; a wall within ~1 m counts.
+function wallBehind(pc) {
+  const yaw = pc.yaw_deg * Math.PI / 180, c = Math.cos(yaw), s = Math.sin(yaw), zm = (pc.z_bottom + pc.z_top) / 2;
+  const sides = [[c, s, pc.size[0] / 2, pc.size[1]], [-c, -s, pc.size[0] / 2, pc.size[1]], [-s, c, pc.size[1] / 2, pc.size[0]], [s, -c, pc.size[1] / 2, pc.size[0]]];
+  let best = null;
+  for (const [ax, ay, half, across] of sides) {
+    const o = { x: pc.cx, y: pc.cy, z: zm }, d = { x: ax, y: ay, z: 0 }, hit = rayStatic(o, d, half + 0.4);
+    if (hit >= half + 0.4 - 1e-6) continue;
+    const gap = hit - half; if (gap > 1.0 || gap < -0.12) continue;
+    if (!best || gap < best.gap) best = { ax, ay, hit, gap, across, zm };
+  }
+  return best;
+}
+function buildPatch(pc) {
+  const meshes = [], info = { floor: false, wall: false, colour: null }; let floorRect = null;
+  const yaw = pc.yaw_deg * Math.PI / 180, c = Math.cos(yaw), s = Math.sin(yaw);
+  if (pc.on_floor) {
+    const GROW = 0.45, sx = pc.size[0] + 2 * GROW, sy = pc.size[1] + 2 * GROW;   // also fills scan holes right next to the piece
+    const hx = (Math.abs(c) * sx + Math.abs(s) * sy) / 2 + 0.06, hy = (Math.abs(s) * sx + Math.abs(c) * sy) / 2 + 0.06;
+    const W = clamp(Math.round(2 * hx * PPM), 16, 256), H = clamp(Math.round(2 * hy * PPM), 16, 256);
+    const cam = new THREE.OrthographicCamera(-hx, hx, hy, -hy, 0.001, 0.13); cam.up.set(0, 1, 0);
+    cam.position.set(pc.cx, pc.cy, pc.floor_z + 0.05); cam.lookAt(pc.cx, pc.cy, pc.floor_z); cam.updateMatrixWorld(); cam.updateProjectionMatrix();
+    const r = inpaint(capture(cam, W, H), W, H, (i, j) => {
+      const dx = pc.cx - hx + (i + 0.5) / W * 2 * hx - pc.cx, dy = pc.cy - hy + (j + 0.5) / H * 2 * hy - pc.cy;
+      return Math.abs(dx * c + dy * s) <= sx / 2 && Math.abs(-dx * s + dy * c) <= sy / 2; });
+    const m = patchMesh(r.out, W, H, 2 * hx, 2 * hy); m.position.set(pc.cx, pc.cy, pc.floor_z + 0.004); meshes.push(m);
+    floorRect = [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([a, b]) => [pc.cx + a * sx / 2 * c - b * sy / 2 * s, pc.cy + a * sx / 2 * s + b * sy / 2 * c]);
+    info.floor = true; info.colour = r.mean; info.weak = r.weak; info.filled = r.filled * 1e-4 * (1 / (PPM / 100) ** 2) * 1; info.filledPx = r.filled;
+  }
+  const wl = wallBehind(pc), height = pc.z_top - pc.z_bottom;
+  if (wl && wl.across * height > 0.05 && height > 0.2) {
+    const GROW = 0.5, w2 = wl.across / 2 + GROW + 0.05, h2 = height / 2 + GROW + 0.05, W = clamp(Math.round(2 * w2 * PPM), 16, 256), H = clamp(Math.round(2 * h2 * PPM), 16, 256);
+    const cam = new THREE.OrthographicCamera(-w2, w2, h2, -h2, 0.42, 0.58); cam.up.set(0, 0, 1);
+    cam.position.set(pc.cx + wl.ax * (wl.hit - 0.5), pc.cy + wl.ay * (wl.hit - 0.5), wl.zm); cam.lookAt(cam.position.x + wl.ax, cam.position.y + wl.ay, wl.zm);
+    cam.updateMatrixWorld(); cam.updateProjectionMatrix();
+    const r = inpaint(capture(cam, W, H), W, H, (i, j) => Math.abs((i + 0.5) / W * 2 * w2 - w2) <= wl.across / 2 + GROW && Math.abs((j + 0.5) / H * 2 * h2 - h2) <= height / 2 + GROW);
+    if (r.knownFrac < 0.3) return { meshes, floorRect, info };   // little wall in view: what the ray hit was not a wall, so paint nothing
+    const m = patchMesh(r.out, W, H, 2 * w2, 2 * h2);
+    const right = new THREE.Vector3(wl.ay, -wl.ax, 0), up = new THREE.Vector3(0, 0, 1), nrm = new THREE.Vector3(-wl.ax, -wl.ay, 0);
+    m.matrixAutoUpdate = false; m.matrix.makeBasis(right, up, nrm).setPosition(pc.cx + wl.ax * (wl.hit - 0.006), pc.cy + wl.ay * (wl.hit - 0.006), wl.zm);
+    m.matrixWorldNeedsUpdate = true; meshes.push(m); info.wall = true; info.wallColour = r.mean; if (!info.colour) info.colour = r.mean;
+  }
+  return { meshes, floorRect, info };
+}
+function syncPatches(pc) {
+  const want = !!(pc.deleted && !pc.added);
+  if (want && !pc.patch) pc.patch = buildPatch(pc);
+  if (pc.patch) for (const m of pc.patch.meshes) m.visible = want || pc.anim === 'out';
+  if (!!pc._pv !== want) { pc._pv = want; staticDirty = true; }
+}
+// The floor patches are walkable: add them to the collision soup (the scan has no floor where the piece stood).
+function rebuildStatic() {
+  staticDirty = false;
+  const rects = pieces.filter(pc => pc._pv && pc.patch && pc.patch.floorRect).map(pc => ({ r: pc.patch.floorRect, z: pc.floor_z + 0.004 }));
+  const ex = new Float32Array(rects.length * 12), ei = new Uint32Array(rects.length * 6), base = CP.length / 3;
+  rects.forEach(({ r, z }, k) => { r.forEach(([x, y], a) => { ex.set([x, y, z], k * 12 + a * 3); }); ei.set([0, 1, 2, 0, 2, 3].map(v => base + k * 4 + v), k * 6); });
+  const P2 = new Float32Array(CP.length + ex.length); P2.set(CP); P2.set(ex, CP.length);
+  const I2 = new Uint32Array(CI.length + ei.length); I2.set(CI); I2.set(ei, CI.length);
+  STATIC = makeSoup(P2, I2, 0.5);
+}
+
+const ease = t => t * t * (3 - 2 * t);
+const scanned = () => pieces.filter(pc => !pc.added);
+function clearStats(list) {
+  const kinds = {}; list.forEach(pc => { const k = (pc.kind || pc.label || 'object').toLowerCase(); kinds[k] = (kinds[k] || 0) + 1; });
+  return kinds;
+}
+async function clearSpace() {
+  if (wave || anims.length) return;
+  const list = scanned().filter(pc => !pc.deleted);
+  closeOffer();
+  if (!list.length) { flash('Nothing left to clear: the scanned objects are already removed'); return; }
+  if (carried) cancelCarry();
+  leavePhoto(true);
+  list.forEach(pc => { pc.outline.visible = false; }); setTarget(null);
+  // 1) analyse: infer the floor / wall under each object (chunked so the page stays alive)
+  const prev = new Map(list.map(pc => [pc, poseOf(pc)])); let tick = performance.now();
+  for (let i = 0; i < list.length; i++) {
+    status(`Reading the floor and walls around ${list.length} objects… ${i + 1}/${list.length}`);
+    if (!list[i].patch) list[i].patch = buildPatch(list[i]);
+    if (performance.now() - tick > 300) { await nextFrame(); tick = performance.now(); }
+  }
+  // 2) sweep: a bright wave runs out from where you stand; each object shrinks into the floor as it passes
+  const d = pc => Math.hypot(pc.cx + pc.tx - feet.x, pc.cy + pc.ty - feet.y);
+  const rmax = Math.max(...list.map(d)) + 0.5, T = clamp(1.4 + rmax * 0.18, 2.2, 5);
+  const ring = new THREE.Mesh(new THREE.RingGeometry(0.93, 1, 96), new THREE.MeshBasicMaterial({ color: 0x9fd0ff, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }));
+  const disc = new THREE.Mesh(new THREE.CircleGeometry(1, 96), new THREE.MeshBasicMaterial({ color: 0x6fb2ff, transparent: true, opacity: 0.12, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }));
+  ring.raycast = disc.raycast = () => {}; ring.renderOrder = disc.renderOrder = 7; scene.add(ring, disc);
+  wave = { t: 0, T, rmax, ring, disc, z: feet.z + 0.03, list, prev, pending: new Set(list), done: () => {
+    scene.remove(ring, disc); ring.geometry.dispose(); disc.geometry.dispose(); wave = null;
+    undoStack.push({ batch: list.map(pc => [pc, prev.get(pc)]), label: 'Clear the space' });
+    const withFloor = list.filter(pc => pc.patch && pc.patch.info.floor), withWall = list.filter(pc => pc.patch && pc.patch.info.wall);
+    lastClear = { n: list.length, kinds: clearStats(list), floor: withFloor.length, wall: withWall.length,
+      swatches: [...new Map(list.filter(pc => pc.patch && pc.patch.info.colour).map(pc => [pc.patch.info.colour.join(), pc.patch.info.colour])).values()].slice(0, 12),
+      weak: list.filter(pc => pc.patch && pc.patch.info.weak).length };
+    save(); showClearInfo(); status(`Cleared ${list.length} scanned objects · empty room`); $('restoreBtn').style.display = '';
+  } };
+  status('Clearing the space…');
+}
+function startShrink(pc, dir) { pc.anim = dir === 'in' ? 'in' : 'out'; anims.push({ pc, t: 0, dur: dir === 'in' ? 0.45 : 0.7, dir });
+  if (dir === 'out') { pc.patch && pc.patch.meshes.forEach(m => { m.visible = true; }); }
+  else { pc.deleted = false; pc.pivot.visible = true; syncPatches(pc); } }
+let clearClock = performance.now();
+function updateClear(frameDt) {
+  const now = performance.now(), dt = Math.min(0.25, (now - clearClock) / 1000); clearClock = now;   // real time: the sweep takes the same few seconds on a slow GPU
+  if (staticDirty && !wave && !anims.length) rebuildStatic();
+  if (wave) {
+    wave.t += dt; const r = wave.rmax * ease(Math.min(1, wave.t / wave.T)), k = Math.min(1, wave.t / wave.T);
+    for (const m of [wave.ring, wave.disc]) { m.scale.set(Math.max(r, 0.01), Math.max(r, 0.01), 1); m.position.set(feet.x, feet.y, wave.z); }
+    wave.ring.material.opacity = 0.85 * (1 - k * k); wave.disc.material.opacity = 0.14 * (1 - k);
+    for (const pc of [...wave.pending]) if (Math.hypot(pc.cx + pc.tx - feet.x, pc.cy + pc.ty - feet.y) <= r + 0.15) { wave.pending.delete(pc); startShrink(pc, 'out'); }
+    if (!wave.pending.size && wave.t >= wave.T && !anims.length) { const w = wave; w.done(); }
+  }
+  for (let i = anims.length - 1; i >= 0; i--) {
+    const a = anims[i], pc = a.pc; a.t += dt; const s = Math.min(1, a.t / a.dur), k = a.dir === 'in' ? ease(s) : 1 - ease(s);
+    pc.pivot.scale.set(Math.max(k, 0.001), Math.max(k, 0.001), Math.max(k, 0.001));
+    pc.pivot.position.set(pc.cx + pc.tx, pc.cy + pc.ty, pc.dz + (1 - k) * pc.floor_z);
+    pc.pivot.rotation.z = pc.dyaw + (1 - k) * (a.dir === 'in' ? -0.8 : 1.4);
+    if (s >= 1) { anims.splice(i, 1); pc.anim = null; if (a.dir === 'out') pc.deleted = true; applyPose(pc); }
+  }
+}
+function restoreScan() {
+  if (wave) return;
+  const list = scanned().filter(pc => pc.deleted || isEdited(pc));
+  if (!list.length) { flash('The scan objects are all where they were scanned'); return; }
+  undoStack.push({ batch: list.map(pc => [pc, poseOf(pc)]), label: 'Restore scan objects' });
+  list.forEach((pc, i) => { const was = pc.deleted; Object.assign(pc, { tx: 0, ty: 0, dz: 0, dyaw: 0 });
+    if (was) setTimeout(() => startShrink(pc, 'in'), Math.min(i, 40) * 25); else applyPose(pc); });
+  setTimeout(() => { save(); closeInfo(); flash(`Restored ${list.length} scanned objects`); $('restoreBtn').style.display = 'none'; }, Math.min(list.length, 40) * 25 + 600);
+}
+function closeInfo() { $('clearInfo').classList.remove('open'); }
+function closeOffer() { $('offer').classList.remove('open'); }
+function showClearInfo() {
+  const L = lastClear; if (!L) return;
+  const kinds = Object.entries(L.kinds).sort((a, b) => b[1] - a[1]).map(([k, n]) => `<li>${n} × ${k}</li>`).join('');
+  const sw = L.swatches.map(c => `<span class="sw" style="background:rgb(${c.join(',')})"></span>`).join('');
+  $('clearInfo').innerHTML = `<b>Space cleared: ${L.n} scanned object${L.n === 1 ? '' : 's'} removed</b>
+    <ul>${kinds}</ul>
+    <p>Where they stood the scan has holes. I filled ${L.floor} patch${L.floor === 1 ? '' : 'es'} of floor${L.wall ? ` and ${L.wall} of wall` : ''} by inference: colour and grain sampled from the surrounding floor and walls ${sw}.
+    This is an estimate of what is under and behind them, not a measurement${L.weak ? ` (${L.weak} had no visible surface nearby and use a neutral grey)` : ''}. Object names are the segmentation's guesses from shape.</p>
+    <div class="row"><button class="go" id="ciCat">Place catalogue pieces (C)</button><button id="ciUndo">Undo (Ctrl+Z)</button><button id="ciRestore">Restore scan objects</button><button id="ciClose">Close</button></div>`;
+  $('clearInfo').classList.add('open');
+  $('ciCat').onclick = () => { closeInfo(); toggleCatalog(true); }; $('ciUndo').onclick = () => { undo(); closeInfo(); };
+  $('ciRestore').onclick = restoreScan; $('ciClose').onclick = closeInfo;
+}
+function maybeOffer() {
+  const n = scanned().filter(pc => !pc.deleted).length;
+  if (!n) return;
+  const kinds = Object.entries(clearStats(scanned())).sort((a, b) => b[1] - a[1]).slice(0, 4).map(([k, c]) => `${c} ${k}`).join(', ');
+  $('offer').innerHTML = `<b>This scan has ${n} detected object${n === 1 ? '' : 's'}</b>
+    <p>${kinds}${Object.keys(clearStats(scanned())).length > 4 ? ', …' : ''}: named by shape, so they are guesses. Clear the space to start from an empty room (the gaps they leave are filled by inference). You can undo it.</p>
+    <div class="row"><button class="go" id="ofGo">Clear the space</button><button id="ofNo">Keep the scan as it is</button></div>`;
+  $('offer').classList.add('open'); $('ofGo').onclick = () => clearSpace(); $('ofNo').onclick = closeOffer;
+}
+$('clearBtn').onclick = () => clearSpace(); $('restoreBtn').onclick = restoreScan;
 
 // edits last for this visit only (not saved); export as edits.json in the studio's format
 let pendingAdded = [];                                // saved catalogue items still loading (kept until they are back)
@@ -771,6 +1014,7 @@ addEventListener('keydown', e => {
   else if (e.code === 'KeyZ' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); undo(); }
   else if (e.code === 'Escape') { if ($('cat').classList.contains('open')) toggleCatalog(false); else cancelCarry(); }
   else if (e.code === 'KeyC' && !e.ctrlKey) toggleCatalog();
+  else if (e.code === 'KeyK' && !e.ctrlKey) clearSpace();
 });
 addEventListener('wheel', e => { if (carried) { wheel += Math.sign(e.deltaY); e.preventDefault(); } }, { passive: false });
 $('exportBtn').onclick = exportEdits;
@@ -1267,7 +1511,7 @@ function frame() {
 
   camera.position.copy(eye);
   camera.lookAt(eye.x + Math.cos(pitch) * Math.cos(yaw), eye.y + Math.cos(pitch) * Math.sin(yaw), eye.z + Math.sin(pitch));
-  updateFurniture(dt);
+  updateFurniture(dt); updateClear(dt);
   renderer.render(scene, camera);
   if (flashTimer > 0 && (flashTimer -= dt) <= 0) hint('');
 
@@ -1284,7 +1528,8 @@ function frame() {
   requestAnimationFrame(frame);
 }
 status(`Ready · ${spots.length} scan spots`);
-window.walk = { feet, eye, spots, groups, renderer, pieces, interact, spawn, catalog, toggleCatalog, envMat, relight: pc => { pc.envSpot = null; lightItem(pc); }, removePiece, undo, checkFit, fitDetails, sceneTools, get target() { return target; },
+setTimeout(maybeOffer, 2500);   // first entry: offer to clear the space
+window.walk = { feet, eye, spots, groups, renderer, pieces, interact, spawn, catalog, toggleCatalog, envMat, relight: pc => { pc.envSpot = null; lightItem(pc); }, removePiece, undo, clearSpace, restoreScan, get lastClear() { return lastClear; }, get clearing() { return !!wave || anims.length > 0; }, get STATIC_() { return STATIC; }, checkFit, fitDetails, sceneTools, get target() { return target; },
   get carried() { return carried; }, get fits() { return fits; }, get mode() { return mode; }, setView(y, p) { yaw = y; pitch = p; }, keys };   // for debugging
 frame();
 </script>

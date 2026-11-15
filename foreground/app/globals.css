@@ -30,6 +30,9 @@
   --animate-agent-ring: agent-ring 1.6s ease-out infinite;
   --animate-agent-vibrate: agent-vibrate 0.55s linear infinite;
   --animate-pop: pop 0.45s cubic-bezier(0.3, 1.5, 0.5, 1) both;
+  --animate-scan-out: scan-out 0.7s ease-in both;
+  --animate-scan-patch: scan-patch 1.1s ease-out both;
+  --animate-scan-wave: scan-wave 2.4s ease-in-out both;
 
   @keyframes caret-blink {
     0%,
@@ -97,6 +100,32 @@
     }
     75% {
       transform: translate(-1px, 0.2px);
+    }
+  }
+
+  /* "Clear the space": a scanned object shrinks into the floor, its hole fills in, a bright band sweeps across. */
+  @keyframes scan-out {
+    to {
+      opacity: 0;
+      transform: scale(0.05) rotate(40deg);
+    }
+  }
+  @keyframes scan-patch {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes scan-wave {
+    from {
+      opacity: 0.9;
+      transform: translateX(-0.6px);
+    }
+    to {
+      opacity: 0;
+      transform: translateX(var(--wave-to));
     }
   }
 
