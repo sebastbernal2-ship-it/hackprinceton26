@@ -1200,6 +1200,27 @@ scene.add(new THREE.HemisphereLight(0xffffff, 0x404040, 0.15));       // tiny fi
 }
 let catalog = [];
 try { const r = await fetch('/assets_catalog/catalog.json'); if (r.ok) catalog = await r.json(); } catch (e) {}
+// Cafe and kitchen equipment from the app's asset catalog (counters, fridges, ranges, hoods, espresso...): same GLB stand-ins the Planner uses.
+try {
+  const r = await fetch('/api/assets');
+  if (r.ok) {
+    const j = await r.json(), list = Array.isArray(j) ? j : (j.assets || []);
+    const kind = (a) => { const n = (a.name || '').toLowerCase(), c = a.category || '';
+      if (/espresso|grinder|brewer|coffee|kegerator|cold brew|pour/.test(n)) return 'Coffee and bar';
+      if (/fridge|refrigerator|freezer|cooler|chiller|ice /.test(n) || c === 'fridge' || c === 'freezer_display') return 'Fridges and freezers';
+      if (/hood|range|griddle|fryer|oven|charbroil|salamander|steamer|warmer|mixer|slicer|dish|sink|interceptor/.test(n) || /oven|range|hood|sink|dish/.test(c)) return 'Kitchen equipment';
+      if (/counter|work table|prep|island|pass|register|pos/.test(n) || /counter|prep_table/.test(c)) return 'Counters and prep';
+      if (/chair|stool|table|booth|banquette|bench|seating/.test(n) || /seating|table/.test(c)) return 'Cafe seating';
+      return 'Cafe and kitchen other'; };
+    const have = new Set(catalog.map(x => x.id));
+    for (const a of list) {
+      const d = a.dims || {}; const id = 'lib_' + a.assetId;
+      if (have.has(id) || !d.w || !d.d || !d.h) continue;
+      catalog.push({ id, name: a.name, category: kind(a), size_m: [d.w, d.d, d.h], file: '/api/assets/' + encodeURIComponent(a.assetId) + '/model',
+        thumb: '', license: 'Demo stand-in (procedural)', authors: ['Foreground catalog'], source: '' });
+    }
+  }
+} catch (e) { console.warn('app asset catalogue not added', e); }
 const models = new Map();
 function loadModel(entry) {                           // template: z-up, centred on x/y, standing on z = 0
   if (models.has(entry.id)) return models.get(entry.id);
@@ -1327,7 +1348,7 @@ let catTab = 'All';
 function drawCatalog() {
   $('catTabs').innerHTML = cats.map(c => `<button class="${c === catTab ? 'on' : ''}" data-tab="${c}">${c}</button>`).join('');
   $('catGrid').innerHTML = catalog.filter(c => catTab === 'All' || c.category === catTab).map(c =>
-    `<button class="card" data-id="${c.id}"><img src="${c.thumb}" alt="" loading="lazy"><b>${c.name}</b>` +
+    `<button class="card" data-id="${c.id}">${c.thumb ? `<img src="${c.thumb}" alt="" loading="lazy">` : `<div style="height:74px;border-radius:6px;background:#2a2d33;display:flex;align-items:center;justify-content:center;font-size:11px;color:#9aa;padding:4px;text-align:center">${(c.size_m||[]).map(x=>x.toFixed(2)).join(" x ")} m</div>`}<b>${c.name}</b>` +
     `<span>${c.size_m.length ? c.size_m.map(v => v.toFixed(1)).join(' × ') + ' m' : ''}</span></button>`).join('') ||
     '<div class="dim">No catalogue yet. Run: python modeling/fetch_catalog.py</div>';
 }
