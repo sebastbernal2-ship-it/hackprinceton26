@@ -1,11 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { buildChecklist, buildDiligence, type ActItem } from "../lib/act";
-import { fetchCosts } from "../lib/costs";
 import { buildCostBreakdown } from "../lib/cost-categories";
 import { briefBudget, outlook, seatTotal, xrayLines, xrayTotal } from "../lib/cost-side";
-import { fetchInspection } from "../lib/inspection";
 import { fetchLayoutCost, layoutCostItems, nameFor, pct, scenarioKey } from "../lib/layout-cost";
 import type { LayoutSummary } from "../lib/layout-summary";
 import type { Asset } from "../lib/assets";
@@ -15,7 +12,6 @@ import { allInRange, budgetGap, budgetStatus, defaultArea, defaultSeats, delta, 
 import { fetchTotalCost, range } from "../lib/total-cost";
 import { useDelta, useScenario } from "../lib/use-scenario";
 import CostCategories, { climateInput, useClimate } from "./cost-categories";
-import ActChecklist from "./act-checklist";
 import CostPanel from "./cost-panel";
 import { Outlook } from "./cost-side";
 import FinancePanel from "./finance/finance-panel";
@@ -39,19 +35,6 @@ type QuantifyProps = {
 const k = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 const compact = (n: number) => (Math.abs(n) >= 1000 ? `${n < 0 ? "-" : ""}$${Math.round(Math.abs(n) / 1000)}k` : k.format(n));
 const span = (r: { low: number; high: number } | null) => (r ? `${compact(r.low)} to ${compact(r.high)}` : "Unknown");
-
-/** Fixed-rule checklist for a candidate listing: findings, evidence gaps and unpriced cost lines. No LLM. */
-export function SiteActChecklist({ match }: { match: Match }) {
-  const [items, setItems] = useState<ActItem[] | null>(null);
-  useEffect(() => {
-    let live = true;
-    Promise.all([fetchInspection(match.listingId).catch(() => null), fetchCosts(match.listingId).catch(() => null)]).then(([insp, costs]) => {
-      if (live) setItems(buildChecklist(insp?.findings ?? [], match.factors ?? [], costs?.lines ?? []));
-    });
-    return () => { live = false; };
-  }, [match]);
-  return items ? <ActChecklist items={items} /> : <p className="mt-4 text-sm text-foreground/50">Building the checklist.</p>;
-}
 
 /**
  * Step 5, Quantify. One page, one set of inputs: seats, area, budget, rent basis, period and the equipment placed in the Planner.
@@ -186,9 +169,6 @@ export default function Quantify({ match, layout, onBackToLayout, onClose, onSte
           {!match.demo && <CostPanel listingId={match.listingId} />}
           {!match.demo && (seats ? <FinancePanel listingId={match.listingId} seats={seats} rentUnknownAssumption={tcData?.parts.find((p) => p.id === "rent")?.low} /> : <p className="mt-6 text-sm text-foreground/55">Enter a seat count to run the 36-month scenario.</p>)}
   </>);
-  const checklistBlock = (<>
-          {match.demo ? <ActChecklist items={buildDiligence({ unpricedPieces: unpricedNames, assumedArea: sqft !== null, linkedBuilding: Boolean(match.costarPropertyId) })} /> : <SiteActChecklist match={match} />}
-  </>);
   const secInputs = (
         <Section n={1} title="Inputs" hint={`${seats ?? "?"} seats · ${sqft ? `${sqft.toLocaleString()} sq ft` : "no area"} · ${budget ? compact(budget) : "no budget"}`} defaultOpen={disc} testId="sec-inputs">
           <p className="text-sm text-foreground/55">Change any value; the summary above recalculates. Starting values come from your brief and the Planner. They are assumptions, not facts.</p>
@@ -267,7 +247,7 @@ export default function Quantify({ match, layout, onBackToLayout, onClose, onSte
         </Section>
   );
   const secDetails = (
-<Section title="Details and checklist" hint="your layout, hidden-cost sources, repair costs, 36-month scenario, diligence" testId="sec-details">
+<Section title="Details" hint="your layout, hidden-cost sources, repair costs, 36-month scenario" testId="sec-details">
           {layout ? <LayoutTable layout={layout} /> : <p className="text-sm text-foreground/60">{match.demo ? "No editable 3D layout: costs use the equipment placed in the Planner." : "No 3D layout yet. Open Scope out your vision, arrange the space, then continue here."}</p>}
           {kit.length > 0 && (
             <div className="mt-6" data-testid="xray">
@@ -280,7 +260,6 @@ export default function Quantify({ match, layout, onBackToLayout, onClose, onSte
           {tcData && <p className="mt-6 text-xs text-foreground/50">Sources: {tcData.parts.map((p) => `${p.label}, ${p.source}`).join("; ")}</p>}
           {!match.demo && <CostPanel listingId={match.listingId} />}
           {!match.demo && (seats ? <FinancePanel listingId={match.listingId} seats={seats} rentUnknownAssumption={tcData?.parts.find((p) => p.id === "rent")?.low} /> : <p className="mt-6 text-sm text-foreground/55">Enter a seat count to run the 36-month scenario.</p>)}
-          {match.demo ? <ActChecklist items={buildDiligence({ unpricedPieces: unpricedNames, assumedArea: sqft !== null, linkedBuilding: Boolean(match.costarPropertyId) })} /> : <SiteActChecklist match={match} />}
         </Section>
   );
 
@@ -311,10 +290,9 @@ export default function Quantify({ match, layout, onBackToLayout, onClose, onSte
         </div>
 
         {disc ? (
-          <DisciplineLayout page="quantify" match={match} extra={{ budgetTone: status?.tone ?? null, paybackMonths: payback, hasAllIn: Boolean(allIn), hasRent: Boolean(monthly), seats, equipmentCount: kit.length }} panels={{
+          <DisciplineLayout page="quantify" match={match} onAct={() => onStep?.(5)} extra={{ budgetTone: status?.tone ?? null, paybackMonths: payback, hasAllIn: Boolean(allIn), hasRent: Boolean(monthly), seats, equipmentCount: kit.length }} panels={{
             "q-inputs": secInputs, "q-costs": secCosts, "q-running": secRunning,
             "q-money-details": <div className="mt-4">{moneyBlock}</div>,
-            "q-checklist": <div className="mt-4">{checklistBlock}</div>,
             "q-layout": <div className="mt-4">{layoutBlock}</div>,
             "q-equipment": <div className="mt-4">{equipmentBlock}</div>,
             "q-structure": <>{match.costarPropertyId && <CostarBuilding propertyId={match.costarPropertyId} city={match.city} />}{!match.demo && !isScanOnly(match) && <StructurePanel listingId={match.listingId} />}</>,
