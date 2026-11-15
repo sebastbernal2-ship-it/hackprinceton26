@@ -15,7 +15,6 @@ from datetime import date
 from pathlib import Path
 
 from forecasting.peers import data, fit, neighbourhood
-from forecasting.peers import peers_knn as K
 from forecasting.peers.site import site_result
 
 REGION_MI = neighbourhood.CONFIG["region_mi"]

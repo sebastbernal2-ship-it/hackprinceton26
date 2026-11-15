@@ -52,8 +52,7 @@ def test_candidate_result_shape_and_labels(biz):
         assert s["low"] <= s["value"] <= s["high"] or s["value"] is None
     n0 = k["neighbours"][0]
     assert set(n0) >= {"id", "distanceMi", "sameKind", "outcome", "kind", "relation", "weight", "demo"} and "name" not in n0
-    assert [n["distanceMi"] for n in k["neighbours"]] == sorted(n["distanceMi"] for n in k["neighbours"]) or True
-    assert k["evaluation"]["plainly"] and "NOT shown" in j["notice"] or "not shown" in j["notice"].lower()
+    assert k["evaluation"]["plainly"] and "not better than the same-market prior" in j["notice"]
     nb = j["neighbourhood"]
     assert nb["index"] is not None and nb["label"].endswith("NOT a forecast.") and isinstance(nb["adjacentCompetitor"], bool) and nb["drivers"]
     assert "observed" in j["labels"]["neighbours"] and j["coverage"]["kitBuildingsWithin1mi"] >= 0

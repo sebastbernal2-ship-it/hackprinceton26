@@ -16,15 +16,14 @@ other exits as a competing risk), shrunk toward the market prior by m pseudo-nei
 """
 from __future__ import annotations
 
-import math
 import random
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass
 from datetime import date
 
 import numpy as np
 
 from forecasting.peers import kinds
-from forecasting.peers.data import CLASS_ORDINAL, haversine_miles
+from forecasting.peers.data import CLASS_ORDINAL
 
 DAYS = 365.25
 HORIZONS = (1.0, 2.0, 3.0, 5.0)
@@ -384,7 +383,7 @@ def evaluate_split(tab: SpellTable, target_idx: np.ndarray, p: Params, **kw) -> 
     ev, y_clo, y_end = labels(tab, 2.0)
     keep = np.array([i for i in target_idx if ev[i]], dtype=int)
     r = loo_predictions(tab, keep, p, **kw)
-    glob_c, glob_e = r["glob_close"], r["glob_end"]
+    glob_c = r["glob_close"]
     ok = ~np.isnan(glob_c)
     keep, ok_r = keep[ok], {k: v[ok] for k, v in r.items()}
     knn_c = np.where(np.isnan(ok_r["knn_close"]), ok_r["glob_close"], ok_r["knn_close"])

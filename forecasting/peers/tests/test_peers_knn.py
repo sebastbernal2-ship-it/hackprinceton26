@@ -3,7 +3,7 @@ from datetime import date
 import numpy as np
 import pytest
 
-from forecasting.peers import fit, kinds
+from forecasting.peers import fit
 from forecasting.peers import peers_knn as K
 
 ASOF = date(2026, 11, 9)

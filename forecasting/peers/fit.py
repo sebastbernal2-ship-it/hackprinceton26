@@ -16,7 +16,7 @@ from pathlib import Path
 
 import numpy as np
 
-from forecasting.peers import data, peers_knn as K
+from forecasting.peers import peers_knn as K
 
 TUNE_YEARS, TEST_YEARS = (2015, 2019), (2020, 2024)
 DEFAULT_CONFIGS = 300
