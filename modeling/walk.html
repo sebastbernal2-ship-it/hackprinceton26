@@ -1115,6 +1115,27 @@ const sceneTools = {
   get_view: () => [imageBlock(), { type: 'text', text: situation() }],
 };
 
+// Demo assistant: used when the Gemini agent is not configured. Handles "add [n] <sofa|armchair|chair|stool|table|shelf|cabinet>" by
+// placing real catalogue pieces in front of you. It is a keyword matcher, not an AI; the log says so.
+const DEMO_WORDS = [['armchair', ['Armchairs']], ['sofa', ['Sofas']], ['couch', ['Sofas']], ['stool', ['Chairs'], 'stool'], ['chair', ['Chairs', 'Armchairs']],
+  ['table', ['Tables']], ['shelf', ['Storage']], ['shelves', ['Storage']], ['cabinet', ['Storage']]];
+const NUMS = { a: 1, an: 1, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6 };
+async function demoAssist(prompt) {
+  aiLog('sys', 'Demo assistant (no Gemini key on this machine): I can add catalogue pieces in front of you, e.g. "add two chairs" or "add a sofa".');
+  const t = prompt.toLowerCase(), hit = DEMO_WORDS.find(w => t.includes(w[0]));
+  if (!hit || !/\b(add|place|put|bring|need|want|more)\b/.test(t)) { aiLog('ai', 'Demo mode cannot do that one. Try "add two chairs", "add a sofa" or "add a table".'); return; }
+  const m = t.match(/\b(\d+|one|two|three|four|five|six|an|a)\b/); const n = Math.min(6, m ? (+m[1] || NUMS[m[1]] || 1) : 1);
+  const pool = catalog.filter(c => hit[1].includes(c.category) && (!hit[2] || c.id.toLowerCase().includes(hit[2])));
+  if (!pool.length) { aiLog('err', 'The furniture catalogue is empty. Run: python modeling/fetch_catalog.py'); return; }
+  let placed = 0;
+  for (let i = 0; i < n; i++) {
+    const e = pool[i % pool.length], side = (i - (n - 1) / 2) * (Math.max(e.size_m[0] || 0.7, 0.7) + 0.3), d = 2.0 + Math.max(e.size_m[2] || 1, 1) / 2;
+    const x = feet.x + Math.cos(yaw) * d - Math.sin(yaw) * side, y = feet.y + Math.sin(yaw) * d + Math.cos(yaw) * side;
+    try { const r = await sceneTools.add_from_catalog({ catalog_id: e.id, x, y, yaw_deg: (yaw + Math.PI) / D2R }); placed++; if (r && r.fits === false) aiLog('sys', `${e.name} overlaps something; press Ctrl+Z to undo.`); }
+    catch (err) { aiLog('err', `${e.name}: ${err.message}`); }
+  }
+  aiLog('ai', placed ? `Added ${placed} ${hit[0]}${placed === 1 ? '' : 's'} in front of you (demo assistant). Walk over and press E or click to move them; Ctrl+Z undoes.` : 'Nothing was placed.');
+}
 let aiMessages = [], aiBusy = false;
 const aiLog = (cls, text) => { const d = document.createElement('div'); d.className = cls; d.textContent = text;
   $('aiLog').appendChild(d); $('aiLog').scrollTop = 1e9; return d; };
@@ -1136,6 +1157,15 @@ async function askAI(prompt) {
       const res = await fetch(/^\/[A-Za-z0-9_\/-]*$/.test(Q.get('agent') || '') ? Q.get('agent') : '/api/agent', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Walk-Agent': '1' },
                                               body: JSON.stringify({ messages: aiMessages }) });
       const out = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
+      if ((!res.ok || out.error) && turn === 0 ) {
+        // No Gemini key / no agent service: answer simple "add ..." requests with the built-in demo assistant so the bar still works.
+        aiMessages.length = base; status.remove();
+        await demoAssist(prompt);
+        const batch0 = undoStack.splice(mark);
+        if (batch0.length) undoStack.push({ batch: batch0, label: `Demo: ${prompt.slice(0, 40)}` });
+        aiBusy = false; $('aiInput').disabled = false; $('aiSend').disabled = false; $('aiInput').focus();
+        return;
+      }
       if (!res.ok || out.error) {
         aiMessages.length = base;                      // drop this whole request so the chat stays valid (no dangling tool_use)
         throw new Error(res.status === 501 || res.status === 405 ? 'This server has no /api/agent - restart it with: python run_all.py --only serve' : out.error);

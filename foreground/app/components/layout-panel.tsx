@@ -1,42 +1,16 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
 import { packAssets, frontZone } from "../lib/asset-layout";
-import { bbox, listAssets, orderAssets, priceFor, type Asset, type AssetCategory } from "../lib/assets";
+import { listAssets, orderAssets, priceFor, type Asset, type AssetCategory } from "../lib/assets";
 import { buildCafeKit, cafeKitArea, CAFE_KIT_NOTE, dedupeAssets } from "../lib/cafe-demo";
 import { conceptFootprint } from "../lib/concept-layout";
 import type { CostLineItem } from "../lib/costs";
-import type { FloorLayout } from "../lib/floor-layout";
 import type { Match } from "../lib/matches";
-import type { TourKind } from "../lib/tour-agent";
-import type { StagedPiece } from "../lib/tour-scene";
 import AssetBrowser from "./asset-browser";
 import AssetUpload from "./asset-upload";
 
-const ForegroundTour = dynamic(() => import("./foreground-tour"), {
-  ssr: false,
-  loading: () => <p className="p-4 text-sm text-foreground/60">Loading 3D view.</p>,
-});
-
-type Trace =
-  | { status: "idle" }
-  | { status: "loading" }
-  | { status: "ok"; layout: FloorLayout }
-  | { status: "notConfigured"; message: string }
-  | { status: "failed"; message: string };
-
-
-const KIND: Partial<Record<Asset["category"], TourKind>> = { seating: "chair", table: "table", prep_table: "table" };
-
-function cafeRoom(item: Asset, rooms: FloorLayout["rooms"]): string {
-  const active = rooms.filter((room) => !room.absorbed);
-  const diningItem = item.category === "seating" || item.category === "table";
-  const chosen = diningItem
-    ? active.find((room) => room.kind === "dining")
-    : active.find((room) => room.kind === "kitchen") ?? active.find((room) => room.kind === "dining");
-  return chosen?.label ?? [...active].sort((a, b) => b.w * b.d - a.w * a.d)[0]?.label ?? "";
-}
+type Trace = { status: "idle" } | { status: "failed"; message: string };
 
 type LayoutPanelProps = {
   match: Match;
@@ -72,23 +46,6 @@ export default function LayoutPanel({ match, lines = [], items, onItems: setItem
   const footprint = useMemo(() => conceptFootprint(sqft), [sqft]);
   const result = useMemo(() => (footprint ? packAssets(footprint, items, respect) : null), [footprint, items, respect]);
 
-  async function traceFloorplan() {
-    setTrace({ status: "loading" });
-    try {
-      const response = await fetch("/api/layout-analyze", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ modelId: match.tourId, squareFeet: sqft }),
-      });
-      const body = (await response.json().catch(() => ({}))) as { layout?: FloorLayout | null; error?: string };
-      if (response.status === 501) setTrace({ status: "notConfigured", message: body.error ?? "Floorplan tracing is not configured." });
-      else if (!response.ok || !body.layout) setTrace({ status: "failed", message: body.error ?? `The tracer answered ${response.status}.` });
-      else setTrace({ status: "ok", layout: body.layout });
-    } catch {
-      setTrace({ status: "failed", message: "The layout service is unreachable." });
-    }
-  }
-
   async function loadCafeKit() {
     try {
       const assets = await listAssets();
@@ -104,26 +61,6 @@ export default function LayoutPanel({ match, lines = [], items, onItems: setItem
     }
   }
 
-  const traced = trace.status === "ok" ? trace.layout : null;
-  const tracedPieces: StagedPiece[] = useMemo(() => {
-    if (!traced) return [];
-    return items.map((item, index) => {
-      const b = bbox(item.footprint);
-      return {
-        id: `${item.assetId}-${index}`,
-        kind: KIND[item.category] ?? "counter",
-        label: item.name,
-        tagId: null,
-        position: { x: 0, y: 0, z: 0 },
-        stem: { x: 0, y: 0, z: 0 },
-        screen: { x: 0, y: 0 },
-        width: b.x1 - b.x0,
-        depth: b.y1 - b.y0,
-        room: cafeRoom(item, traced.rooms),
-      };
-    });
-  }, [traced, items]);
-
   const priced = items.map((item) => priceFor(item, lines));
   const withPrice = priced.filter((p) => p.kind === "line").length;
 
@@ -132,8 +69,7 @@ export default function LayoutPanel({ match, lines = [], items, onItems: setItem
       <p className="text-xs text-foreground/50">Step 4 · Project layout</p>
       <h2 id="layout-title" className="text-lg font-medium tracking-tight">Layout and equipment placement</h2>
       <p role="note" className="mt-2 rounded-lg border border-foreground/25 bg-foreground/5 px-3 py-2 text-sm font-medium">
-        The default floor is an assumed rectangle from the listed area, or from the area you enter for a demo scan. Matterport tracing can show estimated room outlines when the scan
-        and server keys are available. Catalog pieces are illustrative; this view does not check fit, code, utilities, or workflow.
+        The default floor is an assumed rectangle from the listed area, or from the area you enter for a demo scan. Catalog pieces are illustrative; this view does not check fit, code, utilities, or workflow.
       </p>
 
       <div className="mt-4 flex flex-wrap items-center gap-3">
@@ -234,26 +170,7 @@ export default function LayoutPanel({ match, lines = [], items, onItems: setItem
         </div>
       )}
 
-      <div className="mt-6">
-        <button
-          type="button"
-          onClick={traceFloorplan}
-          disabled={trace.status === "loading"}
-          className="rounded-full border border-foreground/20 px-4 py-2 text-sm transition-opacity hover:opacity-70 disabled:opacity-50"
-        >
-          {trace.status === "loading" ? "Tracing floorplan." : "Trace Matterport rooms in 3D"}
-        </button>
-        <p className="mt-2 text-xs text-foreground/50">
-          Needs Matterport and Gemini server keys. A vision model estimates room outlines from the floorplan image; placements are assigned by room type and are not fit-checked or survey measurements.
-        </p>
-        {trace.status === "notConfigured" && <p role="status" className="mt-2 text-sm">Not configured: {trace.message} Showing the concept placement only.</p>}
-        {trace.status === "failed" && <p role="alert" className="mt-2 text-sm">Could not trace: {trace.message}</p>}
-        {traced && (
-          <div className="mt-4 h-[28rem] overflow-hidden rounded-lg border border-foreground/15">
-            <ForegroundTour title={match.address} detail={match.detail} squareFeet={sqft} layout={traced} pieces={tracedPieces} />
-          </div>
-        )}
-      </div>
+      {trace.status === "failed" && <p role="alert" className="mt-6 text-sm">{trace.message}</p>}
     </section>
   );
 }

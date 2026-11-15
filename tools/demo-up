@@ -10,11 +10,12 @@ D=${1:-${HP_DATA:-$HOME/code/hackprinceton/data}}
 SCAN=${2:-${SCAN_ASSETS_DIR:-$HOME/code/_work/recon-data}}
 [ -d "$D/normalized/costar" ] || { echo "no $D/normalized/costar: pass the data folder as the first argument" >&2; exit 2; }
 export COSTAR_NORMALIZED_DIR=$D/normalized/costar TRIAGE_DERIVED_DIR=$D/derived/triage LINEAGE_DIR=$D/derived/lineage \
-  STRUCTURE_DIR=$D/derived/structure AERIAL_DIR=$D/derived/triage/aerial DERIVED_DIR=$D/derived \
+  STRUCTURE_DIR=$D/derived/structure AERIAL_DIR=$D/derived/triage/aerial/properties DERIVED_DIR=$D/derived \
   SITE_PHOTO_DIR=$D/derived/site-photos SCAN_AREAS_PATH=$D/derived/scan_areas.json \
   DEMO_FACTOR_CARDS=$D/derived/demo/factor-cards.csv REFERENCE_MEDIA_DIR=$D/derived/reference-media
 for f in "$SCAN_AREAS_PATH" "$DEMO_FACTOR_CARDS"; do [ -e "$f" ] || echo "note: $f is missing (that part of the demo will show 'not built')" >&2; done
 [ -d "$SCAN" ] || echo "note: $SCAN is missing (the cafe walk falls back to the read-only tour)" >&2
+[ -f "$SCAN/assets_catalog/catalog.json" ] || echo "note: $SCAN/assets_catalog is missing (the walk furniture catalogue will be empty): run  cd $ROOT && python modeling/fetch_catalog.py --res 1k  and move assets_catalog/ into $SCAN" >&2
 trap 'kill 0' EXIT INT TERM
 (cd "$ROOT" && uv run --no-project --python 3.12 --with-requirements services/api/requirements.txt --with numpy --with pandas \
   uvicorn services.api.app.main:app --host 127.0.0.1 --port 8000) &

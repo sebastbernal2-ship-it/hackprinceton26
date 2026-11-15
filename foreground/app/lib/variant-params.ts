@@ -9,7 +9,7 @@ export type Controls = {
 
 export function defaultControls(asset: Asset): Controls {
   const { w, d, h } = asset.dims;
-  return { w, d, h, armA: w, armB: w, depthA: d, depthB: d, length: w };
+  return { w, d, h, armA: Math.max(w, 2 * d), armB: Math.max(w, 2 * d), depthA: d, depthB: d, length: w };
 }
 
 /** Kind-specific params. corner_l: armA/armB/depthA/depthB; wall_run: length; scaled: w/d/h (or a chosen SKU); island and mirrored: none. */

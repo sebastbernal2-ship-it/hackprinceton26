@@ -134,12 +134,26 @@ def _match(c: dict, cards: list[FactorCard], models: Optional[list[str]] = None)
     )
 
 
+_MATCH_CACHE: dict = {}
+
+
 def load_matches(directory: Optional[Path] = None) -> Optional[list[Match]]:
-    """None when the local data files are absent (dataAvailable=false)."""
+    """None when the local data files are absent (dataAvailable=false). Built once per (data dir, file mtimes, env dirs): every
+    /api/property/{id}/... call used to rebuild all candidates (~5 s each), which made Quantify look hung."""
     d = directory or data_dir()
     cand, fac = d / CANDIDATES, d / FACTORS
     if not cand.is_file() or not fac.is_file():
         return None
+    key = (str(d), cand.stat().st_mtime_ns, fac.stat().st_mtime_ns,
+           tuple(sorted((k, v) for k, v in os.environ.items() if k.endswith(("_DIR", "_PATH")) or k == "DEMO_FACTOR_CARDS")))
+    hit = _MATCH_CACHE.get(key)
+    if hit is None:
+        _MATCH_CACHE.clear()
+        hit = _MATCH_CACHE[key] = _load_matches(d, cand, fac)
+    return list(hit)
+
+
+def _load_matches(d: Path, cand: Path, fac: Path) -> list[Match]:
     by_prop: dict[str, list[FactorCard]] = {}
     for r in _rows(fac):
         by_prop.setdefault(r.get("property_id", ""), []).append(_card(r))
