@@ -9,8 +9,23 @@ client = TestClient(app)
 
 
 @pytest.fixture(autouse=True)
-def data(monkeypatch):
-    monkeypatch.setenv("COSTAR_NORMALIZED_DIR", str(FIX))
+def data(monkeypatch, tmp_path):
+    # The area constraint tests the SUITE space (listed available space or scanned area), never the building. This copy of the
+    # fixture states the areas these tests assume as listed available space.
+    import csv
+    import shutil
+    d = tmp_path / "costar"
+    shutil.copytree(FIX, d)
+    p = d / "restaurant-site-candidates.csv"
+    rows = list(csv.DictReader(p.open(newline="", encoding="utf-8")))
+    names = list(rows[0]) + ["active_listed_min_available_sqft"]
+    for r in rows:
+        r["active_listed_min_available_sqft"] = r.get("rentable_area_sqft") or r.get("retail_gla_sqft") or ""
+    with p.open("w", newline="", encoding="utf-8") as f:
+        w = csv.DictWriter(f, fieldnames=names)
+        w.writeheader()
+        w.writerows(rows)
+    monkeypatch.setenv("COSTAR_NORMALIZED_DIR", str(d))
 
 
 def brief(*a):

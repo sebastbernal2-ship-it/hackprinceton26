@@ -90,7 +90,7 @@ def matches(req: MatchesRequest):
         return MatchesResponse(dataAvailable=False, matches=[])
     # The brief becomes a profile by keyword/number extraction; sites are tested, never scored.
     profile, why = pipeline.profile_from_brief(req.brief, pool)
-    shown, counts, excluded, not_shown = pipeline.shortlist(pool, profile)
+    shown, counts, excluded, not_shown = pipeline.shortlist(pool, profile, req.limit)
     # Build-out is sized by the listed space; when a site lists none, by the size stated in the brief (labelled as such).
     brief_sqft, brief_basis = brief_size(profile)
     for m in shown:

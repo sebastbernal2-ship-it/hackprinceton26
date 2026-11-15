@@ -56,6 +56,8 @@ class Exchange(BaseModel):
 
 class MatchesRequest(BaseModel):
     brief: list[Exchange] = []
+    # How many matches to return (default 3).
+    limit: Optional[int] = Field(default=None, ge=1, le=10)
 
 
 class ConstraintVerdict(BaseModel):
@@ -66,11 +68,25 @@ class ConstraintVerdict(BaseModel):
     evidence: dict = {}
 
 
+class Alignment(BaseModel):
+    """How many of the operator's STATED requirements the evidence confirms, cannot confirm, or contradicts.
+    A count of requirements, not a prediction or a fit score."""
+    total: int
+    pass_: int = Field(alias="pass")
+    unknown: int
+    fail: int
+    confirmed: list[str]
+    unknownItems: list[str]
+
+    model_config = {"populate_by_name": True}
+
+
 class ShortlistMatch(Match):
     """A Match plus its hard-constraint verdicts. FAIL sites are never returned. Not a fit score."""
     constraintStatus: Literal["PASS", "UNKNOWN"]
     constraints: list[ConstraintVerdict]
     missingFields: list[str]
+    alignment: Optional[Alignment] = None
     # Site build-out estimate {status, low, high, squareFeet, reason}; status "unknown" carries no numbers.
     buildout: Optional[dict] = None
     # Monthly rent estimate {status, low, high, rateLabel, rateStatus, basis, reason}; same area as the build-out.
