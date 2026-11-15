@@ -30,6 +30,17 @@
   --animate-agent-ring: agent-ring 1.6s ease-out infinite;
   --animate-agent-vibrate: agent-vibrate 0.55s linear infinite;
   --animate-pop: pop 0.45s cubic-bezier(0.3, 1.5, 0.5, 1) both;
+  --animate-recalc: recalc 1.6s ease-out both;
+
+  /* A number that just recalculated: a brief highlight that settles. */
+  @keyframes recalc {
+    0% {
+      background-color: color-mix(in srgb, var(--accent) 35%, transparent);
+    }
+    100% {
+      background-color: transparent;
+    }
+  }
 
   @keyframes caret-blink {
     0%,
