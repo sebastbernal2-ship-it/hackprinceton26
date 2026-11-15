@@ -297,7 +297,8 @@ class Run:
         brief = {"runId": self.run_id, "mode": self.mode, "goal": self.goal, "label": LABEL,
                  "recommendation": guard.sanitize(str(a.get("recommendation", ""))), "claims": ok, "rejectedClaims": rejected,
                  "verdicts": list(self.verdicts.values()), "unknowns": unknowns,
-                 "note": "Screening evidence, not an engineering assessment or a forecast. Unknown means unknown, not zero."}
+                 "note": "Screening evidence, not an engineering assessment or a forecast. Unknown means unknown, not zero. "
+                         "Numbers in claims were checked against cited tool results; the surrounding prose is model-written and is not."}
         try:
             self.derived.mkdir(parents=True, exist_ok=True)
             (self.derived / f"{self.run_id}.json").write_text(json.dumps(brief, indent=1, default=str))

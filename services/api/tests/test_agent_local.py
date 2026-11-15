@@ -135,3 +135,18 @@ def test_citing_inspect_sites_cannot_launder_model_written_numbers(tmp_path):
     brief = evs[-1]["brief"]
     assert [c["text"] for c in brief["claims"]] == ["p over budget 0.18"]
     assert [c["text"] for c in brief["rejectedClaims"]] == ["model invented 777"]
+
+
+def test_replay_info_preserves_recording_metadata(tmp_path, monkeypatch):
+    from fastapi.testclient import TestClient
+    from app.main import app
+    evs = [{"type": "plan", "mode": "LIVE", "provider": "local", "model": "qwen-x", "date": "2026-11-15", "items": ["a"]},
+           {"type": "final", "mode": "LIVE", "provider": "local", "model": "qwen-x", "date": "2026-11-15", "brief": {"mode": "LIVE"}}]
+    (tmp_path / "agent").mkdir()
+    (tmp_path / "agent" / "replay.json").write_text(json.dumps(evs))
+    monkeypatch.setenv("DERIVED_DIR", str(tmp_path))
+    body = TestClient(app).get("/api/agent/replay").text
+    info = json.loads([ln for ln in body.splitlines() if ln.startswith("data:")][0][5:])
+    assert info["source"] == "local-recorded-run"
+    assert info["recordedFrom"] == {"originalMode": "LIVE", "provider": "local", "model": "qwen-x", "date": "2026-11-15"}
+    assert "recorded" in info["note"].lower() and "not a live run" in info["note"].lower()
