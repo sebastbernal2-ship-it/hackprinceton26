@@ -30,3 +30,23 @@ def test_unknown_frame_gets_no_pin(tmp_path):
     f = _finding(); f["evidence"]["ref"] = "nope.jpg"
     r = B.build(tmp_path, [f])
     assert "anchor" not in r["findings"][0] and r["pinned"] == 0
+
+
+def test_failed_reanchor_drops_a_stale_anchor(tmp_path):
+    _make(tmp_path)
+    f = _finding(); f["evidence"]["ref"] = "nope.jpg"
+    f["anchor"] = {"x": 9.0, "y": 9.0, "z": 9.0}  # left over from an earlier run
+    r = B.build(tmp_path, [f])
+    g = r["findings"][0]
+    assert "anchor" not in g and g["surfaceStatus"] == "inferred" and r["pinned"] == 0
+
+
+def test_seen_index_is_built_once_per_bundle(tmp_path, monkeypatch):
+    import scipy.spatial as sp
+    _make(tmp_path)
+    monkeypatch.setattr(B, "seen_means", lambda bundle: np.random.default_rng(0).uniform(-3, 3, (500, 3)))
+    built = []
+    real = sp.cKDTree
+    monkeypatch.setattr(sp, "cKDTree", lambda *a, **k: (built.append(1), real(*a, **k))[1])
+    B.build(tmp_path, [_finding(), _finding({"x": 0.3, "y": 0.5, "w": 0.2, "h": 0.2}), _finding({"x": 0.6, "y": 0.6, "w": 0.1, "h": 0.1})])
+    assert len(built) <= 1

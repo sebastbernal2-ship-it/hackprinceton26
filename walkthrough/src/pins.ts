@@ -52,11 +52,25 @@ function markerTexture(color: string, surface: Pin['surface'], selected: boolean
   return t;
 }
 
+/** Sprite.raycast reads raycaster.camera, so it must be set before intersecting sprites (it throws otherwise). */
+export function raycastSprites(
+  ray: THREE.Raycaster,
+  camera: THREE.Camera,
+  origin: THREE.Vector3,
+  direction: THREE.Vector3,
+  sprites: THREE.Sprite[],
+): THREE.Intersection[] {
+  ray.camera = camera;
+  ray.set(origin, direction.clone().normalize());
+  return ray.intersectObjects(sprites, false);
+}
+
 export class PinLayer {
   readonly group = new THREE.Group();
   readonly pins: Pin[] = [];
   private selected: Pin | null = null;
   private ray = new THREE.Raycaster();
+  private camera: THREE.Camera | null = null;
   private textures = new Map<string, THREE.CanvasTexture>();
 
   constructor() {
@@ -98,6 +112,7 @@ export class PinLayer {
 
   /** Keeps markers a readable size on screen: ~0.06 of the distance, never tiny up close or huge far away. */
   update(camera: THREE.Camera): void {
+    this.camera = camera;
     const cp = camera.getWorldPosition(new THREE.Vector3());
     for (const p of this.pins) {
       const d = cp.distanceTo(p.position);
@@ -107,8 +122,8 @@ export class PinLayer {
   }
 
   pick(origin: THREE.Vector3, direction: THREE.Vector3): Pin | null {
-    this.ray.set(origin, direction.clone().normalize());
-    const hits = this.ray.intersectObjects(this.pins.map((p) => p.sprite), false);
+    if (!this.camera) return null; // no frame rendered yet, so nothing can be picked
+    const hits = raycastSprites(this.ray, this.camera, origin, direction, this.pins.map((p) => p.sprite));
     const id = hits[0]?.object.userData.pinId;
     return this.pins.find((p) => p.finding.id === id) ?? null;
   }

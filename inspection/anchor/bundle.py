@@ -44,6 +44,11 @@ def build(bundle: Path, findings: list[dict], radius: float = 0.25) -> dict:
     poses, depth = load_bundle(bundle)
     names = list(poses)
     seen = seen_means(bundle)
+    tree = None
+    if len(seen):
+        from scipy.spatial import cKDTree
+
+        tree = cKDTree(np.asarray(seen, np.float64))  # built once for the whole bundle
     out, pinned, captured = [], 0, 0
     for f in findings:
         ref = Path(str((f.get("evidence") or {}).get("ref", ""))).name
@@ -56,11 +61,12 @@ def build(bundle: Path, findings: list[dict], radius: float = 0.25) -> dict:
         pos = (a or {}).get("position")
         if pos:
             pinned += 1
-            ok = bool(len(seen) and pin_is_supported(np.array([pos]), seen, radius)[0])
+            ok = bool(len(seen) and pin_is_supported(np.array([pos]), seen, radius, tree)[0])
             g["anchor"] = {"x": pos[0], "y": pos[1], "z": pos[2]}
             g["surfaceStatus"] = "captured" if ok else "inferred"
             captured += ok
         else:
+            g.pop("anchor", None)  # never keep a position that this run could not validate
             g["surfaceStatus"] = "inferred"
             g["anchorReason"] = (a or {}).get("reason") or "frame has no camera pose"
         out.append(g)
