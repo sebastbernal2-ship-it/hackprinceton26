@@ -89,6 +89,9 @@ def agent_replay(delay: float = 0.0, source: str = "auto"):
         err = {"type": "error", "mode": "NONE", "message": "no recorded trace available"}
         return StreamingResponse(_sse([err]), media_type="text/event-stream")
     events = json.loads(path.read_text())
+    first = events[0] if events and isinstance(events[0], dict) else {}
     note = {"type": "replay_info", "mode": "REPLAY", "source": "local-recorded-run" if use_local else "SYNTHETIC-fixture",
-            "note": "Recorded trace replayed; not a live run." + ("" if use_local else " Values are synthetic.")}
+            "note": "Recorded trace replayed; not a live run." + ("" if use_local else " Values are synthetic."),
+            "recordedFrom": {"originalMode": first.get("mode"), "provider": first.get("provider"), "model": first.get("model"),
+                             "date": first.get("date")}}
     return StreamingResponse(_sse(itertools.chain([note], runner.replay(events, min(max(delay, 0.0), 2.0)))), media_type="text/event-stream")

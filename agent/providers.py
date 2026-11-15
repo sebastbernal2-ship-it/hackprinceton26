@@ -3,10 +3,63 @@
 step() returns Turn. Providers: AnthropicProvider, OpenAICompatProvider (LOCAL_LLM_BASE_URL), FakeProvider (tests)."""
 import json
 import os
+import re
+import uuid
 from dataclasses import dataclass, field
 
 PLANNER_MODEL = "claude-sonnet-5-5"
 SUBAGENT_MODEL = "claude-haiku-5-5"
+
+
+_THINK = re.compile(r"<think>.*?</think>", re.S)
+_TAG = re.compile(r"<tool_call>\s*(\{.*?\})\s*</tool_call>", re.S)
+
+
+def repair_json(raw: str):
+    """Parse a model's tool-call arguments. Fixes code fences, trailing commas, single quotes and a missing closing
+    brace/bracket. Returns a dict or None (never guesses values)."""
+    s = raw.strip()
+    s = re.sub(r"^```(?:json)?\s*|\s*```$", "", s)
+    cands = [s, re.sub(r",\s*([}\]])", r"\1", s)]
+    t = cands[1]
+    stack = []
+    in_str = esc = False
+    for ch in t:
+        if in_str:
+            esc = (ch == "\\") and not esc
+            if ch == '"' and not esc:
+                in_str = False
+        elif ch == '"':
+            in_str = True
+        elif ch in "{[":
+            stack.append("}" if ch == "{" else "]")
+        elif ch in "}]" and stack:
+            stack.pop()
+    if not in_str and stack:
+        cands.append(t.rstrip(", ") + "".join(reversed(stack)))
+    if "'" in s and '"' not in s:
+        cands.append(cands[1].replace("'", '"'))
+    for c in cands:
+        try:
+            v = json.loads(c)
+        except ValueError:
+            continue
+        if isinstance(v, dict):
+            return v
+    return None
+
+
+def _inline_calls(text: str):
+    """Some templates emit <tool_call>{json}</tool_call> inside content instead of tool_calls."""
+    calls = []
+    for m in _TAG.finditer(text):
+        d = repair_json(m.group(1))
+        if d and isinstance(d.get("name"), str):
+            a = d.get("arguments", {})
+            a = repair_json(a) if isinstance(a, str) else a
+            if isinstance(a, dict):
+                calls.append({"id": f"call_{uuid.uuid4().hex[:8]}", "name": d["name"], "args": a})
+    return (_TAG.sub("", text).strip() if calls else text), calls
 
 
 @dataclass
@@ -75,22 +128,49 @@ class OpenAICompatProvider:
                                                   "parameters": t["input_schema"]}} for t in tools]
         return msgs, fns
 
-    def step(self, system, messages, tools, max_tokens=2000) -> Turn:
-        msgs, fns = self.to_openai(system, messages, tools)
-        r = self.http.post(f"{self.base}/chat/completions",
-                           json={"model": self.model, "messages": msgs, "tools": fns, "max_tokens": max_tokens})
+    MAX_RETRIES = 2  # bounded: 1 try + 2 retries per step
+
+    def _post(self, body):
+        r = self.http.post(f"{self.base}/chat/completions", json=body)
         r.raise_for_status()
-        d = r.json()
-        msg = d["choices"][0]["message"]
-        t = Turn(text=msg.get("content") or "", input_tokens=d.get("usage", {}).get("prompt_tokens", 0),
-                 output_tokens=d.get("usage", {}).get("completion_tokens", 0))
-        for c in msg.get("tool_calls") or []:
-            try:
-                args = json.loads(c["function"].get("arguments") or "{}")
-            except ValueError:
-                args = {}
-            t.tool_calls.append({"id": c["id"], "name": c["function"]["name"], "args": args})
-        return t
+        return r.json()
+
+    def step(self, system, messages, tools, max_tokens=2000) -> Turn:
+        """One model step. Hardened for small local models: thinking is off by default (LOCAL_LLM_THINK=1 turns it on,
+        but then reasoning eats the token budget), malformed tool JSON is repaired, empty/truncated or unparseable
+        replies are retried at most MAX_RETRIES times with the failure reported, never looped."""
+        msgs, fns = self.to_openai(system, messages, tools)
+        think = os.environ.get("LOCAL_LLM_THINK") == "1"
+        total_in = total_out = 0
+        budget = max_tokens
+        problem = ""
+        for attempt in range(self.MAX_RETRIES + 1):
+            d = self._post({"model": self.model, "messages": msgs, "tools": fns, "max_tokens": budget,
+                            "chat_template_kwargs": {"enable_thinking": think}})
+            u = d.get("usage", {})
+            total_in += u.get("prompt_tokens", 0)
+            total_out += u.get("completion_tokens", 0)
+            ch = d["choices"][0]
+            msg = ch["message"]
+            text = _THINK.sub("", msg.get("content") or "").strip()
+            calls, bad = [], 0
+            for c in msg.get("tool_calls") or []:
+                raw = c["function"].get("arguments") or "{}"
+                args = raw if isinstance(raw, dict) else repair_json(raw)
+                if args is None:
+                    bad += 1
+                    continue
+                calls.append({"id": c.get("id") or f"call_{uuid.uuid4().hex[:8]}", "name": c["function"]["name"], "args": args})
+            if not calls and not bad:
+                text, calls = _inline_calls(text)
+            if bad:
+                problem = f"{bad} tool call(s) with malformed arguments after {attempt + 1} attempt(s)"
+            elif not calls and not text and ch.get("finish_reason") == "length":
+                problem = "reply truncated before any content (token budget used up)"
+                budget *= 2
+            else:
+                return Turn(text=text, tool_calls=calls, input_tokens=total_in, output_tokens=total_out)
+        return Turn(text=f"[local model failure: {problem}]", input_tokens=total_in, output_tokens=total_out)
 
 
 class FakeProvider:
