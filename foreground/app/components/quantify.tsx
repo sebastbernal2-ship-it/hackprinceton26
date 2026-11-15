@@ -21,6 +21,12 @@ import { Outlook } from "./cost-side";
 import FinancePanel from "./finance/finance-panel";
 import { Delta, field, LayoutTable, Section, Stat } from "./quantify-parts";
 import Stepper from "./stepper";
+import CostarBuilding from "./costar-building";
+import DataStreams from "./data-streams";
+import Projections from "./projections";
+import StructurePanel from "./structure/structure-panel";
+import { DisciplineLayout, useViewMode } from "./discipline-view";
+import { isScanOnly } from "../lib/matches";
 
 type QuantifyProps = {
   match: Match; layout: LayoutSummary | null; onBackToLayout: () => void; onClose: () => void; onStep?: (step: number) => void; step?: number;
@@ -35,7 +41,7 @@ const compact = (n: number) => (Math.abs(n) >= 1000 ? `${n < 0 ? "-" : ""}$${Mat
 const span = (r: { low: number; high: number } | null) => (r ? `${compact(r.low)} to ${compact(r.high)}` : "Unknown");
 
 /** Fixed-rule checklist for a candidate listing: findings, evidence gaps and unpriced cost lines. No LLM. */
-function SiteActChecklist({ match }: { match: Match }) {
+export function SiteActChecklist({ match }: { match: Match }) {
   const [items, setItems] = useState<ActItem[] | null>(null);
   useEffect(() => {
     let live = true;
@@ -143,35 +149,48 @@ export default function Quantify({ match, layout, onBackToLayout, onClose, onSte
   const chosen = source ?? tcData?.rentChosen?.id ?? null;
   const chip = (on: boolean) => `rounded-full border px-3 py-1.5 text-sm ${on ? "border-foreground bg-foreground text-background" : "border-foreground/20"}`;
   const unpricedNames = (lcData?.unpriced ?? []).map((u) => nameFor(kit, u.assetId));
+  const [viewMode] = useViewMode();
+  const disc = viewMode === "discipline";
   const periodLabel = months === 12 ? "first year" : `${months / 12} years`;
 
-  return (
-    <div role="dialog" aria-modal="true" aria-labelledby="quantify-title" className="fixed inset-0 z-50 overflow-y-auto bg-background text-foreground animate-rise">
-      <div className="mx-auto max-w-[68rem] px-6 pb-16 pt-6 sm:px-12">
-        <div className="flex flex-wrap gap-3">
-          <button type="button" onClick={onBackToLayout} className="rounded-full border border-foreground/15 px-4 py-2 text-sm font-medium transition-opacity hover:opacity-70">Back to your layout</button>
-          <button type="button" onClick={onClose} className="rounded-full px-4 py-2 text-sm font-medium text-foreground/60 transition-opacity hover:opacity-70">Back to property</button>
-        </div>
-        <div className="mb-5 mt-6"><Stepper active={step ?? 4} onStep={onStep} /></div>
-        <h1 id="quantify-title" className="text-[clamp(1.6rem,4vw,2.5rem)] font-medium leading-tight tracking-tight">Quantify</h1>
-        <p className="mt-1 text-foreground/50">{match.address}{match.detail ? ` · ${match.detail}` : ""}</p>
-
-        <div className="sticky top-0 z-10 -mx-6 mt-5 border-b border-foreground/10 bg-background px-6 py-3 sm:-mx-12 sm:px-12" data-testid="summary-strip" aria-label="Summary">
-          <div className="grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-4">
-            <Stat id="allin" label="All-in cost (est.)" value={allIn ? span(allIn) : fromLayout ? "Pricing…" : "Unknown"} n={dAll.n} pending={pending} d={delta(dAll.prev, mid(allIn))} sub={fromLayout ? "build-out incl. hidden systems" : "one-time"} />
-            <Stat id="budget" label="Vs budget" value={!budget ? "No budget" : !status ? "Pricing…" : status.tone === "under" ? "Within" : status.tone === "over" ? "Over" : "Close"} n={dGap.n} pending={pending}
-              d={delta(dGap.prev, gap)} sub={budget ? `of ${compact(budget)}${gap !== null ? ` · ${gap >= 0 ? compact(gap) + " spare" : compact(-gap) + " over"} at mid` : ""}` : "type one below"} />
-            <Stat id="monthly" label="Running cost / month" value={monthly ? span(monthly) : "Unknown"} n={dMonthly.n} pending={pending} d={delta(dMonthly.prev, mid(monthly))} sub="rent + operating" />
-            <Stat id="breakeven" label="Break-even (est.)" value={!seats ? "Enter seats" : out ? paybackText(payback) : "Pending"} n={dPay.n} pending={pending} d={delta(dPay.prev, payback)} fmt={fmtDeltaMonths} sub={seats ? `${seats} seats, base case` : "needs seats"} />
+  const equipmentBlock = (
+          <div className="mt-5">
+            <p className="text-sm text-foreground/55">Equipment from the Planner</p>
+            {distinct.length === 0 ? <p className="mt-1 text-xs text-foreground/50">None placed. Use the Planner (Load cafe reference kit) to price equipment; build-out then comes from your pieces.</p> : (
+              <ul className="mt-2 grid gap-x-8 gap-y-1 text-sm sm:grid-cols-2" aria-label="Equipment in this scenario">
+                {distinct.map((a) => (
+                  <li key={a.assetId} className="flex items-center gap-2">
+                    <span className="min-w-0 flex-1 truncate">{a.name}</span>
+                    <button type="button" aria-label={`Remove one ${a.name}`} onClick={() => setPieces(a, -1)} className="h-7 w-7 rounded-full border border-foreground/25">-</button>
+                    <span className="w-6 text-center tabular-nums">{kit.filter((x) => x.assetId === a.assetId).length}</span>
+                    <button type="button" aria-label={`Add one ${a.name}`} onClick={() => setPieces(a, 1)} className="h-7 w-7 rounded-full border border-foreground/25">+</button>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
-          <p role="status" aria-live="polite" data-testid="recalc" className="mt-2 text-xs text-foreground/55">
-            {failed ? "The cost service did not answer. Nothing here is zero; it is unknown."
-              : pending ? <span className="animate-breathe">Recalculating…</span>
-              : <span key={track.n} className="animate-recalc rounded px-1">Recalculated{track.change ? `: ${track.change}` : ""}{lastAnswer ? ` · costs refreshed ${new Date(lastAnswer).toLocaleTimeString("en-US", { hour12: false })}` : ""}</span>}
-          </p>
-        </div>
-
-        <Section n={1} title="Inputs" hint={`${seats ?? "?"} seats · ${sqft ? `${sqft.toLocaleString()} sq ft` : "no area"} · ${budget ? compact(budget) : "no budget"}`} defaultOpen testId="sec-inputs">
+  );
+  const layoutBlock = (<>
+          {layout ? <LayoutTable layout={layout} /> : <p className="text-sm text-foreground/60">{match.demo ? "No editable 3D layout: costs use the equipment placed in the Planner." : "No 3D layout yet. Open Scope out your vision, arrange the space, then continue here."}</p>}
+  </>);
+  const moneyBlock = (<>
+          {kit.length > 0 && (
+            <div className="mt-6" data-testid="xray">
+              <h3 className="text-sm font-medium">Hidden-cost X-ray (estimated)</h3>
+              <ul className="mt-2 divide-y divide-foreground/10 text-sm">
+                {xray.map((l) => <li key={l.id} className="py-1.5"><div className="flex justify-between gap-2"><span>{l.label}</span><span className="tabular-nums text-foreground/70">{span(l.range)}</span></div><p className="text-xs text-foreground/45">{l.why} Source: {l.source}</p></li>)}
+              </ul>
+            </div>
+          )}
+          {tcData && <p className="mt-6 text-xs text-foreground/50">Sources: {tcData.parts.map((p) => `${p.label}, ${p.source}`).join("; ")}</p>}
+          {!match.demo && <CostPanel listingId={match.listingId} />}
+          {!match.demo && (seats ? <FinancePanel listingId={match.listingId} seats={seats} rentUnknownAssumption={tcData?.parts.find((p) => p.id === "rent")?.low} /> : <p className="mt-6 text-sm text-foreground/55">Enter a seat count to run the 36-month scenario.</p>)}
+  </>);
+  const checklistBlock = (<>
+          {match.demo ? <ActChecklist items={buildDiligence({ unpricedPieces: unpricedNames, assumedArea: sqft !== null, linkedBuilding: Boolean(match.costarPropertyId) })} /> : <SiteActChecklist match={match} />}
+  </>);
+  const secInputs = (
+        <Section n={1} title="Inputs" hint={`${seats ?? "?"} seats · ${sqft ? `${sqft.toLocaleString()} sq ft` : "no area"} · ${budget ? compact(budget) : "no budget"}`} defaultOpen={disc} testId="sec-inputs">
           <p className="text-sm text-foreground/55">Change any value; the summary above recalculates. Starting values come from your brief and the Planner. They are assumptions, not facts.</p>
           <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <label className="text-sm"><span className="block text-foreground/55">Seats</span>
@@ -203,24 +222,11 @@ export default function Quantify({ match, layout, onBackToLayout, onClose, onSte
             {tcData?.rentChosen && chosen !== "own" && <p className="mt-2 text-xs text-foreground/45">{tcData.rentChosen.source}</p>}
             {chosen === "own" && !parsePositive(ownRate) && <p className="mt-2 text-xs text-foreground/45">Enter a rate; until then the default basis is used.</p>}
           </fieldset>
-          <div className="mt-5">
-            <p className="text-sm text-foreground/55">Equipment from the Planner</p>
-            {distinct.length === 0 ? <p className="mt-1 text-xs text-foreground/50">None placed. Use the Planner (Load cafe reference kit) to price equipment; build-out then comes from your pieces.</p> : (
-              <ul className="mt-2 grid gap-x-8 gap-y-1 text-sm sm:grid-cols-2" aria-label="Equipment in this scenario">
-                {distinct.map((a) => (
-                  <li key={a.assetId} className="flex items-center gap-2">
-                    <span className="min-w-0 flex-1 truncate">{a.name}</span>
-                    <button type="button" aria-label={`Remove one ${a.name}`} onClick={() => setPieces(a, -1)} className="h-7 w-7 rounded-full border border-foreground/25">-</button>
-                    <span className="w-6 text-center tabular-nums">{kit.filter((x) => x.assetId === a.assetId).length}</span>
-                    <button type="button" aria-label={`Add one ${a.name}`} onClick={() => setPieces(a, 1)} className="h-7 w-7 rounded-full border border-foreground/25">+</button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+          {!disc && equipmentBlock}
         </Section>
-
-        <Section n={2} title="Costs breakdown" hint={allIn ? `${span(allIn)} all-in (estimated)` : "estimated ranges, not quotes"} testId="sec-costs">
+  );
+  const secCosts = (
+        <Section n={2} title="Costs breakdown" hint={allIn ? `${span(allIn)} all-in (estimated)` : "estimated ranges, not quotes"} defaultOpen={disc} testId="sec-costs">
           <p className="text-sm text-foreground/55">Ranges, not quotes. Every line sits in a category; open one to see each item. Freight is not included. Hidden systems are counted at 50% until inspected. Unpriced items are named and left out of totals: unknown, not free.</p>
           {failed && <p role="alert" className="mt-3 text-sm text-foreground/60">Cannot say: the cost service did not answer.</p>}
           <div className="mt-2"><CostCategories breakdown={breakdown} pending={pending} climateControls={climateControls} /></div>
@@ -229,8 +235,9 @@ export default function Quantify({ match, layout, onBackToLayout, onClose, onSte
           {budget && lcData?.pOverBudget != null && <p className="mt-3 text-sm" data-testid="cost-pover">P(build-out over {compact(budget)}): <span className="font-medium tabular-nums">{pct(lcData.pOverBudget)}</span> <span className="text-xs text-foreground/50">(simulated; excludes hidden systems)</span></p>}
           {!fromLayout && <p className="mt-3 text-xs text-foreground/50">No equipment placed, so build-out is a per-square-foot estimate for your area.</p>}
         </Section>
-
-        <Section n={3} title="Running costs and outlook" hint={monthly ? `${span(monthly)} / month · break-even ${seats && out ? paybackText(payback) : "unknown"}` : "rent and operating"} testId="sec-running">
+  );
+  const secRunning = (
+        <Section n={3} title="Running costs and outlook" hint={monthly ? `${span(monthly)} / month · break-even ${seats && out ? paybackText(payback) : "unknown"}` : "rent and operating"} defaultOpen={disc} testId="sec-running">
           {!tcKey && <p className="text-sm text-foreground/60">Rent and running costs need a CoStar building record. This scan has none linked, so they are unknown, not zero.</p>}
           {tcData && (
             <>
@@ -258,8 +265,9 @@ export default function Quantify({ match, layout, onBackToLayout, onClose, onSte
               : <p className="mt-1 text-sm text-foreground/55">{!seats ? "Enter a seat count in Inputs." : !allIn ? "Needs a build-out price." : "Needs a monthly running cost (rent basis)."}</p>}
           </div>
         </Section>
-
-        <Section title="Details and checklist" hint="your layout, hidden-cost sources, repair costs, 36-month scenario, diligence" testId="sec-details">
+  );
+  const secDetails = (
+<Section title="Details and checklist" hint="your layout, hidden-cost sources, repair costs, 36-month scenario, diligence" testId="sec-details">
           {layout ? <LayoutTable layout={layout} /> : <p className="text-sm text-foreground/60">{match.demo ? "No editable 3D layout: costs use the equipment placed in the Planner." : "No 3D layout yet. Open Scope out your vision, arrange the space, then continue here."}</p>}
           {kit.length > 0 && (
             <div className="mt-6" data-testid="xray">
@@ -274,6 +282,45 @@ export default function Quantify({ match, layout, onBackToLayout, onClose, onSte
           {!match.demo && (seats ? <FinancePanel listingId={match.listingId} seats={seats} rentUnknownAssumption={tcData?.parts.find((p) => p.id === "rent")?.low} /> : <p className="mt-6 text-sm text-foreground/55">Enter a seat count to run the 36-month scenario.</p>)}
           {match.demo ? <ActChecklist items={buildDiligence({ unpricedPieces: unpricedNames, assumedArea: sqft !== null, linkedBuilding: Boolean(match.costarPropertyId) })} /> : <SiteActChecklist match={match} />}
         </Section>
+  );
+
+  return (
+    <div role="dialog" aria-modal="true" aria-labelledby="quantify-title" className="fixed inset-0 z-50 overflow-y-auto bg-background text-foreground animate-rise">
+      <div className="mx-auto max-w-[68rem] px-6 pb-16 pt-6 sm:px-12">
+        <div className="flex flex-wrap gap-3 pr-44 sm:pr-0">
+          <button type="button" onClick={onBackToLayout} className="rounded-full border border-foreground/15 px-4 py-2 text-sm font-medium transition-opacity hover:opacity-70">Back to your layout</button>
+          <button type="button" onClick={onClose} className="rounded-full px-4 py-2 text-sm font-medium text-foreground/60 transition-opacity hover:opacity-70">Back to property</button>
+        </div>
+        <div className="mb-5 mt-6"><Stepper active={step ?? 4} onStep={onStep} /></div>
+        <h1 id="quantify-title" className="text-[clamp(1.6rem,4vw,2.5rem)] font-medium leading-tight tracking-tight">Quantify</h1>
+        <p className="mt-1 text-foreground/50">{match.address}{match.detail ? ` · ${match.detail}` : ""}</p>
+
+        <div className="sticky top-0 z-10 -mx-6 mt-5 border-b border-foreground/10 bg-background px-6 py-3 sm:-mx-12 sm:px-12" data-testid="summary-strip" aria-label="Summary">
+          <div className="grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-4">
+            <Stat id="allin" label="All-in cost (est.)" value={allIn ? span(allIn) : fromLayout ? "Pricing…" : "Unknown"} n={dAll.n} pending={pending} d={delta(dAll.prev, mid(allIn))} sub={fromLayout ? "build-out incl. hidden systems" : "one-time"} />
+            <Stat id="budget" label="Vs budget" value={!budget ? "No budget" : !status ? "Pricing…" : status.tone === "under" ? "Within" : status.tone === "over" ? "Over" : "Close"} n={dGap.n} pending={pending}
+              d={delta(dGap.prev, gap)} sub={budget ? `of ${compact(budget)}${gap !== null ? ` · ${gap >= 0 ? compact(gap) + " spare" : compact(-gap) + " over"} at mid` : ""}` : "type one below"} />
+            <Stat id="monthly" label="Running cost / month" value={monthly ? span(monthly) : "Unknown"} n={dMonthly.n} pending={pending} d={delta(dMonthly.prev, mid(monthly))} sub="rent + operating" />
+            <Stat id="breakeven" label="Break-even (est.)" value={!seats ? "Enter seats" : out ? paybackText(payback) : "Pending"} n={dPay.n} pending={pending} d={delta(dPay.prev, payback)} fmt={fmtDeltaMonths} sub={seats ? `${seats} seats, base case` : "needs seats"} />
+          </div>
+          <p role="status" aria-live="polite" data-testid="recalc" className="mt-2 text-xs text-foreground/55">
+            {failed ? "The cost service did not answer. Nothing here is zero; it is unknown."
+              : pending ? <span className="animate-breathe">Recalculating…</span>
+              : <span key={track.n} className="animate-recalc rounded px-1">Recalculated{track.change ? `: ${track.change}` : ""}{lastAnswer ? ` · costs refreshed ${new Date(lastAnswer).toLocaleTimeString("en-US", { hour12: false })}` : ""}</span>}
+          </p>
+        </div>
+
+        {disc ? (
+          <DisciplineLayout page="quantify" match={match} extra={{ budgetTone: status?.tone ?? null, paybackMonths: payback, hasAllIn: Boolean(allIn), hasRent: Boolean(monthly), seats, equipmentCount: kit.length }} panels={{
+            "q-inputs": secInputs, "q-costs": secCosts, "q-running": secRunning,
+            "q-money-details": <div className="mt-4">{moneyBlock}</div>,
+            "q-checklist": <div className="mt-4">{checklistBlock}</div>,
+            "q-layout": <div className="mt-4">{layoutBlock}</div>,
+            "q-equipment": <div className="mt-4">{equipmentBlock}</div>,
+            "q-structure": <>{match.costarPropertyId && <CostarBuilding propertyId={match.costarPropertyId} city={match.city} />}{!match.demo && !isScanOnly(match) && <StructurePanel listingId={match.listingId} />}</>,
+            "q-market": !match.demo && <>{!isScanOnly(match) && <Projections listingId={match.listingId} />}<DataStreams listingId={match.listingId} scanOnly={isScanOnly(match)} /></>,
+          }} />
+        ) : (<>{secInputs}{secCosts}{secRunning}{secDetails}</>)}
       </div>
     </div>
   );

@@ -10,8 +10,10 @@ import PlanVision from "./plan-vision";
 import CafePlanner from "./cafe-planner";
 import LayoutPanel from "./layout-panel";
 import CostSide from "./cost-side";
+import { seatTotal } from "../lib/cost-side";
 import type { PlacedPiece } from "../lib/planner";
-import Quantify from "./quantify";
+import Quantify, { SiteActChecklist } from "./quantify";
+import { DisciplineLayout, useViewMode, ViewSwitch } from "./discipline-view";
 import type { LayoutSummary } from "../lib/layout-summary";
 import type { Asset } from "../lib/assets";
 import Stepper from "./stepper";
@@ -84,7 +86,11 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
     if (step === 6 && match.demo) setTab("overview");
     if (step === 5) scrollTo("act-title");
   }
-  const [tab, setTab] = useState<"overview" | "planner" | "layout" | "analysis">("overview");
+  const [tabState, setTab] = useState<"overview" | "planner" | "layout" | "analysis">("overview");
+  const [viewMode] = useViewMode();
+  const byDiscipline = viewMode === "discipline";
+  const real = !match.demo && !isScanOnly(match); // a scan has no listing record, so the per-listing services have nothing to answer
+  const tab = byDiscipline ? "discipline" : tabState; // the tabbed sections below all key on `tab`, so they step aside in the discipline view
   const hero = photos[index % photos.length];
   const thumbs = photos.filter((_, photoIndex) => photoIndex !== index % photos.length).slice(0, 3);
 
@@ -186,8 +192,8 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
           </div>
         </div>
 
-        <nav aria-label="Property sections" className="mt-8 flex gap-1 border-b border-foreground/10">
-          {([["overview", "Overview"], ["planner", "Planner"], ["layout", "Layout & equipment"], ...(match.demo ? [] : [["analysis", "Deeper analysis"]])] as [typeof tab, string][]).map(([key, label]) => (
+        <nav aria-label="Property sections" hidden={byDiscipline} className="mt-8 flex gap-1 border-b border-foreground/10">
+          {([["overview", "Overview"], ["planner", "Planner"], ["layout", "Layout & equipment"], ...(match.demo ? [] : [["analysis", "Deeper analysis"]])] as [typeof tabState, string][]).map(([key, label]) => (
             <button
               key={key}
               type="button"
@@ -265,6 +271,24 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
           </>
         )}
 
+        {byDiscipline && !quantify && (
+          <DisciplineLayout page="property" match={match} extra={{ equipmentCount: kit.length, seats: seatTotal(kit) || null }} panels={{
+            "cost-side": <div className="mt-6"><CostSide match={match} kit={kit} area={area} budgetText={budgetText} onBudgetText={setBudgetText} /></div>,
+            "forecast-row": real && <ForecastRow listingId={match.listingId} />,
+            inspection: real && <InspectionPanel listingId={match.listingId} />,
+            "site-act": real && <SiteActChecklist match={match} />,
+            building: match.costarPropertyId && <CostarBuilding propertyId={match.costarPropertyId} city={match.city} />,
+            growth: !real && <GrowthSim />,
+            structure: real && <StructurePanel listingId={match.listingId} />,
+            triage: real && <TriagePanel listingId={match.listingId} />,
+            planner: <CafePlanner match={match} kit={kit} onKit={setKit} placed={placed} onPlaced={setPlaced} area={area} onArea={setArea} onContinue={() => { setCurrent(4); setQuantify({ layout: lastLayout.current }); }} />,
+            layout: <LayoutPanel match={match} items={kit} onItems={setKit} area={area} onArea={setArea} />,
+            projections: real && <Projections listingId={match.listingId} />,
+            "data-streams": !match.demo && <DataStreams listingId={match.listingId} scanOnly={isScanOnly(match)} />,
+            evidence: <FactorCards factors={demoFactors ?? match.factors ?? []} demo={match.demo && !demoFactors?.length} />,
+          }} />
+        )}
+
         <p className="mt-5 text-xs text-foreground/40">
           Sources: CoStar listing and market data, the Matterport model on file, and Vexcel aerial where available.
         </p>
@@ -284,6 +308,8 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
           </button>
         </section>
       </div>
+      {/* Quantify renders inside this container, so this one switch also covers the Quantify page. */}
+      <ViewSwitch />
       <SpaceChat match={match} open={askOpen} onOpenChange={setAskOpen} />
       {planOpen && (
         <PlanVision
