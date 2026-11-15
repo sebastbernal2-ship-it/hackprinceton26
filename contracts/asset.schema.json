@@ -1,0 +1,400 @@
+{
+  "$defs": {
+    "Clearance": {
+      "properties": {
+        "back": {
+          "minimum": 0,
+          "title": "Back",
+          "type": "number"
+        },
+        "front": {
+          "minimum": 0,
+          "title": "Front",
+          "type": "number"
+        },
+        "sides": {
+          "minimum": 0,
+          "title": "Sides",
+          "type": "number"
+        }
+      },
+      "required": [
+        "front",
+        "sides",
+        "back"
+      ],
+      "title": "Clearance",
+      "type": "object"
+    },
+    "DimRanges": {
+      "properties": {
+        "d": {
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "D",
+          "type": "array"
+        },
+        "h": {
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "H",
+          "type": "array"
+        },
+        "w": {
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "W",
+          "type": "array"
+        }
+      },
+      "required": [
+        "w",
+        "d",
+        "h"
+      ],
+      "title": "DimRanges",
+      "type": "object"
+    },
+    "Dims": {
+      "properties": {
+        "d": {
+          "title": "D",
+          "type": "number"
+        },
+        "h": {
+          "title": "H",
+          "type": "number"
+        },
+        "w": {
+          "title": "W",
+          "type": "number"
+        }
+      },
+      "required": [
+        "w",
+        "d",
+        "h"
+      ],
+      "title": "Dims",
+      "type": "object"
+    },
+    "Model3D": {
+      "properties": {
+        "format": {
+          "enum": [
+            "glb",
+            "obj",
+            "box"
+          ],
+          "title": "Format",
+          "type": "string"
+        },
+        "uri": {
+          "title": "Uri",
+          "type": "string"
+        }
+      },
+      "required": [
+        "uri",
+        "format"
+      ],
+      "title": "Model3D",
+      "type": "object"
+    },
+    "Provenance": {
+      "properties": {
+        "notes": {
+          "default": "",
+          "title": "Notes",
+          "type": "string"
+        },
+        "origin": {
+          "title": "Origin",
+          "type": "string"
+        },
+        "retrievedAt": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Retrievedat"
+        }
+      },
+      "required": [
+        "origin"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "Size": {
+      "properties": {
+        "d": {
+          "title": "D",
+          "type": "number"
+        },
+        "h": {
+          "title": "H",
+          "type": "number"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "w": {
+          "title": "W",
+          "type": "number"
+        }
+      },
+      "required": [
+        "w",
+        "d",
+        "h",
+        "label"
+      ],
+      "title": "Size",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "allowedSizes": {
+      "anyOf": [
+        {
+          "items": {
+            "$ref": "#/$defs/Size"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Allowedsizes"
+    },
+    "assetId": {
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_.\\-]+$",
+      "title": "Assetid",
+      "type": "string"
+    },
+    "category": {
+      "enum": [
+        "counter",
+        "prep_table",
+        "range",
+        "oven",
+        "fridge",
+        "freezer_display",
+        "sink",
+        "hood",
+        "dish",
+        "seating",
+        "table",
+        "storage",
+        "other"
+      ],
+      "title": "Category",
+      "type": "string"
+    },
+    "clearance": {
+      "$ref": "#/$defs/Clearance"
+    },
+    "clearanceBasis": {
+      "title": "Clearancebasis",
+      "type": "string"
+    },
+    "dimRanges": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/DimRanges"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "dims": {
+      "$ref": "#/$defs/Dims"
+    },
+    "dimsStatus": {
+      "enum": [
+        "measured",
+        "catalog",
+        "estimated"
+      ],
+      "title": "Dimsstatus",
+      "type": "string"
+    },
+    "footprint": {
+      "items": {
+        "maxItems": 2,
+        "minItems": 2,
+        "prefixItems": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "number"
+          }
+        ],
+        "type": "array"
+      },
+      "title": "Footprint",
+      "type": "array"
+    },
+    "imageRefs": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Imagerefs",
+      "type": "array"
+    },
+    "model": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Model3D"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "parentAssetId": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Parentassetid"
+    },
+    "priceRef": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Priceref"
+    },
+    "profileId": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Profileid"
+    },
+    "provenance": {
+      "$ref": "#/$defs/Provenance"
+    },
+    "source": {
+      "enum": [
+        "library",
+        "uploaded",
+        "extracted",
+        "generated"
+      ],
+      "title": "Source",
+      "type": "string"
+    },
+    "status": {
+      "default": "draft",
+      "enum": [
+        "draft",
+        "confirmed"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "tags": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Tags",
+      "type": "array"
+    },
+    "variantKind": {
+      "anyOf": [
+        {
+          "enum": [
+            "base",
+            "corner_l",
+            "island",
+            "wall_run",
+            "scaled",
+            "mirrored"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Variantkind"
+    }
+  },
+  "required": [
+    "assetId",
+    "name",
+    "category",
+    "source",
+    "dims",
+    "dimsStatus",
+    "footprint",
+    "clearance",
+    "clearanceBasis",
+    "provenance"
+  ],
+  "title": "Asset",
+  "type": "object"
+}
