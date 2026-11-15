@@ -43,6 +43,16 @@
   #ai button { background:#2a2f37; color:var(--text); border:1px solid #3a3f48; border-radius:6px; padding:4px 10px; cursor:pointer; font:inherit; }
   #aiChips { display:flex; flex-wrap:wrap; gap:4px; } #aiChips button { font-size:11px; padding:2px 8px; border-radius:12px; }
   #aiLog { max-height:180px; overflow:auto; font-size:12px; display:flex; flex-direction:column; gap:3px; }
+  #fioMascot { position:absolute; right:calc(100% + 10px); bottom:0; width:92px; pointer-events:none; }
+  #fioMascot svg { width:72px; height:84px; display:block; margin-left:auto; overflow:visible; }
+  #fioBubble { position:absolute; right:78px; bottom:84px; width:max-content; max-width:min(260px, 30vw); background:#fff; color:#15171b; border-radius:10px; padding:6px 9px; font-size:12px; line-height:1.3; opacity:0; transition:opacity .2s; }
+  #fioBubble.on { opacity:1; }
+  #fioMascot .arm { transform-box:fill-box; transform-origin:50% 0; transition:transform .25s; }
+  #fioMascot[data-s=think] .head { animation:fioTilt 1s ease-in-out infinite; } #fioMascot[data-s=think] .dots { opacity:1; }
+  #fioMascot[data-s=point] .armR { transform:rotate(-70deg); } #fioMascot[data-s=cheer] { animation:fioHop .45s ease-in-out 3; } #fioMascot[data-s=cheer] .arm { transform:rotate(150deg); }
+  #fioMascot[data-s=shake] .head { animation:fioShake .3s linear 3; } #fioMascot .dots { opacity:0; }
+  @keyframes fioTilt { 50% { transform:rotate(8deg); } } @keyframes fioHop { 50% { transform:translateY(-10px); } }
+  @keyframes fioShake { 25% { transform:translateX(-4px); } 75% { transform:translateX(4px); } }
   #aiLog .you { color:#9fd0ff; } #aiLog .ai { color:var(--text); } #aiLog .sys { color:var(--dim); } #aiLog .err { color:#ff8a8a; }
   #cat .head { display:flex; align-items:baseline; gap:10px; margin-bottom:8px; } #cat .head b { font-size:15px; }
   #cat .dim { color:var(--dim); font-size:12px; } #catClose { margin-left:auto; }
@@ -64,7 +74,7 @@
     <kbd>X</kbd> remove · <kbd>Ctrl</kbd>+<kbd>Z</kbd> undo · <kbd>C</kbd> catalogue of new furniture</div>
 </div>
 <div id="panel"><span id="edits"></span> <button id="aiBtn">Ask Fio (Enter)</button><button id="catBtn">Catalogue (C)</button><button id="clearBtn" title="Remove the scanned furniture and patch the floor and walls (K)">Clear the space (K)</button><button id="shellBtn" title="Show the inferred room shell behind the scan: fills holes and black voids by inference (G)">Fill gaps (G)</button><button id="restoreBtn" style="display:none">Restore scan objects</button><select id="floorSel" title="Floor: the scan as it is, or a clean flat floor"><option value="scan">Floor: scan</option><option value="match">Floor: match scan</option><option value="wood">Floor: light wood</option><option value="concrete">Floor: concrete</option><option value="tile">Floor: tile</option><option value="carpet">Floor: carpet</option><option value="plain">Floor: plain</option></select><button id="exportBtn">Export edits.json</button><button id="resetBtn">Reset all</button></div>
-<div id="ai"><div id="aiLog"></div><div id="aiChips"></div><div class="row"><input id="aiInput" placeholder="Ask Fio, or tell it: clear the room, remove the sofa, add 4 two-tops..." autocomplete="off"><button id="aiSend">Send</button><button id="aiNew">New chat</button></div></div>
+<div id="ai"><div id="fioMascot" data-s="idle" aria-hidden="true"><div id="fioBubble"></div><svg viewBox="0 0 72 84"><g class="arm armL"><rect x="6" y="46" width="8" height="22" rx="4" fill="#3a6ea5"/></g><g class="arm armR"><rect x="58" y="46" width="8" height="22" rx="4" fill="#3a6ea5"/></g><rect x="16" y="42" width="40" height="30" rx="10" fill="#4f8fd6"/><rect x="22" y="72" width="9" height="10" rx="3" fill="#2d4f78"/><rect x="41" y="72" width="9" height="10" rx="3" fill="#2d4f78"/><g class="head"><line x1="36" y1="6" x2="36" y2="14" stroke="#2d4f78" stroke-width="2"/><circle cx="36" cy="5" r="3.5" fill="#f0b429"/><rect x="12" y="13" width="48" height="32" rx="12" fill="#f2f5f8" stroke="#2d4f78" stroke-width="2"/><circle cx="27" cy="29" r="4" fill="#15171b"/><circle cx="45" cy="29" r="4" fill="#15171b"/><path d="M28 38q8 5 16 0" fill="none" stroke="#15171b" stroke-width="2" stroke-linecap="round"/><g class="dots"><circle cx="24" cy="10" r="2" fill="#f0b429"/><circle cx="36" cy="8" r="2" fill="#f0b429"/><circle cx="48" cy="10" r="2" fill="#f0b429"/></g></g></svg></div><div id="aiLog"></div><div id="aiChips"></div><div class="row"><input id="aiInput" placeholder="Ask Fio, or tell it: clear the room, remove the sofa, add 4 two-tops..." autocomplete="off"><button id="aiSend">Send</button><button id="aiNew">New chat</button></div></div>
 <div id="cat"><div class="head"><b>Add furniture</b><span class="dim">Free CC0 models from Poly Haven · lit by the room's own photo</span><button id="catClose">✕</button></div>
   <div id="catTabs"></div><div id="catGrid"></div></div>
 <div id="offer"></div><div id="clearInfo"></div>
@@ -1595,9 +1605,42 @@ function toWall(pc, d) {
   settle(pc, p0.x, p0.y); undoStack.pop();
   return { blocked: 'there is no clear floor in that direction (the scan has gaps, or furniture is in the way)' };
 }
+const fioDesign = await import('./fio_design.js').catch(() => null);
+function floorBounds() {                              // flood-fill the scanned floor from the user's feet, 0.5 m cells
+  const S = 0.5, key = (i, j) => i + ',' + j, seen = new Map(), q = [[0, 0]]; seen.set('0,0', true);
+  const has = (i, j) => isFinite(groundAt(feet.x + i * S, feet.y + j * S, feet.z + 0.6, feet.z - 1.5));
+  let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+  while (q.length && seen.size < 6000) { const [i, j] = q.pop(); if (!has(i, j)) { seen.set(key(i, j), false); continue; }
+    seen.set(key(i, j), true); const x = feet.x + i * S, y = feet.y + j * S; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y);
+    for (const [a, b] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) if (!seen.has(key(i + a, j + b)) && Math.abs(i + a) < 40 && Math.abs(j + b) < 40) { seen.set(key(i + a, j + b), 0); q.push([i + a, j + b]); } }
+  return { bounds: { x0, y0, x1, y1 }, ok: (x, y) => seen.get(key(Math.round((x - feet.x) / S), Math.round((y - feet.y) / S))) === true };
+}
+async function dropIn(pc, x, y) {                     // the piece falls in from above onto its spot
+  if (!settle(pc, x, y)) return false;
+  const dz = pc.dz; for (let k = 6; k >= 0; k--) { pc.dz = dz + k * 0.12; applyPose(pc); await new Promise(r => setTimeout(r, 30)); }
+  pc.dz = dz; applyPose(pc); return true;
+}
+async function designMyPlace() {
+  if (!fioDesign || !catalog.length) return 'The furniture catalogue is empty on this machine, so I cannot design anything.';
+  const fb = floorBounds(), plan = fioDesign.designPlan({ bounds: fb.bounds, catalog, seats: 12, ok: fb.ok });
+  if (!plan.pieces.length) return plan.note;
+  let placed = 0, tables = 0, dropped = 0;
+  for (let i = 0; i < plan.pieces.length; i += 3) {
+    const group = [];
+    try {
+      for (const sp of plan.pieces.slice(i, i + 3)) {
+        const pc = await makeItem(catalog.find(c => c.id === sp.id), { tx: feet.x, ty: feet.y, dz: feet.z, dyaw: 0 }); group.push(pc);
+        setFacing(pc, sp.yaw); if (!(await dropIn(pc, sp.x, sp.y)) || !checkFit(pc)) throw new Error('no fit');
+      }
+      group.forEach(pc => { undoStack.push([pc, { ...poseOf(pc), deleted: true }]); changed(pc); }); placed += group.length; tables++;
+    } catch (e) { group.forEach(discard); dropped++; }
+  }
+  return `Designed your place: ${tables} two-top${tables === 1 ? '' : 's'} (${plural(placed, 'piece')}, about ${tables * 2} seats) dropped onto the scanned floor, all checked against walls and furniture${dropped ? `; ${dropped} spot${dropped === 1 ? '' : 's'} did not fit and were skipped` : ''}. Ctrl+Z undoes it.`;
+}
 async function fioRun(c) {
   const items = describeItems();
   switch (c.op) {
+    case 'design': return designMyPlace();
     case 'undo': if (!undoStack.length) return 'There is nothing to undo.'; undo(); return 'Undid the last change.';
     case 'describe': {
       const live = pieces.filter(onLevel), by = new Map();
@@ -1646,15 +1689,18 @@ async function fioRun(c) {
   return null;
 }
 async function runLocal(c, prompt, status, mark) {
-  status.textContent = 'Fio: working…';
+  status.textContent = 'Fio: working…'; mascot('think', 'On it...');
   let reply;
   try { reply = await fioRun(c); } catch (e) { reply = `I could not do that: ${e.message || e}`; }
   status.remove();
   const batch = undoStack.splice(mark);
   if (batch.length) { undoStack.push({ batch, label: `Fio: ${prompt.slice(0, 40)}` }); }
-  aiLog('ai', reply);
+  aiLog('ai', reply); mascot(/^(I could not|I do not|There is nothing|The room is already|The 3D catalogue|I did not)/.test(reply || '') ? 'shake' : batch.length ? 'cheer' : 'point', reply);
   if (batch.length) aiLog('sys', `${touched.size} piece${touched.size === 1 ? '' : 's'} changed · Ctrl+Z undoes all of it`);
 }
+const mascot = (st, say, ms = 2200) => { const m = $('fioMascot'), b = $('fioBubble'); m.dataset.s = st;
+  if (say != null) { b.textContent = say.length > 150 ? say.slice(0, 147) + '...' : say; b.classList.add('on'); }
+  clearTimeout(mascot.t); if (st !== 'think') mascot.t = setTimeout(() => { m.dataset.s = 'idle'; }, ms); if (st !== 'think' && say != null) { clearTimeout(mascot.b); mascot.b = setTimeout(() => b.classList.remove('on'), 9000); } };
 let aiMessages = [], aiBusy = false;
 const aiLog = (cls, text) => { const d = document.createElement('div'); d.className = cls; d.textContent = text;
   $('aiLog').appendChild(d); $('aiLog').scrollTop = 1e9; return d; };
@@ -1673,7 +1719,7 @@ async function askAI(prompt) {
   aiBusy = true; $('aiInput').disabled = true; $('aiSend').disabled = true;
   if (carried) cancelCarry(); leavePhoto(true);
   aiLog('you', prompt);
-  const status = aiLog('sys', 'Fio is thinking…');
+  const status = aiLog('sys', 'Fio is thinking…'); mascot('think', 'Let me see...');
   const mark = undoStack.length, base = aiMessages.length; touched.clear();
   const local = fio && fio.parseCommand(prompt);
   if (local) { await runLocal(local, prompt, status, mark); aiBusy = false; $('aiInput').disabled = false; $('aiSend').disabled = false; $('aiInput').focus(); return; }
@@ -1689,7 +1735,7 @@ async function askAI(prompt) {
         throw new Error(res.status === 501 || res.status === 405 ? 'This server has no /api/agent, so I can only run plain commands (clear the room, remove, move, add, rotate).' : out.error);
       }
       aiMessages.push({ role: 'assistant', content: out.content });
-      for (const b of out.content) if (b.type === 'text' && b.text.trim()) aiLog('ai', b.text.trim());
+      for (const b of out.content) if (b.type === 'text' && b.text.trim()) { aiLog('ai', b.text.trim()); mascot('point', b.text.trim()); }
       if (out.stop_reason === 'refusal') { aiLog('err', 'Fio declined this request.'); break; }
       const calls = out.content.filter(b => b.type === 'tool_use');
       if (out.stop_reason !== 'tool_use' || !calls.length) { if (out.stop_reason === 'max_tokens') aiLog('err', '(reply was cut off)'); break; }
@@ -1706,7 +1752,7 @@ async function askAI(prompt) {
       aiMessages.push({ role: 'user', content: results });
       if (turn === 19) aiLog('err', '(stopped after 20 steps)');
     }
-  } catch (e) { aiLog('err', String(e.message || e)); }
+  } catch (e) { aiLog('err', String(e.message || e)); mascot('shake', "Hmm, I did not catch that one. Try: clear the room, design my place, add 4 two-tops."); }
   const batch = undoStack.splice(mark);
   if (batch.length) { undoStack.push({ batch, label: `AI: ${prompt.slice(0, 40)}` }); aiLog('sys', `${touched.size} piece${touched.size === 1 ? '' : 's'} changed · Ctrl+Z undoes all of it`); }
   status.remove(); aiBusy = false; $('aiInput').disabled = false; $('aiSend').disabled = false; $('aiInput').focus();

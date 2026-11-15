@@ -10,10 +10,14 @@ import { seatsOf, type PlacedPiece } from "../lib/planner";
 const usd = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 const PLAY_SECONDS = 10;
 
-type Props = { floor: Rect; placed: PlacedPiece[]; assets: Asset[]; onPlaced: (next: PlacedPiece[]) => void; onUndo?: () => void };
+type Props = { floor: Rect; placed: PlacedPiece[]; assets: Asset[]; onPlaced: (next: PlacedPiece[]) => void; onUndo?: () => void;
+  /** When given, Fio performs the command on the floor (walking, placing) and resolves with what he says. */
+  onAsk?: (text: string) => Promise<string>;
+  busy?: boolean;
+};
 
 /** Type-to-place instructions plus the "Will it fill?" lunch-rush simulation. All figures are ESTIMATED demo scenarios. */
-export default function PlannerFill({ floor, placed, assets, onPlaced, onUndo }: Props) {
+export default function PlannerFill({ floor, placed, assets, onPlaced, onUndo, onAsk, busy = false }: Props) {
   const seats = useMemo(() => placed.reduce((n, p) => n + seatsOf(p.asset), 0), [placed]);
   const [peak, setPeak] = useState(40);
   const [text, setText] = useState("");
@@ -46,6 +50,14 @@ export default function PlannerFill({ floor, placed, assets, onPlaced, onUndo }:
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (onAsk) {
+      if (!text.trim() || busy) return;
+      const asked = text;
+      setText("");
+      setMsg("Fio is on it...");
+      void onAsk(asked).then(setMsg);
+      return;
+    }
     const r = runFioCommand(text, floor, placed, assets);
     if (r.undo) onUndo?.();
     else if (r.changed) onPlaced(r.placed);
@@ -59,7 +71,7 @@ export default function PlannerFill({ floor, placed, assets, onPlaced, onUndo }:
       <form onSubmit={submit} className="mt-2 flex flex-wrap gap-2">
         <input value={text} onChange={(e) => setText(e.target.value)} placeholder='Ask Fio: "clear the room", "6 two-tops", "move the espresso machine to the back wall"' aria-label="Ask Fio to change the layout"
           className="min-w-0 flex-1 rounded-full border border-foreground/25 bg-background px-3 py-1.5 text-sm" data-testid="fill-instruction" />
-        <button type="submit" className="rounded-full border border-foreground/25 px-3 py-1.5 text-sm" data-testid="fill-place">Do it</button>
+        <button type="submit" className="rounded-full border border-foreground/25 px-3 py-1.5 text-sm" data-testid="fill-place" disabled={busy}>{busy ? "Fio is working" : "Do it"}</button>
       </form>
       {msg && <p role="status" className="mt-1 text-xs text-accent" data-testid="fill-msg">{msg}</p>}
 

@@ -10,6 +10,9 @@ import { conceptFootprint, SQFT_TO_M2 } from "../lib/concept-layout";
 import { fetchLayoutCost, freshResponse, layoutCostItems, scenarioKey, type LayoutCost } from "../lib/layout-cost";
 import type { Match } from "../lib/matches";
 import PlannerFill from "./planner-fill";
+import { FioDesignPanel, useFioPlanner } from "./planner-fio";
+import { readBrief } from "../lib/brief";
+import { briefSeats } from "../lib/fio-design-inputs";
 import { footprint, kindCounts, scanObjectsForFloor, sweepDelay, type ScanPiece } from "../lib/scan-clear";
 import {
   autoLayout, buildVisitors, DOOR_WIDTH, doorX, findSpot, isSeating, newId, reconcile, rotated, sameKit, seatsOf, sizeFor, snapPosition,
@@ -58,6 +61,11 @@ type Props = {
   area: string;
   onArea: (v: string) => void;
   onContinue: () => void;
+  /** Build-out budget in USD shared with the cost panel (typed, else the brief's), and whether it came from the brief. */
+  budget?: number | null;
+  budgetFromBrief?: boolean;
+  /** Bumped by the chat panel to ask Fio to design the place. */
+  designRequest?: number;
 };
 
 const categoryStyle = (a: Asset) =>
@@ -69,7 +77,7 @@ function frontEdge(rot: Rot, b: Placement["box"]): [Pt, Pt] {
   return rot === 0 ? [[b.x0, b.y1], [b.x1, b.y1]] : rot === 90 ? [[b.x0, b.y0], [b.x0, b.y1]] : rot === 180 ? [[b.x1, b.y0], [b.x0, b.y0]] : [[b.x1, b.y0], [b.x1, b.y1]];
 }
 
-export default function CafePlanner({ match, kit, onKit, placed, onPlaced, area, onArea, onContinue }: Props) {
+export default function CafePlanner({ match, kit, onKit, placed, onPlaced, area, onArea, onContinue, budget = null, budgetFromBrief = false, designRequest = 0 }: Props) {
   const sqft = Number(area) || 0;
   const floor = useMemo(() => conceptFootprint(sqft), [sqft]);
   const svgRef = useRef<SVGSVGElement>(null);
@@ -149,6 +157,22 @@ export default function CafePlanner({ match, kit, onKit, placed, onPlaced, area,
     onKit(prev.map((p) => p.asset));
     setSel(null);
   }, [onPlaced, onKit]);
+
+  // Fio edits the floor piece by piece: one undo step up front, then quiet updates of the same placed/kit state.
+  const beginEdit = useCallback(() => {
+    historyRef.current = [...historyRef.current.slice(-49), placedRef.current];
+    setHistory(historyRef.current);
+  }, []);
+  const setQuiet = useCallback((next: PlacedPiece[]) => {
+    placedRef.current = next;
+    onPlaced(next);
+    onKit(next.map((p) => p.asset));
+  }, [onPlaced, onKit]);
+  const [seatsHint] = useState<number | null>(() => briefSeats(readBrief()));
+  const fio = useFioPlanner({
+    floor, assets: catalog.assets, prices, budget, seatsHint, getPlaced: () => placedRef.current,
+    begin: beginEdit, apply: setQuiet, undo, request: designRequest,
+  });
 
   const toFloor = useCallback((cx: number, cy: number): Pt | null => {
     const svg = svgRef.current;
@@ -426,6 +450,7 @@ export default function CafePlanner({ match, kit, onKit, placed, onPlaced, area,
           </aside>
 
           <div ref={floorRef} className="min-w-0 outline-none" tabIndex={0} onKeyDown={onKeyDown} aria-label="Planner floor" data-testid="planner-floor">
+            <FioDesignPanel fio={fio} budget={budget} budgetFromBrief={budgetFromBrief} floor={floor} getPlaced={() => placed} />
             <dl className="grid grid-cols-2 gap-x-6 gap-y-2 rounded-xl border border-foreground/15 bg-background px-4 py-3 text-sm sm:grid-cols-5" data-testid="planner-stats">
               <Stat label="Pieces" value={String(placed.length)} id="pieces" />
               <Stat label="Seats (est.)" value={String(seats)} id="seats" />
@@ -542,6 +567,7 @@ export default function CafePlanner({ match, kit, onKit, placed, onPlaced, area,
                     <circle r={0.11} fill="#f1d9bd" stroke="#1b1a17" strokeOpacity={0.35} strokeWidth={0.02} />
                   </g>
                 ))}
+                {fio.actor}
               </svg>
             </div>
 
@@ -558,7 +584,7 @@ export default function CafePlanner({ match, kit, onKit, placed, onPlaced, area,
               )}
             </div>
 
-            {floor && <PlannerFill floor={floor} placed={placed} assets={catalog.assets} onPlaced={commit} onUndo={undo} />}
+            {floor && <PlannerFill floor={floor} placed={placed} assets={catalog.assets} onPlaced={commit} onUndo={undo} onAsk={fio.ask} busy={fio.busy} />}
 
             {issues.length > 0 && (
               <ul role="alert" className="mt-2 list-disc space-y-0.5 pl-5 text-xs text-foreground/75" data-testid="planner-issues">
