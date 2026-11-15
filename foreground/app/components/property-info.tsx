@@ -30,6 +30,7 @@ import CompatibilityPill from "./compatibility-pill";
 import DataStreams from "./data-streams";
 import GrowthSim from "./structure/growth-sim";
 import LineagePanel from "./triage/lineage-panel";
+import NearbyPeersPanel from "./business/nearby-peers-panel";
 import StructurePanel from "./structure/structure-panel";
 
 const number = new Intl.NumberFormat("en-US");
@@ -286,6 +287,7 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
             <GrowthSim listingId={match.listingId} title="Expansion and growth timeline" />
             <Projections listingId={match.listingId} />
             <LineagePanel listingId={match.listingId} />
+            <NearbyPeersPanel listingId={match.listingId} />
           </>
         )}
 
