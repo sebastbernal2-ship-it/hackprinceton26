@@ -159,21 +159,6 @@ export function unionBounds(a: Bounds, b: Bounds): Bounds {
   };
 }
 
-/** Distance from a point to the box (0 inside). */
-export function distanceOutside(b: Bounds, x: number, y: number, z: number): number {
-  const dx = Math.max(b.min[0] - x, 0, x - b.max[0]);
-  const dy = Math.max(b.min[1] - y, 0, y - b.max[1]);
-  const dz = Math.max(b.min[2] - z, 0, z - b.max[2]);
-  return Math.sqrt(dx * dx + dy * dy + dz * dz);
-}
-
-/** Horizontal (xz) distance from a point to the box footprint (0 inside). */
-export function distanceOutsideXZ(b: Bounds, x: number, z: number): number {
-  const dx = Math.max(b.min[0] - x, 0, x - b.max[0]);
-  const dz = Math.max(b.min[2] - z, 0, z - b.max[2]);
-  return Math.sqrt(dx * dx + dz * dz);
-}
-
 export function insideXZ(b: Bounds, x: number, z: number): boolean {
   return x >= b.min[0] && x <= b.max[0] && z >= b.min[2] && z <= b.max[2];
 }
