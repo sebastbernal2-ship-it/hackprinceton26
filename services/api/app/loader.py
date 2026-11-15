@@ -11,6 +11,7 @@ STATUSES = {"observed", "derived", "estimated", "unknown"}
 CANDIDATES = "restaurant-site-candidates.csv"
 FACTORS = "factor-cards.csv"
 PROPERTY_MODELS = "commercial-properties.csv"
+EVIDENCE = "restaurant-site-evidence.csv"
 
 
 def _scan_areas() -> dict:
@@ -83,6 +84,12 @@ def _walk_ready(model: str) -> bool:
     return (root / f"assets_{model}" / "walk" / "meta.json").is_file()
 
 
+def _evidence(d: Path) -> dict[str, dict]:
+    """restaurant-site-evidence.csv (listing and tenancy columns for the same candidates), by property id. Optional."""
+    p = d / EVIDENCE
+    return {r.get("property_id", ""): r for r in _rows(p)} if p.is_file() else {}
+
+
 def _match(c: dict, cards: list[FactorCard], models: Optional[list[str]] = None) -> Optional[Match]:
     listing = _int(c.get("property_id", ""))
     if listing is None:
@@ -96,7 +103,10 @@ def _match(c: dict, cards: list[FactorCard], models: Optional[list[str]] = None)
         (m for m in models if _walk_ready(m)), models[0] if models else ""
     )
     prop: list[Fact] = []
+    from .concept_gate import subtype_name
+    subtype = subtype_name(c.get("property_subtype_code", ""))
     _fact("Property Type", c.get("property_type", ""), prop)
+    _fact("Property Subtype", subtype, prop)
     if sqft:
         _fact("Area", f"{sqft:,} sq ft", prop)
     _fact("Sprinklers", {"true": "Yes", "false": "No"}.get(c.get("has_sprinklers", "").lower(), ""), prop)
@@ -108,7 +118,11 @@ def _match(c: dict, cards: list[FactorCard], models: Optional[list[str]] = None)
         _fact("Matterport (CoStar-listed, property level)", ", ".join(models), loc)
     city = ", ".join(x for x in (c.get("city", ""), c.get("state", "")) if x)
     # Space you would lease: the listing's available space; else the floor area measured from this site's scan.
-    space, space_src = _int(c.get("active_listed_min_available_sqft", "")), "listing"
+    lo_s, hi_s = _int(c.get("active_listed_min_available_sqft", "")), _int(c.get("active_listed_max_available_sqft", ""))
+    space, space_src = (lo_s or hi_s), "listing"
+    suites = [x for x in (lo_s or hi_s, hi_s or lo_s) if x]
+    if suites:
+        _fact("Listed available space", f"{min(suites):,} to {max(suites):,} sq ft" if min(suites) != max(suites) else f"{suites[0]:,} sq ft", prop)
     if not space:
         scan = _scan_areas().get(tour) or {}
         space, space_src = (scan.get("squareFeet"), "scan") if scan.get("squareFeet") else (None, None)
@@ -116,6 +130,11 @@ def _match(c: dict, cards: list[FactorCard], models: Optional[list[str]] = None)
             _fact(f"Scanned floor area ({scan.get('status')}, Matterport {tour})", f"{space:,} sq ft", prop)
     photo_root = photo_dir() / str(listing)
     photos = [f"/api/site-photos/{listing}/{name}" for name in ("photo-1.jpg", "aerial.jpg") if (photo_root / name).is_file()]
+    if not photos and tour:  # no listing photo: a locally captured scan photo, else nothing (the card draws a placeholder, no request is made)
+        scan_dir = photo_dir() / f"scan-{tour}"
+        local = Path(os.environ.get("SCAN_ASSETS_DIR", ".")) / f"assets_{tour}" / "matterport" / "preview.jpg"
+        if (scan_dir / "photo-1.jpg").is_file() or local.is_file():
+            photos = [f"/api/scan-photo?modelId={tour}&n=0"]
     return Match(
         listingId=listing,
         address=c.get("address", ""),
@@ -128,6 +147,7 @@ def _match(c: dict, cards: list[FactorCard], models: Optional[list[str]] = None)
         spaceSource=space_src,
         rentPerSquareFootYear=None,
         tourId=tour,
+        propertyType=c.get("property_type", ""), propertySubtype=subtype, suiteRangeSqft=[min(suites), max(suites)] if suites else None,
         evidenceReadiness=evidence_readiness(cards),
         facts=SpaceFacts(photos=photos, property=prop, location=loc),
         factors=cards,
@@ -158,7 +178,7 @@ def _load_matches(d: Path, cand: Path, fac: Path) -> list[Match]:
     by_prop: dict[str, list[FactorCard]] = {}
     for r in _rows(fac):
         by_prop.setdefault(r.get("property_id", ""), []).append(_card(r))
-    models = _costar_models(d)
-    out = [m for c in _rows(cand) if (m := _match(c, streams.merge(_int(c.get("property_id", "")) or 0, by_prop.get(c.get("property_id", ""), [])), models.get(c.get("property_id", ""))))]
+    models, ev = _costar_models(d), _evidence(d)
+    out = [m for c in _rows(cand) if (m := _match({**ev.get(c.get("property_id", ""), {}), **c}, streams.merge(_int(c.get("property_id", "")) or 0, by_prop.get(c.get("property_id", ""), [])), models.get(c.get("property_id", ""))))]
     from . import picker
     return sorted(out, key=lambda m: m.listingId) + [c for c in picker.cafe_candidates() if picker.walk_ready(c.tourId)]  # only scans with a local walk export

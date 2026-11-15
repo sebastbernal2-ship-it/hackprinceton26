@@ -52,7 +52,7 @@ async function localAnswer(body: { messages?: unknown; fio?: { match?: Match } }
   let text: string;
   if (!match) text = "I do not know which property this scan belongs to. Open it from the matches page (View Info), then reopen the walk, and I can answer from its data.";
   else if (EDIT_REQUEST.test(question)) text = "I did not read that as a scene command. Try: clear the room, remove the sofa, move the chair to the back wall, add 4 two-tops along the windows, rotate the table, put a bar by the door, or what is in this room? I can also answer questions about this property: cost, seats, hazards, history, forecasts, next steps and fit.";
-  else text = answerFio(match, await loadFioContext(match.listingId, API), question || "help");
+  else text = answerFio(match, await loadFioContext(match.listingId, API, match.spaceSource === "scan-estimate"), question || "help");
   return { content: [{ type: "text", text }], stop_reason: "end_turn", model: "fio-local" };
 }
 

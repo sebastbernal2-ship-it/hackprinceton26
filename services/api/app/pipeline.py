@@ -10,7 +10,7 @@ from integration import intake  # noqa: E402
 from integration.constraint_filter import filter as cf  # noqa: E402
 from planning import assessment  # noqa: E402
 
-from . import picker  # noqa: E402
+from . import concept_gate, picker  # noqa: E402
 
 from .models import (  # noqa: E402
     AssessInputs, AssessRequest, ConstraintVerdict, Match, ParsedProfile, ProjectionCard, ScenarioAssessment,
@@ -100,17 +100,24 @@ def alignment(res: cf.SiteResult) -> Alignment:
                      unknownItems=[label(r) for r in res.results if r.status == cf.UNKNOWN])
 
 
-def shortlist(pool: list[Match], profile: cf.Profile, limit: int | None = None, brief_text: str = ""):
+def shortlist(pool: list[Match], profile: cf.Profile, limit: int | None = None, brief_text: str = "", gate: dict | None = None):
     """(shown, counts, excluded, notShown). PASS first, then the space picker's order (food-service concept, scan, area, seats, budget, city),
     then more confirmed requirements, evidenceReadiness, listingId. Each row carries `pick` (reasons; best match is labelled demo)."""
     limit = limit or LIMIT
+    concept = picker.detect_concept(brief_text)
+    total = len(pool)
+    # Concept gate: a food brief only ever sees sites whose use and suite size can host it (cafe scans are exempt).
+    pool, gated, notes = concept_gate.apply(pool, profile, concept, picker.food_spells, picker.CAFE_IDS, brief_text)
+    if gate is not None:
+        gate["summary"] = concept_gate.summary(gated, total, concept)
     bounds = assessment.buildout_bounds() if profile.budget is not None else None
     results = {m.listingId: cf.evaluate(profile, site_facts(m, bounds)) for m in pool}
     counts = {s: sum(r.status == s for r in results.values()) for s in (cf.PASS, cf.FAIL, cf.UNKNOWN)}
-    kept = [m for m in pool if results[m.listingId].status != cf.FAIL]
+    cafe_scan = lambda m: concept == "cafe" and m.listingId in picker.CAFE_IDS and not m.factors  # noqa: E731
+    city_fail = lambda m: any(r.constraint == "city" and r.status == cf.FAIL for r in results[m.listingId].results)  # noqa: E731
+    kept = [m for m in pool if results[m.listingId].status != cf.FAIL or (cafe_scan(m) and not city_fail(m))]
     n_pass = lambda m: sum(r.status == cf.PASS for r in results[m.listingId].results)  # noqa: E731
-    concept = picker.detect_concept(brief_text)
-    rows = picker.order(kept, results, profile, concept, picker.wants_prior_food(brief_text), n_pass)
+    rows = picker.order(kept, results, profile, concept, picker.wants_prior_food(brief_text), n_pass, notes)
     out = [ShortlistMatch(**m.model_dump(), constraintStatus=results[m.listingId].status,
                           constraints=_verdicts(results[m.listingId]), alignment=alignment(results[m.listingId]),
                           missingFields=list(results[m.listingId].missing_fields),

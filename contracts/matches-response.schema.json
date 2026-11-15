@@ -317,7 +317,8 @@
         "constraintStatus": {
           "enum": [
             "PASS",
-            "UNKNOWN"
+            "UNKNOWN",
+            "FAIL"
           ],
           "title": "Constraintstatus",
           "type": "string"
@@ -373,6 +374,16 @@
           ],
           "default": null,
           "title": "Pick"
+        },
+        "propertySubtype": {
+          "default": "",
+          "title": "Propertysubtype",
+          "type": "string"
+        },
+        "propertyType": {
+          "default": "",
+          "title": "Propertytype",
+          "type": "string"
         },
         "rent": {
           "anyOf": [
@@ -434,6 +445,21 @@
           "default": null,
           "title": "Squarefeet"
         },
+        "suiteRangeSqft": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "integer"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Suiterangesqft"
+        },
         "tourId": {
           "title": "Tourid",
           "type": "string"
@@ -491,6 +517,18 @@
     }
   },
   "properties": {
+    "conceptGate": {
+      "anyOf": [
+        {
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Conceptgate"
+    },
     "counts": {
       "additionalProperties": {
         "type": "integer"
