@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Optional
 
 from .models import Fact, FactorCard, Match, SpaceFacts
+from . import streams
 from .readiness import evidence_readiness
 
 STATUSES = {"observed", "derived", "estimated", "unknown"}
@@ -143,5 +144,5 @@ def load_matches(directory: Optional[Path] = None) -> Optional[list[Match]]:
     for r in _rows(fac):
         by_prop.setdefault(r.get("property_id", ""), []).append(_card(r))
     models = _costar_models(d)
-    out = [m for c in _rows(cand) if (m := _match(c, by_prop.get(c.get("property_id", ""), []), models.get(c.get("property_id", ""))))]
+    out = [m for c in _rows(cand) if (m := _match(c, streams.merge(_int(c.get("property_id", "")) or 0, by_prop.get(c.get("property_id", ""), [])), models.get(c.get("property_id", ""))))]
     return sorted(out, key=lambda m: m.listingId)
