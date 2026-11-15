@@ -27,9 +27,9 @@ def card(status):
     return FactorCard(factorId="f", status=status, value="", unit="", source="", recordId="", asOf="", geography="", limitations="")
 
 
-def test_readiness_counts_only_observed():
+def test_readiness_counts_observed_and_derived():
     assert evidence_readiness([]) == 0
-    assert evidence_readiness([card("unknown"), card("estimated"), card("derived")]) == 0
+    assert evidence_readiness([card("unknown"), card("estimated"), card("derived")]) == 33
     assert evidence_readiness([card("observed"), card("unknown")]) == 50
     assert evidence_readiness([card("observed")]) == 100
 
@@ -46,7 +46,7 @@ def test_matches_from_fixtures(data):
     assert r["dataAvailable"] is True
     m = {x["listingId"]: x for x in r["matches"]}
     assert m[900001]["squareFeet"] == 2500 and m[900001]["tourId"] == "MODEL123"
-    assert m[900001]["evidenceReadiness"] == 50  # 2 of 4 observed
+    assert m[900001]["evidenceReadiness"] == 33  # 2 of 6: 4 fixture cards + 2 labelled estimated demo stream cards
     assert m[900002]["squareFeet"] == 1800 and m[900002]["tourId"] == ""
     assert m[900002]["rentPerSquareFootYear"] is None
     assert "confidence" not in m[900001]
