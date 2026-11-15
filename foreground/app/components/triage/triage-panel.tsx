@@ -16,7 +16,7 @@ const TONE: Record<TriageStatus, string> = {
 };
 
 function Cell({ label, value, unit }: { label: string; value: string; unit?: string }) {
-  const unknown = value === "Cannot say";
+  const unknown = value === "Pending";
   return (
     <div className="min-w-0">
       <div className="text-[11px] uppercase tracking-wide text-foreground/45">{label}</div>
@@ -68,10 +68,10 @@ function Aerial({ a }: { a: AerialResult | null }) {
         <p className="mt-1">
           Vehicles in the crop (not parking stalls): {v.low}-{v.high}, expected {v.expected}. <span className="text-foreground/50">{v.rationale}</span>
         </p>
-      ) : <p className="mt-1">Vehicles: cannot say.</p>}
+      ) : <p className="mt-1">Vehicles: pending.</p>}
       <ul className="mt-1 list-disc pl-4 text-foreground/55">
         {(["rooftop_units", "parking_stalls", "loading_docks", "roof_area_shape"] as const).map((k) => (
-          <li key={k}>{k.replace(/_/g, " ")}: Cannot say. {a[k].reason}</li>
+          <li key={k}>{k.replace(/_/g, " ")}: Pending. {a[k].reason}</li>
         ))}
       </ul>
       <p className="mt-1 text-foreground/45">Imagery date {a.imagery.capture_date ?? "unknown"}. {a.provenance}</p>
@@ -107,7 +107,7 @@ export default function TriagePanel({ listingId }: { listingId: number }) {
         <>
           <p className="mt-3 text-sm" data-testid="triage-summary">
             {t.hasScan ? "Matterport scan on file" : "No Matterport scan"} · {t.hasAerial ? "Vexcel aerial on file" : "No aerial"} ·{" "}
-            {counts.confirmed} confirmed, {counts.filled} filled, {counts.conflicting} conflicting, {counts["blank-unfillable"]} cannot say, {counts.unverified} unverified
+            {counts.confirmed} confirmed, {counts.filled} filled, {counts.conflicting} conflicting, {counts["blank-unfillable"]} not on file, {counts.unverified} awaiting site check
           </p>
           <ul className="mt-2">{[...t.fields].sort((a, b) => b.reviewScore - a.reviewScore).map((f) => <FieldRow key={f.field} f={f} />)}</ul>
           <Aerial a={cur.aerial} />

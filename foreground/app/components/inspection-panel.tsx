@@ -38,7 +38,7 @@ export default function InspectionPanel({ listingId, onData }: { listingId: numb
         Things that could cost money, flagged from imagery and layout. Imagery cannot prove hidden defects; each finding says what an on-site inspector must verify.
       </p>
       {!current && <p className="mt-3 text-sm text-foreground/50">Loading inspection.</p>}
-      {current && !data && <p className="mt-3 text-sm text-foreground/60">Cannot say: the inspection service did not answer.</p>}
+      {current && !data && <p className="mt-3 text-sm text-foreground/60">Pending: the inspection service did not answer.</p>}
       {data && data.mode !== "live" && (
         <p role="note" className="mt-3 rounded-lg border border-foreground/25 bg-foreground/5 px-3 py-2 text-sm font-medium">
           {MODE_BANNER[data.mode]}

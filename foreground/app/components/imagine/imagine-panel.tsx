@@ -107,11 +107,11 @@ export default function ImaginePanel({ listingId }: { listingId: number }) {
 
           <section aria-labelledby="img-ver-h">
             <h3 id="img-ver-h" className="text-sm font-medium">{parsed.kind === "reskin" ? "3" : "2"}. Things to verify before committing</h3>
-            <p className="mt-1 text-xs text-foreground/50">A checklist, not findings. None of these has a source here, so every item is unverified; none states a code requirement.</p>
+            <p className="mt-1 text-xs text-foreground/50">A checklist, not findings. None of these has a source here, so every item is still to confirm; none states a code requirement.</p>
             <ul className="mt-2 grid gap-2 sm:grid-cols-2">
               {VERIFY_TOPICS.map((v) => (
                 <li key={v.id} className="rounded-lg border border-foreground/10 p-2.5 text-sm">
-                  <div className="flex items-center justify-between gap-2"><span className="font-medium">{v.topic}</span><Badge kind="unverified">unverified</Badge></div>
+                  <div className="flex items-center justify-between gap-2"><span className="font-medium">{v.topic}</span><Badge kind="unverified">to confirm</Badge></div>
                   <p className="mt-1 text-foreground/60">{v.ask}</p>
                 </li>
               ))}

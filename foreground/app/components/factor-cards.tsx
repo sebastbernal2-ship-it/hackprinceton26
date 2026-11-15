@@ -5,7 +5,7 @@ const LABEL: Record<FactorStatus, string> = {
   observed: "Observed",
   derived: "Derived",
   estimated: "Estimated",
-  unknown: "Unknown",
+  unknown: "Pending",
 };
 
 const TONE: Record<FactorStatus, string> = {

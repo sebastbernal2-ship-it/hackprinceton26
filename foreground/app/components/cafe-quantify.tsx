@@ -75,7 +75,7 @@ export default function CafeQuantify({ kit, onKit, area, onArea, linkedBuilding 
           </p>
         )}
         {recalculating && <p role="status" className="mt-3 text-xs text-foreground/50">Updating the estimate for your changes...</p>}
-        {failed && <p role="alert" className="mt-4 text-sm text-foreground/60">Cannot say: the cost service did not answer. Nothing below is zero; it is unknown.</p>}
+        {failed && <p role="alert" className="mt-4 text-sm text-foreground/60">Pending: the cost service did not answer. Nothing below is zero; it is unknown.</p>}
         {kit.length === 0 && (
           <p className="mt-4 text-sm text-foreground/60">No equipment placed yet. Close this panel and use <b>Load cafe reference kit</b> in the layout section, then come back.</p>
         )}
@@ -150,7 +150,7 @@ export default function CafeQuantify({ kit, onKit, area, onArea, linkedBuilding 
         )}
         <div className="mt-5 text-sm" aria-live="polite">
           {!budgetN ? <p className="text-foreground/60">Enter a budget to see P(over budget). Without one it is unknown, not zero.</p>
-            : !data?.buildout ? <p className="text-foreground/60">Cannot say: nothing priced to compare with the budget.</p>
+            : !data?.buildout ? <p className="text-foreground/60">Pending: nothing priced to compare with the budget.</p>
             : (
               <>
                 <p>P(build-out over {range({ low: budgetN, high: budgetN })}): <span className="font-medium tabular-nums" data-testid="p-over">{pct(data.pOverBudget)}</span>

@@ -7,8 +7,8 @@ const field = (o: Partial<TriageField>): TriageField => ({ field: "area_sqft", s
 
 describe("triage helpers", () => {
   it("unknown is never rendered as zero", () => {
-    expect(showValue(null)).toBe("Cannot say");
-    expect(showValue(undefined)).toBe("Cannot say");
+    expect(showValue(null)).toBe("Pending");
+    expect(showValue(undefined)).toBe("Pending");
     expect(showValue(0, "ft")).toBe("0 ft");
     expect(showValue(true)).toBe("yes");
   });
@@ -66,10 +66,10 @@ describe("agent helpers", () => {
 });
 
 describe("finance helpers", () => {
-  it("formats unknown as Cannot say, not $0", () => {
-    expect(usd(null)).toBe("Cannot say");
+  it("formats unknown as Pending, not $0", () => {
+    expect(usd(null)).toBe("Pending");
     expect(usd(-1234.4)).toBe("-$1,234");
-    expect(pct(undefined)).toBe("Cannot say");
+    expect(pct(undefined)).toBe("Pending");
     expect(pct(0.336)).toBe("34%");
   });
   it("scales and builds a closed band path", () => {

@@ -4,14 +4,14 @@ import { useEffect, useRef, useState } from "react";
 import { isWalkLayout, summarizeLayout, type LayoutSummary } from "../lib/layout-summary";
 import Stepper from "./stepper";
 
-type PlanVisionProps = { tourId: string; title: string; detail?: string; onClose: () => void; onContinue?: (layout: LayoutSummary | null) => void };
+type PlanVisionProps = { tourId: string; title: string; detail?: string; onClose: () => void; onContinue?: (layout: LayoutSummary | null) => void; onStep?: (step: number) => void; step?: number };
 
 /**
  * Step 4, Project layout: Davd's first-person 3D model of the scan (modeling/walk.html, served at /walk3d/), where the
  * owner walks the space, moves or removes furniture and places catalogue pieces. Needs a local walk export
  * (assets_<id>/walk/, from modeling/walk_export.py); without one it falls back to Matterport's read-only tour.
  */
-export default function PlanVision({ tourId, title, detail, onClose, onContinue }: PlanVisionProps) {
+export default function PlanVision({ tourId, title, detail, onClose, onContinue, onStep, step }: PlanVisionProps) {
   const [ready, setReady] = useState<boolean | null>(tourId ? null : false);
   const frameRef = useRef<HTMLIFrameElement>(null);
   const layoutRef = useRef<LayoutSummary | null>(null);
@@ -61,7 +61,7 @@ export default function PlanVision({ tourId, title, detail, onClose, onContinue 
           <p className="truncate text-sm font-medium tracking-tight">{title}{detail ? ` · ${detail}` : ""}</p>
           <p className="truncate text-xs text-foreground/50">Walk the scan, rearrange it, and place new pieces. Edits are a sketch, not a measured plan.</p>
         </div>
-        <div className="hidden lg:block"><Stepper active={3} /></div>
+        <div className="hidden lg:block"><Stepper active={step ?? 3} onStep={onStep} /></div>
         {onContinue && ready && (
           <button type="button" onClick={() => void continueToQuantify()} className="rounded-full bg-foreground px-5 py-2 text-sm font-medium text-background transition-opacity hover:opacity-90">
             Continue to Quantify

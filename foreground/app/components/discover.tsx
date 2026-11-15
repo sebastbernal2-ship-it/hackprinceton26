@@ -2,6 +2,7 @@
 
 import ListingPhoto from "./listing-photo";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { buildoutCaption, buildoutLabel, heroPhoto, rentEstimateLabel, monthlyRent, rentLabel, type Match } from "../lib/matches";
 import { useMatches, type MatchesState } from "../lib/discover";
 import { alignmentView, topAlignment } from "../lib/alignment";
@@ -19,11 +20,14 @@ export default function Discover() {
   const [tour, setTour] = useState<Match | null>(null);
   const [info, setInfo] = useState<Match | null>(null);
   const leaders = topAlignment(matches);
+  const router = useRouter();
+  // Steps 3 onward belong to one property, so they open the top candidate.
+  const goStep = (step: number) => { if (step === 0) router.push("/"); else if (step >= 2 && matches[0]) setInfo(matches[0]); };
 
   return (
     <>
       <header className="animate-rise">
-        <div className="mb-4 hidden sm:block"><Stepper active={1} /></div>
+        <div className="mb-4 hidden sm:block"><Stepper active={1} onStep={goStep} /></div>
         <h1 className="text-[clamp(1.6rem,4vw,2.5rem)] font-medium leading-tight tracking-tight">Shortlist</h1>
         <p className="mt-2 text-foreground/50">{subtitle(state)}</p>
       </header>

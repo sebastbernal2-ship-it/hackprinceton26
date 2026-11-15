@@ -11,7 +11,7 @@ import Stepper from "./stepper";
 import TotalCostPanel from "./total-cost-panel";
 
 type QuantifyProps = {
-  match: Match; layout: LayoutSummary | null; onBackToLayout: () => void; onClose: () => void;
+  match: Match; layout: LayoutSummary | null; onBackToLayout: () => void; onClose: () => void; onStep?: (step: number) => void; step?: number;
   /** Café demo path: the reference-kit pieces placed on the property page and the owner's assumed area. */
   kit?: Asset[]; onKit?: (items: Asset[]) => void; area?: string; onArea?: (v: string) => void;
 };
@@ -23,7 +23,7 @@ const nice = (kind: string) => kind.charAt(0).toUpperCase() + kind.slice(1);
  * Furniture has no price source in the cost engine, so layout items are listed as unpriced, never as $0. The seat
  * count feeds the 36-month scenario and can be overridden; it is an estimate from the segmentation's piece labels.
  */
-export default function Quantify({ match, layout, onBackToLayout, onClose, kit = [], onKit = () => {}, area = "", onArea = () => {} }: QuantifyProps) {
+export default function Quantify({ match, layout, onBackToLayout, onClose, onStep, step, kit = [], onKit = () => {}, area = "", onArea = () => {} }: QuantifyProps) {
   const [seatsInput, setSeatsInput] = useState<string>(layout && layout.seats > 0 ? String(layout.seats) : "");
   const seatsNum = Number(seatsInput);
   const seats = Number.isInteger(seatsNum) && seatsNum >= 1 && seatsNum <= 500 ? seatsNum : null;
@@ -49,7 +49,7 @@ export default function Quantify({ match, layout, onBackToLayout, onClose, kit =
             Back to property
           </button>
         </div>
-        <div className="mb-5 mt-6"><Stepper active={4} /></div>
+        <div className="mb-5 mt-6"><Stepper active={step ?? 4} onStep={onStep} /></div>
         <h1 id="quantify-title" className="text-[clamp(1.6rem,4vw,2.5rem)] font-medium leading-tight tracking-tight">Quantify</h1>
         <p className="mt-1 text-foreground/50">{match.address}{match.detail ? ` · ${match.detail}` : ""}</p>
 

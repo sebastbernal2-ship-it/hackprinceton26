@@ -45,7 +45,7 @@ export default function DataStreams({ listingId }: { listingId: number }) {
         out.push(f.length > 0
           ? { title: "Scan vs CoStar checks", status: "derived", lines: [
               `${f.filter((x) => x.status === "verified" || x.status === "consistent").length} of ${f.length} fields confirmed by scan or aerial`,
-              `${f.filter((x) => x.status === "unverified").length} unverified, ${f.filter((x) => String(x.status).startsWith("blank")).length} blank in CoStar`,
+              `${f.filter((x) => x.status === "unverified").length} awaiting site check, ${f.filter((x) => String(x.status).startsWith("blank")).length} not on file in CoStar`,
             ] }
           : { title: "Scan vs CoStar checks", status: "unknown", lines: ["No triage for this listing."] });
         out.push(ae
@@ -66,7 +66,7 @@ export default function DataStreams({ listingId }: { listingId: number }) {
           <div key={s.title} className="rounded-2xl border border-foreground/12 p-4 text-sm">
             <div className="flex items-start justify-between gap-2">
               <h3 className="font-medium">{s.title}</h3>
-              <span className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] ${BADGE[s.status]}`}>{s.status === "observed" ? "Observed" : s.status === "derived" ? "Derived" : "Unknown"}</span>
+              <span className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] ${BADGE[s.status]}`}>{s.status === "observed" ? "Observed" : s.status === "derived" ? "Derived" : "Pending"}</span>
             </div>
             <div className="mt-2 space-y-1 text-foreground/65">{s.lines.map((l) => <p key={l}>{l}</p>)}</div>
           </div>

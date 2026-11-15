@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import ListingPhoto from "./listing-photo";
 import InspectionPanel from "./inspection-panel";
 import CostarBuilding from "./costar-building";
@@ -56,6 +57,24 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
   // Café demo path: the placed reference kit and the owner's assumed area are shared by the layout panel and Quantify.
   const [kit, setKit] = useState<Asset[]>([]);
   const [area, setArea] = useState("");
+  const router = useRouter();
+  const lastLayout = useRef<LayoutSummary | null>(null);
+  const scrollTo = (id: string) => window.setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" }) ?? document.querySelector(`[data-testid="${id}"]`)?.scrollIntoView({ behavior: "smooth" }), 500);
+  // The seven workflow steps map to views of this property: 0 intake page, 1 shortlist, 2 overview, 3 layout, 4 quantify,
+  // 5 act checklist (inside quantify), 6 re-plan (deeper analysis).
+  const [current, setCurrent] = useState(2);
+  function goStep(step: number) {
+    if (step < 0 || step > 6) return;
+    setCurrent(step);
+    if (step === 0) { router.push("/"); return; }
+    if (step === 1) { onBack(); return; }
+    setPlanOpen(step === 3);
+    setQuantify(step === 4 || step === 5 ? { layout: lastLayout.current } : null);
+    if (step === 2) setTab("overview");
+    if (step === 6 && !match.demo) { setTab("analysis"); scrollTo("replan-panel"); }
+    if (step === 6 && match.demo) setTab("overview");
+    if (step === 5) scrollTo("act-title");
+  }
   const [tab, setTab] = useState<"overview" | "layout" | "analysis">("overview");
   const hero = photos[index % photos.length];
   const thumbs = photos.filter((_, photoIndex) => photoIndex !== index % photos.length).slice(0, 3);
@@ -89,7 +108,7 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
         Back to Shortlist
       </button>
       <div className="mx-auto max-w-[84rem] px-6 pb-16 pt-8 sm:px-12">
-        <div className="mb-5"><Stepper active={2} /></div>
+        <div className="mb-5"><Stepper active={current} onStep={goStep} /></div>
         <div className={`grid items-stretch gap-4 ${thumbs.length > 0 ? "lg:grid-cols-[1.65fr_0.72fr]" : ""}`}>
           <div className={`relative self-start overflow-hidden rounded-[1.35rem] bg-foreground/5 ${thumbs.length > 0 ? "aspect-[16/10]" : "aspect-[16/7]"}`}>
             <ListingPhoto src={hero} alt={`${match.address} ${match.detail}`} className="absolute inset-0 h-full w-full" />
@@ -244,13 +263,13 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
       {planOpen && (
         <PlanVision
           tourId={match.tourId} title={match.address} detail={match.detail} onClose={() => setPlanOpen(false)}
-          onContinue={(layout) => { setPlanOpen(false); setQuantify({ layout }); }}
+          step={current} onStep={goStep} onContinue={(layout) => { lastLayout.current = layout; setCurrent(4); setPlanOpen(false); setQuantify({ layout }); }}
         />
       )}
       {quantify && (
         <Quantify
           match={match} layout={quantify.layout} kit={kit} onKit={setKit} area={area} onArea={setArea}
-          onBackToLayout={() => { setQuantify(null); setPlanOpen(true); }}
+          step={current} onStep={goStep} onBackToLayout={() => { setCurrent(3); setQuantify(null); setPlanOpen(true); }}
           onClose={() => setQuantify(null)}
         />
       )}
