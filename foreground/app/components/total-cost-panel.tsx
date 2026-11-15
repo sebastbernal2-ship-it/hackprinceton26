@@ -15,7 +15,7 @@ const TONE: Record<string, string> = {
  * square feet to lease (CoStar gives only the building size) and picks a rent rate; unknown parts stay out of the total.
  * onRent hands the monthly rent to the 36-month scenario.
  */
-export default function TotalCostPanel({ listingId, initialSquareFeet, onRent }: { listingId: number; initialSquareFeet?: number; onRent?: (monthly: number | null) => void }) {
+export default function TotalCostPanel({ listingId, initialSquareFeet, onRent, buildoutFromLayout }: { listingId: number; initialSquareFeet?: number; onRent?: (monthly: number | null) => void; buildoutFromLayout?: boolean }) {
   // For a candidate listing, use its stated area as an editable starting assumption. Demo scans
   // linked only to a building record omit this value because building area is not the cafe's lease area.
   const [sqft, setSqft] = useState(initialSquareFeet && initialSquareFeet > 0 ? String(Math.round(initialSquareFeet)) : "");
@@ -31,20 +31,20 @@ export default function TotalCostPanel({ listingId, initialSquareFeet, onRent }:
   useEffect(() => {
     let live = true;
     const t = setTimeout(() => {
-      fetchTotalCost(listingId, { sqft: area, rent: rate, rentSource: source === "own" ? null : source, months }).then(
+      fetchTotalCost(listingId, { sqft: area, rent: rate, rentSource: source === "own" ? null : source, months, buildoutFromLayout }).then(
         (d) => { if (!live) return; setData(d); setFailed(false); const r = d.parts.find((p) => p.id === "rent"); onRent?.(r ? r.low : null); },
         () => live && setFailed(true),
       );
     }, 250);
     return () => { live = false; clearTimeout(t); };
-  }, [listingId, area, rate, source, months, onRent]);
+  }, [listingId, area, rate, source, months, onRent, buildoutFromLayout]);
 
   const chosen = source ?? data?.rentChosen?.id ?? null;
 
   return (
     <section className="mt-8 rounded-[1.75rem] border border-foreground/15 p-6 sm:p-8" aria-labelledby="total-title" data-testid="total-cost">
       <h2 id="total-title" className="text-lg font-medium tracking-tight">Total cost</h2>
-      <p className="mt-1 text-sm text-foreground/55">Build-out, running costs and rent for this space. Ranges, not quotes.</p>
+      <p className="mt-1 text-sm text-foreground/55">{buildoutFromLayout ? "Running costs and rent for this scan's building area. Ranges, not quotes." : "Build-out, running costs and rent for this space. Ranges, not quotes."}</p>
       {failed && <p className="mt-4 text-sm text-foreground/55">Cannot say: the cost service did not answer.</p>}
 
       <div className="mt-5 flex flex-wrap gap-4">
@@ -54,7 +54,9 @@ export default function TotalCostPanel({ listingId, initialSquareFeet, onRent }:
             placeholder={data?.buildingSquareFeet ? `building is ${Math.round(data.buildingSquareFeet).toLocaleString()} sq ft` : "e.g. 2500"}
             className="mt-1 w-56 rounded-lg border border-foreground/20 bg-background px-3 py-2 tabular-nums" />
           <span className="mt-1 block max-w-sm text-xs text-foreground/45">
-            {initialSquareFeet && initialSquareFeet > 0
+            {buildoutFromLayout
+              ? "Rent and running costs only; build-out is priced from your layout above. The area is your own assumption, never the building's size."
+              : initialSquareFeet && initialSquareFeet > 0
               ? `Starts with the listing area (${Math.round(initialSquareFeet).toLocaleString()} sq ft), also used for the concept layout. This is an editable area assumption, not a confirmed lease area.`
               : "Enter the cafe area you plan to lease. A linked building's total area is shown only as a reference; it is not assumed to be your lease area."}
           </span>
@@ -106,7 +108,7 @@ export default function TotalCostPanel({ listingId, initialSquareFeet, onRent }:
               ))}
               {data.excluded.map((e) => (
                 <tr key={e.id} className="border-t border-foreground/10 text-foreground/55">
-                  <td className="py-3 pr-3">{e.id === "rent" ? "Rent" : e.id} <span className="ml-2 rounded-full border border-foreground/15 px-2 py-0.5 text-[0.7rem]">unknown</span><p className="mt-1 text-xs">{e.reason}. Not counted, not zero.</p></td>
+                  <td className="py-3 pr-3">{e.id === "rent" ? "Rent" : e.id === "buildout" ? "Build-out" : e.id} <span className="ml-2 rounded-full border border-foreground/15 px-2 py-0.5 text-[0.7rem]">unknown</span><p className="mt-1 text-xs">{e.reason}. Not counted, not zero.</p></td>
                   <td className="py-3 text-right">Unknown</td>
                 </tr>
               ))}

@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@matterport/sdk": "^1.6.2",
+    "geist": "^1.5.1",
     "next": "16.4.6",
     "polygon-clipping": "^0.15.7",
     "react": "19.3.0",

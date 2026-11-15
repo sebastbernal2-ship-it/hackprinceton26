@@ -21,7 +21,7 @@ export type TotalCost = {
   notice: string;
 };
 
-export type TotalCostQuery = { sqft?: number | null; rent?: number | null; rentSource?: string | null; months?: number };
+export type TotalCostQuery = { sqft?: number | null; rent?: number | null; rentSource?: string | null; months?: number; buildoutFromLayout?: boolean };
 
 export async function fetchTotalCost(listingId: number, q: TotalCostQuery): Promise<TotalCost> {
   const p = new URLSearchParams();
@@ -29,6 +29,7 @@ export async function fetchTotalCost(listingId: number, q: TotalCostQuery): Prom
   if (q.rent) p.set("rent", String(q.rent));
   else if (q.rentSource) p.set("rentSource", q.rentSource);
   p.set("months", String(q.months ?? 12));
+  if (q.buildoutFromLayout) p.set("buildout", "layout");
   const res = await fetch(`/api/property/${listingId}/total-cost?${p}`);
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return (await res.json()) as TotalCost;

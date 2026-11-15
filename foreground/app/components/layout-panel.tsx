@@ -38,8 +38,18 @@ function cafeRoom(item: Asset, rooms: FloorLayout["rooms"]): string {
   return chosen?.label ?? [...active].sort((a, b) => b.w * b.d - a.w * a.d)[0]?.label ?? "";
 }
 
-export default function LayoutPanel({ match, lines = [] }: { match: Match; lines?: CostLineItem[] }) {
-  const [items, setItems] = useState<Asset[]>([]);
+type LayoutPanelProps = {
+  match: Match;
+  lines?: CostLineItem[];
+  /** Placed pieces, owned by the parent so Quantify prices the same layout. */
+  items: Asset[];
+  onItems: (items: Asset[] | ((current: Asset[]) => Asset[])) => void;
+  /** Demo scans have no listed area; the owner's assumed area (sq ft, as typed) is shared with Quantify. */
+  area?: string;
+  onArea?: (v: string) => void;
+};
+
+export default function LayoutPanel({ match, lines = [], items, onItems: setItems, area, onArea }: LayoutPanelProps) {
   const [trace, setTrace] = useState<Trace>({ status: "idle" });
   const [profileDraft, setProfileDraft] = useState("cafe-demo");
   const [profileId, setProfileId] = useState<string | null>("cafe-demo");
@@ -57,7 +67,9 @@ export default function LayoutPanel({ match, lines = [] }: { match: Match; lines
     return () => { live = false; };
   }, [profileId, category, reload]);
 
-  const footprint = useMemo(() => conceptFootprint(match.squareFeet), [match.squareFeet]);
+  const assumedArea = match.demo ? Number(area) || 0 : 0;
+  const sqft = match.demo ? assumedArea : match.squareFeet;
+  const footprint = useMemo(() => conceptFootprint(sqft), [sqft]);
   const result = useMemo(() => (footprint ? packAssets(footprint, items, respect) : null), [footprint, items, respect]);
 
   async function traceFloorplan() {
@@ -66,7 +78,7 @@ export default function LayoutPanel({ match, lines = [] }: { match: Match; lines
       const response = await fetch("/api/layout-analyze", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ modelId: match.tourId, squareFeet: match.squareFeet }),
+        body: JSON.stringify({ modelId: match.tourId, squareFeet: sqft }),
       });
       const body = (await response.json().catch(() => ({}))) as { layout?: FloorLayout | null; error?: string };
       if (response.status === 501) setTrace({ status: "notConfigured", message: body.error ?? "Floorplan tracing is not configured." });
@@ -125,7 +137,7 @@ export default function LayoutPanel({ match, lines = [] }: { match: Match; lines
       <p className="text-xs text-foreground/50">Step 4 · Project layout</p>
       <h2 id="layout-title" className="text-lg font-medium tracking-tight">Layout and equipment placement</h2>
       <p role="note" className="mt-2 rounded-lg border border-foreground/25 bg-foreground/5 px-3 py-2 text-sm font-medium">
-        The default floor is an assumed rectangle from listed area. Matterport tracing can show estimated room outlines when the scan
+        The default floor is an assumed rectangle from the listed area, or from the area you enter for a demo scan. Matterport tracing can show estimated room outlines when the scan
         and server keys are available. Catalog pieces are illustrative; this view does not check fit, code, utilities, or workflow.
       </p>
 
@@ -149,6 +161,15 @@ export default function LayoutPanel({ match, lines = [] }: { match: Match; lines
       />
       {uploading && <AssetUpload profileId={profileId} onClose={() => setUploading(false)} onConfirmed={() => setReload((n) => n + 1)} />}
 
+      {match.demo && onArea && (
+        <label className="mt-6 block text-sm" data-testid="assumed-area">
+          <span className="block text-foreground/55">Area to lay out (sq ft)</span>
+          <input type="number" min={1} inputMode="numeric" value={area ?? ""} onChange={(e) => onArea(e.target.value)} placeholder="e.g. 1200"
+            className="mt-1 w-40 rounded-lg border border-foreground/20 bg-background px-3 py-2 tabular-nums" />
+          <span className="mt-1 block max-w-md text-xs text-foreground/50">This scan is not a listing, so no area is on file. Enter an area you would plan for; it is your assumption, not a measured or leased size, and the same value feeds Quantify.</span>
+        </label>
+      )}
+
       <div className="mt-6 flex flex-wrap items-center gap-3 text-sm">
         <h3 className="font-medium">Placement</h3>
         <label className="flex items-center gap-1.5"><input type="checkbox" checked={respect} onChange={(e) => setRespect(e.target.checked)} /> Space pieces by their clearance assumptions</label>
@@ -156,7 +177,7 @@ export default function LayoutPanel({ match, lines = [] }: { match: Match; lines
       </div>
 
       {!footprint || !result ? (
-        <p className="mt-4 text-sm text-foreground/60">Cannot say: this listing has no usable square footage.</p>
+        <p className="mt-4 text-sm text-foreground/60">{match.demo ? "Cannot say: enter the area you want to lay out above. No area is on file for this scan." : "Cannot say: this listing has no usable square footage."}</p>
       ) : (
         <div className="mt-3 grid gap-6 md:grid-cols-[2fr_1fr]">
           <figure>
@@ -181,14 +202,14 @@ export default function LayoutPanel({ match, lines = [] }: { match: Match; lines
               })}
             </svg>
             <figcaption className="mt-2 text-xs text-foreground/50">
-              Assumed {footprint.width.toFixed(1)} m x {footprint.depth.toFixed(1)} rectangle ({Math.round(match.squareFeet).toLocaleString("en-US")} sq ft listed, 3:2 shape); catalog footprints and clearances are illustrative.
+              Assumed {footprint.width.toFixed(1)} m x {footprint.depth.toFixed(1)} rectangle ({Math.round(sqft).toLocaleString("en-US")} sq ft {match.demo ? "assumed by you" : "listed"}, 3:2 shape); catalog footprints and clearances are illustrative.
             </figcaption>
           </figure>
           <div className="text-sm">
             <dl className="space-y-2">
               <Row label="Pieces placed" value={`${result.placed.length} of ${items.length}`} />
               <Row label="Problems found" value={String(result.issues.length)} />
-              <Row label="Priced from costs" value={`${withPrice} of ${items.length}`} />
+              {!match.demo && <Row label="Priced from costs" value={`${withPrice} of ${items.length}`} />}
             </dl>
             {result.issues.length > 0 && (
               <ul role="alert" className="mt-3 list-disc space-y-1 pl-4 text-foreground/80">
@@ -205,13 +226,13 @@ export default function LayoutPanel({ match, lines = [] }: { match: Match; lines
               <ul className="mt-3 space-y-1 text-xs" aria-label="Pieces in this layout">
                 {items.map((item, i) => (
                   <li key={i} className="flex justify-between gap-2">
-                    <span>{i + 1}. {item.name}{item.status === "draft" ? " (draft)" : ""}: {priced[i].text}</span>
+                    <span>{i + 1}. {item.name}{item.status === "draft" ? " (draft)" : ""}{match.demo ? "" : `: ${priced[i].text}`}</span>
                     <button type="button" onClick={() => setItems((c) => c.filter((_, j) => j !== i))} aria-label={`Remove ${item.name}`} className="text-foreground/55 underline">remove</button>
                   </li>
                 ))}
               </ul>
             )}
-            <p className="mt-3 text-xs text-foreground/55">No total is shown. Prices appear only where a piece links to a line in this property&apos;s costs.</p>
+            <p className="mt-3 text-xs text-foreground/55">{match.demo ? "No total is shown here. Open Quantify (Scope out your vision, then continue) to price these pieces; unpriced ones are listed there." : "No total is shown. Prices appear only where a piece links to a line in this property's costs."}</p>
             {items.length === 0 && <p className="mt-3 text-foreground/55">Add a piece from the catalog to see it placed.</p>}
           </div>
         </div>
@@ -233,7 +254,7 @@ export default function LayoutPanel({ match, lines = [] }: { match: Match; lines
         {trace.status === "failed" && <p role="alert" className="mt-2 text-sm">Could not trace: {trace.message}</p>}
         {traced && (
           <div className="mt-4 h-[28rem] overflow-hidden rounded-lg border border-foreground/15">
-            <ForegroundTour title={match.address} detail={match.detail} squareFeet={match.squareFeet} layout={traced} pieces={tracedPieces} />
+            <ForegroundTour title={match.address} detail={match.detail} squareFeet={sqft} layout={traced} pieces={tracedPieces} />
           </div>
         )}
       </div>

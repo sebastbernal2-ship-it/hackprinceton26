@@ -8,6 +8,7 @@ import PlanVision from "./plan-vision";
 import LayoutPanel from "./layout-panel";
 import Quantify from "./quantify";
 import type { LayoutSummary } from "../lib/layout-summary";
+import type { Asset } from "../lib/assets";
 import Stepper from "./stepper";
 import { heroPhoto, rentLabel, type FactorCard, type Match } from "../lib/matches";
 import EvidenceReadiness from "./evidence-readiness";
@@ -51,6 +52,9 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
     return () => { live = false; };
   }, [match.demo, match.tourId]);
   const [quantify, setQuantify] = useState<{ layout: LayoutSummary | null } | null>(null);
+  // Café demo path: the placed reference kit and the owner's assumed area are shared by the layout panel and Quantify.
+  const [kit, setKit] = useState<Asset[]>([]);
+  const [area, setArea] = useState("");
   const hero = photos[index % photos.length];
   const thumbs = photos.filter((_, photoIndex) => photoIndex !== index % photos.length).slice(0, 3);
 
@@ -184,7 +188,7 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
 
         <FactorCards factors={demoFactors ?? match.factors ?? []} demo={match.demo && !demoFactors?.length} />
 
-        <LayoutPanel match={match} />
+        <LayoutPanel match={match} items={kit} onItems={setKit} area={area} onArea={setArea} />
 
         {!match.demo && <TriagePanel listingId={match.listingId} />}
         {!match.demo && <InspectionPanel listingId={match.listingId} />}
@@ -219,7 +223,7 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
       )}
       {quantify && (
         <Quantify
-          match={match} layout={quantify.layout}
+          match={match} layout={quantify.layout} kit={kit} onKit={setKit} area={area} onArea={setArea}
           onBackToLayout={() => { setQuantify(null); setPlanOpen(true); }}
           onClose={() => setQuantify(null)}
         />
