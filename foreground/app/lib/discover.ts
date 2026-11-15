@@ -3,7 +3,6 @@ import { readBrief } from "./brief";
 import { fetchMatches } from "./api";
 import { DEMO_FALLBACK } from "./demo-flag";
 import { rankMatches } from "./demo-matches";
-import { CAFE_SCAN_IDS } from "./cafe-demo";
 import type { Exchange } from "./next-question";
 import type { Match } from "./matches";
 
@@ -58,9 +57,8 @@ export async function refreshMatches(brief: Exchange[], opts: { limit?: number; 
       save({ status: "ready", matches: rankMatches(brief), dataAvailable: false, demo: true });
       return;
     }
-    // Scripted Sarah scene only: the first candidates open a cafe scan whose walk is editable (furniture can be placed).
-    const shown = opts.scene === "sarah" ? matches.map((m, i) => ({ ...m, tourId: CAFE_SCAN_IDS[i % CAFE_SCAN_IDS.length] })) : matches;
-    save({ status: "ready", matches: shown, dataAvailable, demo: false, ...(opts.scene ? { scene: opts.scene } : {}) });
+    // The API's space picker already ranks the cafe scans with an editable walk first for a cafe brief; tours are never reassigned here.
+    save({ status: "ready", matches, dataAvailable, demo: false, ...(opts.scene ? { scene: opts.scene } : {}) });
   } catch (error) {
     inflight -= 1;
     if (DEMO_FALLBACK) {

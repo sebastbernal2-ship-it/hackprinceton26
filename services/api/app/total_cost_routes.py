@@ -61,7 +61,7 @@ def site_buildout(sqft: Optional[float], basis: str = "listing") -> dict:
     if not est.buildout:
         return {"status": "unknown", "low": None, "high": None, "squareFeet": sqft, "basis": basis, "reason": "equipment prices incomplete"}
     where = {"listing": "listed available space", "scan": "the floor area measured from this site's Matterport scan", "brief": "the size in your brief (this site lists no space)",
-             "owner": "the area you entered",
+             "owner": "the area you entered", "scan-estimate": "an assumed demo floor area for this cafe scan (ESTIMATED, not measured)",
              "seats": f"your seat count x {SQFT_PER_SEAT:g} sq ft per seat (an ASSUMPTION, not a measured size)"}[basis]
     return {"status": "estimated", "low": _r(est.buildout[0]), "high": _r(est.buildout[1]), "squareFeet": sqft, "basis": basis,
             "reason": f"equipment + install + interior fit-out per sq ft x {sqft:,.0f} sq ft from {where}, 10-20% contingency (neutral-band-v1)"}

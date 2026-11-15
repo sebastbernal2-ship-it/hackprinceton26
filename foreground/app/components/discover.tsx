@@ -84,11 +84,12 @@ export default function Discover() {
               </div>
 
               <AlignmentLine match={match} leader={leaders.includes(index)} />
+              <PickReasons match={match} />
 
               <p className="mt-4 text-[0.95rem] leading-relaxed text-foreground/55">{match.blurb}</p>
               <p className="mt-2 text-sm text-foreground/40">
                 {match.address}
-                {match.detail ? ` · ${match.detail}` : ""} · {match.spaceSquareFeet ? `${number.format(match.spaceSquareFeet)} sq ft ${match.spaceSource === "scan" ? "measured from scan" : "available"}` : "space size not listed"}
+                {match.detail ? ` · ${match.detail}` : ""} · {match.spaceSquareFeet ? `${number.format(match.spaceSquareFeet)} sq ft ${match.spaceSource === "scan" ? "measured from scan" : match.spaceSource === "scan-estimate" ? "estimated demo area" : "available"}` : "space size not listed"}
                 {match.squareFeet > 0 ? ` · ${number.format(match.squareFeet)} sq ft building` : ""}
               </p>
 
@@ -133,6 +134,25 @@ export default function Discover() {
         />
       )}
     </>
+  );
+}
+
+function PickReasons({ match }: { match: Match }) {
+  const pick = match.pick;
+  if (!pick || (pick.reasons.length === 0 && !pick.bestMatch)) return null;
+  return (
+    <div className="mt-3" data-testid="pick-reasons">
+      {pick.bestMatch && (
+        <p className="inline-block rounded-full bg-accent/15 px-3 py-1 text-xs font-medium uppercase tracking-wide text-accent" data-testid="best-match">
+          {pick.label ?? "Best match (demo pick)"}
+        </p>
+      )}
+      <ul className="mt-2 space-y-1 text-sm text-foreground/60">
+        {pick.reasons.map((r) => (
+          <li key={r}>· {r}</li>
+        ))}
+      </ul>
+    </div>
   );
 }
 

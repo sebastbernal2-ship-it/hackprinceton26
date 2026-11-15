@@ -17,6 +17,7 @@ from .lineage_routes import router as lineage_router
 from .concepts_routes import router as concepts_router
 from .finance_routes import router as finance_router
 from .horizons_routes import router as horizons_router
+from . import picker
 from .loader import load_matches
 from .structure_routes import router as structure_router
 from .rent_routes import router as rent_router
@@ -100,7 +101,10 @@ def matches(req: MatchesRequest):
         return MatchesResponse(dataAvailable=False, matches=[])
     # The brief becomes a profile by keyword/number extraction; sites are tested, never scored.
     profile, why = pipeline.profile_from_brief(req.brief, pool)
-    shown, counts, excluded, not_shown = pipeline.shortlist(pool, profile, req.limit)
+    text = " . ".join(e.answer for e in req.brief)
+    if (concept := picker.detect_concept(text)):
+        why["concept"] = concept
+    shown, counts, excluded, not_shown = pipeline.shortlist(pool, profile, req.limit, text)
     # Build-out is sized by the listed space; when a site lists none, by the size stated in the brief (labelled as such).
     brief_sqft, brief_basis = brief_size(profile)
     for m in shown:
@@ -109,7 +113,7 @@ def matches(req: MatchesRequest):
         else:
             m.buildout = site_buildout(brief_sqft, basis=brief_basis or "brief")
         m.rent = site_rent(m, m.buildout.get("squareFeet"), m.buildout.get("basis"))
-    note = ("Ordered by constraint status (PASS, then UNKNOWN by evidence readiness), not by fit. FAIL sites are excluded "
+    note = ("Ordered by constraint status, then the space picker (food-service concept, scan, area, seats, budget, city: stated demo heuristics, not a fit score). FAIL sites are excluded "
             "and counted. UNKNOWN means a needed fact is missing, not that the site fails.")
     return MatchesResponse(dataAvailable=True, matches=shown, profile=pipeline.to_parsed(profile, why), counts=counts,
                            excludedCount=excluded, notShownCount=not_shown, note=note)
