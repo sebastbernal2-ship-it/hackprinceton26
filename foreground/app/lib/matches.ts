@@ -57,6 +57,8 @@ export type Match = {
   buildout?: Buildout | null;
   /** Monthly rent estimate from /api/matches: best rate option x the same area as the build-out. */
   rent?: RentEstimate | null;
+  /** Requirements the evidence confirms / cannot confirm / contradicts. Absent from older services. Not a fit score. */
+  alignment?: import("./alignment").Alignment | null;
 };
 
 export type RentEstimate = {

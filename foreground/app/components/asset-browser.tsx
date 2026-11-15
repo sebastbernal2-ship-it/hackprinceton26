@@ -17,7 +17,8 @@ type Props = {
   category: AssetCategory | "";
   onCategory: (c: AssetCategory | "") => void;
   lines: CostLineItem[];
-  onAdd: (asset: Asset) => void;
+  /** Omit to browse without a layout to add to (the Profile page): the add buttons are then hidden. */
+  onAdd?: (asset: Asset) => void;
   onSaved: (asset: Asset) => void;
 };
 
@@ -57,7 +58,7 @@ export default function AssetBrowser({ assets, profileId, status, error, categor
                     <AssetFacts asset={asset} />
                     <p className="mt-1 text-xs">Price: <span className={price.kind === "none" ? "text-foreground/60" : "font-medium"}>{price.text}</span></p>
                     <div className="mt-2 flex gap-2">
-                      <button type="button" onClick={() => onAdd(asset)} className="rounded-full bg-foreground px-3 py-1 text-xs text-background">Add to layout</button>
+                      {onAdd && <button type="button" onClick={() => onAdd(asset)} className="rounded-full bg-foreground px-3 py-1 text-xs text-background">Add to layout</button>}
                       <button type="button" onClick={() => setSelectedId(asset.assetId === selectedId ? null : asset.assetId)} className="rounded-full border border-foreground/25 px-3 py-1 text-xs" aria-pressed={selectedId === asset.assetId}>
                         Variants
                       </button>
@@ -74,7 +75,7 @@ export default function AssetBrowser({ assets, profileId, status, error, categor
   );
 }
 
-function VariantGenerator({ asset, profileId, onAdd, onSaved }: { asset: Asset | null; profileId: string | null; onAdd: (a: Asset) => void; onSaved: (a: Asset) => void }) {
+function VariantGenerator({ asset, profileId, onAdd, onSaved }: { asset: Asset | null; profileId: string | null; onAdd?: (a: Asset) => void; onSaved: (a: Asset) => void }) {
   const [kind, setKind] = useState<Exclude<VariantKind, "base">>("corner_l");
   const [size, setSize] = useState<Controls>(() => (asset ? defaultControls(asset) : { w: 0, d: 0, h: 0, armA: 0, armB: 0, depthA: 0, depthB: 0, length: 0 }));
   const [skuIndex, setSkuIndex] = useState(0);
@@ -160,7 +161,7 @@ function VariantGenerator({ asset, profileId, onAdd, onSaved }: { asset: Asset |
             <div><p className="font-medium">{result.name}</p><AssetFacts asset={result} /></div></div>
           <p className="mt-2 text-xs text-foreground/60">{result.provenance.notes}</p>
           <div className="mt-2 flex gap-2">
-            <button type="button" onClick={() => onAdd(result)} className="rounded-full bg-foreground px-3 py-1 text-xs text-background">Add to layout</button>
+            {onAdd && <button type="button" onClick={() => onAdd(result)} className="rounded-full bg-foreground px-3 py-1 text-xs text-background">Add to layout</button>}
             <button type="button" onClick={save} disabled={busy} className="rounded-full border border-foreground/25 px-3 py-1 text-xs disabled:opacity-50">Save to catalog</button>
           </div>
         </div>
