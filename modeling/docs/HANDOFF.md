@@ -74,3 +74,12 @@ a CoStar zip password – remove before pushing.
 - Shells in this environment cannot reach api.matterport.com; the user runs network steps on his own machine.
 - Matterport console noise is harmless: `events.matterport.com … ERR_BLOCKED_BY_CLIENT/PROXY`, `Uncaught (in promise)` from showcase.js.
 - Obsolete files were moved to `_to_delete/obsolete/` (gitignored), incl. planner.html, old mesh_furniture, splat_remove.
+
+## Teammate branch sync (2026-11-14)
+
+What main already contains and what was deliberately left on the teammate branches:
+
+- `origin/Model-testing` (Davd): everything is ported through be9f2e2 (walk.html v4, scene_agent.py, fetch_catalog.py, vendored GLTFLoader). Not taken: `run_*.log`, `docs/restaurant_models_scan.json` (19k-line scan of sponsor models), `Code/scan_restaurants.py` (reads the sponsor kit and `.env` ad hoc), `CLAUDE.local.md`, `.claude/launch.json`.
+- `origin/expansion-model-testing` (Davd): fully ported already (diff against main is path rewrites plus main's `estimate_floor_z` fix). Not taken: `shots/` PNGs (about 40 MB), `house_dna.json` and `d_roofshell/scan.json` (derived from a sponsor scan; regenerate with `analyse_house.py`).
+- `origin/frontend_dev` (Afnan Ahmed): ported earlier, file by file. History holds about 154 MB of sponsor data, never merge it.
+- `origin/final_frontend` (Afnan Ahmed): one commit adding `foreground_final/`, a separate Next.js app (deepagents planner, own cost engine, ML models, Vexcel/Gemini imagine, saved sites). It does not use `services/api`, and ships `public/sites` (141 MB), `docs/spikes` (23 MB), `data/sites`, `data/ml` and replays built from the CoStar kit. Not merged: it duplicates and conflicts with `foreground/` (typed API client, evidence labels, stepper), and its `layout-catalog.ts` prints catalogue prices that main refuses to invent. The small shared files (`gemini-rooms`, `matterport-scan`, `scan` route, `brief`, `refine`) are older than main's hardened versions.
