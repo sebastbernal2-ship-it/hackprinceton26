@@ -6,7 +6,6 @@ import { buildoutCaption, buildoutLabel, heroPhoto, rentEstimateLabel, monthlyRe
 import { useMatches, type MatchesState } from "../lib/discover";
 import { alignmentView, topAlignment } from "../lib/alignment";
 import CompatibilityPill from "./compatibility-pill";
-import { SARAH_NOTICE } from "../lib/sarah-scene";
 import Stepper from "./stepper";
 import PropertyInfo from "./property-info";
 import TourOverlay from "./tour-overlay";
@@ -29,11 +28,6 @@ export default function Discover() {
         <p className="mt-2 text-foreground/50">{subtitle(state)}</p>
       </header>
 
-      {state.status === "ready" && state.scene === "sarah" && (
-        <p role="status" data-testid="scene-banner" className="mt-6 inline-block rounded-full border border-dashed border-foreground/30 px-4 py-1.5 text-sm text-foreground/70">
-          {SARAH_NOTICE}
-        </p>
-      )}
       {state.status === "loading" && <p className="mt-10 text-foreground/50">Loading spaces…</p>}
       {state.status === "error" && (
         <Notice title="Could not reach the data service">
