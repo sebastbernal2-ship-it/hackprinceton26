@@ -5,7 +5,6 @@ import {
   FIELD_LABEL, SCOPE_LABEL, STATUS_LABEL, fetchAerial, fetchQueue, fetchTriage, scopeMismatch, showValue, statusCounts,
   type AerialResult, type QueueResponse, type TriageField, type TriageResult, type TriageStatus,
 } from "../../lib/triage";
-import LineagePanel from "./lineage-panel";
 
 const TONE: Record<TriageStatus, string> = {
   confirmed: "bg-match-soft text-match",
@@ -131,7 +130,6 @@ export default function TriagePanel({ listingId }: { listingId: number }) {
           </ol>
         </details>
       )}
-      <LineagePanel listingId={listingId} />
     </section>
   );
 }

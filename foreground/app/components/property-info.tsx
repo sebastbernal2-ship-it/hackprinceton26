@@ -28,6 +28,7 @@ import TriagePanel from "./triage/triage-panel";
 import CompatibilityPill from "./compatibility-pill";
 import DataStreams from "./data-streams";
 import GrowthSim from "./structure/growth-sim";
+import LineagePanel from "./triage/lineage-panel";
 import StructurePanel from "./structure/structure-panel";
 
 const number = new Intl.NumberFormat("en-US");
@@ -89,11 +90,11 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
     setPlanOpen(step === 3);
     setQuantify(step === 4 || step === 5 ? { layout: lastLayout.current } : null);
     if (step === 2) setTab("overview");
-    if (step === 6 && !match.demo) { setTab("analysis"); scrollTo("replan-panel"); }
+    if (step === 6 && !match.demo) { setTab("business"); scrollTo("replan-panel"); }
     if (step === 6 && match.demo) setTab("overview");
     if (step === 5) scrollTo("act-title");
   }
-  const [tabState, setTab] = useState<"overview" | "planner" | "layout" | "analysis">("overview");
+  const [tabState, setTab] = useState<"overview" | "planner" | "layout" | "inspection" | "structural" | "business">("overview");
   const [viewMode] = useViewMode();
   const byDiscipline = viewMode === "discipline";
   const real = !match.demo && !isScanOnly(match); // a scan has no listing record, so the per-listing services have nothing to answer
@@ -200,7 +201,7 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
         </div>
 
         <nav aria-label="Property sections" hidden={byDiscipline} className="mt-8 flex gap-1 border-b border-foreground/10">
-          {([["overview", "Overview"], ["planner", "Planner"], ["layout", "Layout & equipment"], ...(match.demo ? [] : [["analysis", "Deeper analysis"]])] as [typeof tabState, string][]).map(([key, label]) => (
+          {([["overview", "Overview"], ["planner", "Planner"], ["layout", "Layout & equipment"], ...(match.demo ? [] : [["inspection", "Inspection"], ["structural", "Structural & architecture"], ["business", "Business & financial"]])] as [typeof tabState, string][]).map(([key, label]) => (
             <button
               key={key}
               type="button"
@@ -270,12 +271,18 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
           </div>
         )}
 
-        {tab === "analysis" && !match.demo && (
+        {/* "Deeper analysis" split into three tabs; the panels are the same ones as before, only moved. */}
+        {tab === "inspection" && !match.demo && (
           <>
-            <TriagePanel listingId={match.listingId} />
             <InspectionPanel listingId={match.listingId} />
-            <StructurePanel listingId={match.listingId} />
+            <TriagePanel listingId={match.listingId} />
+          </>
+        )}
+        {tab === "structural" && !match.demo && <StructurePanel listingId={match.listingId} />}
+        {tab === "business" && !match.demo && (
+          <>
             <Projections listingId={match.listingId} />
+            <LineagePanel listingId={match.listingId} />
           </>
         )}
 
@@ -288,7 +295,7 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
             building: match.costarPropertyId && <CostarBuilding propertyId={match.costarPropertyId} city={match.city} />,
             growth: !real && <GrowthSim />,
             structure: real && <StructurePanel listingId={match.listingId} />,
-            triage: real && <TriagePanel listingId={match.listingId} />,
+            triage: real && <><TriagePanel listingId={match.listingId} /><LineagePanel listingId={match.listingId} /></>,
             planner: <CafePlanner match={match} kit={kit} onKit={setKit} placed={placed} onPlaced={setPlaced} area={area} onArea={setArea} onContinue={() => { setCurrent(4); setQuantify({ layout: lastLayout.current }); }} />,
             layout: <LayoutPanel match={match} items={kit} onItems={setKit} area={area} onArea={setArea} />,
             projections: real && <Projections listingId={match.listingId} />,
