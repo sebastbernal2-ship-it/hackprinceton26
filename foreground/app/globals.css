@@ -33,6 +33,17 @@
   --animate-scan-out: scan-out 0.7s ease-in both;
   --animate-scan-patch: scan-patch 1.1s ease-out both;
   --animate-scan-wave: scan-wave 2.4s ease-in-out both;
+  --animate-recalc: recalc 1.6s ease-out both;
+
+  /* A number that just recalculated: a brief highlight that settles. */
+  @keyframes recalc {
+    0% {
+      background-color: color-mix(in srgb, var(--accent) 35%, transparent);
+    }
+    100% {
+      background-color: transparent;
+    }
+  }
 
   @keyframes caret-blink {
     0%,

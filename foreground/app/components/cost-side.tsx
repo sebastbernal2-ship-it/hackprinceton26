@@ -6,6 +6,7 @@ import { readBrief } from "../lib/brief";
 import { fetchLayoutCost, freshResponse, layoutCostItems, scenarioKey, type LayoutCost } from "../lib/layout-cost";
 import type { Match } from "../lib/matches";
 import { fetchTotalCost, type TotalCost } from "../lib/total-cost";
+import { resolveBudget } from "../lib/quantify-model";
 import { briefBudget, budgetStatus, CASES, outlook, seatTotal, xrayLines, xrayTotal, zeroCrossing, type Case, type Outlook, type Range } from "../lib/cost-side";
 
 const usd = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
@@ -17,11 +18,14 @@ const TONE = { under: "text-match", tight: "text-accent", over: "text-accent", u
  * Live cost panel docked beside the planner and the layout view. Everything is derived from the shared kit, so it moves as pieces
  * are placed or removed. Build-out and rent come from the cost services; the X-ray and the outlook are labelled estimates.
  */
-export default function CostSide({ match, kit, area }: { match: Match; kit: Asset[]; area: string }) {
+export default function CostSide({ match, kit, area, budgetText: sharedBudget, onBudgetText }: { match: Match; kit: Asset[]; area: string; budgetText?: string | null; onBudgetText?: (v: string) => void }) {
   const sqft = Number(area) > 0 ? Number(area) : null;
-  const [budgetText, setBudgetText] = useState<string | null>(null);
+  // The budget is shared with Quantify when the parent passes it, so one typed number drives both panels.
+  const [ownBudget, setOwnBudget] = useState<string | null>(null);
+  const budgetText = onBudgetText ? (sharedBudget ?? null) : ownBudget;
+  const setBudgetText = onBudgetText ?? setOwnBudget;
   const [fromBrief] = useState<number | null>(() => briefBudget(readBrief()));
-  const budget = budgetText !== null ? (Number(budgetText) > 0 ? Number(budgetText) : null) : fromBrief;
+  const budget = resolveBudget(budgetText, fromBrief);
 
   const items = useMemo(() => layoutCostItems(kit), [kit]);
   const key = scenarioKey(items, sqft, budget);
@@ -152,7 +156,7 @@ function Bar({ budget, buildout, hidden }: { budget: number | null; buildout: nu
 const DIAL_TONE = { comfortable: "#5f6d4e", stretch: "#b08d57", unlikely: "#d9512c", unknown: "#999" } as const;
 const WORD = { comfortable: "Comfortable", stretch: "A stretch", unlikely: "Unlikely on these seats", unknown: "Unknown" } as const;
 
-function Outlook({ out }: { out: Outlook }) {
+export function Outlook({ out }: { out: Outlook }) {
   const base = out.cases.base;
   const months = base.paybackMonths;
   return (
