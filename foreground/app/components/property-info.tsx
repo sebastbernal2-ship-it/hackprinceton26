@@ -1,23 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { CostLineItem } from "../lib/costs";
-import type { DefectFinding } from "../lib/inspection";
-import ActChecklist from "./act-checklist";
-import CostPanel from "./cost-panel";
 import ListingPhoto from "./listing-photo";
-import LayoutPanel from "./layout-panel";
 import InspectionPanel from "./inspection-panel";
+import CostarBuilding from "./costar-building";
+import PlanVision from "./plan-vision";
+import Quantify from "./quantify";
+import type { LayoutSummary } from "../lib/layout-summary";
 import Stepper from "./stepper";
-import { rentLabel, type Match } from "../lib/matches";
+import { heroPhoto, rentLabel, type Match } from "../lib/matches";
 import EvidenceReadiness from "./evidence-readiness";
 import FactorCards from "./factor-cards";
 import Projections from "./projections";
 import SpaceChat from "./space-chat";
 import TriagePanel from "./triage/triage-panel";
-import FinancePanel from "./finance/finance-panel";
-import ImaginePanel from "./imagine/imagine-panel";
-import ReskinPanel from "./reskin/reskin-panel";
 import StructurePanel from "./structure/structure-panel";
 
 const number = new Intl.NumberFormat("en-US");
@@ -38,18 +34,19 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
     ],
     location: [{ label: "Matterport", value: `Model ${match.tourId}` }],
   };
-  const listed = (facts.photos.length > 0 ? facts.photos : [match.photo]).filter((url) => typeof url === "string" && url.length > 0);
+  const listed = (facts.photos.length > 0 ? facts.photos : [heroPhoto(match)]).filter((url) => typeof url === "string" && url.length > 0);
   const photos = listed.length > 0 ? listed : [""];
   const [index, setIndex] = useState(0);
   const [askOpen, setAskOpen] = useState(false);
-  const [findings, setFindings] = useState<DefectFinding[]>([]);
-  const [lines, setLines] = useState<CostLineItem[]>([]);
+  const [planOpen, setPlanOpen] = useState(false);
+  const [quantify, setQuantify] = useState<{ layout: LayoutSummary | null } | null>(null);
   const hero = photos[index % photos.length];
   const thumbs = photos.filter((_, photoIndex) => photoIndex !== index % photos.length).slice(0, 3);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
+      if (planOpen || quantify) return;
       if (askOpen) {
         setAskOpen(false);
         return;
@@ -58,7 +55,7 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [onBack, askOpen]);
+  }, [onBack, askOpen, planOpen, quantify]);
 
   function step(delta: number) {
     setIndex((current) => (current + delta + photos.length) % photos.length);
@@ -72,7 +69,7 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
         className="ml-4 mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-foreground/70 transition-opacity hover:opacity-70"
       >
         <ChevronLeft />
-        Back to Discover
+        Back to Shortlist
       </button>
       <div className="mx-auto max-w-[68rem] px-6 pb-16 pt-8 sm:px-12">
         <div className="mb-5"><Stepper active={2} /></div>
@@ -149,27 +146,7 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
           <FactList title="Location & Area" rows={facts.location} />
         </div>
 
-        <FactorCards factors={match.factors ?? []} demo={match.demo} />
-
-        {!match.demo && <TriagePanel listingId={match.listingId} />}
-
-        {!match.demo && <Projections listingId={match.listingId} />}
-
-        {!match.demo && <InspectionPanel listingId={match.listingId} onData={setFindings} />}
-        <LayoutPanel match={match} lines={lines} />
-        {!match.demo && <ReskinPanel listingId={match.listingId} />}
-        {!match.demo && <ImaginePanel listingId={match.listingId} />}
-        {!match.demo && <StructurePanel listingId={match.listingId} />}
-
-        {!match.demo && <CostPanel listingId={match.listingId} onData={setLines} />}
-        {!match.demo && <FinancePanel listingId={match.listingId} />}
-        {!match.demo && <ActChecklist findings={findings} factors={match.factors ?? []} lines={lines} />}
-
-        <p className="mt-5 text-xs text-foreground/40">
-          From the CoStar listing and the Matterport model on file.
-        </p>
-
-        <div className="mt-5 flex flex-wrap gap-3">
+        <div className="mt-6 flex flex-wrap items-center gap-3">
           <button
             type="button"
             onClick={onTour}
@@ -187,9 +164,53 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
             <Spark />
             Ask AI About This Space
           </button>
+          <p className="text-xs text-foreground/45">
+            {match.tourId ? `Matterport model ${match.tourId} (property-level link; may not show this exact suite).` : "No Matterport model on file."}
+          </p>
         </div>
+
+        {match.costarPropertyId && <CostarBuilding propertyId={match.costarPropertyId} city={match.city} />}
+
+        <FactorCards factors={match.factors ?? []} demo={match.demo} />
+
+        {!match.demo && <TriagePanel listingId={match.listingId} />}
+        {!match.demo && <InspectionPanel listingId={match.listingId} />}
+        {!match.demo && <StructurePanel listingId={match.listingId} />}
+        {!match.demo && <Projections listingId={match.listingId} />}
+
+        <p className="mt-5 text-xs text-foreground/40">
+          Sources: CoStar listing and market data, the Matterport model on file, and Vexcel aerial where available.
+        </p>
+
+        <section className="mt-12 rounded-[1.75rem] bg-foreground/[0.04] px-6 py-10 text-center sm:px-10" aria-labelledby="vision-title" data-testid="vision-cta">
+          <h2 id="vision-title" className="text-[clamp(1.4rem,2.6vw,1.9rem)] font-medium tracking-tight">Like what you&apos;re seeing?</h2>
+          <p className="mx-auto mt-2 max-w-md text-[0.95rem] leading-relaxed text-foreground/55">
+            Step inside the 3D model of this space, move things around and try out your layout.
+          </p>
+          <button
+            type="button"
+            onClick={() => setPlanOpen(true)}
+            className="mt-6 inline-flex items-center gap-2 rounded-full bg-foreground px-6 py-3 text-sm font-medium text-background transition-[transform,opacity] duration-300 hover:opacity-90 active:scale-[0.98]"
+          >
+            <Cube />
+            Scope out your vision
+          </button>
+        </section>
       </div>
       <SpaceChat match={match} open={askOpen} onOpenChange={setAskOpen} />
+      {planOpen && (
+        <PlanVision
+          tourId={match.tourId} title={match.address} detail={match.detail} onClose={() => setPlanOpen(false)}
+          onContinue={(layout) => { setPlanOpen(false); setQuantify({ layout }); }}
+        />
+      )}
+      {quantify && (
+        <Quantify
+          match={match} layout={quantify.layout}
+          onBackToLayout={() => { setQuantify(null); setPlanOpen(true); }}
+          onClose={() => setQuantify(null)}
+        />
+      )}
     </div>
   );
 }

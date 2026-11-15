@@ -45,9 +45,17 @@ export type Match = {
   evidenceReadiness: number;
   facts: SpaceFacts;
   factors: FactorCard[];
+  /** CoStar PropertyId of the building, when it differs from listingId (demo scans: listingId is a placeholder). */
+  costarPropertyId?: number;
   /** Client-side only: true for NEXT_PUBLIC_DEMO_FALLBACK sample data. */
   demo?: boolean;
 };
+
+/** The listing photo, or the Matterport scan's preview image when the listing has none. */
+export function heroPhoto(match: Pick<Match, "photo" | "tourId">): string {
+  if (match.photo) return match.photo;
+  return match.tourId ? `/api/scan-photo?modelId=${encodeURIComponent(match.tourId)}` : "";
+}
 
 /** Monthly rent in dollars, or null when the listing states no rent. Unknown is never shown as $0. */
 export function monthlyRent(match: Pick<Match, "squareFeet" | "rentPerSquareFootYear">): number | null {

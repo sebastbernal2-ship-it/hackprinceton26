@@ -3,7 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { saveBrief } from "../lib/brief";
-import { seedMatches } from "../lib/discover";
+import { CAFE_MATCHES, CAFE_NOTICE, isCafePrompt } from "../lib/cafe-demo";
+import { seedMatches, showDemoMatches } from "../lib/discover";
 import { FIRST_QUESTION, MAX_QUESTIONS, nextQuestion, type Exchange } from "../lib/next-question";
 
 type Phase = "welcome" | "asking" | "thinking" | "leaving";
@@ -121,6 +122,13 @@ export default function Intake() {
     const answered = [...history, { question, answer }];
     setHistory(answered);
     clearInput();
+    if (history.length === 0 && isCafePrompt(answer)) {
+      saveBrief(answered);
+      showDemoMatches(CAFE_MATCHES, CAFE_NOTICE);
+      finished.current = true;
+      setPhase("leaving");
+      return;
+    }
     let next: string | null = null;
     if (answered.length < MAX_QUESTIONS) {
       setPhase("thinking");

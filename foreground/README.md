@@ -9,7 +9,7 @@ This is a newer Next.js than most docs describe; read `node_modules/next/dist/do
 ## Run
 ```bash
 npm ci
-cp .env.example .env.local        # set NEXT_PUBLIC_MATTERPORT_SDK_KEY; never commit .env.local
+# keys: MATTERPORT_SDK_KEY, MATTERPORT_API_KEY, MATTERPORT_API_TOKEN go in the repo-root .env (never commit it)
 npm run dev                       # http://localhost:3000
 ```
 Without the real API, run the contract mock in another terminal: `npm run mock-api`
@@ -29,4 +29,4 @@ The typed client is `app/lib/api.ts`; types are in `app/lib/matches.ts`.
 - The refine questions (`app/lib/refine.ts`) are still a local deterministic stub; the API contract has no endpoint for them.
 
 ## Secrets
-Only `NEXT_PUBLIC_MATTERPORT_SDK_KEY` is read by the browser bundle. Do not put other keys in `NEXT_PUBLIC_*`.
+Only `MATTERPORT_SDK_KEY` reaches the browser bundle (via `env` in next.config.ts). `MATTERPORT_API_KEY` and `MATTERPORT_API_TOKEN` stay server-side. Never expose other keys.

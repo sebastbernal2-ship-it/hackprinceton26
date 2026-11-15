@@ -4,7 +4,7 @@ run_all.py - run the whole HackPrinceton pipeline, one step after another, with 
 
     python run_all.py                 # run every step that is not already done
     python run_all.py --force         # redo every step
-    python run_all.py --from bake     # start at a step (download, matterpak, fetch, tiles, pipeline, meshdiff, prepare, tileobjects, refine, bake, carve, walk, catalog, sdk, serve)
+    python run_all.py --from bake     # start at a step (download, matterpak, fetch, tiles, pipeline, meshdiff, shell, prepare, tileobjects, refine, bake, carve, walk, catalog, sdk, serve)
     python run_all.py --only meshdiff # run one step
     python run_all.py --list          # show the steps and whether each is done
     python run_all.py --only serve    # just start the local server and open the studio
@@ -152,7 +152,19 @@ def step_tiles():
     run([PY, script("tiles_mesh.py"), "--model", SID], fatal=False)
 
 
+def has_empty_view():
+    """True when Matterport has an empty-room (defurnished) mesh for this model. Without one, pipeline / meshdiff / bake /
+    carve cannot run, and the shell step estimates the empty room from the furnished mesh instead."""
+    return (TILES / "defurnished_mesh.npz").exists() or any((ASSETS / "matterport" / "meshes").glob("*defurnished*.obj"))
+
+
+def no_empty_view(step):
+    print(f"   no empty-room (defurnished) view for this model - skipping {step}; the shell step estimates the empty room")
+
+
 def step_pipeline():
+    if not has_empty_view():
+        return no_empty_view("the panorama pipeline")
     cmd = [PY, script("pano_pipeline.py"), "--model", SID, "--res", S["pipeline_res"],
            "--max-panos", S["pipeline_max_panos"], "--min-confidence", S["pipeline_min_confidence"]]
     if S["pipeline_label"]:
@@ -163,6 +175,8 @@ def step_pipeline():
 
 
 def step_meshdiff():
+    if not has_empty_view():
+        return no_empty_view("the mesh difference")
     meshes = ASSETS / "matterport" / "meshes"
     if (TILES / "furnished_mesh.obj").exists():
         furn = [TILES / "furnished_mesh.obj"]
@@ -175,6 +189,16 @@ def step_meshdiff():
         sys.exit(f"no meshes in {meshes} - run the download step first")
     run([PY, script("mesh_furniture.py"), "--furnished", furn[0], "--empty", empty[0],
          "--pano-dir", PANO, "--tol", S["meshdiff_tol"], "--cluster-radius", S["meshdiff_cluster_radius"]])
+
+
+def step_shell():
+    """Scans with no empty-room view: estimate the empty house from the furnished mesh (floor, ceiling, tall wall
+    planes), so tileobjects can still split the furniture into movable pieces. An estimate, not an empty scan."""
+    if has_empty_view():
+        print("   the model has an empty-room view - the meshdiff step provides the empty house"); return
+    if not (TILES / "furnished_mesh.npz").exists():
+        print("   no furnished mesh (matterpak / tiles step) - skipping"); return
+    run([PY, script("shell_from_furnished.py"), "--model", SID, "--force"])
 
 
 def step_prepare():
@@ -219,6 +243,8 @@ def refine_done():
 
 
 def step_bake():
+    if not has_empty_view():
+        return no_empty_view("the texture bake (no photo spots in walk.html)")
     cmd = [PY, script("texture_bake.py"), "--pano-dir", PANO, "--edge", S["bake_edge"],
            "--obj-edge", S["bake_obj_edge"], "--pano-width", S["bake_pano_width"]]
     if not S["bake_refine_poses"]:
@@ -227,6 +253,8 @@ def step_bake():
 
 
 def step_carve():
+    if not has_empty_view():
+        return no_empty_view("carving")
     if not S["carve"]:
         print("   carving disabled in SETTINGS"); return
     cmd = [PY, script("shape_carve.py"), "--pano-dir", PANO, "--mask-mode", S["carve_mask_mode"], "--voxel", S["carve_voxel"]]
@@ -337,6 +365,7 @@ STEPS = [  # name, function, "done" check
     ("tiles",    step_tiles,    lambda: (TILES / "furnished_mesh.npz").exists()),   # skipped when the MatterPak supplied it
     ("pipeline", step_pipeline, lambda: (PANO / "objects.json").exists() and (PANO / "panos.json").exists()),
     ("meshdiff", step_meshdiff, lambda: (MD / "objects_fused.json").exists()),
+    ("shell",    step_shell,    lambda: has_empty_view() or (MD / "shell_report.json").exists()),
     ("prepare",  step_prepare,  lambda: False),           # cheap: always runs
     ("tileobjects", step_tileobjects, lambda: (MD / "scene_tiles.json").exists()),
     ("refine",   step_refine,   refine_done),             # redone whenever the cuts are newer

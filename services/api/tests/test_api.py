@@ -90,3 +90,19 @@ def _normalize(node):
 def test_schemas_committed_and_current():
     for name, s in schemas().items():
         assert _normalize(json.loads((OUT / name).read_text())) == _normalize(s)
+
+
+def test_tour_falls_back_to_costar_listed_model(tmp_path, monkeypatch):
+    import shutil
+    from app.loader import load_matches
+    for f in ("restaurant-site-candidates.csv", "factor-cards.csv"):
+        shutil.copy(FIX / f, tmp_path / f)
+    (tmp_path / "commercial-properties.csv").write_text(
+        "PropertyId,MatterportModelId\n900001,OTHERMODEL1\n900002,AAAAAAAAAAA\n900002,BBBBBBBBBBB\n", encoding="utf-8")
+    (tmp_path / "assets_BBBBBBBBBBB" / "walk").mkdir(parents=True)
+    (tmp_path / "assets_BBBBBBBBBBB" / "walk" / "meta.json").write_text("{}", encoding="utf-8")
+    monkeypatch.setenv("SCAN_ASSETS_DIR", str(tmp_path))
+    m = {x.listingId: x for x in load_matches(tmp_path)}
+    assert m[900001].tourId == "MODEL123"          # an observed scan card still wins
+    assert m[900002].tourId == "BBBBBBBBBBB"       # CoStar-listed model, the walkable one first
+    assert any("AAAAAAAAAAA, BBBBBBBBBBB" == f.value for f in m[900002].facts.location)
