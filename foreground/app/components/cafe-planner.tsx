@@ -10,6 +10,7 @@ import { conceptFootprint, SQFT_TO_M2 } from "../lib/concept-layout";
 import { fetchLayoutCost, freshResponse, layoutCostItems, scenarioKey, type LayoutCost } from "../lib/layout-cost";
 import type { Match } from "../lib/matches";
 import PlannerFill from "./planner-fill";
+import { footprint, kindCounts, scanObjectsForFloor, sweepDelay, type ScanPiece } from "../lib/scan-clear";
 import {
   autoLayout, buildVisitors, DOOR_WIDTH, doorX, findSpot, isSeating, newId, reconcile, rotated, sameKit, seatsOf, sizeFor, snapPosition,
   toPlacements, visitorAt, type PlacedPiece, type Pt,
@@ -75,6 +76,11 @@ export default function CafePlanner({ match, kit, onKit, placed, onPlaced, area,
   const [note, setNote] = useState("");
   const [cost, setCost] = useState<{ key: string; data: LayoutCost } | null>(null);
   const [costError, setCostError] = useState(false);
+  // Scanned objects (from the 3D scan's walk export) shown on the floor until the user clears the space.
+  const [scanData, setScanData] = useState<{ tourId: string; pieces: ScanPiece[] } | null>(null);
+  const scanPieces = scanData && scanData.tourId === match.tourId ? scanData.pieces : null;
+  const [phase, setPhase] = useState<"shown" | "clearing" | "cleared">("shown");
+  const [offerDismissed, setOfferDismissed] = useState(false);
   const placedRef = useRef(placed);
   useEffect(() => { placedRef.current = placed; }, [placed]);
   const dragRef = useRef<Drag | null>(null);
@@ -98,6 +104,17 @@ export default function CafePlanner({ match, kit, onKit, placed, onPlaced, area,
       .catch(() => live && setCatalog({ status: "error", assets: [] }));
     return () => { live = false; };
   }, [reloadCatalog]);
+
+  useEffect(() => {
+    if (!match.tourId) return;
+    const tourId = match.tourId;
+    let live = true;
+    fetch(`/walk3d/files/assets_${encodeURIComponent(match.tourId)}/walk/meta.json`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((meta: { pieces?: ScanPiece[] } | null) => { if (live && Array.isArray(meta?.pieces)) setScanData({ tourId, pieces: meta.pieces }); })
+      .catch(() => {});
+    return () => { live = false; };
+  }, [match.tourId]);
 
   // A demo scan has no listed area: start from the reference kit's estimated area so the floor exists.
   useEffect(() => {
@@ -273,6 +290,17 @@ export default function CafePlanner({ match, kit, onKit, placed, onPlaced, area,
     for (const i of allIssues) for (const k of i.keys) (i.kind === "overlap" || i.kind === "outside_floor" ? hard : soft).add(k);
     return { hard, soft };
   }, [allIssues]);
+  const scan = useMemo(() => (floor ? scanObjectsForFloor(scanPieces, floor) : null), [scanPieces, floor]);
+  const clearTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => { if (clearTimer.current) clearTimeout(clearTimer.current); }, []);
+  const clearSpace = () => {
+    if (!scan || phase !== "shown") return;
+    setPhase("clearing");
+    setOfferDismissed(true);
+    const still = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    clearTimer.current = setTimeout(() => setPhase("cleared"), still ? 0 : 3200);
+  };
+  const restoreScan = () => { if (clearTimer.current) clearTimeout(clearTimer.current); setPhase("shown"); };
   const seats = placed.reduce((n, p) => n + seatsOf(p.asset), 0);
   const useAreaPct = floor ? Math.round((placed.reduce((s, p) => { const z = sizeFor(p.asset, p.rot); return s + z.w * z.d; }, 0) / (floor.width * floor.depth)) * 100) : 0;
   const items = useMemo(() => layoutCostItems(kit), [kit]);
@@ -337,6 +365,8 @@ export default function CafePlanner({ match, kit, onKit, placed, onPlaced, area,
         <button type="button" onClick={() => void loadKit()} className="rounded-full bg-foreground px-4 py-1.5 text-background" data-testid="planner-load-kit">Load cafe reference kit</button>
         <button type="button" onClick={undo} disabled={!history.length} className="rounded-full border border-foreground/25 px-3 py-1.5 disabled:opacity-40" data-testid="planner-undo">Undo</button>
         <button type="button" onClick={() => commit([])} disabled={!placed.length} className="rounded-full border border-foreground/25 px-3 py-1.5 disabled:opacity-40">Clear</button>
+        {scan && phase === "shown" && <button type="button" onClick={clearSpace} className="rounded-full border border-match px-3 py-1.5 text-match" data-testid="planner-clear-space">Clear the space</button>}
+        {scan && phase === "cleared" && <button type="button" onClick={restoreScan} className="rounded-full border border-foreground/25 px-3 py-1.5" data-testid="planner-restore-scan">Restore scan objects</button>}
         <label className="ml-2 flex items-center gap-1.5"><input type="checkbox" checked={zones} onChange={(e) => setZones(e.target.checked)} /> Clearance zones</label>
         <label className="flex items-center gap-1.5"><input type="checkbox" checked={people} onChange={(e) => setPeople(e.target.checked)} data-testid="planner-people" /> Visitors (illustrative)</label>
         <label className="ml-auto flex items-center gap-1.5 text-foreground/70">Floor (sq ft, assumed)
@@ -394,6 +424,22 @@ export default function CafePlanner({ match, kit, onKit, placed, onPlaced, area,
             </dl>
             {fresh && fresh.unpriced.length > 0 && <p className="mt-1 text-xs text-foreground/55">{fresh.unpriced.reduce((n, u) => n + u.quantity, 0)} placed pieces have no catalog price and are left out of the total, not counted as $0.</p>}
 
+            {scan && phase === "shown" && !offerDismissed && (
+              <div role="status" className="mt-3 flex flex-wrap items-center gap-3 rounded-xl border border-match/40 bg-match-soft px-4 py-3 text-sm" data-testid="planner-scan-offer">
+                <p className="min-w-0 flex-1">
+                  The scan found {scan.objects.length} object{scan.objects.length === 1 ? "" : "s"} in {scan.room === "scan" ? "this space" : scan.room} ({kindCounts(scan.objects).slice(0, 4).map(([k, n]) => `${n} ${k}`).join(", ")}), drawn faintly on the floor below. Names are guesses from shape. Clear the space to start from an empty floor?
+                </p>
+                <button type="button" onClick={clearSpace} className="rounded-full bg-foreground px-4 py-1.5 text-background" data-testid="planner-offer-clear">Clear the space</button>
+                <button type="button" onClick={() => setOfferDismissed(true)} className="rounded-full border border-foreground/25 px-3 py-1.5">Keep them</button>
+              </div>
+            )}
+            {scan && phase === "cleared" && (
+              <div role="status" className="mt-3 rounded-xl border border-foreground/15 bg-background px-4 py-3 text-sm" data-testid="planner-clear-summary">
+                <p className="font-medium">Space cleared: {scan.objects.length} scanned object{scan.objects.length === 1 ? "" : "s"} removed ({kindCounts(scan.objects).map(([k, n]) => `${n} ${k}`).join(", ")}).</p>
+                <p className="mt-1 text-xs text-foreground/60">The floor where they stood is redrawn as plain floor (dashed outlines mark the patches): an inference, not a measurement. Drag pieces from the tray onto the empty floor. {scan.omitted > 0 ? `${scan.omitted} more objects in the rest of the scan fall outside this floor and are not shown.` : ""}</p>
+              </div>
+            )}
+
             <div className="mt-3 overflow-hidden rounded-xl border border-foreground/15 bg-panel">
               <svg ref={svgRef} viewBox={`-0.9 -0.9 ${floor.width + 1.8} ${floor.depth + 2.1}`} className="block w-full touch-none select-none" data-testid="planner-svg"
                 role="group" aria-label={`Cafe floor, ${floor.width.toFixed(1)} by ${floor.depth.toFixed(1)} meters, ${placed.length} pieces`}
@@ -410,6 +456,32 @@ export default function CafePlanner({ match, kit, onKit, placed, onPlaced, area,
                 <text x={doorX(floor)} y={floor.depth + 0.5} fontSize={0.22} textAnchor="middle" className="fill-foreground/55">Door (assumed)</text>
                 <text x={floor.width / 2} y={-0.35} fontSize={0.26} textAnchor="middle" className="fill-foreground/60">{floor.width.toFixed(1)} m ({widthFt.toFixed(0)} ft)</text>
                 <text x={-0.35} y={floor.depth / 2} fontSize={0.26} textAnchor="middle" transform={`rotate(-90 -0.35 ${floor.depth / 2})`} className="fill-foreground/60">{floor.depth.toFixed(1)} m ({depthFt.toFixed(0)} ft)</text>
+
+                {scan && (
+                  <g data-testid="scan-layer" data-phase={phase} className="pointer-events-none">
+                    {scan.objects.map((o) => {
+                      const pts = footprint(o).map(([x, y]) => `${x.toFixed(3)},${y.toFixed(3)}`).join(" ");
+                      const delay = `${sweepDelay(o.x, floor.width).toFixed(2)}s`;
+                      const label = o.w > 0.6 && o.d > 0.4 ? o.kind : "";
+                      return (
+                        <g key={o.id} data-testid="scan-object" data-kind={o.kind}>
+                          {/* the hole the scan has under the object, then the floor redrawn over it */}
+                          {phase !== "cleared" && <polygon points={pts} fill="#1b1a17" opacity={0.5} />}
+                          {phase !== "shown" && <polygon points={pts} fill="url(#pl-grid)" stroke="currentColor" strokeWidth={0.02} strokeDasharray="0.08 0.06" opacity={0.35} className={phase === "clearing" ? "animate-scan-patch" : ""} style={phase === "clearing" ? { animationDelay: delay } : undefined} data-testid="scan-floor-patch" />}
+                          {phase !== "cleared" && (
+                            <g className={phase === "clearing" ? "animate-scan-out [transform-box:fill-box] [transform-origin:center]" : ""} style={phase === "clearing" ? { animationDelay: delay } : undefined}>
+                              <polygon points={pts} className="fill-[#b9a58a]/70 stroke-[#8a7658]" strokeWidth={0.03} />
+                              {label && <text x={o.x} y={o.y} fontSize={Math.min(0.16, o.w / Math.max(3, label.length * 0.62))} textAnchor="middle" dominantBaseline="middle" className="fill-foreground/70">{label}</text>}
+                            </g>
+                          )}
+                        </g>
+                      );
+                    })}
+                    {phase === "clearing" && (
+                      <rect x={0} y={0} width={0.5} height={floor.depth} fill="#ffffff" opacity={0.6} className="animate-scan-wave" style={{ ["--wave-to" as string]: `${floor.width}px` }} data-testid="scan-wave" />
+                    )}
+                  </g>
+                )}
 
                 {visitors.map((v, i) => (
                   <polyline key={`trail-${i}`} fill="none" stroke={VISITOR_COLORS[i % VISITOR_COLORS.length]} strokeWidth={0.035} strokeDasharray="0.06 0.1" opacity={0.35}
