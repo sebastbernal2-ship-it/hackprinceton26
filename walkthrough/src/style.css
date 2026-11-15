@@ -5,7 +5,8 @@ html, body { margin:0; height:100%; background:var(--bg); color:var(--text); fon
 #crosshair { position:fixed; left:50%; top:50%; width:10px; height:10px; margin:-5px; border:2px solid #fff; border-radius:50%; mix-blend-mode:difference; pointer-events:none; }
 #bar { position:fixed; top:0; left:0; right:0; display:flex; gap:10px; align-items:center; padding:8px 16px; background:linear-gradient(var(--panel), transparent); pointer-events:none; flex-wrap:wrap; }
 #bar > * { pointer-events:auto; }
-#status { color:var(--dim); font-size:12px; flex:1; min-width:0; }
+#status { color:var(--dim); font-size:12px; flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#list .warn { background:rgba(245,165,36,.15); border:1px solid var(--warn); border-radius:6px; padding:6px 8px; margin:6px 0 0; font-size:12px; }
 #badge { background:var(--warn); color:#1a1200; font-weight:700; border-radius:4px; padding:1px 8px; font-size:12px; }
 button { font:inherit; background:#222634; color:var(--text); border:1px solid var(--line); border-radius:6px; padding:5px 11px; cursor:pointer; }
 button:hover { background:#2c3142; }
@@ -20,7 +21,7 @@ button[aria-pressed="true"] { border-color:var(--violet); }
 #list small { display:block; color:var(--dim); }
 #card { position:fixed; top:48px; right:16px; width:min(400px, calc(100% - 32px)); max-height:calc(100% - 200px); overflow:auto; background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:14px 16px; }
 #card[hidden] { display:none; }
-#card h2 { margin:0 0 6px; font-size:17px; }
+#card h2 { margin:0 0 6px; padding-right:28px; font-size:17px; }
 #card .badges { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px; }
 #card .badge { border:1px solid var(--line); border-radius:999px; padding:1px 9px; font-size:12px; color:var(--dim); }
 #card .notice { color:var(--dim); font-style:italic; margin:0 0 8px; }

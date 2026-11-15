@@ -109,8 +109,8 @@ async function main(): Promise<void> {
   // ---- UI ----
   document.title = isDemo ? 'Site walkthrough (DEMO)' : 'Site walkthrough';
   if (isDemo) { const b = $('badge'); b.hidden = false; b.textContent = 'DEMO: synthetic room and findings'; }
-  const rejectedNote = parsed.rejected.length ? ` ${parsed.rejected.length} finding(s) rejected as invalid: ${parsed.rejected.map((r) => `${r.id ?? `#${r.index}`} (${r.reason})`).join('; ')}.` : '';
-  status.textContent = `${loaded.label} | ${loaded.stats} | ${pins.pins.length} pinned of ${parsed.findings.length} findings.${findingsNote ? ' ' + findingsNote : ''}${rejectedNote}`;
+  const rejectedNote = parsed.rejected.length ? `${parsed.rejected.length} finding(s) rejected as invalid: ${parsed.rejected.map((r) => `${r.id ?? `#${r.index}`} (${r.reason})`).join('; ')}.` : '';
+  status.textContent = `${loaded.label} | ${loaded.stats} | ${pins.pins.length} pinned of ${parsed.findings.length} findings.${findingsNote ? ' ' + findingsNote : ''}${rejectedNote ? ' ' + rejectedNote : ''}`;
   status.title = status.textContent;
 
   const card = $('card');
@@ -159,6 +159,7 @@ async function main(): Promise<void> {
     list.append(b);
   }
   if (!parsed.findings.length) list.append(el('p', undefined, findingsNote || 'No findings.'));
+  if (rejectedNote) list.append(el('p', 'warn', rejectedNote));
   $('listToggle').onclick = () => { list.hidden = !list.hidden; };
 
   // legend
@@ -193,7 +194,8 @@ async function main(): Promise<void> {
         if (inside) { best = f; break; }
       }
     }
-    if (!best) return;
+    // nowhere to stand (e.g. the pin is in an inferred part nobody can walk into): just face it from here
+    if (!best) best = { x: player.pos.x, y: player.pos.y, z: player.pos.z };
     const dx = p.x - best.x, dz = p.z - best.z, dy = p.y - (best.y + player.eyeHeight);
     player.place(best.x, best.y, best.z, Math.atan2(-dx, -dz), Math.atan2(dy, Math.hypot(dx, dz)));
   }
@@ -257,9 +259,11 @@ async function main(): Promise<void> {
   });
 
   // ---- loop ----
-  const clock = new THREE.Clock();
+  let last = performance.now();
   renderer.setAnimationLoop(() => {
-    const dt = clock.getDelta();
+    const now = performance.now();
+    const dt = (now - last) / 1000;
+    last = now;
     if (xr.presenting) xr.update(dt);
     else {
       const look = controls.consumeLook();
