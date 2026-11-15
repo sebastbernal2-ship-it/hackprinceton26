@@ -46,7 +46,7 @@ def make_asset(*, name: str, category: str, dims: tuple | None, dims_status: str
         "parentAssetId": None, "variantKind": "base",
         "dims": {"w": round(w, 3), "d": round(d, 3), "h": round(h, 3)}, "dimsStatus": dims_status,
         "dimRanges": None, "allowedSizes": None,
-        "footprint": [[0, 0], [round(w, 3), 0], [round(w, 3), round(d, 3)], [0, round(d, 3)]],
+        "footprint": [[0, 0], [round(w, 3), 0], [round(w, 3), round(d, 3)], [0, round(d, 3)], [0, 0]],
         "clearance": {"front": f, "sides": s, "back": b}, "clearanceBasis": CLEARANCE_BASIS,
         "model": {"uri": "", "format": "box"}, "imageRefs": list(image_refs), "profileId": profile_id,
         "tags": list(tags), "priceRef": None,  # never invented; link to data/financial/catalog.json by a human/other slice
