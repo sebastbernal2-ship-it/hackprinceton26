@@ -5,6 +5,14 @@
       "name": "studio",
       "url": "http://localhost:8000",
       "port": 8000
+    },
+    {
+      "name": "walk",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["run_all.py", "--only", "serve"],
+      "env": { "HP_NO_BROWSER": "1", "HP_SERVE_PORT": "8001" },
+      "port": 8001,
+      "autoPort": false
     }
   ]
 }

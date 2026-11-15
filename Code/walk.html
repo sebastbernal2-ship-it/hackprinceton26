@@ -24,6 +24,13 @@
   #cat { position:fixed; left:50%; top:50%; transform:translate(-50%, -50%); width:min(760px, calc(100vw - 32px)); max-height:min(620px, calc(100vh - 32px));
          display:none; flex-direction:column; background:#15171cf2; border:1px solid #2c3038; border-radius:12px; padding:12px; z-index:5; }
   #cat.open { display:flex; }
+  #ai { position:fixed; left:50%; bottom:56px; transform:translateX(-50%); width:min(640px, calc(100vw - 32px)); display:none; flex-direction:column; gap:6px;
+        background:#15171cf2; border:1px solid #2c3038; border-radius:10px; padding:8px; z-index:4; }
+  #ai.open { display:flex; } #ai .row { display:flex; gap:4px; }
+  #aiInput { flex:1; background:#0f1013; color:var(--text); border:1px solid #3a3f48; border-radius:6px; padding:6px 8px; font:inherit; }
+  #ai button { background:#2a2f37; color:var(--text); border:1px solid #3a3f48; border-radius:6px; padding:4px 10px; cursor:pointer; font:inherit; }
+  #aiLog { max-height:180px; overflow:auto; font-size:12px; display:flex; flex-direction:column; gap:3px; }
+  #aiLog .you { color:#9fd0ff; } #aiLog .ai { color:var(--text); } #aiLog .sys { color:var(--dim); } #aiLog .err { color:#ff8a8a; }
   #cat .head { display:flex; align-items:baseline; gap:10px; margin-bottom:8px; } #cat .head b { font-size:15px; }
   #cat .dim { color:var(--dim); font-size:12px; } #catClose { margin-left:auto; }
   #cat button { background:#2a2f37; color:var(--text); border:1px solid #3a3f48; border-radius:6px; padding:4px 10px; cursor:pointer; font:inherit; }
@@ -43,7 +50,8 @@
   <div class="dim" style="margin-top:4px">Furniture: aim at a piece · <kbd>E</kbd> or click pick up / place · wheel or <kbd>R</kbd> turn ·
     <kbd>X</kbd> remove · <kbd>Ctrl</kbd>+<kbd>Z</kbd> undo · <kbd>C</kbd> catalogue of new furniture</div>
 </div>
-<div id="panel"><span id="edits"></span> <button id="catBtn">Catalogue (C)</button><button id="exportBtn">Export edits.json</button><button id="resetBtn">Reset all</button></div>
+<div id="panel"><span id="edits"></span> <button id="aiBtn">Ask AI (Enter)</button><button id="catBtn">Catalogue (C)</button><button id="exportBtn">Export edits.json</button><button id="resetBtn">Reset all</button></div>
+<div id="ai"><div id="aiLog"></div><div class="row"><input id="aiInput" placeholder="e.g. move the sofa against the left wall and add two armchairs facing it" autocomplete="off"><button id="aiSend">Send</button><button id="aiNew">New chat</button></div></div>
 <div id="cat"><div class="head"><b>Add furniture</b><span class="dim">Free CC0 models from Poly Haven · lit by the room's own photo</span><button id="catClose">✕</button></div>
   <div id="catTabs"></div><div id="catGrid"></div></div>
 <div id="cross"></div><div id="target" style="opacity:0"></div><div id="hint" style="opacity:0"></div><div id="fade"></div>
@@ -116,7 +124,7 @@ async function bitmap(url, half) {
   const s = await createImageBitmap(b, { ...RAW, resizeWidth: Math.max(1, b.width >> 1), resizeHeight: Math.max(1, b.height >> 1), resizeQuality: 'high' });
   b.close(); return s;
 }
-const nextFrame = () => new Promise(r => requestAnimationFrame(r));
+const nextFrame = () => new Promise(r => { requestAnimationFrame(r); setTimeout(r, 100); });   // rAF never fires in a hidden tab
 const wait = ms => new Promise(r => setTimeout(r, ms));
 function texture(bmp) {
   const t = new THREE.Texture(bmp); t.flipY = false; t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = aniso;
@@ -475,8 +483,9 @@ const start = spots[0] || { pos: new THREE.Vector3((meta.bbox[0][0] + meta.bbox[
 placeAt(start, true);
 
 const keys = new Set();
+const typing = e => !!(e.target && e.target.closest && e.target.closest('input, textarea'));
 addEventListener('keydown', e => {
-  if (e.repeat) return; keys.add(e.code);
+  if (e.repeat || typing(e)) return; keys.add(e.code);
   if (e.code === 'KeyN' || e.code === 'KeyB') jump(e.code === 'KeyN' ? 1 : -1);
   if (e.code === 'KeyP') { autoPhoto = !autoPhoto; hint(autoPhoto ? 'Photo view on: stop at a scan spot to see the photo' : 'Photo view off'); setTimeout(() => hint(''), 1600); if (!autoPhoto) leavePhoto(); }
 });
@@ -599,6 +608,10 @@ const pushUndo = pc => { undoStack.push([pc, poseOf(pc)]); if (undoStack.length 
 function undo() {
   if (carried) { cancelCarry(); return; }
   const u = undoStack.pop(); if (!u) return;
+  if (u.batch) {                                      // everything one AI request changed, undone together
+    for (let i = u.batch.length - 1; i >= 0; i--) setPose(u.batch[i][0], u.batch[i][1]);
+    save(); flash(`Undid: ${u.label}`); return;
+  }
   setPose(u[0], u[1]); save(); flash(`Undid: ${u[0].label}`);
 }
 
@@ -663,16 +676,32 @@ function inFootprint(pc, wx, wy, wz) {                // world point -> inside p
   const i = Math.floor((lx - o.x0) / o.C), j = Math.floor((ly - o.y0) / o.C);
   return i >= 0 && j >= 0 && i < o.n && j < o.n && o.grid[j * o.n + i] === 1;
 }
+// What a piece already overlapped where it was scanned is not a collision: scan remnants of the piece left in the house
+// mesh, the wall it stood flush against, and the pieces it stood among (both still where they were scanned).
+const atScan = q => !q.added && !q.tx && !q.ty && !q.dz && !q.dyaw;
+function scanOverlap(pc) {                            // static triangles inside pc's footprint at its scanned pose
+  if (pc.scanTris) return pc.scanTris;
+  const set = pc.scanTris = new Set(); if (pc.added) return set;
+  const keep = { tx: pc.tx, ty: pc.ty, dz: pc.dz, dyaw: pc.dyaw }; Object.assign(pc, { tx: 0, ty: 0, dz: 0, dyaw: 0 });
+  const S = STATIC, r = pc.rxy;
+  eachTri(S, pc.cx - r, pc.cx + r, pc.cy - r, pc.cy + r, t => {
+    if (S.nz[t] >= 0.6) return;
+    const a = S.Ix[t * 3] * 3, b = S.Ix[t * 3 + 1] * 3, c = S.Ix[t * 3 + 2] * 3;
+    if (inFootprint(pc, (S.Pos[a] + S.Pos[b] + S.Pos[c]) / 3, (S.Pos[a + 1] + S.Pos[b + 1] + S.Pos[c + 1]) / 3, (S.Pos[a + 2] + S.Pos[b + 2] + S.Pos[c + 2]) / 3)) set.add(t);
+  });
+  Object.assign(pc, keep); return set;
+}
+const coexist = (pc, q) => atScan(pc) && atScan(q);
 function checkFit(pc) {
-  let hits = 0;
+  let hits = 0; const own = scanOverlap(pc);
   const x = pc.cx + pc.tx, y = pc.cy + pc.ty, r = pc.rxy, S = STATIC;
   eachTri(S, x - r, x + r, y - r, y + r, t => {
-    if (hits > 12 || S.nz[t] >= 0.6) return;                      // floors are fine; walls and other solids are not
+    if (hits > 12 || S.nz[t] >= 0.6 || own.has(t)) return;                      // floors are fine; walls and other solids are not
     const a = S.Ix[t * 3] * 3, b = S.Ix[t * 3 + 1] * 3, c = S.Ix[t * 3 + 2] * 3;
     if (inFootprint(pc, (S.Pos[a] + S.Pos[b] + S.Pos[c]) / 3, (S.Pos[a + 1] + S.Pos[b + 1] + S.Pos[c + 1]) / 3, (S.Pos[a + 2] + S.Pos[b + 2] + S.Pos[c + 2]) / 3)) hits++;
   });
   for (const q of pieces) {
-    if (q === pc || q.deleted || hits > 12) continue;
+    if (q === pc || q.deleted || hits > 12 || coexist(pc, q)) continue;
     if (Math.hypot(q.cx + q.tx - x, q.cy + q.ty - y) > q.rxy + r) continue;
     const c = Math.cos(q.dyaw), s = Math.sin(q.dyaw);
     const V = vertsOf(q);
@@ -714,7 +743,7 @@ function flash(s) { hint(s); flashTimer = 2.2; }
 const editedNear = s => pieces.some(pc => isEdited(pc) && Math.hypot(pc.cx + pc.tx - s.pos.x, pc.cy + pc.ty - s.pos.y) < 12 && Math.abs(pc.floor_z - (s.pos.z - 1.3)) < 2);
 
 addEventListener('keydown', e => {
-  if (e.repeat) return;
+  if (e.repeat || typing(e)) return;
   if (e.code === 'KeyE') interact(e.shiftKey);
   else if (e.code === 'KeyX' || e.code === 'Delete') removePiece(carried || target);
   else if (e.code === 'KeyR' && carried) { carried.dyaw += Math.PI / 2; applyPose(carried); }
@@ -850,7 +879,8 @@ async function spawn(entry) {
   const hold = 1.0 + Math.max(entry.size_m[0] || 1, entry.size_m[2] || 1) / 2;
   const x = feet.x + Math.cos(yaw) * hold, y = feet.y + Math.sin(yaw) * hold;
   const g = groundAt(x, y, feet.z + 0.5, feet.z - 1.5);
-  const pc = await makeItem(entry, { tx: x, ty: y, dz: isFinite(g) ? g : feet.z, dyaw: yaw + Math.PI / 2 });
+  // glTF fronts face +z, which becomes -y here: dyaw = facing + 90 deg; new items face the user
+  const pc = await makeItem(entry, { tx: x, ty: y, dz: isFinite(g) ? g : feet.z, dyaw: yaw + Math.PI - Math.PI / 2 });
   undoStack.push([pc, { ...poseOf(pc), deleted: true }]);
   carried = pc; carry = { start: poseOf(pc), hold: Math.max(hold, pc.rxy + 0.5), fresh: true };
   pc.outline.visible = true; leavePhoto(true);
@@ -879,6 +909,240 @@ $('catClose').onclick = () => toggleCatalog(false);
 pendingAdded = pendingAdded.filter(a => catalog.some(c => c.id === a.cat));   // items added in an earlier visit
 Promise.all(pendingAdded.map(a => makeItem(catalog.find(c => c.id === a.cat), a).catch(e => console.warn(a.cat, e))))
   .then(() => { pendingAdded = []; save(); });
+
+// ------------------------------------------------------------------ AI: ask Gemini to rearrange the scene
+// The agent loop runs here because the scene does: each turn POSTs the conversation to /api/agent (run_all.py's server,
+// which holds the API key and calls Gemini, see Code/scene_agent.py), runs the tool calls the model returns against the
+// scene, and sends the results back until the model is done. A whole request is one Ctrl+Z.
+const D2R = Math.PI / 180, wrap = d => ((d % 360) + 540) % 360 - 180;
+const findPiece = id => pieces.find(p => String(p.id) === String(id).replace(/^#/, ''));
+const facingDeg = pc => wrap(pc.added ? pc.dyaw / D2R - 90 : pc.yaw_deg + pc.dyaw / D2R);   // where its front points
+const setFacing = (pc, deg) => { pc.dyaw = pc.added ? (deg + 90) * D2R : (deg - pc.yaw_deg) * D2R; };
+const posOf = pc => ({ x: pc.cx + pc.tx, y: pc.cy + pc.ty });
+const view = () => ({ f: [Math.cos(yaw), Math.sin(yaw)], r: [Math.sin(yaw), -Math.cos(yaw)] });
+function extent(pc, dx, dy) {                         // how far the piece reaches from its centre in world direction (dx, dy)
+  const V = vertsOf(pc), c = Math.cos(pc.dyaw), s = Math.sin(pc.dyaw), lx = dx * c + dy * s, ly = -dx * s + dy * c;
+  const stride = Math.max(1, Math.floor(V.length / 3 / 6000)) * 3; let m = 0.05;
+  for (let v = 0; v < V.length; v += stride) { if (V[v + 2] < pc.floor_z + 0.05) continue;
+    m = Math.max(m, (V[v] - pc.cx) * lx + (V[v + 1] - pc.cy) * ly); }
+  return m;
+}
+function fitDetails(pc) {                             // checkFit, plus what is in the way and the clearance to walls
+  let wall = 0; const by = new Map(), own = scanOverlap(pc);
+  const { x, y } = posOf(pc), r = pc.rxy, S = STATIC;
+  eachTri(S, x - r, x + r, y - r, y + r, t => {
+    if (wall > 40 || S.nz[t] >= 0.6 || own.has(t)) return;
+    const a = S.Ix[t * 3] * 3, b = S.Ix[t * 3 + 1] * 3, c = S.Ix[t * 3 + 2] * 3;
+    if (inFootprint(pc, (S.Pos[a] + S.Pos[b] + S.Pos[c]) / 3, (S.Pos[a + 1] + S.Pos[b + 1] + S.Pos[c + 1]) / 3, (S.Pos[a + 2] + S.Pos[b + 2] + S.Pos[c + 2]) / 3)) wall++;
+  });
+  for (const q of pieces) {
+    if (q === pc || q.deleted || coexist(pc, q)) continue;
+    const qp = posOf(q); if (Math.hypot(qp.x - x, qp.y - y) > q.rxy + r) continue;
+    const c = Math.cos(q.dyaw), s = Math.sin(q.dyaw), V = vertsOf(q); let n = 0;
+    for (let v = 0; v < V.length && n < 40; v += 9) { const dx = V[v] - q.cx, dy = V[v + 1] - q.cy;
+      if (inFootprint(pc, qp.x + dx * c - dy * s, qp.y + dx * s + dy * c, V[v + 2] + q.dz)) n++; }
+    if (n) by.set(q, n);
+  }
+  const total = wall + [...by.values()].reduce((a, b) => a + b, 0);
+  let clear = 5;
+  const z = pc.floor_z + pc.dz + Math.min(0.5, (pc.zmax - pc.floor_z) / 2);
+  for (let k = 0; k < 8; k++) { const a = k * Math.PI / 4, d = new THREE.Vector3(Math.cos(a), Math.sin(a), 0);
+    clear = Math.min(clear, rayStatic(new THREE.Vector3(x, y, z), d, 5) - extent(pc, d.x, d.y)); }
+  return { fits: total <= 12, overlaps_wall: wall > 6, blocked_by: [...by].filter(([, n]) => n > 3).map(([q]) => `${q.label} (#${q.id})`),
+           wall_clearance_m: +Math.max(0, clear).toFixed(2) };
+}
+function report(pc, extra) {
+  const p = posOf(pc);
+  return { id: String(pc.id), label: pc.label, x: +p.x.toFixed(2), y: +p.y.toFixed(2), facing_deg: +facingDeg(pc).toFixed(0),
+           removed: pc.deleted, ...(pc.deleted ? {} : fitDetails(pc)), ...extra };
+}
+function settle(pc, x, y) {                           // move to (x, y) on whatever floor is there; false if there is none
+  const ox = pc.tx, oy = pc.ty, oz = pc.dz;
+  pc.tx = x - pc.cx; pc.ty = y - pc.cy;
+  if (pc.on_floor) {
+    const g = groundAt(x, y, pc.floor_z + pc.dz + 0.6, pc.floor_z + pc.dz - 1.5);
+    if (!isFinite(g)) { pc.tx = ox; pc.ty = oy; pc.dz = oz; return false; }
+    pc.dz = g - pc.floor_z;
+  }
+  return true;
+}
+const touched = new Set();
+function changed(pc) { touched.add(pc); applyPose(pc); if (pc.added) { pc.envSpot = null; lightItem(pc); } save();
+  pc.outline.visible = true; outlineMat.color.set(0xffc94d); setTimeout(() => { if (pc !== target && pc !== carried) pc.outline.visible = false; }, 1800); }
+function need(id) { const pc = findPiece(id); if (!pc) throw new Error(`No piece with id ${id}`); return pc; }
+function sceneText(radius = 10, cx = feet.x, cy = feet.y) {
+  const v = view(), lines = [];
+  for (const pc of pieces) {
+    const p = posOf(pc), d = Math.hypot(p.x - cx, p.y - cy);
+    if (d > radius || Math.abs(pc.floor_z + pc.dz - feet.z) > 1.5) continue;
+    const rx = p.x - feet.x, ry = p.y - feet.y, fw = rx * v.f[0] + ry * v.f[1], rt = rx * v.r[0] + ry * v.r[1];
+    const where = `${Math.abs(fw) < 0.3 ? '' : fw > 0 ? `${fw.toFixed(1)} m ahead` : `${(-fw).toFixed(1)} m behind`}${Math.abs(rt) < 0.3 ? '' : `, ${Math.abs(rt).toFixed(1)} m ${rt > 0 ? 'right' : 'left'}`}`;
+    const state = pc.deleted ? ' REMOVED' : pc.added ? ' (catalogue item)' : isEdited(pc) ? ' (moved)' : '';
+    lines.push([d, `#${pc.id} ${pc.label}${pc.kind ? ` [${pc.kind}]` : ''}${state} | centre (${p.x.toFixed(2)}, ${p.y.toFixed(2)}) | ` +
+      `${pc.size.map(s => s.toFixed(2)).join(' x ')} m | facing ${facingDeg(pc).toFixed(0)} deg | ${where.replace(/^, /, '') || 'at the user'}`]);
+  }
+  lines.sort((a, b) => a[0] - b[0]);
+  return lines.slice(0, 60).map(l => l[1]).join('\n') || '(no movable pieces in range)';
+}
+function situation() {
+  const fd = wrap(yaw / D2R), compass = ['east', 'north-east', 'north', 'north-west', 'west', 'south-west', 'south', 'south-east'][((Math.round(fd / 45) % 8) + 8) % 8];
+  return `The user stands at (${feet.x.toFixed(2)}, ${feet.y.toFixed(2)}), floor z ${feet.z.toFixed(2)}, facing ${fd.toFixed(0)} deg (${compass}).\n` +
+         `Pieces within 10 m (nearest first; "ahead/left/right" are from the user's view):\n${sceneText()}`;
+}
+// screenshot of the user's view with every nearby piece's id drawn on it (so "the chair by the window" resolves to an id)
+function snapshot() {
+  renderer.render(scene, camera);                    // read back in the same task, before the buffer is cleared
+  const src = renderer.domElement; if (!src.width || !src.height) return null;   // hidden / zero-size view
+  const W = 1024, H = Math.round(W * src.height / src.width);
+  const c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d');
+  x.drawImage(src, 0, 0, W, H);
+  x.font = 'bold 15px system-ui, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
+  const v = new THREE.Vector3();
+  for (const pc of pieces) {
+    if (pc.deleted) continue;
+    const p = posOf(pc), zc = pc.floor_z + pc.dz + Math.min(1.2, (pc.zmax - pc.floor_z) * 0.6);
+    const d = Math.hypot(p.x - camera.position.x, p.y - camera.position.y); if (d > 12) continue;
+    v.set(p.x, p.y, zc).project(camera); if (v.z > 1 || Math.abs(v.x) > 1 || Math.abs(v.y) > 1) continue;
+    const dir = new THREE.Vector3(p.x, p.y, zc).sub(camera.position), dist = dir.length(); dir.normalize();
+    if (rayStatic(camera.position, dir, dist) < dist - Math.max(0.3, pc.rxy * 0.7)) continue;   // hidden behind a wall
+    const sx = (v.x + 1) / 2 * W, sy = (1 - v.y) / 2 * H, t = `#${pc.id}`, w = x.measureText(t).width + 10;
+    x.fillStyle = pc.added ? '#ffc94dee' : '#000c'; x.fillRect(sx - w / 2, sy - 11, w, 22);
+    x.fillStyle = pc.added ? '#000' : '#fff'; x.fillText(t, sx, sy);
+  }
+  return c.toDataURL('image/jpeg', 0.82).split(',')[1];
+}
+const imageBlock = () => { const data = snapshot();
+  return data ? { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data } } : { type: 'text', text: '(no screenshot: the view is hidden)' }; };
+
+const sceneTools = {
+  describe_scene: ({ radius_m, x, y }) => sceneText(Math.min(30, Math.max(1, radius_m || 10)), x ?? feet.x, y ?? feet.y),
+  move_object: ({ id, x, y, yaw_deg }) => {
+    const pc = need(id); pushUndo(pc); pc.deleted = false;
+    if (yaw_deg != null) setFacing(pc, yaw_deg);
+    if (!settle(pc, x, y)) return report(pc, { error: 'no floor at that position; piece not moved' });
+    changed(pc); return report(pc);
+  },
+  move_relative: ({ id, forward_m, right_m, turn_deg }) => {
+    const pc = need(id), v = view(), p = posOf(pc); pushUndo(pc);
+    pc.dyaw += (turn_deg || 0) * D2R;
+    if (!settle(pc, p.x + v.f[0] * forward_m + v.r[0] * right_m, p.y + v.f[1] * forward_m + v.r[1] * right_m))
+      return report(pc, { error: 'no floor there; only turned' });
+    changed(pc); return report(pc);
+  },
+  place_next_to: ({ id, anchor_id, side, gap_m, face }) => {
+    const pc = need(id), an = need(anchor_id), v = view(); pushUndo(pc); pc.deleted = false;
+    const d = { left: [-v.r[0], -v.r[1]], right: v.r, in_front: [-v.f[0], -v.f[1]], behind: v.f }[side];
+    const ap = posOf(an);
+    if (face === 'same_as_anchor') setFacing(pc, facingDeg(an));
+    for (let it = 0; it < 2; it++) {                 // facing depends on the spot, the spot on the facing: settle twice
+      const dist = extent(an, d[0], d[1]) + (gap_m ?? 0.1) + extent(pc, -d[0], -d[1]);
+      const x = ap.x + d[0] * dist, y = ap.y + d[1] * dist;
+      if (face === 'toward_anchor') setFacing(pc, Math.atan2(ap.y - y, ap.x - x) / D2R);
+      if (face === 'away_from_anchor') setFacing(pc, Math.atan2(y - ap.y, x - ap.x) / D2R);
+      if (face === 'toward_user') setFacing(pc, Math.atan2(feet.y - y, feet.x - x) / D2R);
+      if (!settle(pc, x, y)) return report(pc, { error: 'no floor on that side of the anchor' });
+    }
+    changed(pc); return report(pc);
+  },
+  push_against_wall: ({ id, direction, gap_m }) => {
+    const pc = need(id), v = view(); pushUndo(pc);
+    const d = { forward: v.f, back: [-v.f[0], -v.f[1]], right: v.r, left: [-v.r[0], -v.r[1]],
+                north: [0, 1], south: [0, -1], east: [1, 0], west: [-1, 0] }[direction];
+    const start = posOf(pc); let last = 0;
+    for (const step of [0.1, 0.02]) {                // coarse, then fine
+      for (let s = last + step; s < 10; s += step) {
+        if (!settle(pc, start.x + d[0] * s, start.y + d[1] * s) || !checkFit(pc)) break;
+        last = s;
+      }
+    }
+    const back = Math.max(0, last - (gap_m || 0));
+    settle(pc, start.x + d[0] * back, start.y + d[1] * back);
+    changed(pc); return report(pc, { moved_m: +back.toFixed(2) });
+  },
+  rotate_object: ({ id, mode, degrees, target_id }) => {
+    const pc = need(id), p = posOf(pc); pushUndo(pc);
+    if (mode === 'set') setFacing(pc, degrees || 0);
+    else if (mode === 'by') pc.dyaw += (degrees || 0) * D2R;
+    else if (mode === 'face_object') { const t = posOf(need(target_id)); setFacing(pc, Math.atan2(t.y - p.y, t.x - p.x) / D2R); }
+    else setFacing(pc, Math.atan2(feet.y - p.y, feet.x - p.x) / D2R);
+    changed(pc); return report(pc);
+  },
+  remove_object: ({ id }) => { const pc = need(id); pushUndo(pc); pc.deleted = true; changed(pc); return report(pc); },
+  restore_object: ({ id }) => { const pc = need(id); pushUndo(pc);
+    Object.assign(pc, pc.added ? { deleted: false } : { tx: 0, ty: 0, dz: 0, dyaw: 0, deleted: false }); changed(pc); return report(pc); },
+  list_catalog: ({ category }) => catalog.filter(c => !category || c.category.toLowerCase() === category.toLowerCase())
+    .map(c => `${c.id} | ${c.name} | ${c.category} | ${c.size_m.map(v => v.toFixed(2)).join(' x ')} m`).join('\n') || 'catalogue is empty (run Code/fetch_catalog.py)',
+  add_from_catalog: async ({ catalog_id, x, y, yaw_deg }) => {
+    const entry = catalog.find(c => c.id === catalog_id); if (!entry) throw new Error(`No catalogue item ${catalog_id}`);
+    const g = groundAt(x, y, feet.z + 0.6, feet.z - 1.5); if (!isFinite(g)) throw new Error('no floor at that position');
+    const pc = await makeItem(entry, { tx: x, ty: y, dz: g, dyaw: 0 });
+    setFacing(pc, yaw_deg); undoStack.push([pc, { ...poseOf(pc), deleted: true }]); changed(pc);
+    return report(pc);
+  },
+  get_view: () => [imageBlock(), { type: 'text', text: situation() }],
+};
+
+let aiMessages = [], aiBusy = false;
+const aiLog = (cls, text) => { const d = document.createElement('div'); d.className = cls; d.textContent = text;
+  $('aiLog').appendChild(d); $('aiLog').scrollTop = 1e9; return d; };
+const toolLine = (n, a) => ({ move_object: `moving #${a.id}`, move_relative: `moving #${a.id}`, place_next_to: `placing #${a.id} next to #${a.anchor_id}`,
+  push_against_wall: `pushing #${a.id} ${a.direction}`, rotate_object: `turning #${a.id}`, remove_object: `removing #${a.id}`,
+  restore_object: `restoring #${a.id}`, add_from_catalog: `adding ${a.catalog_id}`, list_catalog: 'checking the catalogue',
+  describe_scene: 'looking around', get_view: 'checking the view' }[n] || n);
+async function askAI(prompt) {
+  if (aiBusy || !prompt.trim()) return;
+  aiBusy = true; $('aiInput').disabled = true; $('aiSend').disabled = true;
+  if (carried) cancelCarry(); leavePhoto(true);
+  aiLog('you', prompt);
+  const status = aiLog('sys', 'Gemini is thinking…');
+  const mark = undoStack.length, base = aiMessages.length; touched.clear();
+  try {
+    aiMessages.push({ role: 'user', content: [imageBlock(), { type: 'text', text: `${situation()}\n\nRequest: ${prompt}` }] });
+    for (let turn = 0; turn < 20; turn++) {
+      const res = await fetch('/api/agent', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Walk-Agent': '1' },
+                                              body: JSON.stringify({ messages: aiMessages }) });
+      const out = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
+      if (!res.ok || out.error) {
+        aiMessages.length = base;                      // drop this whole request so the chat stays valid (no dangling tool_use)
+        throw new Error(res.status === 501 || res.status === 405 ? 'This server has no /api/agent - restart it with: python run_all.py --only serve' : out.error);
+      }
+      aiMessages.push({ role: 'assistant', content: out.content });
+      for (const b of out.content) if (b.type === 'text' && b.text.trim()) aiLog('ai', b.text.trim());
+      if (out.stop_reason === 'refusal') { aiLog('err', 'Gemini declined this request.'); break; }
+      const calls = out.content.filter(b => b.type === 'tool_use');
+      if (out.stop_reason !== 'tool_use' || !calls.length) { if (out.stop_reason === 'max_tokens') aiLog('err', '(reply was cut off)'); break; }
+      const results = [];
+      for (const c of calls) {                         // all results go back in one user message
+        status.textContent = `Gemini: ${toolLine(c.name, c.input || {})}…`;
+        try {
+          const fn = sceneTools[c.name]; if (!fn) throw new Error(`unknown tool ${c.name}`);
+          const r = await fn(c.input || {});
+          results.push({ type: 'tool_result', tool_use_id: c.id, content: Array.isArray(r) ? r : typeof r === 'string' ? r : JSON.stringify(r) });
+        } catch (e) { results.push({ type: 'tool_result', tool_use_id: c.id, content: String(e.message || e), is_error: true }); }
+        await nextFrame();
+      }
+      aiMessages.push({ role: 'user', content: results });
+      if (turn === 19) aiLog('err', '(stopped after 20 steps)');
+    }
+  } catch (e) { aiLog('err', String(e.message || e)); }
+  const batch = undoStack.splice(mark);
+  if (batch.length) { undoStack.push({ batch, label: `AI: ${prompt.slice(0, 40)}` }); aiLog('sys', `${touched.size} piece${touched.size === 1 ? '' : 's'} changed · Ctrl+Z undoes all of it`); }
+  status.remove(); aiBusy = false; $('aiInput').disabled = false; $('aiSend').disabled = false; $('aiInput').focus();
+}
+function toggleAI(open) {
+  const el = $('ai'); open = open ?? !el.classList.contains('open');
+  el.classList.toggle('open', open);
+  if (open) { keys.clear(); document.exitPointerLock?.(); setTimeout(() => $('aiInput').focus(), 0); } else $('aiInput').blur();
+}
+$('aiSend').onclick = () => { const v = $('aiInput').value; $('aiInput').value = ''; askAI(v); };
+$('aiInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') { e.preventDefault(); $('aiSend').click(); }
+  if (e.key === 'Escape') { toggleAI(false); }
+  e.stopPropagation();
+});
+$('aiNew').onclick = () => { aiMessages = []; $('aiLog').innerHTML = ''; aiLog('sys', 'New conversation.'); };
+$('aiBtn').onclick = () => toggleAI();
+addEventListener('keydown', e => { if (!typing(e) && (e.code === 'Enter' || e.code === 'Slash')) { e.preventDefault(); toggleAI(true); } });
 
 // ------------------------------------------------------------------ loop
 const clock = new THREE.Clock();
@@ -913,7 +1177,8 @@ function frame() {
 
     if (autoPhoto && idle > IDLE_S && !carried) {
       const s = nearestSpot(PHOTO_DIST);
-      if (s && s.tex && s.align && !editedNear(s)) {         // the photo would show the old layout mode = 'glide'; active = s; glide = { from: eye.clone(), t: 0 };
+      if (s && s.tex && s.align && !editedNear(s)) {         // the photo would show the old layout
+        mode = 'glide'; active = s; glide = { from: eye.clone(), t: 0 };
         photoMat.uniforms.pano.value = s.tex; photoMat.uniforms.ym.value.set(s.align.yaw, s.align.mirror); }
     }
   } else if (mode === 'glide' || mode === 'photo') {
@@ -946,7 +1211,7 @@ function frame() {
   requestAnimationFrame(frame);
 }
 status(`Ready · ${spots.length} scan spots`);
-window.walk = { feet, eye, spots, groups, renderer, pieces, interact, spawn, catalog, toggleCatalog, envMat, relight: pc => { pc.envSpot = null; lightItem(pc); }, removePiece, undo, get target() { return target; },
+window.walk = { feet, eye, spots, groups, renderer, pieces, interact, spawn, catalog, toggleCatalog, envMat, relight: pc => { pc.envSpot = null; lightItem(pc); }, removePiece, undo, checkFit, fitDetails, sceneTools, get target() { return target; },
   get carried() { return carried; }, get fits() { return fits; }, get mode() { return mode; }, setView(y, p) { yaw = y; pitch = p; }, keys };   // for debugging
 frame();
 </script>

@@ -260,20 +260,42 @@ def step_sdk():
 
 def step_serve():
     """Serve the repo on localhost and open the studio. Runs until you press Ctrl+C."""
-    import http.server, functools, threading
-    port = S["serve_port"]
+    import http.server, functools, json, threading
+    port = int(os.environ.get("HP_SERVE_PORT") or S["serve_port"])
     class NoCache(http.server.SimpleHTTPRequestHandler):
         def end_headers(self):                       # never let the browser run a stale page/script
             self.send_header("Cache-Control", "no-store, max-age=0")
             super().end_headers()
         def log_message(self, *a):
             pass
+        def do_POST(self):
+            """POST /api/agent: one Gemini call for walk.html's AI scene editing (Code/scene_agent.py holds the key)."""
+            origin = self.headers.get("Origin") or ""
+            # only our own pages: a custom header forces a CORS preflight, which this server never approves,
+            # so another website open in the browser cannot spend the API key
+            if (self.path != "/api/agent" or self.headers.get("X-Walk-Agent") != "1"
+                    or (origin and not origin.startswith(("http://localhost:", "http://127.0.0.1:")))):
+                self.send_error(403); return
+            try:
+                body = json.loads(self.rfile.read(int(self.headers.get("Content-Length") or 0)) or b"{}")
+                sys.path.insert(0, str(CODE)); import scene_agent        # noqa: E402
+                status, out = scene_agent.handle(body)
+            except Exception as e:                   # noqa: BLE001 - report, keep serving
+                status, out = 500, {"error": f"{type(e).__name__}: {e}"}
+            data = json.dumps(out).encode()
+            self.send_response(status); self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(data))); self.end_headers(); self.wfile.write(data)
     handler = functools.partial(NoCache, directory=str(ROOT))
     httpd = http.server.ThreadingHTTPServer(("127.0.0.1", port), handler)
     base = f"http://localhost:{port}"
     print(f"   studio : {base}/Code/studio.html   (the page title shows its version)")
     print(f"   editor : {base}/Code/editor3d.html  (choose the folder {MD})")
     print(f"   walk   : {base}/Code/walk.html?model={SID}  (first-person walk-through)")
+    has_key = bool(os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY"))
+    print(f"   AI     : walk.html's prompt bar -> /api/agent "
+          f"({'ready' if has_key else 'needs GEMINI_API_KEY in .env'})")
+    if os.environ.get("HP_NO_BROWSER"):
+        S["open_studio"] = S["open_editor"] = False
     if S["open_studio"]:
         threading.Timer(1.0, lambda: webbrowser.open(base + "/Code/studio.html")).start()
     if S["open_editor"]:
