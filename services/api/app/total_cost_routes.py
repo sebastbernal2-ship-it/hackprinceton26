@@ -118,14 +118,18 @@ def rent_options(match) -> list[dict]:
     return opts
 
 
-def total_cost(match, sqft: Optional[float], rent_rate: Optional[float], rent_choice: Optional[str], months: int) -> dict:
+def total_cost(match, sqft: Optional[float], rent_rate: Optional[float], rent_choice: Optional[str], months: int,
+               buildout_from_layout: bool = False) -> dict:
     lines = financials.all_lines(match.city.split(",")[0], match.city.split(",")[1].strip() if "," in match.city else None, {})
     ops = financials.totals(lines)["totals"]
     space, space_src = getattr(match, "spaceSquareFeet", None), getattr(match, "spaceSource", None)  # kit properties have none
     bo = site_buildout(sqft, "owner") if sqft else site_buildout(space, space_src or "listing")
     parts, excluded = [], []
 
-    if bo["status"] == "estimated":
+    if buildout_from_layout:
+        # The default catalogue is the earlier Italian/gelato equipment set; a layout is priced by POST /api/layout-cost instead.
+        excluded.append({"id": "buildout", "reason": "priced from the pieces in your layout (see Layout cost), not the default restaurant equipment set"})
+    elif bo["status"] == "estimated":
         parts.append({"id": "buildout", "label": f"Build-out: kitchen equipment, install, interior fit-out x {bo['squareFeet']:,.0f} sq ft, 10-20% contingency",
                       "basis": "one_time", "low": bo["low"], "high": bo["high"], "status": "estimated",
                       "source": "planning/cost_model.py over data/financial/catalog.json (fit-out rate and contingency are stated assumptions)"})
@@ -174,11 +178,12 @@ def total_cost(match, sqft: Optional[float], rent_rate: Optional[float], rent_ch
 @router.get("/api/property/{listing_id}/total-cost")
 def property_total_cost(listing_id: int, sqft: Optional[float] = Query(None, gt=0, le=1_000_000),
                         rent: Optional[float] = Query(None, gt=0, le=1_000), rentSource: Optional[str] = None,
-                        months: int = Query(12, ge=1, le=120)):
+                        months: int = Query(12, ge=1, le=120),
+                        buildout: Optional[str] = Query(None, pattern="^layout$")):
     m = next((m for m in load_matches() or [] if m.listingId == listing_id), None) or kit_property(listing_id)
     if m is None:
         raise HTTPException(status_code=404, detail="listing not found or data unavailable")
-    return total_cost(m, sqft, rent, rentSource, months)
+    return total_cost(m, sqft, rent, rentSource, months, buildout == "layout")
 
 
 CITY = {"houston": "Houston, TX", "los-angeles": "Los Angeles, CA"}

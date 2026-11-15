@@ -91,7 +91,7 @@ export default function AgentPanel() {
         <label className="sr-only" htmlFor="agent-goal">Goal</label>
         <input id="agent-goal" value={goal} onChange={(e) => setGoal(e.target.value)} className="min-w-0 flex-1 rounded-lg border border-foreground/20 bg-background px-3 py-2 text-sm" />
         <button type="submit" disabled={busy || !goal.trim()} className="rounded-lg bg-foreground px-4 py-2 text-sm text-background disabled:opacity-40">Run agent</button>
-        <button type="button" disabled={busy} onClick={() => void start("replay")} className="rounded-lg border border-foreground/25 px-4 py-2 text-sm disabled:opacity-40">Replay saved run</button>
+        <button type="button" disabled={busy} onClick={() => void start("replay")} className="rounded-lg border border-foreground/25 px-4 py-2 text-sm disabled:opacity-40">Replay saved run (earlier Italian/gelato scenario)</button>
       </form>
       {err && <p role="alert" className="mt-3 rounded-lg border border-accent/40 p-3 text-sm" data-testid="agent-error">{err} Nothing was run. Try the replay.</p>}
       {busy && <p className="mt-2 text-xs text-foreground/50" aria-live="polite">Streaming trace.</p>}

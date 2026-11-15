@@ -2,13 +2,19 @@
 
 import { useCallback, useEffect, useState } from "react";
 import type { LayoutSummary } from "../lib/layout-summary";
+import type { Asset } from "../lib/assets";
 import type { Match } from "../lib/matches";
+import CafeQuantify from "./cafe-quantify";
 import CostPanel from "./cost-panel";
 import FinancePanel from "./finance/finance-panel";
 import Stepper from "./stepper";
 import TotalCostPanel from "./total-cost-panel";
 
-type QuantifyProps = { match: Match; layout: LayoutSummary | null; onBackToLayout: () => void; onClose: () => void };
+type QuantifyProps = {
+  match: Match; layout: LayoutSummary | null; onBackToLayout: () => void; onClose: () => void;
+  /** Café demo path: the reference-kit pieces placed on the property page and the owner's assumed area. */
+  kit?: Asset[]; onKit?: (items: Asset[]) => void; area?: string; onArea?: (v: string) => void;
+};
 
 const nice = (kind: string) => kind.charAt(0).toUpperCase() + kind.slice(1);
 
@@ -17,7 +23,7 @@ const nice = (kind: string) => kind.charAt(0).toUpperCase() + kind.slice(1);
  * Furniture has no price source in the cost engine, so layout items are listed as unpriced, never as $0. The seat
  * count feeds the 36-month scenario and can be overridden; it is an estimate from the segmentation's piece labels.
  */
-export default function Quantify({ match, layout, onBackToLayout, onClose }: QuantifyProps) {
+export default function Quantify({ match, layout, onBackToLayout, onClose, kit = [], onKit = () => {}, area = "", onArea = () => {} }: QuantifyProps) {
   const [seatsInput, setSeatsInput] = useState<string>(layout && layout.seats > 0 ? String(layout.seats) : "");
   const seatsNum = Number(seatsInput);
   const seats = Number.isInteger(seatsNum) && seatsNum >= 1 && seatsNum <= 500 ? seatsNum : null;
@@ -50,7 +56,14 @@ export default function Quantify({ match, layout, onBackToLayout, onClose }: Qua
         <section className="mt-8 rounded-[1.75rem] bg-foreground/[0.04] p-6 sm:p-8" aria-labelledby="layout-title" data-testid="layout-summary">
           <h2 id="layout-title" className="text-lg font-medium tracking-tight">Your layout</h2>
           {!layout ? (
+            match.demo ? (
+            <p className="mt-2 text-sm text-foreground/60">
+              No editable 3D layout: the read-only Matterport tour was used, which cannot be edited or counted. Costs below come from the equipment placed
+              with <b>Load cafe reference kit</b> in the layout section of the property page (illustrative placements, not measured fit).
+            </p>
+          ) : (
             <p className="mt-2 text-sm text-foreground/60">No layout yet. Open <b>Scope out your vision</b>, arrange the space, then continue here.</p>
+          )
           ) : (
             <>
               <p className="mt-1 text-sm text-foreground/55">
@@ -83,7 +96,7 @@ export default function Quantify({ match, layout, onBackToLayout, onClose }: Qua
             </>
           )}
 
-          <div className="mt-6 flex flex-wrap items-end gap-4 border-t border-foreground/10 pt-5">
+          {!match.demo && <div className="mt-6 flex flex-wrap items-end gap-4 border-t border-foreground/10 pt-5">
             <label className="text-sm">
               <span className="block text-foreground/55">Seats</span>
               <input
@@ -97,23 +110,23 @@ export default function Quantify({ match, layout, onBackToLayout, onClose }: Qua
                 ? `Counted from your layout: chairs, stools and armchairs (${layout.seats}).${layout.sofasNotCounted ? ` ${layout.sofasNotCounted} sofa${layout.sofasNotCounted === 1 ? "" : "s"} not counted (seats per sofa unknown).` : ""} Change it if it is off.`
                 : "Enter the seats you plan for. It drives the scenario below."}
             </p>
-          </div>
+          </div>}
         </section>
 
         {match.demo ? (
-          match.costarPropertyId ? (
-            <>
-              <TotalCostPanel listingId={match.costarPropertyId} onRent={onRent} />
-              <p className="mt-6 text-sm text-foreground/55">
-                The itemised cost list and the 36-month scenario need a restaurant candidate listing; this demo scan is
-                linked to its building&apos;s CoStar record only, so they are not shown.
+          <>
+            <CafeQuantify kit={kit} onKit={onKit} area={area} onArea={onArea} linkedBuilding={Boolean(match.costarPropertyId)} />
+            {match.costarPropertyId ? (
+              <TotalCostPanel listingId={match.costarPropertyId} initialSquareFeet={Number(area) > 0 ? Number(area) : undefined} onRent={onRent} buildoutFromLayout />
+            ) : (
+              <p className="mt-8 text-sm text-foreground/55">
+                Rent and running costs need a CoStar building record. This scan has none linked, so they are unknown, not zero.
               </p>
-            </>
-          ) : (
-            <p className="mt-8 text-sm text-foreground/55">
-              Costs need a CoStar record. This demo scan has none, so only the layout is shown.
+            )}
+            <p className="mt-6 text-sm text-foreground/55">
+              The itemised restaurant cost list and the 36-month scenario need a candidate listing; this scan is not one, so they are not shown.
             </p>
-          )
+          </>
         ) : (
           <>
             <TotalCostPanel listingId={match.listingId} initialSquareFeet={match.squareFeet} onRent={onRent} />

@@ -23,7 +23,7 @@ export default function FactorCards({ factors, demo }: { factors: FactorCard[]; 
       <h2 className="text-lg font-medium tracking-tight">Evidence</h2>
       {groups.length === 0 ? (
         <p className="mt-3 text-sm text-foreground/50">
-          {demo ? "Demo data carries no evidence cards." : "No evidence was found for this space yet."}
+          {demo ? "Evidence cards for this demo scan are not built on this machine, so every factor is unknown here (not negative, not zero)." : "No evidence was found for this space yet."}
         </p>
       ) : (
         <>

@@ -21,6 +21,7 @@ from .structure_routes import router as structure_router
 from .rent_routes import router as rent_router
 from .total_cost_routes import router as total_cost_router, brief_size, site_buildout, site_rent
 from .demo_routes import router as demo_router
+from .layout_cost_routes import router as layout_cost_router
 from .models import (
     AssessRequest, ProjectionsResponse, ReplanRequest, ReplanResponse, ScenarioAssessment,
     Match, MatchesRequest, MatchesResponse, NextQuestionRequest, NextQuestionResponse,
@@ -46,6 +47,7 @@ app.include_router(structure_router)
 app.include_router(rent_router)
 app.include_router(total_cost_router)
 app.include_router(demo_router)
+app.include_router(layout_cost_router)
 app.include_router(horizons_router)
 
 
