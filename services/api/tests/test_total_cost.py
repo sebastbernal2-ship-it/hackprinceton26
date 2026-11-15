@@ -17,9 +17,16 @@ def data(monkeypatch):
 def test_rent_is_excluded_not_zero_without_a_rate_or_area():
     d = client.get("/api/property/900001/total-cost").json()
     ids = {p["id"] for p in d["parts"]}
-    assert "buildout" in ids and "rent" not in ids
-    assert any(e["id"] == "rent" for e in d["excluded"])
+    # No listed space and no owner area: build-out is unknown too (sized by space, never by building area).
+    assert "buildout" not in ids and "rent" not in ids
+    assert {e["id"] for e in d["excluded"]} >= {"rent", "buildout"}
     assert d["totalStatus"].startswith("partial")
+
+
+def test_buildout_scales_with_space_area():
+    small = next(p for p in client.get("/api/property/900001/total-cost?sqft=1000").json()["parts"] if p["id"] == "buildout")
+    large = next(p for p in client.get("/api/property/900001/total-cost?sqft=2000").json()["parts"] if p["id"] == "buildout")
+    assert large["low"] > small["low"] and large["high"] > small["high"]
 
 
 def test_owner_rate_and_area_complete_the_total_deterministically():

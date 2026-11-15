@@ -199,13 +199,16 @@ def counts(lines: list[dict]) -> dict:
 
 def build_scenario(repairs: dict[str, float] | None = None, *, tasks=(), monthly_rent=None, rent_free_months=None,
                    delay_cost_per_month=None, planned_open_months=None, budget=None,
-                   contingency=(0.10, 0.20), path=None) -> Scenario:
+                   contingency=(0.10, 0.20), path=None, fitout_sqft: float | None = None) -> Scenario:
     """Scenario over equipment + install allowance + confirmed repairs so estimated inputs show in flip analysis.
-    Contingency default is a stated assumption. Repair categories without quantity are omitted (see unknown lines)."""
+    Contingency default is a stated assumption. Repair categories without quantity are omitted (see unknown lines).
+    fitout_sqft adds the per-sq-ft interior fit-out line (the site-specific part); None leaves it out."""
     cat = pc.load_financial_catalog(path)
     d = pc.load_financial_json(path)
     lines = [Line(e["id"], e.get("defaultQuantity", 1)) for e in d["equipment"]]
     lines.append(Line(d["installAllowance"]["id"], 1))
+    if fitout_sqft and "interiorFitout" in d:
+        lines.append(Line(d["interiorFitout"]["id"], float(fitout_sqft)))
     for cat_name, q in (repairs or {}).items():
         lines.append(Line(f"repair:{cat_name}", q))
     return Scenario(tuple(lines), contingency[0], contingency[1], tuple(tasks), monthly_rent, rent_free_months,

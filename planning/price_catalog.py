@@ -130,6 +130,10 @@ def load_financial_catalog(path: Path | None = None) -> dict[str, CatalogItem]:
     ia = d["installAllowance"]
     lo, _, hi = band(ia["referenceFractionOfEquipment"] * equipment_subtotal(d), "costBand", d)
     out[ia["id"]] = CatalogItem(ia["id"], ia["label"], "lump_sum", lo, hi, ESTIMATE_URL, d["asOf"], "", ia["rationale"], "estimated")
+    fo = d.get("interiorFitout")
+    if fo:
+        lo, _, hi = band(fo["referencePerSqft"], "costBand", d)
+        out[fo["id"]] = CatalogItem(fo["id"], fo["label"], fo["unit"], lo, hi, ESTIMATE_URL, d["asOf"], "", fo["rationale"], "estimated")
     for r in d["repairUnitCosts"]:
         iid = f'repair:{r["category"]}'
         if r["status"] == "unknown":

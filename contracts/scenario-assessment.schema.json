@@ -257,7 +257,6 @@
     "assumptionsUsed": {
       "default": [],
       "items": {
-        "additionalProperties": true,
         "type": "object"
       },
       "title": "Assumptionsused",
@@ -278,7 +277,6 @@
     "buildout": {
       "anyOf": [
         {
-          "additionalProperties": true,
           "type": "object"
         },
         {
@@ -291,7 +289,6 @@
     "costLines": {
       "default": [],
       "items": {
-        "additionalProperties": true,
         "type": "object"
       },
       "title": "Costlines",
@@ -390,7 +387,6 @@
     "sensitivity": {
       "anyOf": [
         {
-          "additionalProperties": true,
           "type": "object"
         },
         {
@@ -412,7 +408,6 @@
     "total": {
       "anyOf": [
         {
-          "additionalProperties": true,
           "type": "object"
         },
         {
@@ -425,7 +420,6 @@
     "totals": {
       "anyOf": [
         {
-          "additionalProperties": true,
           "type": "object"
         },
         {
@@ -441,7 +435,6 @@
       "type": "string"
     },
     "unknownInputs": {
-      "additionalProperties": true,
       "default": {},
       "title": "Unknowninputs",
       "type": "object"

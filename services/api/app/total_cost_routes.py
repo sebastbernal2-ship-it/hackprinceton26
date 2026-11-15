@@ -34,6 +34,36 @@ def _r(x):
     return None if x is None else round(float(x), 2)
 
 
+def site_buildout(sqft: Optional[float], basis: str = "listing") -> dict:
+    """Build-out for one site: equipment + install + interior fit-out x an area, with contingency.
+    basis says where the area came from: "listing" (listed available space), "brief" (the size the owner stated) or
+    "owner" (entered in the panel). Without an area the estimate is unknown (never the equipment-only figure)."""
+    if not sqft or sqft <= 0:
+        return {"status": "unknown", "low": None, "high": None, "squareFeet": None, "basis": None,
+                "reason": "no listed available space and no size in the brief, so the fit-out cannot be sized (building area is not used)"}
+    est = cost_model.estimate(financials.build_scenario(fitout_sqft=sqft))
+    if not est.buildout:
+        return {"status": "unknown", "low": None, "high": None, "squareFeet": sqft, "basis": basis, "reason": "equipment prices incomplete"}
+    where = {"listing": "listed available space", "scan": "the floor area measured from this site's Matterport scan", "brief": "the size in your brief (this site lists no space)",
+             "owner": "the area you entered"}[basis]
+    return {"status": "estimated", "low": _r(est.buildout[0]), "high": _r(est.buildout[1]), "squareFeet": sqft, "basis": basis,
+            "reason": f"equipment + install + interior fit-out per sq ft x {sqft:,.0f} sq ft from {where}, 10-20% contingency (neutral-band-v1)"}
+
+
+def site_rent(match, sqft: Optional[float], basis: Optional[str]) -> dict:
+    """Monthly rent estimate for one site: best available rate option x the same area the build-out uses.
+    Unknown (no numbers) when there is no rate option or no area. Never the building's area."""
+    opts = rent_options(match)
+    if not opts or not sqft:
+        why = "no rent rate on file" if not opts else "no space size (listing, scan or brief)"
+        return {"status": "unknown", "low": None, "high": None, "rateLabel": None, "rateStatus": None, "basis": basis, "reason": why}
+    o = opts[0]
+    lo, hi = o.get("low") or o["rate"], o.get("high") or o["rate"]
+    return {"status": "observed" if o["status"] == "observed" and o["id"] == "listing" else "estimated",
+            "low": _r(lo * sqft / 12), "high": _r(hi * sqft / 12), "rateLabel": o["label"], "rateStatus": o["status"],
+            "basis": basis, "reason": f"{o['label']} (${o['rate']:,.2f}/sf/yr, {o['status']}; {o['source']}) x {sqft:,.0f} sq ft"}
+
+
 def rent_options(match) -> list[dict]:
     """Rate options ($/sf/yr) for this listing, best evidence first. Each one names its source and status."""
     opts: list[dict] = []
@@ -74,15 +104,15 @@ def rent_options(match) -> list[dict]:
 def total_cost(match, sqft: Optional[float], rent_rate: Optional[float], rent_choice: Optional[str], months: int) -> dict:
     lines = financials.all_lines(match.city.split(",")[0], match.city.split(",")[1].strip() if "," in match.city else None, {})
     ops = financials.totals(lines)["totals"]
-    est = cost_model.estimate(financials.build_scenario())
+    bo = site_buildout(sqft, "owner") if sqft else site_buildout(match.spaceSquareFeet, match.spaceSource or "listing")
     parts, excluded = [], []
 
-    if est.buildout:
-        parts.append({"id": "buildout", "label": "Build-out: kitchen equipment, install, 10-20% contingency", "basis": "one_time",
-                      "low": _r(est.buildout[0]), "high": _r(est.buildout[1]), "status": "estimated",
-                      "source": "planning/cost_model.py over data/financial/catalog.json (contingency is a stated assumption)"})
+    if bo["status"] == "estimated":
+        parts.append({"id": "buildout", "label": f"Build-out: kitchen equipment, install, interior fit-out x {bo['squareFeet']:,.0f} sq ft, 10-20% contingency",
+                      "basis": "one_time", "low": bo["low"], "high": bo["high"], "status": "estimated",
+                      "source": "planning/cost_model.py over data/financial/catalog.json (fit-out rate and contingency are stated assumptions)"})
     else:
-        excluded.append({"id": "buildout", "reason": "equipment prices incomplete"})
+        excluded.append({"id": "buildout", "reason": bo["reason"]})
 
     if ops and ops["monthly"]["expected"] is not None:
         m = ops["monthly"]
@@ -99,10 +129,11 @@ def total_cost(match, sqft: Optional[float], rent_rate: Optional[float], rent_ch
         chosen = next((o for o in options if o["id"] == rent_choice), None)
     elif options:
         chosen = options[0]
-    if chosen and sqft:
+    rent_sqft = sqft or match.spaceSquareFeet  # owner's area, else the listed / scanned space (never the building)
+    if chosen and rent_sqft:
         lo_rate, hi_rate = chosen.get("low") or chosen["rate"], chosen.get("high") or chosen["rate"]
-        parts.append({"id": "rent", "label": f"Rent: {chosen['label']} x {sqft:,.0f} sq ft", "basis": "monthly",
-                      "low": _r(lo_rate * sqft / 12), "high": _r(hi_rate * sqft / 12), "status": chosen["status"],
+        parts.append({"id": "rent", "label": f"Rent: {chosen['label']} x {rent_sqft:,.0f} sq ft", "basis": "monthly",
+                      "low": _r(lo_rate * rent_sqft / 12), "high": _r(hi_rate * rent_sqft / 12), "status": chosen["status"],
                       "source": chosen["source"]})
     else:
         excluded.append({"id": "rent", "reason": "enter the square feet you would lease" if chosen else "no rent rate on file; enter one"})
