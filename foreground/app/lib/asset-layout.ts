@@ -2,7 +2,8 @@
 import polygonClipping from "polygon-clipping";
 import { bbox, type Asset } from "./assets";
 
-export type Placement = { key: string; asset: Asset; x: number; y: number; rot: 0 | 90; poly: [number, number][]; box: { x0: number; y0: number; x1: number; y1: number } };
+export type Placement = { key: string; asset: Asset; x: number; y: number; rot: Rot; poly: [number, number][]; box: { x0: number; y0: number; x1: number; y1: number } };
+export type Rot = 0 | 90 | 180 | 270;
 export type Issue = { kind: "overlap" | "blocked_front" | "narrow_aisle" | "outside_floor"; message: string };
 export type PackResult = { placed: Placement[]; unplaced: { asset: Asset; reason: string }[]; issues: Issue[] };
 
@@ -10,16 +11,17 @@ export type Rect = { width: number; depth: number };
 
 const EPS = 1e-6;
 
-function transform(asset: Asset, rot: 0 | 90, x: number, y: number): [number, number][] {
+/** Rotate the footprint counter-clockwise by `rot` degrees (local +y, the front, turns with it), then move its bbox min to (x, y). */
+function transform(asset: Asset, rot: Rot, x: number, y: number): [number, number][] {
   const b = bbox(asset.footprint);
-  const local = asset.footprint.map(([px, py]) => [px - b.x0, py - b.y0] as [number, number]);
-  const depth = b.y1 - b.y0;
-  // 90 degrees: (px, py) -> (depth - py, px); the front (+y) then faces -x... kept simple: rotate about bbox origin.
-  const turned = rot === 90 ? local.map(([px, py]) => [depth - py, px] as [number, number]) : local;
-  return turned.map(([px, py]) => [px + x, py + y]);
+  const turn = ([px, py]: [number, number]): [number, number] =>
+    rot === 0 ? [px, py] : rot === 90 ? [-py, px] : rot === 180 ? [-px, -py] : [py, -px];
+  const turned = asset.footprint.map(([px, py]) => turn([px - b.x0, py - b.y0]));
+  const t = bbox(turned);
+  return turned.map(([px, py]) => [px - t.x0 + x, py - t.y0 + y]);
 }
 
-function place(asset: Asset, key: string, rot: 0 | 90, x: number, y: number): Placement {
+export function placeAsset(asset: Asset, key: string, rot: Rot, x: number, y: number): Placement {
   const poly = transform(asset, rot, x, y);
   return { key, asset, x, y, rot, poly, box: bbox(poly) };
 }
@@ -44,7 +46,7 @@ export function packAssets(floor: Rect, assets: Asset[], respectClearance = true
     const key = `${asset.assetId}-${i}`;
     const side = respectClearance ? asset.clearance.sides : 0;
     const front = respectClearance ? asset.clearance.front + asset.clearance.back : 0;
-    let rot: 0 | 90 = 0;
+    let rot: Rot = 0;
     let pw = w;
     let pd = d;
     if (w > floor.width - 2 * margin + EPS && d <= floor.width - 2 * margin + EPS) { rot = 90; pw = d; pd = w; }
@@ -58,7 +60,7 @@ export function packAssets(floor: Rect, assets: Asset[], respectClearance = true
       rowGap = 0;
     }
     if (y + pd > floor.depth - margin + EPS) { unplaced.push({ asset, reason: "no room left on the assumed floor" }); return; }
-    placed.push(place(asset, key, rot, x, y));
+    placed.push(placeAsset(asset, key, rot, x, y));
     x += pw + side;
     prevSide = side;
     rowDepth = Math.max(rowDepth, pd);
@@ -82,13 +84,16 @@ function area(a: [number, number][], b: [number, number][]): number {
   return total;
 }
 
-/** The rectangle in front of a piece (unrotated: below its bbox, +y; rotated 90: front faces +x) that must stay free. */
+/** The rectangle in front of a piece that must stay free: local +y rotated with the footprint (0: +y, 90: -x, 180: -y, 270: +x). */
 export function frontZone(p: Placement): [number, number][] {
   const c = p.asset.clearance.front;
   const { x0, y0, x1, y1 } = p.box;
-  return p.rot === 0
-    ? [[x0, y1], [x1, y1], [x1, y1 + c], [x0, y1 + c]]
-    : [[x1, y0], [x1 + c, y0], [x1 + c, y1], [x1, y1]];
+  switch (p.rot) {
+    case 0: return [[x0, y1], [x1, y1], [x1, y1 + c], [x0, y1 + c]];
+    case 90: return [[x0 - c, y0], [x0, y0], [x0, y1], [x0 - c, y1]];
+    case 180: return [[x0, y0 - c], [x1, y0 - c], [x1, y0], [x0, y0]];
+    case 270: return [[x1, y0], [x1 + c, y0], [x1 + c, y1], [x1, y1]];
+  }
 }
 
 export function checkLayout(floor: Rect, placed: Placement[]): Issue[] {
@@ -101,7 +106,7 @@ export function checkLayout(floor: Rect, placed: Placement[]): Issue[] {
     }
     const zone = frontZone(a);
     const zb = bbox(zone);
-    if (a.asset.clearance.front > 0 && (zb.x1 > floor.width + EPS || zb.y1 > floor.depth + EPS)) {
+    if (a.asset.clearance.front > 0 && (zb.x0 < -EPS || zb.y0 < -EPS || zb.x1 > floor.width + EPS || zb.y1 > floor.depth + EPS)) {
       issues.push({ kind: "blocked_front", message: `${name(a)}: its ${fmt(a.asset.clearance.front)} m front clearance runs off the floor.` });
     }
     for (let j = 0; j < placed.length; j++) {
