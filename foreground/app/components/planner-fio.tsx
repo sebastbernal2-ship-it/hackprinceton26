@@ -33,6 +33,8 @@ export type FioPlannerArgs = {
   undo: () => void;
   /** Bump to ask for a design (the chat panel does this). */
   request: number;
+  /** Runs before a design starts: the planner clears the scanned objects so nothing is placed on top of them. */
+  prepare?: () => Promise<void> | void;
 };
 
 const itemFor = (p: PlacedPiece, color = "var(--match)"): FioItem => {
@@ -42,7 +44,7 @@ const itemFor = (p: PlacedPiece, color = "var(--match)"): FioItem => {
 const same = (a: PlacedPiece, b: PlacedPiece) => a.x === b.x && a.y === b.y && a.rot === b.rot;
 
 export function useFioPlanner(a: FioPlannerArgs) {
-  const { floor, assets, prices, budget, seatsHint, getPlaced, begin, apply, undo, request } = a;
+  const { floor, assets, prices, budget, seatsHint, getPlaced, begin, apply, undo, request, prepare } = a;
   const ref = useRef<FioHandle>(null);
   const [busy, setBusy] = useState(false);
   const busyRef = useRef(false);
@@ -94,6 +96,7 @@ export function useFioPlanner(a: FioPlannerArgs) {
     const result = autoDesign({ floor: f, seatsTarget: target, concept: c, assets: L.assets, priceOf, windowWall: "front", ...(L.budget ? { budget: L.budget } : {}) });
     const id = start();
     setDesign(result);
+    await prepare?.(); // clear the scanned objects (the brown squares) first so the design goes on an empty floor
     L.begin();
     L.apply([]);
     placeActs.current.clear();

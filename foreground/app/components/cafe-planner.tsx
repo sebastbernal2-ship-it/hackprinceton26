@@ -169,7 +169,9 @@ export default function CafePlanner({ match, kit, onKit, placed, onPlaced, area,
     onKit(next.map((p) => p.asset));
   }, [onPlaced, onKit]);
   const [seatsHint] = useState<number | null>(() => briefSeats(readBrief()));
+  const prepareRef = useRef<() => Promise<void>>(async () => {});
   const fio = useFioPlanner({
+    prepare: () => prepareRef.current(),
     floor, assets: catalog.assets, prices, budget, seatsHint, getPlaced: () => placedRef.current,
     begin: beginEdit, apply: setQuiet, undo, request: designRequest,
   });
@@ -332,6 +334,15 @@ export default function CafePlanner({ match, kit, onKit, placed, onPlaced, area,
     const still = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
     clearTimer.current = setTimeout(() => setPhase("cleared"), still ? 0 : 3200);
   };
+  // Design my place starts on an empty floor: sweep the scanned objects away first and wait for it to finish.
+  useEffect(() => {
+    prepareRef.current = async () => {
+      if (!scan || phase === "cleared") return;
+      if (phase === "shown") clearSpace();
+      const still = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+      await new Promise((r) => setTimeout(r, still ? 0 : 3300));
+    };
+  });
   const restoreScan = () => { if (clearTimer.current) clearTimeout(clearTimer.current); setPhase("shown"); };
   const seats = placed.reduce((n, p) => n + seatsOf(p.asset), 0);
   const useAreaPct = floor ? Math.round((placed.reduce((s, p) => { const z = sizeFor(p.asset, p.rot); return s + z.w * z.d; }, 0) / (floor.width * floor.depth)) * 100) : 0;
