@@ -65,7 +65,7 @@ function ItemRow({ c, i, compact }: { c: CostCategory; i: CostItem; compact: boo
       <p className="text-xs text-foreground/50">
         <span className="font-medium">{i.status === "unpriced" ? "unpriced" : i.status}</span>
         {!compact && i.unitLow !== null && i.unitHigh !== null && i.quantity !== null && i.quantity !== 1 && ` · unit ${rng(i.unitLow, i.unitHigh)}${i.unit ? ` per ${i.unit.replace(/s$/, "")}` : " each"}`}
-        {!compact && i.status !== "unpriced" && ` · ${i.source.replace(/^https?:\/\//, "").split("/")[0]}`}
+        {!compact && i.status !== "unpriced" && ` · ${/^https?:/.test(i.source) ? new URL(i.source).host : i.source.replace("://", " ")}`}
         {i.note && ` · ${i.note}`}
       </p>
     </li>
@@ -83,7 +83,7 @@ function Row({ c, isOpen, onToggle, compact }: { c: CostCategory; isOpen: boolea
         <span className="flex items-baseline gap-2">
           <span aria-hidden="true" className="w-3 text-foreground/40">{isOpen ? "−" : "+"}</span>
           <span className="min-w-0 flex-1 font-medium">{c.label}</span>
-          <span key={d.n} className={`${d.n > 0 ? "animate-recalc " : ""}rounded px-1 text-right tabular-nums`} data-testid={`cat-${c.id}-subtotal`}>
+          <span key={d.n} className={`${d.n > 0 ? "animate-recalc " : ""}rounded px-1 text-right tabular-nums`} data-testid={`cat-${c.id}-subtotal`} data-low={c.subtotal?.low} data-expected={c.subtotal?.expected} data-high={c.subtotal?.high}>
             {c.subtotal ? `${rng(c.subtotal.low, c.subtotal.high)}${per}` : "Unknown"}
             {dd !== null && dd !== 0 && <Delta d={dd} fmt={fmtDelta} testId={`cat-${c.id}-delta`} />}
           </span>
@@ -111,7 +111,7 @@ function Total({ label, money, testId, per, extra }: { label: string; money: Mon
   return (
     <div className="flex items-baseline justify-between gap-3 border-t border-foreground/20 py-2 font-medium">
       <span>{label}{extra && <span className="ml-2 text-xs font-normal text-foreground/50">{extra}</span>}</span>
-      <span className="whitespace-nowrap tabular-nums" data-testid={testId}>{money ? `${rng(money.low, money.high)}${per ?? ""}` : "Unknown"}</span>
+      <span className="whitespace-nowrap tabular-nums" data-testid={testId} data-low={money?.low} data-expected={money?.expected} data-high={money?.high}>{money ? `${rng(money.low, money.high)}${per ?? ""}` : "Unknown"}</span>
     </div>
   );
 }
