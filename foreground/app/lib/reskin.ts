@@ -76,3 +76,14 @@ export function boundsOf(boxes: Box[]) {
   const y1 = Math.max(...boxes.map((b) => b.y + ext(b)[1]));
   return { x0, y0, x1, y1 };
 }
+
+/** Collapse repeated placements of the same asset into one row with a count (a reference layout can repeat a piece dozens of times). */
+export function groupEquipment(items: PlacedEquipment[]): (PlacedEquipment & { count: number })[] {
+  const out = new Map<string, PlacedEquipment & { count: number }>();
+  for (const e of items) {
+    const cur = out.get(e.assetId);
+    if (cur) cur.count += 1;
+    else out.set(e.assetId, { ...e, count: 1 });
+  }
+  return [...out.values()];
+}
