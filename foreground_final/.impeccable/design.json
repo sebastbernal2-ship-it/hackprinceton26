@@ -1,0 +1,151 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-13T00:00:00Z",
+  "title": "Design System: Foreground",
+  "extensions": {
+    "colorMeta": {
+      "ink": { "role": "primary", "displayName": "Iron-Gall Ink", "canonical": "oklch(0.235 0.04 258)", "tonalRamp": ["oklch(0.15 0.03 258)", "oklch(0.235 0.04 258)", "oklch(0.33 0.04 256)", "oklch(0.43 0.035 254)", "oklch(0.55 0.03 252)", "oklch(0.68 0.022 250)", "oklch(0.82 0.014 248)", "oklch(0.95 0.006 246)"] },
+      "ink-2": { "role": "neutral", "displayName": "Faded Ink", "canonical": "oklch(0.43 0.03 252)", "tonalRamp": ["oklch(0.15 0.02 252)", "oklch(0.25 0.025 252)", "oklch(0.35 0.03 252)", "oklch(0.43 0.03 252)", "oklch(0.55 0.026 252)", "oklch(0.68 0.02 252)", "oklch(0.82 0.012 252)", "oklch(0.95 0.005 252)"] },
+      "needed": { "role": "secondary", "displayName": "Surveyor's Red", "canonical": "oklch(0.52 0.19 29)", "tonalRamp": ["oklch(0.25 0.09 29)", "oklch(0.35 0.13 29)", "oklch(0.45 0.17 29)", "oklch(0.52 0.19 29)", "oklch(0.63 0.15 29)", "oklch(0.75 0.1 29)", "oklch(0.86 0.06 29)", "oklch(0.93 0.035 29)"] },
+      "needed-wash": { "role": "secondary", "displayName": "Red Wash", "canonical": "oklch(0.93 0.035 29)" },
+      "saved": { "role": "secondary", "displayName": "Survey Green", "canonical": "oklch(0.47 0.1 155)", "tonalRamp": ["oklch(0.22 0.05 155)", "oklch(0.32 0.07 155)", "oklch(0.4 0.09 155)", "oklch(0.47 0.1 155)", "oklch(0.6 0.09 155)", "oklch(0.73 0.07 155)", "oklch(0.85 0.05 155)", "oklch(0.93 0.035 155)"] },
+      "saved-wash": { "role": "secondary", "displayName": "Green Wash", "canonical": "oklch(0.93 0.035 155)" },
+      "maybe": { "role": "tertiary", "displayName": "Assay Ochre", "canonical": "oklch(0.7 0.14 74)", "tonalRamp": ["oklch(0.3 0.06 68)", "oklch(0.4 0.09 68)", "oklch(0.5 0.11 68)", "oklch(0.6 0.13 72)", "oklch(0.7 0.14 74)", "oklch(0.8 0.11 80)", "oklch(0.88 0.07 84)", "oklch(0.94 0.045 85)"] },
+      "maybe-ink": { "role": "tertiary", "displayName": "Ochre Ink", "canonical": "oklch(0.5 0.11 68)" },
+      "maybe-wash": { "role": "tertiary", "displayName": "Ochre Wash", "canonical": "oklch(0.94 0.045 85)" },
+      "paper": { "role": "neutral", "displayName": "Cool Linen", "canonical": "oklch(0.968 0.006 230)", "tonalRamp": ["oklch(0.2 0.01 230)", "oklch(0.35 0.012 230)", "oklch(0.5 0.012 230)", "oklch(0.65 0.011 230)", "oklch(0.78 0.01 230)", "oklch(0.88 0.008 230)", "oklch(0.938 0.009 232)", "oklch(0.968 0.006 230)"] },
+      "paper-2": { "role": "neutral", "displayName": "Linen Shade", "canonical": "oklch(0.938 0.009 232)" },
+      "rule": { "role": "neutral", "displayName": "Hairline", "canonical": "oklch(0.84 0.014 240)" },
+      "rule-strong": { "role": "neutral", "displayName": "Strong Hairline", "canonical": "oklch(0.62 0.025 248)" },
+      "on-ink": { "role": "neutral", "displayName": "Paper on Ink", "canonical": "oklch(0.97 0.006 230)" },
+      "on-ink-2": { "role": "neutral", "displayName": "Faded Paper on Ink", "canonical": "oklch(0.8 0.025 245)" },
+      "focus-ring": { "role": "neutral", "displayName": "Focus Blue", "canonical": "oklch(0.52 0.16 250)" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "The address in the ink title block, once per page; 2.75rem / 3.5rem / 4rem by breakpoint." },
+      "figure-lead": { "displayName": "Figure Lead", "purpose": "The one headline figure of a section, e.g. total to open." },
+      "headline": { "displayName": "Headline", "purpose": "Section titles, condensed." },
+      "figure": { "displayName": "Figure", "purpose": "Fact-cell and range-column numbers; 1.75rem title block, 1.5rem fact grids, 1.125rem cost rows." },
+      "title": { "displayName": "Title", "purpose": "Sub-panel headings inside a section." },
+      "body": { "displayName": "Body", "purpose": "Explanations and reasons; 0.875rem ink-2 for secondary lines." },
+      "label": { "displayName": "Label", "purpose": "Uppercase dt labels, table headers and status marks that name the value beneath." },
+      "wordmark": { "displayName": "Wordmark", "purpose": "Foreground wordmark only; the single wide tracked setting." },
+      "source": { "displayName": "Source", "purpose": "Geist Mono provenance lines, evidence links and scale ticks." }
+    },
+    "shadows": [],
+    "motion": [
+      { "name": "color-transition", "value": "color 150ms ease, border-color 150ms ease", "purpose": "Rail links, fields and text links shift ink weight on hover." },
+      { "name": "press", "value": "transform: scale(0.97)", "purpose": "Primary button press feedback." },
+      { "name": "smooth-anchor", "value": "scroll-behavior: smooth; scroll-padding-top: 4.5rem", "purpose": "Rail anchor jumps clear the sticky rail; disabled under reduced motion." },
+      { "name": "reduced-motion", "value": "animation/transition-duration: 0.01ms", "purpose": "Global prefers-reduced-motion override." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The only filled button; recalculates the brief.",
+      "html": "<button class=\"ds-btn-primary\">Recalculate</button>",
+      "css": ".ds-btn-primary { height: 36px; padding: 0 12px; background: var(--ink, oklch(0.235 0.04 258)); color: var(--on-ink, oklch(0.97 0.006 230)); border: none; border-radius: 0.15rem; font-family: Archivo, ui-sans-serif, sans-serif; font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: transform 150ms ease, background-color 150ms ease; } .ds-btn-primary:hover { background: color-mix(in oklch, oklch(0.235 0.04 258) 90%, transparent); } .ds-btn-primary:active { transform: scale(0.97); } .ds-btn-primary:focus-visible { outline: 2px solid oklch(0.52 0.16 250); outline-offset: 2px; }"
+    },
+    {
+      "name": "Field",
+      "kind": "input",
+      "refersTo": "field",
+      "description": "Stacked-label number or select field in the brief form.",
+      "html": "<label class=\"ds-field\">Budget ($)<input type=\"number\" value=\"150000\"></label>",
+      "css": ".ds-field { display: inline-flex; flex-direction: column; gap: 4px; font-family: Archivo, ui-sans-serif, sans-serif; font-size: 0.75rem; font-weight: 500; color: oklch(0.43 0.03 252); } .ds-field input { height: 36px; width: 7rem; padding: 0 8px; background: oklch(0.968 0.006 230); color: oklch(0.235 0.04 258); border: 1px solid oklch(0.62 0.025 248); border-radius: 0.15rem; font: inherit; font-size: 0.875rem; font-weight: 400; transition: border-color 150ms ease; } .ds-field input:hover, .ds-field input:focus-visible { border-color: oklch(0.235 0.04 258); } .ds-field input:focus-visible { outline: 2px solid oklch(0.52 0.16 250); outline-offset: 2px; }"
+    },
+    {
+      "name": "Section Rail",
+      "kind": "nav",
+      "refersTo": "section-rail",
+      "description": "Sticky section navigation; current section carries an ink underline.",
+      "html": "<nav class=\"ds-rail\"><a href=\"#\" aria-current=\"location\">Hidden costs</a><a href=\"#\">3D tour</a><a href=\"#\">Break-even</a></nav>",
+      "css": ".ds-rail { display: flex; gap: 4px; padding: 0 16px; background: color-mix(in oklch, oklch(0.968 0.006 230) 90%, transparent); backdrop-filter: blur(4px); border-bottom: 1px solid oklch(0.62 0.025 248); font-family: Archivo, ui-sans-serif, sans-serif; } .ds-rail a { position: relative; display: flex; align-items: center; height: 48px; padding: 0 12px; font-size: 0.875rem; font-weight: 500; color: oklch(0.43 0.03 252); text-decoration: none; transition: color 150ms ease; } .ds-rail a:hover { color: oklch(0.235 0.04 258); } .ds-rail a[aria-current] { color: oklch(0.235 0.04 258); } .ds-rail a[aria-current]::after { content: ''; position: absolute; left: 12px; right: 12px; bottom: 0; height: 2px; background: oklch(0.235 0.04 258); } .ds-rail a:focus-visible { outline: 2px solid oklch(0.52 0.16 250); outline-offset: 2px; }"
+    },
+    {
+      "name": "Status Marks",
+      "kind": "chip",
+      "refersTo": "status-mark-needed",
+      "description": "You pay / Already there / Unknown marks on cost lines.",
+      "html": "<span class=\"ds-mark ds-mark-needed\">You pay</span> <span class=\"ds-mark ds-mark-saved\">Already there</span> <span class=\"ds-mark ds-mark-maybe\">Unknown</span>",
+      "css": ".ds-mark { display: inline-block; padding: 1px 6px; border: 1px solid; border-radius: 0.15rem; font-family: Archivo, ui-sans-serif, sans-serif; font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; } .ds-mark-needed { background: oklch(0.52 0.19 29); border-color: oklch(0.52 0.19 29); color: oklch(0.97 0.006 230); } .ds-mark-saved { border-color: oklch(0.47 0.1 155); color: oklch(0.47 0.1 155); } .ds-mark-maybe { border-color: oklch(0.5 0.11 68); border-style: dashed; color: oklch(0.5 0.11 68); }"
+    },
+    {
+      "name": "Source and Estimate",
+      "kind": "chip",
+      "refersTo": "estimate-mark",
+      "description": "Provenance under every figure: a mono src line, or the dashed estimate mark.",
+      "html": "<div class=\"ds-fact\"><span class=\"ds-fact-label\">Asking rent</span><span class=\"ds-fact-value\">$38.00</span><span class=\"ds-src\">src CoStar listing</span><span class=\"ds-estimate\">estimate</span></div>",
+      "css": ".ds-fact { display: inline-flex; flex-direction: column; gap: 4px; font-family: Archivo, ui-sans-serif, sans-serif; color: oklch(0.235 0.04 258); } .ds-fact-label { font-size: 0.75rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: oklch(0.43 0.03 252); } .ds-fact-value { font-size: 1.5rem; font-weight: 600; line-height: 1; font-stretch: 78%; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; } .ds-src { font-family: 'Geist Mono', ui-monospace, monospace; font-size: 0.6875rem; color: oklch(0.43 0.03 252); } .ds-estimate { align-self: flex-start; padding: 0 4px; border: 1px dashed oklch(0.62 0.025 248); border-radius: 0.15rem; font-family: 'Geist Mono', ui-monospace, monospace; font-size: 0.625rem; line-height: 1.4; letter-spacing: 0.025em; text-transform: uppercase; color: oklch(0.43 0.03 252); }"
+    },
+    {
+      "name": "Dimension Line",
+      "kind": "custom",
+      "refersTo": "dimension-line",
+      "description": "Signature: a dollar range as a survey dimension line with end ticks and a heavier midpoint, colored by status.",
+      "html": "<div class=\"ds-dim\"><svg viewBox=\"0 0 100 20\" preserveAspectRatio=\"none\" width=\"100%\" height=\"20\"><line x1=\"18\" x2=\"64\" y1=\"10\" y2=\"10\" stroke=\"oklch(0.52 0.19 29)\" stroke-width=\"2\" vector-effect=\"non-scaling-stroke\"/><line x1=\"18\" x2=\"18\" y1=\"3\" y2=\"17\" stroke=\"oklch(0.52 0.19 29)\" stroke-width=\"1.5\" vector-effect=\"non-scaling-stroke\"/><line x1=\"64\" x2=\"64\" y1=\"3\" y2=\"17\" stroke=\"oklch(0.52 0.19 29)\" stroke-width=\"1.5\" vector-effect=\"non-scaling-stroke\"/><line x1=\"38\" x2=\"38\" y1=\"5.5\" y2=\"14.5\" stroke=\"oklch(0.52 0.19 29)\" stroke-width=\"4\" vector-effect=\"non-scaling-stroke\"/></svg><span class=\"ds-dim-figure\">$18k–$64k</span></div>",
+      "css": ".ds-dim { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: center; width: 360px; padding: 12px 0; border-bottom: 1px solid oklch(0.84 0.014 240); } .ds-dim-figure { font-family: Archivo, ui-sans-serif, sans-serif; font-size: 1.125rem; font-weight: 600; font-stretch: 78%; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; color: oklch(0.235 0.04 258); white-space: nowrap; }"
+    },
+    {
+      "name": "Budget Capacity",
+      "kind": "custom",
+      "refersTo": "budget-capacity",
+      "description": "Budget as fixed capacity; overflow drawn as red encroachment hatching.",
+      "html": "<div class=\"ds-cap\"><div class=\"ds-cap-fill\"></div><div class=\"ds-cap-over\"></div><div class=\"ds-cap-mark\"></div></div>",
+      "css": ".ds-cap { position: relative; width: 320px; height: 32px; } .ds-cap-fill { position: absolute; top: 4px; left: 0; width: 70%; height: 24px; background: oklch(0.938 0.009 232); border: 1px solid oklch(0.235 0.04 258); border-radius: 0.15rem; } .ds-cap-over { position: absolute; top: 4px; left: 70%; width: 20%; height: 24px; border: 1px solid oklch(0.52 0.19 29); border-left: none; background-image: repeating-linear-gradient(-45deg, oklch(0.52 0.19 29) 0 1.5px, transparent 1.5px 6px); } .ds-cap-mark { position: absolute; top: 0; left: 70%; height: 32px; border-left: 2px solid oklch(0.235 0.04 258); }"
+    },
+    {
+      "name": "Empty State",
+      "kind": "card",
+      "refersTo": "empty-panel",
+      "description": "The one boxed container: what is missing and what will appear.",
+      "html": "<div class=\"ds-empty\" role=\"status\"><p class=\"ds-empty-title\">No 3D scan for this space</p><p class=\"ds-empty-body\">The cost lines above come from the CoStar listing and tenant records only.</p></div>",
+      "css": ".ds-empty { display: flex; flex-direction: column; justify-content: center; gap: 4px; min-height: 10rem; padding: 20px; background: color-mix(in oklch, oklch(0.938 0.009 232) 60%, transparent); border: 1px dashed oklch(0.62 0.025 248); border-radius: 0.15rem; font-family: Archivo, ui-sans-serif, sans-serif; color: oklch(0.235 0.04 258); } .ds-empty-title { margin: 0; font-weight: 500; } .ds-empty-body { margin: 0; max-width: 65ch; font-size: 0.875rem; color: oklch(0.43 0.03 252); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Surveyor's Plat",
+    "overview": "Foreground reads one commercial space the way a county surveyor records a parcel: measured from inside, from above and from the record, drawn in ink on cool linen with hairlines and nothing else. The page is a document, not a dashboard. Money is the subject, so color is reserved for what a dollar does to the owner: surveyor's red when they pay it, survey green when the space already has it, ochre when nobody knows yet.\n\nDensity is high and ruled, like an assessor's sheet. Sections are stacked full width and separated by a heavy ink rule rather than boxed into cards; rows inside are separated by light hairlines. Headings and figures are set in Archivo pulled to a condensed width so numbers read as survey lettering; provenance is set in Geist Mono beneath every figure. Depth comes from rules and tone, never from shadow. The grey SaaS card grid with KPI tiles is the confirmed anti-reference.",
+    "keyCharacteristics": [
+      "Cool linen ground, iron-gall ink, three money hues with matching washes.",
+      "Condensed Archivo (wdth 78) for headings and figures; tabular figures everywhere.",
+      "Every figure carries a mono `src` line or a dashed \"estimate\" mark.",
+      "Dollar ranges are drawn as survey dimension lines on one shared scale.",
+      "Hairline linework, a heavy ink rule opening each section, no shadows, no gradients.",
+      "An ink title-block band heads the page."
+    ],
+    "rules": [
+      { "name": "The Money Has Three Colors Rule", "body": "Red, green and ochre are spent only on what a dollar does to the owner (pays, saved, unknown). They never decorate headings, links or chrome.", "section": "colors" },
+      { "name": "The Ochre Text Rule", "body": "Ochre text and borders use maybe-ink; bright maybe is for strokes, dots and fills only.", "section": "colors" },
+      { "name": "The Lettering Rule", "body": "Headings and figures use the condensed width (wdth 78, -0.01em). The only wide, tracked uppercase setting (wdth 100, 0.06em) is the wordmark.", "section": "typography" },
+      { "name": "The Tabular Rule", "body": "Figures are tabular everywhere (`tnum` on body), so ranges stack and align in columns.", "section": "typography" },
+      { "name": "The Provenance Rule", "body": "Every figure is followed by a mono `src` line or the dashed \"estimate\" mark. A number without one is unfinished.", "section": "typography" },
+      { "name": "The Linework Rule", "body": "Separation is drawn, never cast. Use a rule of the right weight, never a shadow or a gradient. The one sanctioned pattern fill is the 45-degree red hatch for money that overflows the budget, the surveyor's encroachment mark.", "section": "elevation" }
+    ],
+    "dos": [
+      "**Do** draw every dollar range as a dimension line on the table's shared scale, colored by status.",
+      "**Do** follow every figure with a mono `src` line or the dashed estimate mark.",
+      "**Do** set headings and figures in condensed Archivo (wdth 78) and keep figures tabular.",
+      "**Do** open each section with a 1px ink rule and separate rows with rule hairlines.",
+      "**Do** show the budget as a fixed-capacity bar and the overflow as red hatching.",
+      "**Do** use maybe-ink, not maybe, for any ochre text or border.",
+      "**Do** give every missing-media panel a dashed empty state that says what will appear there."
+    ],
+    "donts": [
+      "**Don't** use box shadows or gradients; separation is linework and tone.",
+      "**Don't** spend needed, saved or maybe on anything but what a dollar does to the owner.",
+      "**Don't** build grey card grids with KPI tiles.",
+      "**Don't** round corners past rounded-sm except for point markers (dots, drag handle).",
+      "**Don't** show a figure without a source or an estimate label.",
+      "**Don't** use dashed borders for recorded facts; dashed means uncertain."
+    ]
+  }
+}

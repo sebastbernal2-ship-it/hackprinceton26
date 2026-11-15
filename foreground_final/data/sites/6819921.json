@@ -1,0 +1,1405 @@
+{
+  "id": "6819921",
+  "address": "655 S Hope St",
+  "city": "Los Angeles",
+  "state": "CA",
+  "postcode": "90017",
+  "lat": 34.0483251,
+  "lng": -118.2576883,
+  "buildingName": "701 W 7th St",
+  "propertyType": "Multifamily",
+  "propertySubtype": "MultiFamily_Apartments",
+  "buildingSf": 116651.0,
+  "yearBuilt": 1964,
+  "stories": 17,
+  "zoning": "LAC2",
+  "photoUrl": "https://ahprd1cdn.csgpimgs.com/i2/5admr8Gt5EvvKpi4FyCSSxv04g8rV3ZgqC8DQGy5WcY/112/image.jpg",
+  "space": {
+    "spaceId": 20192922,
+    "listingId": 38856970,
+    "suite": "101 - 701 W 7th St",
+    "floor": "FirstFloor",
+    "sf": 4265.0,
+    "sfMin": 4265.0,
+    "rentPerSfYr": 36.0,
+    "serviceType": "NNN",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "notes": "*Property is listed by owner. Cooperating broker fee is a generous  6%.\nThis space is a two-level retail or restaurant shell, delivered with plumbing, electrical, and HVAC in place, offering a versatile layout for easy tenant customization. This 4,265-square-foot space includes an open storefront, a rear kitchen area, a monumental staircase, upper-level bar or lounge space, and a gated outdoor patio. This space is suitable for art galleries, restaurants, bars, nightclubs, QSRs, pop-up exhibits, wedding venues, parties, and other uses, such as fitness studios or community spaces. \n\nPlease see the Matterport video",
+    "availableOn": "2025-12-22",
+    "floorPlanUrl": "https://ahprd1cdn.csgpimgs.com/i2/shRcfjuR50FShJHaWw8XoTdldN5KrqFCOLcwpmgcQJQ/112/image.svg",
+    "restaurantKeywords": [
+      "bar",
+      "kitchen",
+      "patio",
+      "restaurant"
+    ]
+  },
+  "otherSpaces": [],
+  "tenantHistory": [
+    {
+      "name": "QDOBA",
+      "industry": "AccommodationAndFoodServices",
+      "isFood": true,
+      "moveIn": "2009-02-01",
+      "moveOut": "2025-03-28",
+      "years": 16.2,
+      "suite": null,
+      "sameSuite": false,
+      "current": false,
+      "outcome": "moved",
+      "matchBasis": "profile.industryType=17, bio-regex"
+    },
+    {
+      "name": "Ono Hawaiian BBQ",
+      "industry": "AccommodationAndFoodServices",
+      "isFood": true,
+      "moveIn": "2025-09-05",
+      "moveOut": null,
+      "years": 1.2,
+      "suite": "105",
+      "sameSuite": false,
+      "current": true,
+      "outcome": "current",
+      "matchBasis": "profile.industryType=17, name-regex, bio-regex"
+    }
+  ],
+  "sales": [
+    {
+      "date": "2026-04-14",
+      "priceUsd": 960000,
+      "note": "FullValue"
+    }
+  ],
+  "matterport": {
+    "modelId": "MHAy54smDJN",
+    "defurnishedViewId": "ub78nk6qhmk7hdm0qn77pp1ic",
+    "scanOfExactSuite": true,
+    "scanName": "701 W 7th St, Suite 101",
+    "areaSf": 4855,
+    "rooms": [
+      {
+        "label": "Unlabeled space",
+        "areaSf": 1631.0,
+        "widthFt": 68.7,
+        "depthFt": 25.9,
+        "heightFt": 11.0,
+        "polygon": [
+          [
+            -16.359,
+            -7.373
+          ],
+          [
+            -16.361,
+            -6.794
+          ],
+          [
+            -16.902,
+            -6.796
+          ],
+          [
+            -16.9,
+            -7.375
+          ],
+          [
+            -22.912,
+            -7.396
+          ],
+          [
+            -22.915,
+            -6.49
+          ],
+          [
+            -28.825,
+            -6.511
+          ],
+          [
+            -28.823,
+            -7.115
+          ],
+          [
+            -33.679,
+            -7.132
+          ],
+          [
+            -33.682,
+            -6.247
+          ],
+          [
+            -31.617,
+            -6.24
+          ],
+          [
+            -31.625,
+            -4.137
+          ],
+          [
+            -34.267,
+            -4.146
+          ],
+          [
+            -34.269,
+            -3.615
+          ],
+          [
+            -34.284,
+            0.598
+          ],
+          [
+            -13.266,
+            0.673
+          ],
+          [
+            -13.238,
+            -7.362
+          ]
+        ]
+      },
+      {
+        "label": "Unlabeled space",
+        "areaSf": 1030.9,
+        "widthFt": null,
+        "depthFt": null,
+        "heightFt": 7.5,
+        "polygon": [
+          [
+            -27.569,
+            0.849
+          ],
+          [
+            -35.649,
+            0.82
+          ],
+          [
+            -35.645,
+            -0.288
+          ],
+          [
+            -35.635,
+            -4.389
+          ],
+          [
+            -35.629,
+            -5.975
+          ],
+          [
+            -34.667,
+            -5.972
+          ],
+          [
+            -34.659,
+            -8.214
+          ],
+          [
+            -33.044,
+            -8.208
+          ],
+          [
+            -33.048,
+            -7.173
+          ],
+          [
+            -30.715,
+            -7.164
+          ],
+          [
+            -30.718,
+            -6.11
+          ],
+          [
+            -24.731,
+            -6.088
+          ],
+          [
+            -24.727,
+            -7.207
+          ],
+          [
+            -23.621,
+            -7.203
+          ],
+          [
+            -23.622,
+            -7.039
+          ],
+          [
+            -22.589,
+            -7.036
+          ],
+          [
+            -22.618,
+            0.867
+          ],
+          [
+            -27.164,
+            0.851
+          ],
+          [
+            -27.163,
+            0.685
+          ],
+          [
+            -27.568,
+            0.684
+          ]
+        ]
+      },
+      {
+        "label": "Unlabeled space",
+        "areaSf": 683.7,
+        "widthFt": null,
+        "depthFt": null,
+        "heightFt": null,
+        "polygon": [
+          [
+            -11.157,
+            -6.739
+          ],
+          [
+            -11.612,
+            -6.741
+          ],
+          [
+            -11.61,
+            -7.356
+          ],
+          [
+            -13.238,
+            -7.362
+          ],
+          [
+            -13.266,
+            0.673
+          ],
+          [
+            -2.884,
+            0.71
+          ],
+          [
+            -1.696,
+            0.714
+          ],
+          [
+            -1.691,
+            -0.694
+          ],
+          [
+            -1.69,
+            -1.011
+          ],
+          [
+            -1.687,
+            -1.607
+          ],
+          [
+            -1.687,
+            -1.817
+          ],
+          [
+            -2.839,
+            -1.822
+          ],
+          [
+            -6.637,
+            -1.835
+          ],
+          [
+            -6.618,
+            -7.279
+          ],
+          [
+            -7.396,
+            -7.282
+          ],
+          [
+            -9.363,
+            -7.289
+          ],
+          [
+            -10.536,
+            -7.293
+          ]
+        ]
+      },
+      {
+        "label": "Unlabeled space",
+        "areaSf": 321.6,
+        "widthFt": null,
+        "depthFt": null,
+        "heightFt": 7.7,
+        "polygon": [
+          [
+            -1.691,
+            -0.694
+          ],
+          [
+            -1.696,
+            0.714
+          ],
+          [
+            4.875,
+            0.738
+          ],
+          [
+            4.886,
+            -2.286
+          ],
+          [
+            4.739,
+            -2.286
+          ],
+          [
+            1.363,
+            -2.298
+          ],
+          [
+            1.378,
+            -6.573
+          ],
+          [
+            1.379,
+            -6.735
+          ],
+          [
+            -0.684,
+            -6.743
+          ],
+          [
+            -0.688,
+            -5.637
+          ],
+          [
+            -1.673,
+            -5.641
+          ],
+          [
+            -1.687,
+            -1.817
+          ],
+          [
+            -1.687,
+            -1.607
+          ],
+          [
+            -1.428,
+            -1.606
+          ],
+          [
+            -1.431,
+            -0.693
+          ]
+        ]
+      },
+      {
+        "label": "Bar",
+        "areaSf": 272.9,
+        "widthFt": 11.7,
+        "depthFt": 25.5,
+        "heightFt": 7.3,
+        "polygon": [
+          [
+            -19.702,
+            -6.229
+          ],
+          [
+            -18.965,
+            -6.227
+          ],
+          [
+            -18.969,
+            -5.227
+          ],
+          [
+            -18.987,
+            -0.218
+          ],
+          [
+            -20.5,
+            -0.224
+          ],
+          [
+            -20.504,
+            0.874
+          ],
+          [
+            -22.618,
+            0.867
+          ],
+          [
+            -22.589,
+            -7.036
+          ],
+          [
+            -19.7,
+            -7.025
+          ]
+        ]
+      },
+      {
+        "label": "Unlabeled space",
+        "areaSf": 255.4,
+        "widthFt": 16.0,
+        "depthFt": 17.6,
+        "heightFt": 7.4,
+        "polygon": [
+          [
+            -2.839,
+            -1.822
+          ],
+          [
+            -6.637,
+            -1.835
+          ],
+          [
+            -6.618,
+            -7.279
+          ],
+          [
+            -3.179,
+            -7.267
+          ],
+          [
+            -3.183,
+            -6.138
+          ],
+          [
+            -2.49,
+            -6.135
+          ],
+          [
+            -2.492,
+            -5.644
+          ],
+          [
+            -1.673,
+            -5.641
+          ],
+          [
+            -1.687,
+            -1.817
+          ]
+        ]
+      },
+      {
+        "label": "Walk In Freezer",
+        "areaSf": 146.6,
+        "widthFt": 10.7,
+        "depthFt": 13.7,
+        "heightFt": 6.8,
+        "polygon": [
+          [
+            1.363,
+            -2.298
+          ],
+          [
+            4.739,
+            -2.286
+          ],
+          [
+            4.754,
+            -6.561
+          ],
+          [
+            1.378,
+            -6.573
+          ]
+        ]
+      },
+      {
+        "label": "Unlabeled space",
+        "areaSf": 122.6,
+        "widthFt": 6.0,
+        "depthFt": 20.4,
+        "heightFt": 8.4,
+        "polygon": [
+          [
+            -9.363,
+            -7.289
+          ],
+          [
+            -7.396,
+            -7.282
+          ],
+          [
+            -7.374,
+            -13.569
+          ],
+          [
+            -9.34,
+            -13.576
+          ]
+        ]
+      },
+      {
+        "label": "Unlabeled space",
+        "areaSf": 121.0,
+        "widthFt": 6.3,
+        "depthFt": 19.1,
+        "heightFt": null,
+        "polygon": [
+          [
+            -18.969,
+            -5.227
+          ],
+          [
+            -18.987,
+            -0.218
+          ],
+          [
+            -18.99,
+            0.74
+          ],
+          [
+            -16.929,
+            0.747
+          ],
+          [
+            -16.908,
+            -5.22
+          ]
+        ]
+      },
+      {
+        "label": "Unlabeled space",
+        "areaSf": 91.7,
+        "widthFt": null,
+        "depthFt": null,
+        "heightFt": 8.7,
+        "polygon": [
+          [
+            -34.269,
+            -3.615
+          ],
+          [
+            -35.655,
+            -3.62
+          ],
+          [
+            -35.645,
+            -6.254
+          ],
+          [
+            -33.682,
+            -6.247
+          ],
+          [
+            -31.617,
+            -6.24
+          ],
+          [
+            -31.625,
+            -4.137
+          ],
+          [
+            -34.267,
+            -4.146
+          ]
+        ]
+      },
+      {
+        "label": "Unlabeled space",
+        "areaSf": 84.4,
+        "widthFt": 9.1,
+        "depthFt": 10.4,
+        "heightFt": 8.5,
+        "polygon": [
+          [
+            -10.262,
+            -14.578
+          ],
+          [
+            -10.254,
+            -16.886
+          ],
+          [
+            -7.362,
+            -16.875
+          ],
+          [
+            -7.374,
+            -13.569
+          ],
+          [
+            -9.34,
+            -13.576
+          ],
+          [
+            -9.337,
+            -14.575
+          ]
+        ]
+      },
+      {
+        "label": "Unlabeled space",
+        "areaSf": 57.9,
+        "widthFt": 4.2,
+        "depthFt": 13.8,
+        "heightFt": 8.6,
+        "polygon": [
+          [
+            -34.284,
+            0.598
+          ],
+          [
+            -35.67,
+            0.593
+          ],
+          [
+            -35.655,
+            -3.62
+          ],
+          [
+            -34.269,
+            -3.615
+          ]
+        ]
+      },
+      {
+        "label": "Unlabeled space",
+        "areaSf": 35.2,
+        "widthFt": 6.3,
+        "depthFt": 5.6,
+        "heightFt": 7.3,
+        "polygon": [
+          [
+            -18.965,
+            -6.227
+          ],
+          [
+            -18.969,
+            -5.227
+          ],
+          [
+            -16.908,
+            -5.22
+          ],
+          [
+            -16.902,
+            -7.051
+          ],
+          [
+            -18.962,
+            -7.058
+          ]
+        ]
+      }
+    ],
+    "panos": [
+      {
+        "id": "atqe83rwxs2szxbggd2ki992b",
+        "position": {
+          "x": -5.745,
+          "y": -0.474,
+          "z": 1.359
+        },
+        "label": "7"
+      },
+      {
+        "id": "iix60b9xfm515na74amuf6aib",
+        "position": {
+          "x": -30.922,
+          "y": -1.503,
+          "z": 1.363
+        },
+        "label": "21"
+      },
+      {
+        "id": "mtr3b0c94qehfh99ksy1eu5kd",
+        "position": {
+          "x": -21.92,
+          "y": -3.893,
+          "z": 4.877
+        },
+        "label": "35"
+      },
+      {
+        "id": "ak6usy5qbm8gxtu4wtuwe24rc",
+        "position": {
+          "x": -8.68,
+          "y": -14.16,
+          "z": 1.387
+        },
+        "label": "13"
+      },
+      {
+        "id": "ekwc6q7km4yrd0wyqhagmc6wb",
+        "position": {
+          "x": -31.442,
+          "y": -0.512,
+          "z": 4.858
+        },
+        "label": "31"
+      },
+      {
+        "id": "i3iw17cf54xwhhzr6bn50kbmc",
+        "position": {
+          "x": -25.123,
+          "y": -0.724,
+          "z": 1.371
+        },
+        "label": "20"
+      },
+      {
+        "id": "p3i12wnssdhiz98hyu6g7t4tb",
+        "position": {
+          "x": 2.74,
+          "y": -0.885,
+          "z": 0.449
+        },
+        "label": "1"
+      },
+      {
+        "id": "a445mxaatzpc4kbxntxd4mn5c",
+        "position": {
+          "x": -27.043,
+          "y": -5.752,
+          "z": 3.185
+        },
+        "label": "28"
+      },
+      {
+        "id": "n482yyikert9uqnn9s5ygk7yd",
+        "position": {
+          "x": -23.656,
+          "y": -5.358,
+          "z": 1.36
+        },
+        "label": "27"
+      },
+      {
+        "id": "2madec9r4wta4x3umgnt9i1uc",
+        "position": {
+          "x": -9.075,
+          "y": -16.341,
+          "z": 1.395
+        },
+        "label": "14"
+      },
+      {
+        "id": "7m2se4zapy2iy4yu16mqnuc9b",
+        "position": {
+          "x": -31.014,
+          "y": -4.742,
+          "z": 4.854
+        },
+        "label": "30"
+      },
+      {
+        "id": "0x3xa5wwb414mg1rwt4t62mcd",
+        "position": {
+          "x": -29.761,
+          "y": -5.146,
+          "z": 4.677
+        },
+        "label": "29",
+        "rotation": {
+          "x": 0.021408434957265854,
+          "y": -0.008891613222658634,
+          "z": 0.9772008061408997,
+          "w": 0.21104808151721954
+        },
+        "skybox": [
+          "/sites/6819921/pano/0x3xa5wwb414mg1rwt4t62mcd/f0.jpg",
+          "/sites/6819921/pano/0x3xa5wwb414mg1rwt4t62mcd/f1.jpg",
+          "/sites/6819921/pano/0x3xa5wwb414mg1rwt4t62mcd/f2.jpg",
+          "/sites/6819921/pano/0x3xa5wwb414mg1rwt4t62mcd/f3.jpg",
+          "/sites/6819921/pano/0x3xa5wwb414mg1rwt4t62mcd/f4.jpg",
+          "/sites/6819921/pano/0x3xa5wwb414mg1rwt4t62mcd/f5.jpg"
+        ],
+        "skyboxEmpty": [
+          "/sites/6819921/pano/0x3xa5wwb414mg1rwt4t62mcd/empty/f0.jpg",
+          "/sites/6819921/pano/0x3xa5wwb414mg1rwt4t62mcd/empty/f1.jpg",
+          "/sites/6819921/pano/0x3xa5wwb414mg1rwt4t62mcd/empty/f2.jpg",
+          "/sites/6819921/pano/0x3xa5wwb414mg1rwt4t62mcd/empty/f3.jpg",
+          "/sites/6819921/pano/0x3xa5wwb414mg1rwt4t62mcd/empty/f4.jpg",
+          "/sites/6819921/pano/0x3xa5wwb414mg1rwt4t62mcd/empty/f5.jpg"
+        ]
+      },
+      {
+        "id": "1n7xd1h5f8qux2eg6c7h9zqyd",
+        "position": {
+          "x": 1.136,
+          "y": -3.388,
+          "z": 0.472
+        },
+        "label": "3",
+        "rotation": {
+          "x": 0.005388530902564526,
+          "y": 0.0031471496913582087,
+          "z": 0.999632716178894,
+          "w": -0.026372849941253662
+        },
+        "skybox": [
+          "/sites/6819921/pano/1n7xd1h5f8qux2eg6c7h9zqyd/f0.jpg",
+          "/sites/6819921/pano/1n7xd1h5f8qux2eg6c7h9zqyd/f1.jpg",
+          "/sites/6819921/pano/1n7xd1h5f8qux2eg6c7h9zqyd/f2.jpg",
+          "/sites/6819921/pano/1n7xd1h5f8qux2eg6c7h9zqyd/f3.jpg",
+          "/sites/6819921/pano/1n7xd1h5f8qux2eg6c7h9zqyd/f4.jpg",
+          "/sites/6819921/pano/1n7xd1h5f8qux2eg6c7h9zqyd/f5.jpg"
+        ],
+        "skyboxEmpty": [
+          "/sites/6819921/pano/1n7xd1h5f8qux2eg6c7h9zqyd/empty/f0.jpg",
+          "/sites/6819921/pano/1n7xd1h5f8qux2eg6c7h9zqyd/empty/f1.jpg",
+          "/sites/6819921/pano/1n7xd1h5f8qux2eg6c7h9zqyd/empty/f2.jpg",
+          "/sites/6819921/pano/1n7xd1h5f8qux2eg6c7h9zqyd/empty/f3.jpg",
+          "/sites/6819921/pano/1n7xd1h5f8qux2eg6c7h9zqyd/empty/f4.jpg",
+          "/sites/6819921/pano/1n7xd1h5f8qux2eg6c7h9zqyd/empty/f5.jpg"
+        ]
+      },
+      {
+        "id": "5xhtb7iunmx44w3iym370faub",
+        "position": {
+          "x": -35.385,
+          "y": -1.787,
+          "z": 1.361
+        },
+        "label": "23"
+      },
+      {
+        "id": "6xzhhtcnhirp829wi8hm44e6c",
+        "position": {
+          "x": -31.456,
+          "y": -4.333,
+          "z": 1.358
+        },
+        "label": "24"
+      },
+      {
+        "id": "85xfknf5209c377m4c648xrnb",
+        "position": {
+          "x": -35.027,
+          "y": -2.869,
+          "z": 4.846
+        },
+        "label": "32",
+        "rotation": {
+          "x": 0.0008636151906102896,
+          "y": -0.0015348833985626698,
+          "z": -0.5167420506477356,
+          "w": 0.8561393022537231
+        },
+        "skybox": [
+          "/sites/6819921/pano/85xfknf5209c377m4c648xrnb/f0.jpg",
+          "/sites/6819921/pano/85xfknf5209c377m4c648xrnb/f1.jpg",
+          "/sites/6819921/pano/85xfknf5209c377m4c648xrnb/f2.jpg",
+          "/sites/6819921/pano/85xfknf5209c377m4c648xrnb/f3.jpg",
+          "/sites/6819921/pano/85xfknf5209c377m4c648xrnb/f4.jpg",
+          "/sites/6819921/pano/85xfknf5209c377m4c648xrnb/f5.jpg"
+        ],
+        "skyboxEmpty": [
+          "/sites/6819921/pano/85xfknf5209c377m4c648xrnb/empty/f0.jpg",
+          "/sites/6819921/pano/85xfknf5209c377m4c648xrnb/empty/f1.jpg",
+          "/sites/6819921/pano/85xfknf5209c377m4c648xrnb/empty/f2.jpg",
+          "/sites/6819921/pano/85xfknf5209c377m4c648xrnb/empty/f3.jpg",
+          "/sites/6819921/pano/85xfknf5209c377m4c648xrnb/empty/f4.jpg",
+          "/sites/6819921/pano/85xfknf5209c377m4c648xrnb/empty/f5.jpg"
+        ]
+      },
+      {
+        "id": "fpiy419wf64zw4pe2acafen9d",
+        "position": {
+          "x": -5.421,
+          "y": -4.984,
+          "z": 1.37
+        },
+        "label": "8"
+      },
+      {
+        "id": "n6q8wfda4mzasim9d8ibgqsqc",
+        "position": {
+          "x": -21.331,
+          "y": -5.809,
+          "z": 4.88
+        },
+        "label": "37"
+      },
+      {
+        "id": "qyfw75x6n5ywehme7dum805ad",
+        "position": {
+          "x": -8.319,
+          "y": -6.195,
+          "z": 1.372
+        },
+        "label": "11",
+        "rotation": {
+          "x": -0.0007142846588976681,
+          "y": 0.003571562934666872,
+          "z": 0.9999303221702576,
+          "w": 0.011232035234570503
+        },
+        "skybox": [
+          "/sites/6819921/pano/qyfw75x6n5ywehme7dum805ad/f0.jpg",
+          "/sites/6819921/pano/qyfw75x6n5ywehme7dum805ad/f1.jpg",
+          "/sites/6819921/pano/qyfw75x6n5ywehme7dum805ad/f2.jpg",
+          "/sites/6819921/pano/qyfw75x6n5ywehme7dum805ad/f3.jpg",
+          "/sites/6819921/pano/qyfw75x6n5ywehme7dum805ad/f4.jpg",
+          "/sites/6819921/pano/qyfw75x6n5ywehme7dum805ad/f5.jpg"
+        ],
+        "skyboxEmpty": [
+          "/sites/6819921/pano/qyfw75x6n5ywehme7dum805ad/empty/f0.jpg",
+          "/sites/6819921/pano/qyfw75x6n5ywehme7dum805ad/empty/f1.jpg",
+          "/sites/6819921/pano/qyfw75x6n5ywehme7dum805ad/empty/f2.jpg",
+          "/sites/6819921/pano/qyfw75x6n5ywehme7dum805ad/empty/f3.jpg",
+          "/sites/6819921/pano/qyfw75x6n5ywehme7dum805ad/empty/f4.jpg",
+          "/sites/6819921/pano/qyfw75x6n5ywehme7dum805ad/empty/f5.jpg"
+        ]
+      },
+      {
+        "id": "rekq02b64efn0i9msdmpen26a",
+        "position": {
+          "x": -12.434,
+          "y": -5.808,
+          "z": 1.386
+        },
+        "label": "17"
+      },
+      {
+        "id": "wy8t2ghe9yq9h1nbcpybf27aa",
+        "position": {
+          "x": -32.972,
+          "y": -4.728,
+          "z": 1.368
+        },
+        "label": "25"
+      },
+      {
+        "id": "xp62xphtkr3imfx2xzx6f5h1d",
+        "position": {
+          "x": -27.84,
+          "y": -3.789,
+          "z": 1.364
+        },
+        "label": "26"
+      },
+      {
+        "id": "3psgw2ad07pd56ea4bcr5x9cb",
+        "position": {
+          "x": -26.891,
+          "y": -0.39,
+          "z": 4.857
+        },
+        "label": "33"
+      },
+      {
+        "id": "6yx34brsgdznx2ypw4aht48ua",
+        "position": {
+          "x": 3.002,
+          "y": -5.363,
+          "z": 0.578
+        },
+        "label": "5"
+      },
+      {
+        "id": "bzx5kkiikwy73ie44f0s4ty0a",
+        "position": {
+          "x": -19.936,
+          "y": -5.429,
+          "z": 1.376
+        },
+        "label": "19"
+      },
+      {
+        "id": "e7dbn3umt8krntpx43fn223wc",
+        "position": {
+          "x": -20.03,
+          "y": -2.433,
+          "z": 4.876
+        },
+        "label": "39",
+        "rotation": {
+          "x": 0.002086823107674718,
+          "y": -0.009845815598964691,
+          "z": 0.647972047328949,
+          "w": 0.7615975737571716
+        },
+        "skybox": [
+          "/sites/6819921/pano/e7dbn3umt8krntpx43fn223wc/f0.jpg",
+          "/sites/6819921/pano/e7dbn3umt8krntpx43fn223wc/f1.jpg",
+          "/sites/6819921/pano/e7dbn3umt8krntpx43fn223wc/f2.jpg",
+          "/sites/6819921/pano/e7dbn3umt8krntpx43fn223wc/f3.jpg",
+          "/sites/6819921/pano/e7dbn3umt8krntpx43fn223wc/f4.jpg",
+          "/sites/6819921/pano/e7dbn3umt8krntpx43fn223wc/f5.jpg"
+        ],
+        "skyboxEmpty": [
+          "/sites/6819921/pano/e7dbn3umt8krntpx43fn223wc/empty/f0.jpg",
+          "/sites/6819921/pano/e7dbn3umt8krntpx43fn223wc/empty/f1.jpg",
+          "/sites/6819921/pano/e7dbn3umt8krntpx43fn223wc/empty/f2.jpg",
+          "/sites/6819921/pano/e7dbn3umt8krntpx43fn223wc/empty/f3.jpg",
+          "/sites/6819921/pano/e7dbn3umt8krntpx43fn223wc/empty/f4.jpg",
+          "/sites/6819921/pano/e7dbn3umt8krntpx43fn223wc/empty/f5.jpg"
+        ]
+      },
+      {
+        "id": "ifyzmg56936gta3xw9anyb2na",
+        "position": {
+          "x": -2.311,
+          "y": -3.819,
+          "z": 1.373
+        },
+        "label": "10"
+      },
+      {
+        "id": "r7r5902ya5xucbd9ww0h6q65b",
+        "position": {
+          "x": -19.879,
+          "y": -5.535,
+          "z": 4.886
+        },
+        "label": "38"
+      },
+      {
+        "id": "wz28isswzw2y4e0bzc8i6d3rc",
+        "position": {
+          "x": -2.51,
+          "y": -4.893,
+          "z": 1.371
+        },
+        "label": "9",
+        "rotation": {
+          "x": -0.0017471789615228772,
+          "y": 0.0042357188649475574,
+          "z": -0.2196880728006363,
+          "w": 0.975559413433075
+        },
+        "skybox": [
+          "/sites/6819921/pano/wz28isswzw2y4e0bzc8i6d3rc/f0.jpg",
+          "/sites/6819921/pano/wz28isswzw2y4e0bzc8i6d3rc/f1.jpg",
+          "/sites/6819921/pano/wz28isswzw2y4e0bzc8i6d3rc/f2.jpg",
+          "/sites/6819921/pano/wz28isswzw2y4e0bzc8i6d3rc/f3.jpg",
+          "/sites/6819921/pano/wz28isswzw2y4e0bzc8i6d3rc/f4.jpg",
+          "/sites/6819921/pano/wz28isswzw2y4e0bzc8i6d3rc/f5.jpg"
+        ],
+        "skyboxEmpty": [
+          "/sites/6819921/pano/wz28isswzw2y4e0bzc8i6d3rc/empty/f0.jpg",
+          "/sites/6819921/pano/wz28isswzw2y4e0bzc8i6d3rc/empty/f1.jpg",
+          "/sites/6819921/pano/wz28isswzw2y4e0bzc8i6d3rc/empty/f2.jpg",
+          "/sites/6819921/pano/wz28isswzw2y4e0bzc8i6d3rc/empty/f3.jpg",
+          "/sites/6819921/pano/wz28isswzw2y4e0bzc8i6d3rc/empty/f4.jpg",
+          "/sites/6819921/pano/wz28isswzw2y4e0bzc8i6d3rc/empty/f5.jpg"
+        ]
+      },
+      {
+        "id": "w7kmqxtrr64ueyzha1s69rb0b",
+        "position": {
+          "x": -17.995,
+          "y": -2.504,
+          "z": 4.857
+        },
+        "label": "43"
+      },
+      {
+        "id": "xqds471u1g8u3e3dcqn61mqub",
+        "position": {
+          "x": -8.983,
+          "y": -1.092,
+          "z": 1.371
+        },
+        "label": "15",
+        "rotation": {
+          "x": 0.00029746131622232497,
+          "y": -0.006751860026270151,
+          "z": 0.8244118690490723,
+          "w": 0.5659498572349548
+        },
+        "skybox": [
+          "/sites/6819921/pano/xqds471u1g8u3e3dcqn61mqub/f0.jpg",
+          "/sites/6819921/pano/xqds471u1g8u3e3dcqn61mqub/f1.jpg",
+          "/sites/6819921/pano/xqds471u1g8u3e3dcqn61mqub/f2.jpg",
+          "/sites/6819921/pano/xqds471u1g8u3e3dcqn61mqub/f3.jpg",
+          "/sites/6819921/pano/xqds471u1g8u3e3dcqn61mqub/f4.jpg",
+          "/sites/6819921/pano/xqds471u1g8u3e3dcqn61mqub/f5.jpg"
+        ],
+        "skyboxEmpty": [
+          "/sites/6819921/pano/xqds471u1g8u3e3dcqn61mqub/empty/f0.jpg",
+          "/sites/6819921/pano/xqds471u1g8u3e3dcqn61mqub/empty/f1.jpg",
+          "/sites/6819921/pano/xqds471u1g8u3e3dcqn61mqub/empty/f2.jpg",
+          "/sites/6819921/pano/xqds471u1g8u3e3dcqn61mqub/empty/f3.jpg",
+          "/sites/6819921/pano/xqds471u1g8u3e3dcqn61mqub/empty/f4.jpg",
+          "/sites/6819921/pano/xqds471u1g8u3e3dcqn61mqub/empty/f5.jpg"
+        ]
+      },
+      {
+        "id": "3qwikm9mkzshd3xdw2tczpxea",
+        "position": {
+          "x": -18.182,
+          "y": -4.937,
+          "z": 4.882
+        },
+        "label": "42"
+      },
+      {
+        "id": "8qkgtat2zmgu8b7aubtw8wuqc",
+        "position": {
+          "x": -20.294,
+          "y": -0.698,
+          "z": 4.866
+        },
+        "label": "40"
+      },
+      {
+        "id": "i0pa13rq941cbsrwsgud85keb",
+        "position": {
+          "x": -22.598,
+          "y": -0.821,
+          "z": 4.875
+        },
+        "label": "34"
+      },
+      {
+        "id": "n8sf6uqnmuisiup2ukm8uf5gc",
+        "position": {
+          "x": -11.287,
+          "y": -2.381,
+          "z": 1.375
+        },
+        "label": "16"
+      },
+      {
+        "id": "p85ws45ngpqin7c4q1cac3c3d",
+        "position": {
+          "x": -1.98,
+          "y": 0.086,
+          "z": 1.359
+        },
+        "label": "6"
+      },
+      {
+        "id": "q8ixy9561grhx1fyrnfnug6hd",
+        "position": {
+          "x": -16.797,
+          "y": -1.163,
+          "z": 1.387
+        },
+        "label": "18"
+      },
+      {
+        "id": "s0e9pdy681q6ntnd2ibtdznga",
+        "position": {
+          "x": -33.094,
+          "y": -2.213,
+          "z": 1.368
+        },
+        "label": "22"
+      },
+      {
+        "id": "tgh40c2a2qdtk27kxwggea8pb",
+        "position": {
+          "x": -8.73,
+          "y": -12.934,
+          "z": 1.399
+        },
+        "label": "12"
+      },
+      {
+        "id": "ygmhn6ddr78uhpbxmrdd8g2ca",
+        "position": {
+          "x": -18.867,
+          "y": -5.773,
+          "z": 4.882
+        },
+        "label": "41"
+      },
+      {
+        "id": "ps77q0ff5mt33y8mwgewwrb9c",
+        "position": {
+          "x": 2.273,
+          "y": -3.397,
+          "z": 0.579
+        },
+        "label": "4"
+      },
+      {
+        "id": "x98z8fqeqh6surpnxm9wu1qrc",
+        "position": {
+          "x": -24.488,
+          "y": -4.608,
+          "z": 4.862
+        },
+        "label": "36",
+        "rotation": {
+          "x": -0.00294491252861917,
+          "y": -0.0037900249008089304,
+          "z": 0.9589152336120605,
+          "w": 0.28365224599838257
+        },
+        "skybox": [
+          "/sites/6819921/pano/x98z8fqeqh6surpnxm9wu1qrc/f0.jpg",
+          "/sites/6819921/pano/x98z8fqeqh6surpnxm9wu1qrc/f1.jpg",
+          "/sites/6819921/pano/x98z8fqeqh6surpnxm9wu1qrc/f2.jpg",
+          "/sites/6819921/pano/x98z8fqeqh6surpnxm9wu1qrc/f3.jpg",
+          "/sites/6819921/pano/x98z8fqeqh6surpnxm9wu1qrc/f4.jpg",
+          "/sites/6819921/pano/x98z8fqeqh6surpnxm9wu1qrc/f5.jpg"
+        ],
+        "skyboxEmpty": [
+          "/sites/6819921/pano/x98z8fqeqh6surpnxm9wu1qrc/empty/f0.jpg",
+          "/sites/6819921/pano/x98z8fqeqh6surpnxm9wu1qrc/empty/f1.jpg",
+          "/sites/6819921/pano/x98z8fqeqh6surpnxm9wu1qrc/empty/f2.jpg",
+          "/sites/6819921/pano/x98z8fqeqh6surpnxm9wu1qrc/empty/f3.jpg",
+          "/sites/6819921/pano/x98z8fqeqh6surpnxm9wu1qrc/empty/f4.jpg",
+          "/sites/6819921/pano/x98z8fqeqh6surpnxm9wu1qrc/empty/f5.jpg"
+        ]
+      },
+      {
+        "id": "11ii4sz5zcn7n10hpcmnbf8qd",
+        "position": {
+          "x": 0.004,
+          "y": -0.069,
+          "z": 0.447
+        },
+        "label": "0"
+      },
+      {
+        "id": "1hf89d3xh6drix031c11baeaa",
+        "position": {
+          "x": -0.521,
+          "y": -4.858,
+          "z": 0.475
+        },
+        "label": "2"
+      }
+    ],
+    "beforeAfter": [
+      {
+        "panoId": "1n7xd1h5f8qux2eg6c7h9zqyd",
+        "before": "/sites/6819921/before-1n7xd1h5f8qux2eg6c7h9zqyd.jpg",
+        "after": "/sites/6819921/after-1n7xd1h5f8qux2eg6c7h9zqyd.jpg",
+        "caption": "Dining area"
+      },
+      {
+        "panoId": "qyfw75x6n5ywehme7dum805ad",
+        "before": "/sites/6819921/before-qyfw75x6n5ywehme7dum805ad.jpg",
+        "after": "/sites/6819921/after-qyfw75x6n5ywehme7dum805ad.jpg",
+        "caption": "Dining area"
+      }
+    ],
+    "photos": [
+      "/sites/6819921/photo-1.jpg",
+      "/sites/6819921/photo-2.jpg",
+      "/sites/6819921/photo-3.jpg"
+    ],
+    "floorplanImage": "/sites/6819921/floorplan.jpg",
+    "description": "Two-floor commercial space at 701 W 7th St, Los Angeles, spanning nearly 5,000 sq ft with a dramatic curved main floor, mezzanine level, commercial kitchen, patio, and street-facing entrance."
+  },
+  "aerial": {
+    "widthPx": 1024,
+    "heightPx": 1024,
+    "orthoPath": "/sites/6819921/aerial.jpg",
+    "obliquePath": "/sites/6819921/oblique.jpg",
+    "captureDate": "2025-12-01",
+    "extentM": 120.0,
+    "gsdM": 0.1172,
+    "vehicleCount": null,
+    "hardscapeSf": 1464,
+    "footprintSf": 8686,
+    "parkingSpaces": 0,
+    "patioCandidateSf": 0,
+    "detections": []
+  },
+  "findings": [
+    {
+      "id": "costar-patio",
+      "kind": "patio",
+      "status": "present",
+      "confidence": 0.6,
+      "evidence": "Listing notes mention a patio.",
+      "source": "costar-notes"
+    },
+    {
+      "id": "6819921-vision-hood",
+      "kind": "hood",
+      "status": "unknown",
+      "confidence": 0.4,
+      "evidence": "No exhaust hood or ventilation canopy appears in any view; the exposed ceilings show only ductwork and conduit.",
+      "source": "matterport-vision"
+    },
+    {
+      "id": "6819921-vision-kitchen-line",
+      "kind": "kitchen-line",
+      "status": "unknown",
+      "confidence": 0.4,
+      "evidence": "Only a wooden bar counter with a drip tray and stripped plumbing stubs are visible, with no cooking equipment or prep tables in place.",
+      "source": "matterport-vision"
+    },
+    {
+      "id": "6819921-vision-walk-in",
+      "kind": "walk-in",
+      "status": "present",
+      "confidence": 0.9,
+      "evidence": "A heavy insulated stainless door with cooler hinges and a plastic strip curtain opens into an insulated box with shelving and beverage gas lines.",
+      "source": "matterport-vision",
+      "imagePath": "/sites/6819921/before-1n7xd1h5f8qux2eg6c7h9zqyd.jpg",
+      "position": {
+        "x": 1.136,
+        "y": -3.388,
+        "z": 0.472
+      },
+      "panoId": "1n7xd1h5f8qux2eg6c7h9zqyd"
+    },
+    {
+      "id": "6819921-vision-restrooms",
+      "kind": "restrooms",
+      "status": "present",
+      "confidence": 0.7,
+      "evidence": "A black 'Restrooms' sign with male/female pictograms is mounted on the wall beside a corridor opening, though no fixtures or doors are visible.",
+      "source": "matterport-vision",
+      "imagePath": "/sites/6819921/before-qyfw75x6n5ywehme7dum805ad.jpg",
+      "position": {
+        "x": -8.319,
+        "y": -6.195,
+        "z": 1.372
+      },
+      "panoId": "qyfw75x6n5ywehme7dum805ad"
+    },
+    {
+      "id": "6819921-vision-grease-trap",
+      "kind": "grease-trap",
+      "status": "present",
+      "confidence": 0.55,
+      "evidence": "The stripped tile floor area below the mezzanine shows several round floor drain covers and a rectangular grated drain.",
+      "source": "matterport-vision",
+      "imagePath": "/sites/6819921/photo-1.jpg",
+      "position": {
+        "x": -27.043,
+        "y": -5.752,
+        "z": 3.185
+      }
+    },
+    {
+      "id": "6819921-vision-electrical",
+      "kind": "electrical",
+      "status": "unknown",
+      "confidence": 0.4,
+      "evidence": "Only junction boxes, flexible conduit and low-voltage devices are visible in the open ceiling; no panel or service gear is seen.",
+      "source": "matterport-vision"
+    },
+    {
+      "id": "6819921-vision-storefront",
+      "kind": "storefront",
+      "status": "present",
+      "confidence": 0.8,
+      "evidence": "A glazed door opens onto a balcony railing directly overlooking the street and the restaurant frontage across the road.",
+      "source": "matterport-vision",
+      "imagePath": "/sites/6819921/vision-85xfknf5209c377m4c648xrnb.jpg",
+      "position": {
+        "x": -35.027,
+        "y": -2.869,
+        "z": 4.846
+      },
+      "panoId": "85xfknf5209c377m4c648xrnb"
+    },
+    {
+      "id": "6819921-vision-ada",
+      "kind": "ada",
+      "status": "unknown",
+      "confidence": 0.3,
+      "evidence": "No ramp, grab bars or accessible restroom features are visible; the two levels are shown connected only by a staircase.",
+      "source": "matterport-vision"
+    }
+  ],
+  "headline": "Second-generation suite with a hood; $36/SF NNN.",
+  "sources": [
+    {
+      "label": "CoStar hackathon data kit (Nov 2026)"
+    }
+  ]
+}

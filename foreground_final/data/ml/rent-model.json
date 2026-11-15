@@ -1,0 +1,769 @@
+{
+ "name": "Foreground fair-rent model",
+ "version": "1.0",
+ "trainedOn": "2026-11-13",
+ "dataDate": "2026-11-09",
+ "target": "asking rent, $/SF/yr, NNN-equivalent, for a retail / restaurant-suitable space",
+ "algorithm": "HistGradientBoostingRegressor on log rent (depth 6, 300 trees, lr 0.05, min leaf 20); submarket target-encoded with cross-fitting; office rows weight 0.3; 80% interval by split-conformal on out-of-fold residuals per market",
+ "dataset": {
+  "rows": 16656,
+  "retailRows": 1196,
+  "properties": 500,
+  "retailProperties": 298,
+  "bySource": {
+   "deal": 14779,
+   "listing": 1877
+  },
+  "byFlavor": {
+   "deal_ask": 13037,
+   "listing_ask": 1877,
+   "deal_contract": 1742
+  },
+  "byUse": {
+   "office": 15460,
+   "retail": 1196
+  },
+  "byMarket": {
+   "Houston": 11160,
+   "LosAngeles": 5496
+  },
+  "retailByMarket": {
+   "LosAngeles": 843,
+   "Houston": 353
+  },
+  "retailBySource": {
+   "deal": 980,
+   "listing": 216
+  },
+  "dateRange": [
+   "1989-12-14",
+   "2026-11-09"
+  ],
+  "features": [
+   "submarket",
+   "market",
+   "property_type",
+   "property_subtype",
+   "space_type",
+   "floor_class",
+   "rent_flavor",
+   "svc_group",
+   "is_retail_use",
+   "log_building_sf",
+   "log_space_sf",
+   "age",
+   "year_built",
+   "stories",
+   "sf_share_of_building",
+   "floor_no",
+   "ground",
+   "year_frac",
+   "lat",
+   "lng",
+   "rest_kw",
+   "other_avail_share",
+   "other_avail_n",
+   "cur_tenants",
+   "cur_occupied_share",
+   "r_knn_med",
+   "r_knn_dist",
+   "r_knn_d1",
+   "r_knn_size_med",
+   "r_knn_n1km",
+   "o_knn_med",
+   "o_knn_dist"
+  ],
+  "outliersDropped": 81,
+  "outlierRule": "after NNN conversion: keep $3..$250/SF/yr; drop |log rent - median| > 3.5 x 1.4826 x MAD within (market, use class)",
+  "dropCounts": {
+   "listing: no rate (0)": 1089,
+   "coworking listing": 47,
+   "off market / unknown property": 236,
+   "deal: no rate": 25246,
+   "deal: no SF": 11
+  },
+  "unknownServiceRowsDropped": 1021
+ },
+ "nnnAdjustment": {
+  "grossToNnnFactor": 0.8648472856415873,
+  "grossOverNnnRatio": 1.1562735023885164,
+  "applied": "all_uses",
+  "estimates": {
+   "all_uses": {
+    "label": "all uses",
+    "n": 16737,
+    "n_gross": 12897,
+    "n_nnn": 3840,
+    "coef_log": 0.145202336027988,
+    "se": 0.0062255009053517165,
+    "ratio_gross_over_nnn": 1.1562735023885164,
+    "ci95_ratio": [
+     1.1422504029770242,
+     1.1704687596006034
+    ]
+   },
+   "retail_use": {
+    "label": "retail-use only",
+    "n": 1204,
+    "n_gross": 362,
+    "n_nnn": 842,
+    "coef_log": -0.2200958779571464,
+    "se": 0.02828509926316069,
+    "ratio_gross_over_nnn": 0.8024418577880505,
+    "ci95_ratio": [
+     0.7591661094409611,
+     0.8481845107713069
+    ]
+   },
+   "office_use": {
+    "label": "office only",
+    "n": 15533,
+    "n_gross": 12535,
+    "n_nnn": 2998,
+    "coef_log": 0.18669098419428165,
+    "se": 0.006242481587365463,
+    "ratio_gross_over_nnn": 1.205254784720248,
+    "ci95_ratio": [
+     1.190598021874383,
+     1.2200919784866864
+    ]
+   }
+  },
+  "method": "OLS of log(rent) on gross-vs-NNN service group with submarket fixed effects, use, log SF, property type, era; NNN-equivalent = gross x factor",
+  "note": "The retail-only estimate has the wrong sign (gross-quoted retail is cheaper, a mix effect) and is reported but not applied; the model also sees service type as a feature."
+ },
+ "chosenConfig": {
+  "params": {
+   "depth": 6,
+   "iters": 300,
+   "lr": 0.05,
+   "leaf": 20
+  },
+  "officeWeight": 0.3,
+  "search": [
+   {
+    "grid": 0,
+    "params": {
+     "depth": 4,
+     "iters": 250,
+     "lr": 0.05,
+     "leaf": 20
+    },
+    "officeWeight": 0.0,
+    "n": 1196,
+    "mae": 8.512138907211524,
+    "mape": 0.29525405002051347,
+    "medianApe": 0.22423943462749146,
+    "r2": 0.49978014902765233,
+    "rmseLog": 0.3526450806379526,
+    "bias": -0.8373617256744806
+   },
+   {
+    "grid": 0,
+    "params": {
+     "depth": 4,
+     "iters": 250,
+     "lr": 0.05,
+     "leaf": 20
+    },
+    "officeWeight": 0.3,
+    "n": 1196,
+    "mae": 8.414275530894095,
+    "mape": 0.2734066754620333,
+    "medianApe": 0.2175342384538569,
+    "r2": 0.47326507009835506,
+    "rmseLog": 0.34537803287305124,
+    "bias": -2.1282592108710907
+   },
+   {
+    "grid": 0,
+    "params": {
+     "depth": 4,
+     "iters": 250,
+     "lr": 0.05,
+     "leaf": 20
+    },
+    "officeWeight": 1.0,
+    "n": 1196,
+    "mae": 8.681985970797058,
+    "mape": 0.27924092608293233,
+    "medianApe": 0.22061020200787823,
+    "r2": 0.450957224336208,
+    "rmseLog": 0.35162434411503246,
+    "bias": -2.361878913011344
+   },
+   {
+    "grid": 1,
+    "params": {
+     "depth": 6,
+     "iters": 300,
+     "lr": 0.05,
+     "leaf": 20
+    },
+    "officeWeight": 0.3,
+    "n": 1196,
+    "mae": 8.267955029833429,
+    "mape": 0.2751608528848042,
+    "medianApe": 0.19982319869364087,
+    "r2": 0.4952392495832679,
+    "rmseLog": 0.3401663753042092,
+    "bias": -1.1592639910313147
+   },
+   {
+    "grid": 2,
+    "params": {
+     "depth": 3,
+     "iters": 400,
+     "lr": 0.05,
+     "leaf": 30
+    },
+    "officeWeight": 0.3,
+    "n": 1196,
+    "mae": 8.4651747191828,
+    "mape": 0.2745760021194411,
+    "medianApe": 0.21202643178999556,
+    "r2": 0.46743647453176085,
+    "rmseLog": 0.345245473499366,
+    "bias": -2.042915534487561
+   }
+  ]
+ },
+ "metrics": {
+  "groupedCv": {
+   "folds": 5,
+   "scope": "retail-use rows, no building in both train and test",
+   "model": {
+    "n": 1196,
+    "mae": 8.267955029833429,
+    "mape": 0.2751608528848042,
+    "medianApe": 0.19982319869364087,
+    "r2": 0.4952392495832679,
+    "rmseLog": 0.3401663753042092,
+    "bias": -1.1592639910313147
+   },
+   "marketMedian": {
+    "n": 1196,
+    "mae": 11.668371070671219,
+    "mape": 0.41368709263377473,
+    "medianApe": 0.2938115393198146,
+    "r2": 0.1717763019885553,
+    "rmseLog": 0.45234673632347366,
+    "bias": -1.5656705200205314
+   },
+   "submarketMedian": {
+    "n": 1196,
+    "mae": 10.416428653286802,
+    "mape": 0.3560772954257537,
+    "medianApe": 0.2587023265929252,
+    "r2": 0.2520901721333789,
+    "rmseLog": 0.4267433908141544,
+    "bias": -1.7078695189746687
+   },
+   "knnCompsMedian": {
+    "n": 1196,
+    "mae": 11.304033693561312,
+    "mape": 0.3895458679393016,
+    "medianApe": 0.25925925925925924,
+    "r2": 0.14433038756740613,
+    "rmseLog": 0.45359607944316704,
+    "bias": -0.6698619922194899
+   },
+   "modelCi95": {
+    "mae": [
+     7.371411791744752,
+     9.202940070962168
+    ],
+    "medianApe": [
+     0.17325843084391454,
+     0.22485558216381923
+    ],
+    "r2": [
+     0.40438577592079356,
+     0.5849046379798714
+    ]
+   },
+   "bestBaseline": "submarketMedian",
+   "maeDiffVsBestBaseline": [
+    -2.9509884908690487,
+    -1.2477605459017533
+   ],
+   "modelNnnQuotedOnly": {
+    "n": 836,
+    "mae": 8.780955484012448,
+    "mape": 0.2600373399342856,
+    "medianApe": 0.1967413434581381,
+    "r2": 0.4708587124302327,
+    "rmseLog": 0.3343112448426912,
+    "bias": -2.114765754656159
+   },
+   "submarketMedianNnnQuotedOnly": {
+    "n": 836,
+    "mae": 10.42864262299832,
+    "mape": 0.30087210546171517,
+    "medianApe": 0.23395061728395056,
+    "r2": 0.2824702694782305,
+    "rmseLog": 0.4051845394007588,
+    "bias": -4.776172874638969
+   },
+   "listingsOnly": {
+    "n": 216,
+    "mae": 6.742007970642859,
+    "mape": 0.23176822928862026,
+    "medianApe": 0.17250005979477723,
+    "r2": 0.6601952295545684,
+    "rmseLog": 0.2908110008931054,
+    "bias": -0.2631101669608896
+   },
+   "listingsOnlySubmarketMedian": {
+    "n": 216,
+    "mae": 8.735039445384276,
+    "mape": 0.3148999937714273,
+    "medianApe": 0.20383893347487858,
+    "r2": 0.41620047626568346,
+    "rmseLog": 0.3919251359983885,
+    "bias": -0.4205282880481854
+   },
+   "byMarket": {
+    "Houston": {
+     "model": {
+      "n": 353,
+      "mae": 5.113793585082822,
+      "mape": 0.2632503151577251,
+      "medianApe": 0.19272419562166043,
+      "r2": 0.4326984198797016,
+      "rmseLog": 0.30838178509565034,
+      "bias": 0.4705271160673409
+     },
+     "submarketMedian": {
+      "n": 353,
+      "mae": 6.57092776763111,
+      "mape": 0.3044082194795739,
+      "medianApe": 0.23076923076923078,
+      "r2": -0.05057908645743203,
+      "rmseLog": 0.3931231445901998,
+      "bias": -2.372452935511628
+     }
+    },
+    "LosAngeles": {
+     "model": {
+      "n": 843,
+      "mae": 9.588736749877278,
+      "mape": 0.28014830225332016,
+      "medianApe": 0.2054792398105561,
+      "r2": 0.358171100863244,
+      "rmseLog": 0.3526259413507206,
+      "bias": -1.8417269338614755
+     },
+     "submarketMedian": {
+      "n": 843,
+      "mae": 12.026703638620683,
+      "mape": 0.37771333790381,
+      "medianApe": 0.26895927553314875,
+      "r2": 0.07560706376167803,
+      "rmseLog": 0.4400593031763368,
+      "bias": -1.4295801405196908
+     }
+    }
+   },
+   "intervals": {
+    "conformalGlobal": {
+     "coverage": 0.8244147157190636,
+     "medianWidthPct": 0.9266526928384463,
+     "byMarket": {
+      "Houston": 0.8498583569405099,
+      "LosAngeles": 0.8137603795966786
+     }
+    },
+    "conformalByMarket": {
+     "coverage": 0.8269230769230769,
+     "medianWidthPct": 0.9841340567743218,
+     "byMarket": {
+      "Houston": 0.8186968838526912,
+      "LosAngeles": 0.830367734282325
+     }
+    },
+    "quantileGbm": {
+     "coverage": 0.5752508361204013,
+     "medianWidthPct": 0.5178022644238411,
+     "byMarket": {
+      "Houston": 0.623229461756374,
+      "LosAngeles": 0.5551601423487544
+     }
+    }
+   }
+  },
+  "timeSplit": {
+   "split": "train on all rows dated before 2024-01-01, test on retail-use rows dated 2024-01-01 onwards",
+   "train": {
+    "n": 14259,
+    "retailN": 936
+   },
+   "test": {
+    "n": 260
+   },
+   "model": {
+    "n": 260,
+    "mae": 7.250335530416469,
+    "mape": 0.2320027374312401,
+    "medianApe": 0.14769608220638952,
+    "r2": 0.4818534889310615,
+    "rmseLog": 0.310477873095588,
+    "bias": 0.0009289020339568201
+   },
+   "marketMedian": {
+    "n": 260,
+    "mae": 12.15637237013695,
+    "mape": 0.4144057734086819,
+    "medianApe": 0.3066666666666667,
+    "r2": 0.12812892687951172,
+    "rmseLog": 0.4679299511027768,
+    "bias": -2.4080736816125463
+   },
+   "submarketMedian": {
+    "n": 260,
+    "mae": 10.025441210748772,
+    "mape": 0.3317670411792598,
+    "medianApe": 0.21395881006864986,
+    "r2": 0.24242727722442758,
+    "rmseLog": 0.42263127179778215,
+    "bias": -1.4316400603750672
+   },
+   "knnCompsMedian": {
+    "n": 260,
+    "mae": 11.506996214417695,
+    "mape": 0.39490395232480685,
+    "medianApe": 0.2525285005243535,
+    "r2": 0.1905849095436215,
+    "rmseLog": 0.4273872614124063,
+    "bias": 1.2890837250129215
+   },
+   "interval": {
+    "kind": "conformalByMarket",
+    "coverage": 0.8730769230769231,
+    "medianWidthPct": 1.0667943286009345,
+    "quantileGbmCoverage": 0.6307692307692307
+   }
+  }
+ },
+ "intervals": {
+  "level": 0.8,
+  "kind": "conformalByMarket",
+  "logOffsets": {
+   "Houston": [
+    -0.41447757344379443,
+    0.29002251160587333
+   ],
+   "LosAngeles": [
+    -0.4549808996257149,
+    0.42376433941307834
+   ],
+   "_all": [
+    -0.4483095466716507,
+    0.4017562521380891
+   ]
+  },
+  "groupedCvCoverage": {
+   "conformalGlobal": {
+    "coverage": 0.8244147157190636,
+    "medianWidthPct": 0.9266526928384463,
+    "byMarket": {
+     "Houston": 0.8498583569405099,
+     "LosAngeles": 0.8137603795966786
+    }
+   },
+   "conformalByMarket": {
+    "coverage": 0.8269230769230769,
+    "medianWidthPct": 0.9841340567743218,
+    "byMarket": {
+     "Houston": 0.8186968838526912,
+     "LosAngeles": 0.830367734282325
+    }
+   },
+   "quantileGbm": {
+    "coverage": 0.5752508361204013,
+    "medianWidthPct": 0.5178022644238411,
+    "byMarket": {
+     "Houston": 0.623229461756374,
+     "LosAngeles": 0.5551601423487544
+    }
+   }
+  },
+  "timeSplitCoverage": {
+   "kind": "conformalByMarket",
+   "coverage": 0.8730769230769231,
+   "medianWidthPct": 1.0667943286009345,
+   "quantileGbmCoverage": 0.6307692307692307
+  }
+ },
+ "featureImportance": {
+  "method": "permutation on out-of-fold test folds, increase in RMSE of log rent (higher = more important)",
+  "groups": [
+   {
+    "group": "Location (lat/lng, market, submarket)",
+    "rmseLogIncrease": 0.13800622440322513,
+    "std": 0.027592755439348495,
+    "features": [
+     "lat",
+     "lng",
+     "market",
+     "submarket"
+    ]
+   },
+   {
+    "group": "Building (type, size, age, stories)",
+    "rmseLogIncrease": 0.03933523653097094,
+    "std": 0.017880827663460643,
+    "features": [
+     "property_type",
+     "property_subtype",
+     "log_building_sf",
+     "age",
+     "year_built",
+     "stories"
+    ]
+   },
+   {
+    "group": "Nearby comps (kNN rents)",
+    "rmseLogIncrease": 0.032827266973797085,
+    "std": 0.025277510753265706,
+    "features": [
+     "r_knn_med",
+     "r_knn_dist",
+     "r_knn_d1",
+     "r_knn_size_med",
+     "r_knn_n1km",
+     "o_knn_med",
+     "o_knn_dist"
+    ]
+   },
+   {
+    "group": "Rent basis (use, source, service type)",
+    "rmseLogIncrease": 0.02217663881359231,
+    "std": 0.012253175552285656,
+    "features": [
+     "is_retail_use",
+     "rent_flavor",
+     "svc_group"
+    ]
+   },
+   {
+    "group": "Era (date on market / signed)",
+    "rmseLogIncrease": 0.020195099852543637,
+    "std": 0.005694102233070799,
+    "features": [
+     "year_frac"
+    ]
+   },
+   {
+    "group": "Space size",
+    "rmseLogIncrease": 0.006460778712848447,
+    "std": 0.007491291182388855,
+    "features": [
+     "log_space_sf",
+     "sf_share_of_building"
+    ]
+   },
+   {
+    "group": "Building vacancy proxies",
+    "rmseLogIncrease": 0.004193830269375754,
+    "std": 0.0032467859827719535,
+    "features": [
+     "other_avail_share",
+     "other_avail_n",
+     "cur_tenants",
+     "cur_occupied_share"
+    ]
+   },
+   {
+    "group": "Space attributes (floor, new/relet/sublet, restaurant words)",
+    "rmseLogIncrease": 0.0021327174740293072,
+    "std": 0.0025124778587050298,
+    "features": [
+     "floor_class",
+     "floor_no",
+     "ground",
+     "space_type",
+     "rest_kw"
+    ]
+   }
+  ],
+  "features": [
+   {
+    "feature": "submarket",
+    "rmseLogIncrease": 0.09229062975615906,
+    "std": 0.033692104699892714
+   },
+   {
+    "feature": "svc_group",
+    "rmseLogIncrease": 0.02490887745239833,
+    "std": 0.018760035116723625
+   },
+   {
+    "feature": "age",
+    "rmseLogIncrease": 0.02204130191091183,
+    "std": 0.01663285159349987
+   },
+   {
+    "feature": "year_frac",
+    "rmseLogIncrease": 0.02141661854380747,
+    "std": 0.005343834157292039
+   },
+   {
+    "feature": "lng",
+    "rmseLogIncrease": 0.016666314592681263,
+    "std": 0.016164611807304986
+   },
+   {
+    "feature": "lat",
+    "rmseLogIncrease": 0.009803319690118073,
+    "std": 0.007231234783903167
+   },
+   {
+    "feature": "o_knn_med",
+    "rmseLogIncrease": 0.008840330351400938,
+    "std": 0.01040287224256441
+   },
+   {
+    "feature": "r_knn_med",
+    "rmseLogIncrease": 0.00636931834519514,
+    "std": 0.008358559849250201
+   },
+   {
+    "feature": "sf_share_of_building",
+    "rmseLogIncrease": 0.005257361629521529,
+    "std": 0.004452574001394
+   },
+   {
+    "feature": "r_knn_d1",
+    "rmseLogIncrease": 0.0044958211934724105,
+    "std": 0.0065473774561974965
+   },
+   {
+    "feature": "year_built",
+    "rmseLogIncrease": 0.0032006093393439684,
+    "std": 0.008459934556425472
+   },
+   {
+    "feature": "stories",
+    "rmseLogIncrease": 0.0028946192248167023,
+    "std": 0.004326285644884469
+   },
+   {
+    "feature": "cur_occupied_share",
+    "rmseLogIncrease": 0.002815882786797952,
+    "std": 0.001333969283315266
+   },
+   {
+    "feature": "log_building_sf",
+    "rmseLogIncrease": 0.0026301307196692713,
+    "std": 0.0042207893864521385
+   },
+   {
+    "feature": "cur_tenants",
+    "rmseLogIncrease": 0.0018659031022243533,
+    "std": 0.001502542980926878
+   },
+   {
+    "feature": "r_knn_size_med",
+    "rmseLogIncrease": 0.0018149608588345135,
+    "std": 0.004427680828543178
+   },
+   {
+    "feature": "r_knn_dist",
+    "rmseLogIncrease": 0.001765477989968811,
+    "std": 0.0035513267078687125
+   },
+   {
+    "feature": "other_avail_n",
+    "rmseLogIncrease": 0.0013507928238684574,
+    "std": 0.0013284244047852528
+   },
+   {
+    "feature": "property_subtype",
+    "rmseLogIncrease": 0.0012902588095598743,
+    "std": 0.0025699412362737567
+   },
+   {
+    "feature": "r_knn_n1km",
+    "rmseLogIncrease": 0.0011142175657479492,
+    "std": 0.003136309890707346
+   },
+   {
+    "feature": "space_type",
+    "rmseLogIncrease": 0.0009191571746734572,
+    "std": 0.003357348068491508
+   },
+   {
+    "feature": "rent_flavor",
+    "rmseLogIncrease": 0.0008684097432458071,
+    "std": 0.001391569177885601
+   },
+   {
+    "feature": "floor_no",
+    "rmseLogIncrease": 0.000829283455658042,
+    "std": 0.0015152457558974854
+   },
+   {
+    "feature": "log_space_sf",
+    "rmseLogIncrease": 0.0008029202174097249,
+    "std": 0.003936135982573229
+   },
+   {
+    "feature": "rest_kw",
+    "rmseLogIncrease": 0.00031969490137680466,
+    "std": 0.0002937493631731562
+   },
+   {
+    "feature": "other_avail_share",
+    "rmseLogIncrease": 0.00011307267877944672,
+    "std": 0.0017878258879141108
+   },
+   {
+    "feature": "market",
+    "rmseLogIncrease": 9.756550424581124e-05,
+    "std": 0.00023306432940128872
+   },
+   {
+    "feature": "is_retail_use",
+    "rmseLogIncrease": 0.0,
+    "std": 0.0
+   },
+   {
+    "feature": "ground",
+    "rmseLogIncrease": -5.1757003726571324e-05,
+    "std": 8.542213478971292e-05
+   },
+   {
+    "feature": "floor_class",
+    "rmseLogIncrease": -0.00023025958038994654,
+    "std": 0.00035932523352471364
+   },
+   {
+    "feature": "o_knn_dist",
+    "rmseLogIncrease": -0.00023124783757261236,
+    "std": 0.0025310874277403653
+   },
+   {
+    "feature": "property_type",
+    "rmseLogIncrease": -0.000837291854945188,
+    "std": 0.0018427200669949382
+   }
+  ]
+ },
+ "modelCard": {
+  "data": "CoStar hackathon kit, Houston and Los Angeles: active for-lease listing spaces with a rate, plus lease deals with a rent (contract or quoted asking), retail-use and office spaces.",
+  "unit": "asking rent, $/SF/yr, NNN-equivalent",
+  "features": "market, submarket (target-encoded), property type and subtype, building SF, age, stories, space SF and share of building, floor, relet/new/sublet, era, lat/lng, rents of nearby retail comps and office buildings (training rows only, own building excluded), restaurant words, vacancy proxies, rent basis (source, service type)",
+  "intendedUse": "A rough fair-asking-rent range beside a listing's ask, to size a negotiation. Not an appraisal, not a forecast of what a lease will settle at, not for lending.",
+  "limits": [
+   "Asking rents, not achieved rents: concessions, free rent and tenant-improvement allowances are not in the data.",
+   "NNN-equivalent conversion for gross rents uses one data-derived factor; retail-only data points the other way (mix effect), so retail gross conversions are uncertain.",
+   "Only 1,196 retail-use rows on about 360 buildings; much of the training data is office rent, which carries a use flag.",
+   "Most rows are lease-deal records whose rate is the quoted asking rent at signing; their dates are signing dates, not today's market.",
+   "Houston and Los Angeles only; 12 demo sites cannot validate a model.",
+   "No photos, frontage, visibility, co-tenancy, traffic counts or build-out condition.",
+   "Intervals are calibrated on held-out buildings; individual spaces can fall well outside them."
+  ],
+  "date": "2026-11-13"
+ }
+}

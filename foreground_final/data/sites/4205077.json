@@ -1,0 +1,453 @@
+{
+  "id": "4205077",
+  "address": "1870-1890 S Western Ave",
+  "city": "Los Angeles",
+  "state": "CA",
+  "postcode": "90006",
+  "lat": 34.040349,
+  "lng": -118.308612,
+  "buildingName": "Golden Family Plaza",
+  "propertyType": "GeneralRetail",
+  "propertySubtype": "GeneralRetail_Freestanding",
+  "buildingSf": 11103.0,
+  "yearBuilt": 1986,
+  "stories": 1,
+  "zoning": "C2",
+  "photoUrl": "https://ahprd1cdn.csgpimgs.com/i2/1muQNuvsZbuLG70ewALspiKJcTb0rAUTky0LbCxMzGw/112/image.jpg",
+  "space": {
+    "spaceId": 20972587,
+    "listingId": 40308509,
+    "suite": null,
+    "floor": "FirstFloor",
+    "sf": 1500.0,
+    "sfMin": 1500.0,
+    "rentPerSfYr": 30.6,
+    "serviceType": "NNN",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "notes": null,
+    "availableOn": "2026-04-01",
+    "floorPlanUrl": null,
+    "restaurantKeywords": [
+      "hood"
+    ]
+  },
+  "otherSpaces": [],
+  "tenantHistory": [
+    {
+      "name": "El Sonsonateco Restaurant",
+      "industry": "AccommodationAndFoodServices",
+      "isFood": true,
+      "moveIn": "2010-08-21",
+      "moveOut": null,
+      "years": 16.2,
+      "suite": null,
+      "sameSuite": false,
+      "current": true,
+      "outcome": "current",
+      "matchBasis": "name-regex"
+    },
+    {
+      "name": "Deli World No 2",
+      "industry": "AccommodationAndFoodServices",
+      "isFood": true,
+      "moveIn": "2010-08-21",
+      "moveOut": "2015-07-18",
+      "years": 4.9,
+      "suite": null,
+      "sameSuite": false,
+      "current": false,
+      "outcome": "moved",
+      "matchBasis": "name-regex"
+    },
+    {
+      "name": "Boba Grande Ice Tea",
+      "industry": "AccommodationAndFoodServices",
+      "isFood": true,
+      "moveIn": "2023-09-06",
+      "moveOut": null,
+      "years": 3.2,
+      "suite": "1876",
+      "sameSuite": false,
+      "current": true,
+      "outcome": "current",
+      "matchBasis": "name-regex"
+    }
+  ],
+  "sales": [
+    {
+      "date": "2018-05-24",
+      "priceUsd": null,
+      "note": "Unknown"
+    }
+  ],
+  "matterport": {
+    "modelId": "WevFANR2s1h",
+    "defurnishedViewId": null,
+    "scanOfExactSuite": false,
+    "scanName": "Golden Family Plaza Virtual Tour",
+    "areaSf": null,
+    "rooms": [],
+    "panos": [
+      {
+        "id": "gtu6g40yx5y8pe8dpsadmwxud",
+        "position": {
+          "x": -0.091,
+          "y": -15.062,
+          "z": 1.785
+        },
+        "label": "3"
+      },
+      {
+        "id": "rabceqe82zpa8n5st3bps57rc",
+        "position": {
+          "x": -6.823,
+          "y": -19.641,
+          "z": 1.792
+        },
+        "label": "5",
+        "rotation": {
+          "x": -0.005018416326493025,
+          "y": -0.006684110965579748,
+          "z": -0.7863609790802002,
+          "w": 0.6177107691764832
+        },
+        "skybox": [
+          "/sites/4205077/pano/rabceqe82zpa8n5st3bps57rc/f0.jpg",
+          "/sites/4205077/pano/rabceqe82zpa8n5st3bps57rc/f1.jpg",
+          "/sites/4205077/pano/rabceqe82zpa8n5st3bps57rc/f2.jpg",
+          "/sites/4205077/pano/rabceqe82zpa8n5st3bps57rc/f3.jpg",
+          "/sites/4205077/pano/rabceqe82zpa8n5st3bps57rc/f4.jpg",
+          "/sites/4205077/pano/rabceqe82zpa8n5st3bps57rc/f5.jpg"
+        ]
+      },
+      {
+        "id": "suiupwu8mikb9tym3km7yxbxa",
+        "position": {
+          "x": -16.311,
+          "y": -19.575,
+          "z": 1.632
+        },
+        "label": "7",
+        "rotation": {
+          "x": -0.004645085893571377,
+          "y": 0.016874589025974274,
+          "z": 0.9982821941375732,
+          "w": -0.05591346696019173
+        },
+        "skybox": [
+          "/sites/4205077/pano/suiupwu8mikb9tym3km7yxbxa/f0.jpg",
+          "/sites/4205077/pano/suiupwu8mikb9tym3km7yxbxa/f1.jpg",
+          "/sites/4205077/pano/suiupwu8mikb9tym3km7yxbxa/f2.jpg",
+          "/sites/4205077/pano/suiupwu8mikb9tym3km7yxbxa/f3.jpg",
+          "/sites/4205077/pano/suiupwu8mikb9tym3km7yxbxa/f4.jpg",
+          "/sites/4205077/pano/suiupwu8mikb9tym3km7yxbxa/f5.jpg"
+        ]
+      },
+      {
+        "id": "i43sttkcgx622kxmuxfunc9fd",
+        "position": {
+          "x": -11.442,
+          "y": -19.608,
+          "z": 1.782
+        },
+        "label": "6",
+        "rotation": {
+          "x": 0.0032131054904311895,
+          "y": -0.009544317610561848,
+          "z": -0.6822898387908936,
+          "w": 0.7310124635696411
+        },
+        "skybox": [
+          "/sites/4205077/pano/i43sttkcgx622kxmuxfunc9fd/f0.jpg",
+          "/sites/4205077/pano/i43sttkcgx622kxmuxfunc9fd/f1.jpg",
+          "/sites/4205077/pano/i43sttkcgx622kxmuxfunc9fd/f2.jpg",
+          "/sites/4205077/pano/i43sttkcgx622kxmuxfunc9fd/f3.jpg",
+          "/sites/4205077/pano/i43sttkcgx622kxmuxfunc9fd/f4.jpg",
+          "/sites/4205077/pano/i43sttkcgx622kxmuxfunc9fd/f5.jpg"
+        ]
+      },
+      {
+        "id": "r5rz5644rbmaub50qq4wwb2dc",
+        "position": {
+          "x": -20.644,
+          "y": -19.564,
+          "z": 1.623
+        },
+        "label": "8"
+      },
+      {
+        "id": "3dxye61raxezssie04r3weryc",
+        "position": {
+          "x": -25.219,
+          "y": -19.666,
+          "z": 1.623
+        },
+        "label": "9",
+        "rotation": {
+          "x": -0.0012571570696309209,
+          "y": 0.009660820476710796,
+          "z": 0.9999399185180664,
+          "w": 0.005022444762289524
+        },
+        "skybox": [
+          "/sites/4205077/pano/3dxye61raxezssie04r3weryc/f0.jpg",
+          "/sites/4205077/pano/3dxye61raxezssie04r3weryc/f1.jpg",
+          "/sites/4205077/pano/3dxye61raxezssie04r3weryc/f2.jpg",
+          "/sites/4205077/pano/3dxye61raxezssie04r3weryc/f3.jpg",
+          "/sites/4205077/pano/3dxye61raxezssie04r3weryc/f4.jpg",
+          "/sites/4205077/pano/3dxye61raxezssie04r3weryc/f5.jpg"
+        ]
+      },
+      {
+        "id": "s6dw011yemuu7idubq0u7s2eb",
+        "position": {
+          "x": -0.341,
+          "y": -10.686,
+          "z": 1.722
+        },
+        "label": "2",
+        "rotation": {
+          "x": -0.021985791623592377,
+          "y": -0.013999531045556068,
+          "z": -0.347788542509079,
+          "w": 0.9372106194496155
+        },
+        "skybox": [
+          "/sites/4205077/pano/s6dw011yemuu7idubq0u7s2eb/f0.jpg",
+          "/sites/4205077/pano/s6dw011yemuu7idubq0u7s2eb/f1.jpg",
+          "/sites/4205077/pano/s6dw011yemuu7idubq0u7s2eb/f2.jpg",
+          "/sites/4205077/pano/s6dw011yemuu7idubq0u7s2eb/f3.jpg",
+          "/sites/4205077/pano/s6dw011yemuu7idubq0u7s2eb/f4.jpg",
+          "/sites/4205077/pano/s6dw011yemuu7idubq0u7s2eb/f5.jpg"
+        ]
+      },
+      {
+        "id": "t6w0c3qs67rc01bh3inmyra6d",
+        "position": {
+          "x": -0.064,
+          "y": 0.086,
+          "z": 1.582
+        },
+        "label": "0",
+        "rotation": {
+          "x": -0.003197144251316786,
+          "y": -0.004883389919996262,
+          "z": -0.693777322769165,
+          "w": 0.7201659083366394
+        },
+        "skybox": [
+          "/sites/4205077/pano/t6w0c3qs67rc01bh3inmyra6d/f0.jpg",
+          "/sites/4205077/pano/t6w0c3qs67rc01bh3inmyra6d/f1.jpg",
+          "/sites/4205077/pano/t6w0c3qs67rc01bh3inmyra6d/f2.jpg",
+          "/sites/4205077/pano/t6w0c3qs67rc01bh3inmyra6d/f3.jpg",
+          "/sites/4205077/pano/t6w0c3qs67rc01bh3inmyra6d/f4.jpg",
+          "/sites/4205077/pano/t6w0c3qs67rc01bh3inmyra6d/f5.jpg"
+        ]
+      },
+      {
+        "id": "788ex0fheqei5mr8cmxyh0x8b",
+        "position": {
+          "x": -1.628,
+          "y": -17.982,
+          "z": 1.786
+        },
+        "label": "4",
+        "rotation": {
+          "x": 0.0018857343820855021,
+          "y": 0.00734632508829236,
+          "z": 0.9427462816238403,
+          "w": -0.33342447876930237
+        },
+        "skybox": [
+          "/sites/4205077/pano/788ex0fheqei5mr8cmxyh0x8b/f0.jpg",
+          "/sites/4205077/pano/788ex0fheqei5mr8cmxyh0x8b/f1.jpg",
+          "/sites/4205077/pano/788ex0fheqei5mr8cmxyh0x8b/f2.jpg",
+          "/sites/4205077/pano/788ex0fheqei5mr8cmxyh0x8b/f3.jpg",
+          "/sites/4205077/pano/788ex0fheqei5mr8cmxyh0x8b/f4.jpg",
+          "/sites/4205077/pano/788ex0fheqei5mr8cmxyh0x8b/f5.jpg"
+        ]
+      },
+      {
+        "id": "9rcbbrehsgc70pf3fuxghmgkd",
+        "position": {
+          "x": -0.196,
+          "y": -5.145,
+          "z": 1.583
+        },
+        "label": "1",
+        "rotation": {
+          "x": -0.0032922462560236454,
+          "y": -0.010804736986756325,
+          "z": 0.017066961154341698,
+          "w": 0.9997905492782593
+        },
+        "skybox": [
+          "/sites/4205077/pano/9rcbbrehsgc70pf3fuxghmgkd/f0.jpg",
+          "/sites/4205077/pano/9rcbbrehsgc70pf3fuxghmgkd/f1.jpg",
+          "/sites/4205077/pano/9rcbbrehsgc70pf3fuxghmgkd/f2.jpg",
+          "/sites/4205077/pano/9rcbbrehsgc70pf3fuxghmgkd/f3.jpg",
+          "/sites/4205077/pano/9rcbbrehsgc70pf3fuxghmgkd/f4.jpg",
+          "/sites/4205077/pano/9rcbbrehsgc70pf3fuxghmgkd/f5.jpg"
+        ]
+      }
+    ],
+    "beforeAfter": [
+      {
+        "panoId": "rabceqe82zpa8n5st3bps57rc",
+        "before": "/sites/4205077/before-rabceqe82zpa8n5st3bps57rc.jpg",
+        "after": null,
+        "caption": "Main space"
+      },
+      {
+        "panoId": "t6w0c3qs67rc01bh3inmyra6d",
+        "before": "/sites/4205077/before-t6w0c3qs67rc01bh3inmyra6d.jpg",
+        "after": null,
+        "caption": "Dining area"
+      }
+    ],
+    "photos": [
+      "/sites/4205077/photo-1.jpg",
+      "/sites/4205077/photo-2.jpg",
+      "/sites/4205077/photo-3.jpg"
+    ],
+    "floorplanImage": "/sites/4205077/floorplan.jpg",
+    "description": "A single-story retail strip center featuring a diverse mix of tenants, ample surface parking, and high visibility at a busy urban intersection with strong street-level exposure."
+  },
+  "aerial": {
+    "widthPx": 1024,
+    "heightPx": 1024,
+    "orthoPath": "/sites/4205077/aerial.jpg",
+    "obliquePath": "/sites/4205077/oblique.jpg",
+    "captureDate": "2025-12-01",
+    "extentM": 120.0,
+    "gsdM": 0.1172,
+    "vehicleCount": 15,
+    "hardscapeSf": 9,
+    "footprintSf": 12437,
+    "parkingSpaces": 1,
+    "patioCandidateSf": 0,
+    "detections": [
+      {
+        "label": "parking space",
+        "confidence": 0.525,
+        "polygon": [
+          [
+            1024.0,
+            367.6
+          ],
+          [
+            1024.0,
+            755.0
+          ],
+          [
+            680.4,
+            755.0
+          ],
+          [
+            680.4,
+            367.6
+          ],
+          [
+            1024.0,
+            367.6
+          ]
+        ]
+      }
+    ]
+  },
+  "findings": [
+    {
+      "id": "costar-hood",
+      "kind": "hood",
+      "status": "unknown",
+      "confidence": 0.4,
+      "evidence": "The building's listing mentions a hood, but not for this suite.",
+      "source": "costar-notes"
+    },
+    {
+      "id": "4205077-vision-hood",
+      "kind": "hood",
+      "status": "unknown",
+      "confidence": 0.1,
+      "evidence": "All images show only the exterior walkway and parking lot of the strip mall, so no cooking area is visible.",
+      "source": "matterport-vision"
+    },
+    {
+      "id": "4205077-vision-kitchen-line",
+      "kind": "kitchen-line",
+      "status": "unknown",
+      "confidence": 0.1,
+      "evidence": "No interior kitchen or prep area is visible in any of the exterior views.",
+      "source": "matterport-vision"
+    },
+    {
+      "id": "4205077-vision-walk-in",
+      "kind": "walk-in",
+      "status": "unknown",
+      "confidence": 0.1,
+      "evidence": "No interior back-of-house area is shown, so a walk-in cooler or freezer cannot be assessed.",
+      "source": "matterport-vision"
+    },
+    {
+      "id": "4205077-vision-restrooms",
+      "kind": "restrooms",
+      "status": "unknown",
+      "confidence": 0.1,
+      "evidence": "No restroom doors or fixtures are visible in the exterior-only images.",
+      "source": "matterport-vision"
+    },
+    {
+      "id": "4205077-vision-grease-trap",
+      "kind": "grease-trap",
+      "status": "unknown",
+      "confidence": 0.1,
+      "evidence": "No floor sink or grease interceptor lid is identifiable on the exterior concrete walkway or parking lot.",
+      "source": "matterport-vision"
+    },
+    {
+      "id": "4205077-vision-electrical",
+      "kind": "electrical",
+      "status": "unknown",
+      "confidence": 0.2,
+      "evidence": "Only a small metal cover plate low on a stucco column is visible, with no identifiable electrical panel or service gear.",
+      "source": "matterport-vision"
+    },
+    {
+      "id": "4205077-vision-storefront",
+      "kind": "storefront",
+      "status": "present",
+      "confidence": 0.95,
+      "evidence": "Teal-framed storefront glazing with an open glass entry door faces the covered walkway and parking lot, with tenant signage on the fascia beyond.",
+      "source": "matterport-vision",
+      "imagePath": "/sites/4205077/before-t6w0c3qs67rc01bh3inmyra6d.jpg",
+      "position": {
+        "x": -0.064,
+        "y": 0.086,
+        "z": 1.582
+      },
+      "panoId": "t6w0c3qs67rc01bh3inmyra6d"
+    },
+    {
+      "id": "4205077-vision-ada",
+      "kind": "ada",
+      "status": "present",
+      "confidence": 0.85,
+      "evidence": "A concrete ramp with a green metal handrail connects the parking lot to the covered storefront walkway.",
+      "source": "matterport-vision",
+      "imagePath": "/sites/4205077/vision-3dxye61raxezssie04r3weryc.jpg",
+      "position": {
+        "x": -25.219,
+        "y": -19.666,
+        "z": 1.623
+      },
+      "panoId": "3dxye61raxezssie04r3weryc"
+    }
+  ],
+  "headline": "Second-generation suite; $30.6/SF NNN.",
+  "sources": [
+    {
+      "label": "CoStar hackathon data kit (Nov 2026)"
+    }
+  ]
+}

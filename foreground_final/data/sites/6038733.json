@@ -1,0 +1,695 @@
+{
+  "id": "6038733",
+  "address": "3150 Wilshire Blvd",
+  "city": "Los Angeles",
+  "state": "CA",
+  "postcode": "90010",
+  "lat": 34.0614245,
+  "lng": -118.2909395,
+  "buildingName": "Nari Koreatown",
+  "propertyType": "Multifamily",
+  "propertySubtype": "MultiFamily_Apartments",
+  "buildingSf": 391304.0,
+  "yearBuilt": 2014,
+  "stories": 18,
+  "zoning": "LAC4",
+  "photoUrl": "https://ahprd1cdn.csgpimgs.com/i2/vFoB-y4KOQAbn8nwH-XvpiyfayMuLW9n6808XF-ViVw/112/image.jpg",
+  "space": {
+    "spaceId": 22165591,
+    "listingId": 42742989,
+    "suite": "112",
+    "floor": "FirstFloor",
+    "sf": 1879.0,
+    "sfMin": 1879.0,
+    "rentPerSfYr": 48.0,
+    "serviceType": "NNN",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "notes": "Prime ±1,879 SF ground-floor retail space (former Starbucks) available at NARI, a luxury mixed-use development featuring 464 residential apartments at the prominent intersection of Wilshire Boulevard and Vermont Avenue in Koreatown.\n\nIdeal for coffee shops, cafés, and restaurant concepts, this restaurant-ready space offers a shared grease interceptor, 225-amp/480V electrical service, 2-inch gas meter, and existing HVAC.\n\nLocated directly across from the Wilshire/Vermont Metro Station (B and D Lines), the property benefits from excellent transit accessibility, strong street visibility, and a dense residential and daytime employment population.\n\nNARI features on-site structured parking and established co-tenants including Kura Sushi, The Kickin' Crab, Buffalo Wild Wings, Wells Fargo, and Hot",
+    "availableOn": "2026-10-19",
+    "floorPlanUrl": null,
+    "restaurantKeywords": [
+      "café",
+      "coffee",
+      "grease",
+      "restaurant"
+    ]
+  },
+  "otherSpaces": [],
+  "tenantHistory": [
+    {
+      "name": "Fatburger",
+      "industry": "AccommodationAndFoodServices",
+      "isFood": true,
+      "moveIn": "2014-07-01",
+      "moveOut": "2025-03-29",
+      "years": 10.7,
+      "suite": null,
+      "sameSuite": false,
+      "current": false,
+      "outcome": "moved",
+      "matchBasis": "profile.industryType=17, bio-regex"
+    },
+    {
+      "name": "Pizza Rev",
+      "industry": "AccommodationAndFoodServices",
+      "isFood": true,
+      "moveIn": "2014-08-01",
+      "moveOut": "2018-06-30",
+      "years": 3.9,
+      "suite": null,
+      "sameSuite": false,
+      "current": false,
+      "outcome": "moved",
+      "matchBasis": "profile.industryType=17, name-regex, bio-regex"
+    },
+    {
+      "name": "Jimmy John's",
+      "industry": "AccommodationAndFoodServices",
+      "isFood": true,
+      "moveIn": "2016-07-18",
+      "moveOut": "2019-12-28",
+      "years": 3.4,
+      "suite": null,
+      "sameSuite": false,
+      "current": false,
+      "outcome": "moved",
+      "matchBasis": "profile.industryType=17, name-regex, bio-regex"
+    },
+    {
+      "name": "Buffalo Wild Wings",
+      "industry": "AccommodationAndFoodServices",
+      "isFood": true,
+      "moveIn": "2017-11-18",
+      "moveOut": null,
+      "years": 9.0,
+      "suite": null,
+      "sameSuite": false,
+      "current": true,
+      "outcome": "current",
+      "matchBasis": "profile.industryType=17, name-regex, bio-regex"
+    },
+    {
+      "name": "Starbucks",
+      "industry": "AccommodationAndFoodServices",
+      "isFood": true,
+      "moveIn": "2020-11-10",
+      "moveOut": "2025-10-31",
+      "years": 5.0,
+      "suite": null,
+      "sameSuite": false,
+      "current": false,
+      "outcome": "moved",
+      "matchBasis": "profile.industryType=17, name-regex, bio-regex"
+    },
+    {
+      "name": "Kura Sushi",
+      "industry": "AccommodationAndFoodServices",
+      "isFood": true,
+      "moveIn": "2020-11-10",
+      "moveOut": null,
+      "years": 6.0,
+      "suite": "114",
+      "sameSuite": false,
+      "current": true,
+      "outcome": "current",
+      "matchBasis": "profile.industryType=17, name-regex, bio-regex"
+    },
+    {
+      "name": "The Kickin' Crab",
+      "industry": "AccommodationAndFoodServices",
+      "isFood": true,
+      "moveIn": "2024-12-12",
+      "moveOut": "2025-12-31",
+      "years": 1.1,
+      "suite": "F-116",
+      "sameSuite": false,
+      "current": false,
+      "outcome": "closed",
+      "matchBasis": "profile.industryType=17"
+    }
+  ],
+  "sales": [
+    {
+      "date": "2022-11-16",
+      "priceUsd": 235000000,
+      "note": "Confirmed"
+    }
+  ],
+  "matterport": {
+    "modelId": "JdstXeubbif",
+    "defurnishedViewId": "fgecs83z00770p9enytc8idpb",
+    "scanOfExactSuite": false,
+    "scanName": "Studio - 768SF",
+    "areaSf": 680,
+    "rooms": [
+      {
+        "label": "Unlabeled space",
+        "areaSf": 429.9,
+        "widthFt": null,
+        "depthFt": null,
+        "heightFt": 9.5,
+        "polygon": [
+          [
+            1.358,
+            1.204
+          ],
+          [
+            1.368,
+            2.12
+          ],
+          [
+            1.618,
+            2.118
+          ],
+          [
+            1.635,
+            3.636
+          ],
+          [
+            8.25,
+            3.566
+          ],
+          [
+            8.17,
+            -3.936
+          ],
+          [
+            5.156,
+            -3.904
+          ],
+          [
+            5.189,
+            -0.787
+          ],
+          [
+            5.197,
+            -0.128
+          ],
+          [
+            3.03,
+            -0.105
+          ],
+          [
+            3.023,
+            -0.764
+          ],
+          [
+            1.648,
+            -0.749
+          ],
+          [
+            -1.161,
+            -0.719
+          ],
+          [
+            -1.141,
+            1.23
+          ]
+        ]
+      },
+      {
+        "label": "Unlabeled space",
+        "areaSf": 110.2,
+        "widthFt": 11.4,
+        "depthFt": 9.7,
+        "heightFt": 9.6,
+        "polygon": [
+          [
+            5.156,
+            -3.904
+          ],
+          [
+            1.615,
+            -3.866
+          ],
+          [
+            1.648,
+            -0.749
+          ],
+          [
+            3.023,
+            -0.764
+          ],
+          [
+            5.189,
+            -0.787
+          ]
+        ]
+      },
+      {
+        "label": "Unlabeled space",
+        "areaSf": 82.7,
+        "widthFt": 8.7,
+        "depthFt": 9.7,
+        "heightFt": 8.6,
+        "polygon": [
+          [
+            -1.161,
+            -0.719
+          ],
+          [
+            -1.194,
+            -3.836
+          ],
+          [
+            0.471,
+            -3.854
+          ],
+          [
+            0.48,
+            -2.962
+          ]
+        ]
+      },
+      {
+        "label": "Unlabeled space",
+        "areaSf": 46.6,
+        "widthFt": null,
+        "depthFt": null,
+        "heightFt": 8.5,
+        "polygon": [
+          [
+            1.358,
+            1.204
+          ],
+          [
+            1.368,
+            2.12
+          ],
+          [
+            0.851,
+            2.126
+          ],
+          [
+            0.868,
+            3.645
+          ],
+          [
+            -1.115,
+            3.666
+          ],
+          [
+            -1.131,
+            2.162
+          ],
+          [
+            -0.132,
+            2.151
+          ]
+        ]
+      }
+    ],
+    "panos": [
+      {
+        "id": "u2ee90d2m8m5b91wrtsk2padb",
+        "position": {
+          "x": 0.327,
+          "y": 1.158,
+          "z": 1.315
+        },
+        "label": "1"
+      },
+      {
+        "id": "1im856hxnzyb2b3ewwdnn2r6b",
+        "position": {
+          "x": 7.778,
+          "y": 2.078,
+          "z": 1.319
+        },
+        "label": "5"
+      },
+      {
+        "id": "727k69sys5kcx9xz2rdaaq5fd",
+        "position": {
+          "x": 5.593,
+          "y": 2.22,
+          "z": 1.312
+        },
+        "label": "6",
+        "rotation": {
+          "x": -0.007775882724672556,
+          "y": -0.010486754588782787,
+          "z": 0.011945308186113834,
+          "w": 0.999843418598175
+        },
+        "skybox": [
+          "/sites/6038733/pano/727k69sys5kcx9xz2rdaaq5fd/f0.jpg",
+          "/sites/6038733/pano/727k69sys5kcx9xz2rdaaq5fd/f1.jpg",
+          "/sites/6038733/pano/727k69sys5kcx9xz2rdaaq5fd/f2.jpg",
+          "/sites/6038733/pano/727k69sys5kcx9xz2rdaaq5fd/f3.jpg",
+          "/sites/6038733/pano/727k69sys5kcx9xz2rdaaq5fd/f4.jpg",
+          "/sites/6038733/pano/727k69sys5kcx9xz2rdaaq5fd/f5.jpg"
+        ],
+        "skyboxEmpty": [
+          "/sites/6038733/pano/727k69sys5kcx9xz2rdaaq5fd/empty/f0.jpg",
+          "/sites/6038733/pano/727k69sys5kcx9xz2rdaaq5fd/empty/f1.jpg",
+          "/sites/6038733/pano/727k69sys5kcx9xz2rdaaq5fd/empty/f2.jpg",
+          "/sites/6038733/pano/727k69sys5kcx9xz2rdaaq5fd/empty/f3.jpg",
+          "/sites/6038733/pano/727k69sys5kcx9xz2rdaaq5fd/empty/f4.jpg",
+          "/sites/6038733/pano/727k69sys5kcx9xz2rdaaq5fd/empty/f5.jpg"
+        ]
+      },
+      {
+        "id": "93x8u4ahzwhhgz5bqm5wh5pdd",
+        "position": {
+          "x": -0.011,
+          "y": 0.001,
+          "z": 1.326
+        },
+        "label": "0"
+      },
+      {
+        "id": "hma5meiehpm0h31ku1u45p7kb",
+        "position": {
+          "x": 2.273,
+          "y": -0.763,
+          "z": 1.296
+        },
+        "label": "12"
+      },
+      {
+        "id": "hw57r2neqf0ik79xxykq165ua",
+        "position": {
+          "x": 2.208,
+          "y": -2.062,
+          "z": 1.299
+        },
+        "label": "11"
+      },
+      {
+        "id": "ex6s5q0qbeqgfih567e85763d",
+        "position": {
+          "x": 0.216,
+          "y": 2.746,
+          "z": 1.332
+        },
+        "label": "2",
+        "rotation": {
+          "x": -0.010149058885872364,
+          "y": -0.007199693936854601,
+          "z": 0.9712813496589661,
+          "w": 0.23760844767093658
+        },
+        "skybox": [
+          "/sites/6038733/pano/ex6s5q0qbeqgfih567e85763d/f0.jpg",
+          "/sites/6038733/pano/ex6s5q0qbeqgfih567e85763d/f1.jpg",
+          "/sites/6038733/pano/ex6s5q0qbeqgfih567e85763d/f2.jpg",
+          "/sites/6038733/pano/ex6s5q0qbeqgfih567e85763d/f3.jpg",
+          "/sites/6038733/pano/ex6s5q0qbeqgfih567e85763d/f4.jpg",
+          "/sites/6038733/pano/ex6s5q0qbeqgfih567e85763d/f5.jpg"
+        ],
+        "skyboxEmpty": [
+          "/sites/6038733/pano/ex6s5q0qbeqgfih567e85763d/empty/f0.jpg",
+          "/sites/6038733/pano/ex6s5q0qbeqgfih567e85763d/empty/f1.jpg",
+          "/sites/6038733/pano/ex6s5q0qbeqgfih567e85763d/empty/f2.jpg",
+          "/sites/6038733/pano/ex6s5q0qbeqgfih567e85763d/empty/f3.jpg",
+          "/sites/6038733/pano/ex6s5q0qbeqgfih567e85763d/empty/f4.jpg",
+          "/sites/6038733/pano/ex6s5q0qbeqgfih567e85763d/empty/f5.jpg"
+        ]
+      },
+      {
+        "id": "mxnfkwtf33ddnzsr2te3yy4qc",
+        "position": {
+          "x": 5.427,
+          "y": 0.373,
+          "z": 1.298
+        },
+        "label": "7"
+      },
+      {
+        "id": "unnczfx8mme7ug6zg46apuatd",
+        "position": {
+          "x": 0.128,
+          "y": -1.632,
+          "z": 1.333
+        },
+        "label": "14",
+        "rotation": {
+          "x": -0.008886096067726612,
+          "y": 0.0022537242621183395,
+          "z": -0.7850503921508789,
+          "w": 0.6193641424179077
+        },
+        "skybox": [
+          "/sites/6038733/pano/unnczfx8mme7ug6zg46apuatd/f0.jpg",
+          "/sites/6038733/pano/unnczfx8mme7ug6zg46apuatd/f1.jpg",
+          "/sites/6038733/pano/unnczfx8mme7ug6zg46apuatd/f2.jpg",
+          "/sites/6038733/pano/unnczfx8mme7ug6zg46apuatd/f3.jpg",
+          "/sites/6038733/pano/unnczfx8mme7ug6zg46apuatd/f4.jpg",
+          "/sites/6038733/pano/unnczfx8mme7ug6zg46apuatd/f5.jpg"
+        ],
+        "skyboxEmpty": [
+          "/sites/6038733/pano/unnczfx8mme7ug6zg46apuatd/empty/f0.jpg",
+          "/sites/6038733/pano/unnczfx8mme7ug6zg46apuatd/empty/f1.jpg",
+          "/sites/6038733/pano/unnczfx8mme7ug6zg46apuatd/empty/f2.jpg",
+          "/sites/6038733/pano/unnczfx8mme7ug6zg46apuatd/empty/f3.jpg",
+          "/sites/6038733/pano/unnczfx8mme7ug6zg46apuatd/empty/f4.jpg",
+          "/sites/6038733/pano/unnczfx8mme7ug6zg46apuatd/empty/f5.jpg"
+        ]
+      },
+      {
+        "id": "byxchmu6wair074ifhq8kp54c",
+        "position": {
+          "x": 3.118,
+          "y": 2.473,
+          "z": 1.285
+        },
+        "label": "4"
+      },
+      {
+        "id": "kygnbd3pu4dxue8n1m3waq84b",
+        "position": {
+          "x": 7.457,
+          "y": -3.165,
+          "z": 1.323
+        },
+        "label": "9",
+        "rotation": {
+          "x": -0.006040668115019798,
+          "y": -0.003239100333303213,
+          "z": 0.45940813422203064,
+          "w": 0.8881988525390625
+        },
+        "skybox": [
+          "/sites/6038733/pano/kygnbd3pu4dxue8n1m3waq84b/f0.jpg",
+          "/sites/6038733/pano/kygnbd3pu4dxue8n1m3waq84b/f1.jpg",
+          "/sites/6038733/pano/kygnbd3pu4dxue8n1m3waq84b/f2.jpg",
+          "/sites/6038733/pano/kygnbd3pu4dxue8n1m3waq84b/f3.jpg",
+          "/sites/6038733/pano/kygnbd3pu4dxue8n1m3waq84b/f4.jpg",
+          "/sites/6038733/pano/kygnbd3pu4dxue8n1m3waq84b/f5.jpg"
+        ],
+        "skyboxEmpty": [
+          "/sites/6038733/pano/kygnbd3pu4dxue8n1m3waq84b/empty/f0.jpg",
+          "/sites/6038733/pano/kygnbd3pu4dxue8n1m3waq84b/empty/f1.jpg",
+          "/sites/6038733/pano/kygnbd3pu4dxue8n1m3waq84b/empty/f2.jpg",
+          "/sites/6038733/pano/kygnbd3pu4dxue8n1m3waq84b/empty/f3.jpg",
+          "/sites/6038733/pano/kygnbd3pu4dxue8n1m3waq84b/empty/f4.jpg",
+          "/sites/6038733/pano/kygnbd3pu4dxue8n1m3waq84b/empty/f5.jpg"
+        ]
+      },
+      {
+        "id": "zeaa32zyid07s99hni9q6ra4a",
+        "position": {
+          "x": 5.189,
+          "y": -2.592,
+          "z": 1.295
+        },
+        "label": "10"
+      },
+      {
+        "id": "q75u62hbzbdu37dpq36nf5wna",
+        "position": {
+          "x": 2.682,
+          "y": 0.355,
+          "z": 1.292
+        },
+        "label": "3",
+        "rotation": {
+          "x": -0.0034347902983427048,
+          "y": 0.005155035760253668,
+          "z": 0.13438791036605835,
+          "w": 0.9909094572067261
+        },
+        "skybox": [
+          "/sites/6038733/pano/q75u62hbzbdu37dpq36nf5wna/f0.jpg",
+          "/sites/6038733/pano/q75u62hbzbdu37dpq36nf5wna/f1.jpg",
+          "/sites/6038733/pano/q75u62hbzbdu37dpq36nf5wna/f2.jpg",
+          "/sites/6038733/pano/q75u62hbzbdu37dpq36nf5wna/f3.jpg",
+          "/sites/6038733/pano/q75u62hbzbdu37dpq36nf5wna/f4.jpg",
+          "/sites/6038733/pano/q75u62hbzbdu37dpq36nf5wna/f5.jpg"
+        ],
+        "skyboxEmpty": [
+          "/sites/6038733/pano/q75u62hbzbdu37dpq36nf5wna/empty/f0.jpg",
+          "/sites/6038733/pano/q75u62hbzbdu37dpq36nf5wna/empty/f1.jpg",
+          "/sites/6038733/pano/q75u62hbzbdu37dpq36nf5wna/empty/f2.jpg",
+          "/sites/6038733/pano/q75u62hbzbdu37dpq36nf5wna/empty/f3.jpg",
+          "/sites/6038733/pano/q75u62hbzbdu37dpq36nf5wna/empty/f4.jpg",
+          "/sites/6038733/pano/q75u62hbzbdu37dpq36nf5wna/empty/f5.jpg"
+        ]
+      },
+      {
+        "id": "2hczu58mu99gtses16wy0ah0d",
+        "position": {
+          "x": 1.286,
+          "y": -2.135,
+          "z": 1.314
+        },
+        "label": "13"
+      },
+      {
+        "id": "4sa68zqcyr1dufpzx2xmxsuzd",
+        "position": {
+          "x": 6.581,
+          "y": -1.172,
+          "z": 1.307
+        },
+        "label": "8"
+      }
+    ],
+    "beforeAfter": [
+      {
+        "panoId": "kygnbd3pu4dxue8n1m3waq84b",
+        "before": "/sites/6038733/before-kygnbd3pu4dxue8n1m3waq84b.jpg",
+        "after": "/sites/6038733/after-kygnbd3pu4dxue8n1m3waq84b.jpg",
+        "caption": "Dining area"
+      },
+      {
+        "panoId": "unnczfx8mme7ug6zg46apuatd",
+        "before": "/sites/6038733/before-unnczfx8mme7ug6zg46apuatd.jpg",
+        "after": "/sites/6038733/after-unnczfx8mme7ug6zg46apuatd.jpg",
+        "caption": "Dining area"
+      }
+    ],
+    "photos": [
+      "/sites/6038733/photo-1.jpg",
+      "/sites/6038733/photo-2.jpg",
+      "/sites/6038733/photo-3.jpg"
+    ],
+    "floorplanImage": "/sites/6038733/floorplan.jpg",
+    "description": "Modern 1-bed, 1-bath high-rise residence at 3150 Wilshire Blvd, Los Angeles, featuring floor-to-ceiling windows with sweeping panoramic city views."
+  },
+  "aerial": {
+    "widthPx": 1024,
+    "heightPx": 1024,
+    "orthoPath": "/sites/6038733/aerial.jpg",
+    "obliquePath": "/sites/6038733/oblique.jpg",
+    "captureDate": "2025-12-01",
+    "extentM": 120.0,
+    "gsdM": 0.1172,
+    "vehicleCount": null,
+    "hardscapeSf": 938,
+    "footprintSf": 79447,
+    "parkingSpaces": 0,
+    "patioCandidateSf": 0,
+    "detections": []
+  },
+  "findings": [
+    {
+      "id": "costar-grease-trap",
+      "kind": "grease-trap",
+      "status": "present",
+      "confidence": 0.6,
+      "evidence": "Listing notes mention a grease trap or interceptor.",
+      "source": "costar-notes"
+    },
+    {
+      "id": "6038733-vision-hood",
+      "kind": "hood",
+      "status": "absent",
+      "confidence": 0.82,
+      "evidence": "The gas range in the kitchen has only a residential over-the-range microwave above it, with no commercial exhaust hood or canopy.",
+      "source": "matterport-vision",
+      "imagePath": "/sites/6038733/vision-727k69sys5kcx9xz2rdaaq5fd.jpg",
+      "position": {
+        "x": 5.593,
+        "y": 2.22,
+        "z": 1.312
+      },
+      "panoId": "727k69sys5kcx9xz2rdaaq5fd"
+    },
+    {
+      "id": "6038733-vision-kitchen-line",
+      "kind": "kitchen-line",
+      "status": "present",
+      "confidence": 0.55,
+      "evidence": "A residential-grade kitchen is installed with a gas range, double sink, dishwasher, refrigerator and island counter, though none of it is commercial equipment.",
+      "source": "matterport-vision",
+      "imagePath": "/sites/6038733/vision-727k69sys5kcx9xz2rdaaq5fd.jpg",
+      "position": {
+        "x": 5.593,
+        "y": 2.22,
+        "z": 1.312
+      },
+      "panoId": "727k69sys5kcx9xz2rdaaq5fd"
+    },
+    {
+      "id": "6038733-vision-walk-in",
+      "kind": "walk-in",
+      "status": "unknown",
+      "confidence": 0.6,
+      "evidence": "Only a freestanding residential side-by-side refrigerator is visible; no insulated walk-in box or heavy refrigerated door appears in any view.",
+      "source": "matterport-vision"
+    },
+    {
+      "id": "6038733-vision-restrooms",
+      "kind": "restrooms",
+      "status": "present",
+      "confidence": 0.95,
+      "evidence": "A bathroom with a toilet, undermount sink vanity and a glass-door tub/shower is visible in the mirror reflection.",
+      "source": "matterport-vision",
+      "imagePath": "/sites/6038733/before-unnczfx8mme7ug6zg46apuatd.jpg",
+      "position": {
+        "x": 0.128,
+        "y": -1.632,
+        "z": 1.333
+      },
+      "panoId": "unnczfx8mme7ug6zg46apuatd"
+    },
+    {
+      "id": "6038733-vision-grease-trap",
+      "kind": "grease-trap",
+      "status": "unknown",
+      "confidence": 0.6,
+      "evidence": "No floor sink or grease interceptor lid is visible; the only floor fitting is a small round cover by the window that looks like a floor outlet.",
+      "source": "matterport-vision"
+    },
+    {
+      "id": "6038733-vision-electrical",
+      "kind": "electrical",
+      "status": "unknown",
+      "confidence": 0.45,
+      "evidence": "A white wall-mounted enclosure cover in the closet appears to be a low-voltage media panel rather than a confirmed breaker panel or service gear.",
+      "source": "matterport-vision"
+    },
+    {
+      "id": "6038733-vision-storefront",
+      "kind": "storefront",
+      "status": "absent",
+      "confidence": 0.8,
+      "evidence": "The glazing is high-rise curtain wall many storeys above the street, looking down on rooftops, with no street-level storefront, entry door or signage wall.",
+      "source": "matterport-vision",
+      "imagePath": "/sites/6038733/before-kygnbd3pu4dxue8n1m3waq84b.jpg",
+      "position": {
+        "x": 7.457,
+        "y": -3.165,
+        "z": 1.323
+      },
+      "panoId": "kygnbd3pu4dxue8n1m3waq84b"
+    },
+    {
+      "id": "6038733-vision-ada",
+      "kind": "ada",
+      "status": "unknown",
+      "confidence": 0.55,
+      "evidence": "The bathroom shows towel bars but no clear grab bars, and no ramps or other accessibility features can be confirmed.",
+      "source": "matterport-vision"
+    }
+  ],
+  "headline": "Second-generation suite, non-vented; $48/SF NNN.",
+  "sources": [
+    {
+      "label": "CoStar hackathon data kit (Nov 2026)"
+    }
+  ]
+}

@@ -1,0 +1,5859 @@
+[
+ {
+  "propertyId": 1018657,
+  "buildingName": null,
+  "address": "2600 Travis St",
+  "city": "Houston",
+  "state": "TX",
+  "postcode": "77006",
+  "market": "Houston",
+  "lat": 29.74587,
+  "lng": -95.375417,
+  "propertyType": "GeneralRetail",
+  "propertySubtype": "GeneralRetail_Freestanding",
+  "buildingSF": 36932.0,
+  "buildingSFBasis": "RBA",
+  "stories": 2,
+  "yearBuilt": 1960,
+  "yearRenovated": 2019,
+  "parkingRatio": null,
+  "zoning": "N/Ap Houston",
+  "primarySubmarketId": 4321,
+  "primaryPhotoUri": "https://ahprd1cdn.csgpimgs.com/i2/_fMjYB-LRQqsWcJ4lFAuLzQ3lyfJS33NxLzNv2_WiVY/112/image.jpg",
+  "availableSpaceCount": 4,
+  "availableSFSmallest": 2946.0,
+  "availableSFLargest": 9889.0,
+  "minDivisibleSF": 2127.0,
+  "askingRentPerSfYrLow": 37.0,
+  "askingRentPerSfYrHigh": 45.0,
+  "askingRentServiceTypes": [
+   "NNN"
+  ],
+  "spacesWithRent": 4,
+  "listingIds": [
+   4105591
+  ],
+  "spaces": [
+   {
+    "spaceId": 21963212,
+    "listingId": 4105591,
+    "listingType": "PropertyDirectSpaceForLease",
+    "suite": "104",
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "sfMin": 2946.0,
+    "sfMax": 2946.0,
+    "sfMaxContiguous": 2946.0,
+    "rentPerSfYrLow": 45.0,
+    "rentPerSfYrHigh": 45.0,
+    "rentAsQuoted": {
+     "rateLow": 45.0,
+     "rateHigh": 45.0,
+     "rateBasis": "Yearly"
+    },
+    "serviceType": "TripleNet",
+    "serviceTypeShort": "NNN",
+    "monetaryUnit": "UnitedStatesDollar",
+    "isLeasePending": false,
+    "dateOnMarket": "2026-09-24",
+    "availableOnDate": "2026-09-24",
+    "leaseTermType": "Negotiable",
+    "floorPlanUri": "https://ahprd1cdn.csgpimgs.com/i2/yoNMuPf0XAO_5r0wueWTttE8Ccr3QGZzyomPL2BjaWY/112/image.svg",
+    "spaceNotes": "2nd generation restaurant/hard corner.",
+    "restaurantKeywordsInSpaceNotes": [
+     "2nd gen",
+     "restaurant"
+    ],
+    "restaurantKeywordsInListingNotes": [
+     "dining",
+     "hood",
+     "restaurant",
+     "second-gen"
+    ],
+    "suiteTenantHistory": [
+     {
+      "occupancyId": 276927771,
+      "name": "Gage Lounge",
+      "industry": "AccommodationAndFoodServices",
+      "moveIn": "2020-08-26",
+      "moveOut": "2021-08-19",
+      "durationYears": 1.0,
+      "isFood": true
+     },
+     {
+      "occupancyId": 338363261,
+      "name": "Mezcal Houston",
+      "industry": "AccommodationAndFoodServices",
+      "moveIn": "2025-02-01",
+      "moveOut": "2026-10-04",
+      "durationYears": 1.7,
+      "isFood": true
+     }
+    ],
+    "matterportModelIdsForSuite": [
+     "4H2JSnQ3wSj"
+    ]
+   },
+   {
+    "spaceId": 12873016,
+    "listingId": 4105591,
+    "listingType": "PropertyDirectSpaceForLease",
+    "suite": "106",
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "sfMin": 2554.0,
+    "sfMax": 4681.0,
+    "sfMaxContiguous": 4681.0,
+    "rentPerSfYrLow": 37.0,
+    "rentPerSfYrHigh": 37.0,
+    "rentAsQuoted": {
+     "rateLow": 37.0,
+     "rateHigh": 37.0,
+     "rateBasis": "Yearly"
+    },
+    "serviceType": "TripleNet",
+    "serviceTypeShort": "NNN",
+    "monetaryUnit": "UnitedStatesDollar",
+    "isLeasePending": false,
+    "dateOnMarket": "2018-08-13",
+    "availableOnDate": "2018-08-13",
+    "leaseTermType": "Negotiable",
+    "floorPlanUri": null,
+    "spaceNotes": "2nd generation hair salon.",
+    "restaurantKeywordsInSpaceNotes": [
+     "2nd gen"
+    ],
+    "restaurantKeywordsInListingNotes": [
+     "dining",
+     "hood",
+     "restaurant",
+     "second-gen"
+    ],
+    "suiteTenantHistory": [],
+    "matterportModelIdsForSuite": []
+   },
+   {
+    "spaceId": 18035986,
+    "listingId": 4105591,
+    "listingType": "PropertyDirectSpaceForLease",
+    "suite": "107",
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "sfMin": 2127.0,
+    "sfMax": 4681.0,
+    "sfMaxContiguous": 4681.0,
+    "rentPerSfYrLow": 37.0,
+    "rentPerSfYrHigh": 37.0,
+    "rentAsQuoted": {
+     "rateLow": 37.0,
+     "rateHigh": 37.0,
+     "rateBasis": "Yearly"
+    },
+    "serviceType": "TripleNet",
+    "serviceTypeShort": "NNN",
+    "monetaryUnit": "UnitedStatesDollar",
+    "isLeasePending": false,
+    "dateOnMarket": "2024-09-17",
+    "availableOnDate": "2018-08-13",
+    "leaseTermType": "Negotiable",
+    "floorPlanUri": null,
+    "spaceNotes": "2nd generation restaurant.",
+    "restaurantKeywordsInSpaceNotes": [
+     "2nd gen",
+     "restaurant"
+    ],
+    "restaurantKeywordsInListingNotes": [
+     "dining",
+     "hood",
+     "restaurant",
+     "second-gen"
+    ],
+    "suiteTenantHistory": [
+     {
+      "occupancyId": 235880421,
+      "name": "Ocean 11 Investments",
+      "industry": "Unknown",
+      "moveIn": "2018-07-05",
+      "moveOut": "2019-01-31",
+      "durationYears": 0.6,
+      "isFood": false
+     }
+    ],
+    "matterportModelIdsForSuite": []
+   },
+   {
+    "spaceId": 21053094,
+    "listingId": 4105591,
+    "listingType": "PropertyDirectSpaceForLease",
+    "suite": "100",
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "sfMin": 9889.0,
+    "sfMax": 9889.0,
+    "sfMaxContiguous": 9889.0,
+    "rentPerSfYrLow": 45.0,
+    "rentPerSfYrHigh": 45.0,
+    "rentAsQuoted": {
+     "rateLow": 45.0,
+     "rateHigh": 45.0,
+     "rateBasis": "Yearly"
+    },
+    "serviceType": "TripleNet",
+    "serviceTypeShort": "NNN",
+    "monetaryUnit": "UnitedStatesDollar",
+    "isLeasePending": false,
+    "dateOnMarket": "2026-05-08",
+    "availableOnDate": "2018-08-13",
+    "leaseTermType": "Negotiable",
+    "floorPlanUri": "https://ahprd1cdn.csgpimgs.com/i2/IGtNSHVkQADV0uIEQHysDcOlMlvQj2yC_qxUkeNuLTk/112/image.svg",
+    "spaceNotes": "Make your Midtown debut in a 9,889 SF move-in-ready, second-generation restaurant at 2600 Travis. The existing build-out offers an efficient path to opening and the scale to create a standout dining destination in one of Houston’s most active urban neighborhoods.",
+    "restaurantKeywordsInSpaceNotes": [
+     "dining",
+     "hood",
+     "restaurant",
+     "second-gen"
+    ],
+    "restaurantKeywordsInListingNotes": [
+     "dining",
+     "hood",
+     "restaurant",
+     "second-gen"
+    ],
+    "suiteTenantHistory": [
+     {
+      "occupancyId": 283932631,
+      "name": "Unknown tenant",
+      "industry": "AccommodationAndFoodServices",
+      "moveIn": "2021-06-11",
+      "moveOut": "2026-10-04",
+      "durationYears": 5.3,
+      "isFood": true
+     }
+    ],
+    "matterportModelIdsForSuite": [
+     "NxYn1owequw"
+    ]
+   }
+  ],
+  "matterportModelIds": [
+   "4H2JSnQ3wSj",
+   "NxYn1owequw"
+  ],
+  "matterportModels": [
+   {
+    "modelId": "4H2JSnQ3wSj",
+    "captions": [
+     "Suite 104 - 2,946SF"
+    ],
+    "sources": [
+     "property"
+    ]
+   },
+   {
+    "modelId": "NxYn1owequw",
+    "captions": [
+     "Suite 100 - 9,889SF"
+    ],
+    "sources": [
+     "property"
+    ]
+   }
+  ],
+  "matterportRetailCaptionModelIds": [
+   "4H2JSnQ3wSj",
+   "NxYn1owequw"
+  ],
+  "currentTenantCount": 2,
+  "totalOccupancyRecords": 27,
+  "matterportModelIdsMatchingAvailableSuite": [
+   "4H2JSnQ3wSj",
+   "NxYn1owequw"
+  ],
+  "foodHistory": [
+   {
+    "name": "Thienh Anh Sandwiches",
+    "moveIn": "2006-12-12",
+    "moveOut": "2016-05-31",
+    "suites": [
+     "A"
+    ],
+    "sfOccupied": 6928.0,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex"
+    ],
+    "occupancyIds": [
+     111773423
+    ],
+    "isCurrent": false,
+    "durationYears": 9.5,
+    "confidence": "high"
+   },
+   {
+    "name": "Gage Lounge",
+    "moveIn": "2015-10-06",
+    "moveOut": "2019-01-31",
+    "suites": [],
+    "sfOccupied": 500.0,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "matchBasis": [
+     "profile.industryType=17"
+    ],
+    "occupancyIds": [
+     135416741
+    ],
+    "isCurrent": false,
+    "durationYears": 3.3,
+    "confidence": "medium"
+   },
+   {
+    "name": "Reef",
+    "moveIn": "2019-02-01",
+    "moveOut": "2020-06-25",
+    "suites": [],
+    "sfOccupied": 11540.0,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "matchBasis": [
+     "profile.industryType=17"
+    ],
+    "occupancyIds": [
+     255323561
+    ],
+    "isCurrent": false,
+    "durationYears": 1.4,
+    "confidence": "medium"
+   },
+   {
+    "name": "Gage Lounge",
+    "moveIn": "2020-08-26",
+    "moveOut": "2021-08-19",
+    "suites": [
+     "104"
+    ],
+    "sfOccupied": 1200.0,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "matchBasis": [
+     "profile.industryType=17"
+    ],
+    "occupancyIds": [
+     276927771
+    ],
+    "isCurrent": false,
+    "durationYears": 1.0,
+    "confidence": "medium"
+   },
+   {
+    "name": "Unknown tenant (Accommodation/Food industry)",
+    "moveIn": "2021-06-11",
+    "moveOut": "2026-10-04",
+    "suites": [
+     "100"
+    ],
+    "sfOccupied": 9743.0,
+    "expirationReason": "UnableToConfirm",
+    "matchBasis": [
+     "occupancy.industryType=17"
+    ],
+    "occupancyIds": [
+     283932631
+    ],
+    "isCurrent": false,
+    "durationYears": 5.3,
+    "confidence": "medium"
+   },
+   {
+    "name": "Mezcal Houston",
+    "moveIn": "2025-02-01",
+    "moveOut": "2026-10-04",
+    "suites": [
+     "104"
+    ],
+    "sfOccupied": 2946.0,
+    "expirationReason": "ClosedLocationOrBankrupt",
+    "matchBasis": [
+     "profile.industryType=17",
+     "bio-regex"
+    ],
+    "occupancyIds": [
+     338363261
+    ],
+    "isCurrent": false,
+    "durationYears": 1.7,
+    "confidence": "high"
+   }
+  ],
+  "foodHistoryRecords": [
+   {
+    "occupancyId": 111773423,
+    "tenantLocationId": 4194659,
+    "name": "Thienh Anh Sandwiches",
+    "companyName": "Thienh Anh Sandwiches",
+    "moveIn": "2006-12-12",
+    "moveInSource": "moveInDate",
+    "moveOut": "2016-05-31",
+    "isCurrent": false,
+    "durationYears": 9.5,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "suites": [
+     "A"
+    ],
+    "sfOccupied": 6928.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex"
+    ],
+    "leaseSignDate": "2006-10-13",
+    "leaseExpirationDate": "2009-12-12"
+   },
+   {
+    "occupancyId": 118941814,
+    "tenantLocationId": 30846291,
+    "name": "Que Huong Food Market",
+    "companyName": "Que Huong Food Market",
+    "moveIn": "2011-02-10",
+    "moveInSource": "fromDate",
+    "moveOut": "2011-10-04",
+    "isCurrent": false,
+    "durationYears": 0.6,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "suites": [],
+    "sfOccupied": 500.0,
+    "leaseType": "Unknown",
+    "matchBasis": [
+     "name-regex-weak"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 135416741,
+    "tenantLocationId": 51715641,
+    "name": "Gage Lounge",
+    "companyName": "Gage Lounge",
+    "moveIn": "2015-10-06",
+    "moveInSource": "fromDate",
+    "moveOut": "2019-01-31",
+    "isCurrent": false,
+    "durationYears": 3.3,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "suites": [],
+    "sfOccupied": 500.0,
+    "leaseType": "Unknown",
+    "matchBasis": [
+     "profile.industryType=17"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 255323561,
+    "tenantLocationId": 153906991,
+    "name": "Reef",
+    "companyName": "Reef",
+    "moveIn": "2019-02-01",
+    "moveInSource": "moveInDate",
+    "moveOut": "2020-06-25",
+    "isCurrent": false,
+    "durationYears": 1.4,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "suites": [],
+    "sfOccupied": 11540.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "profile.industryType=17"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 276927771,
+    "tenantLocationId": 51715641,
+    "name": "Gage Lounge",
+    "companyName": "Gage Lounge",
+    "moveIn": "2020-08-26",
+    "moveInSource": "moveInDate",
+    "moveOut": "2021-08-19",
+    "isCurrent": false,
+    "durationYears": 1.0,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "suites": [
+     "104"
+    ],
+    "sfOccupied": 1200.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "profile.industryType=17"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 283932631,
+    "tenantLocationId": null,
+    "name": "Unknown tenant (Accommodation/Food industry)",
+    "companyName": null,
+    "moveIn": "2021-06-11",
+    "moveInSource": "moveInDate",
+    "moveOut": "2026-10-04",
+    "isCurrent": false,
+    "durationYears": 5.3,
+    "expirationReason": "UnableToConfirm",
+    "suites": [
+     "100"
+    ],
+    "sfOccupied": 9743.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "occupancy.industryType=17"
+    ],
+    "leaseSignDate": "2021-04-12",
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 338363261,
+    "tenantLocationId": 353802621,
+    "name": "Mezcal Houston",
+    "companyName": "Mezcal Houston",
+    "moveIn": "2025-02-01",
+    "moveInSource": "moveInDate",
+    "moveOut": "2026-10-04",
+    "isCurrent": false,
+    "durationYears": 1.7,
+    "expirationReason": "ClosedLocationOrBankrupt",
+    "suites": [
+     "104"
+    ],
+    "sfOccupied": 2946.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "profile.industryType=17",
+     "bio-regex"
+    ],
+    "leaseSignDate": "2025-02-01",
+    "leaseExpirationDate": null
+   }
+  ],
+  "foodHistoryCount": 6,
+  "foodPastCount": 6,
+  "foodCurrentCount": 0,
+  "foodWeakMatchCount": 1,
+  "saleCompCount": 3,
+  "lastSale": {
+   "compId": 2187502,
+   "soldDate": "2011-08-26",
+   "soldForPrice": null,
+   "salePriceStatus": "Unknown",
+   "entityCount": 1,
+   "isPortfolio": false,
+   "allocatedPrice": null,
+   "allocatedPriceStatus": "Unknown",
+   "monetaryUnit": "UnitedStatesDollar"
+  },
+  "activeSaleListings": [],
+  "foodHistoryArtifacts": [],
+  "foodClosedOrBankruptCount": 1,
+  "selection": {
+   "top12Rank": 1,
+   "score": 20,
+   "scoreReasons": [
+    "fit-space+rent",
+    "food-past=6",
+    "mp-of-available-suite",
+    "restaurant-keywords",
+    "retail-building"
+   ],
+   "rationale": "Hero site. Suite 104 is a 2nd-generation restaurant on a Midtown hard corner with its own Matterport scan; the same suite lost two food tenants in five years (Gage Lounge 1.0 yr, Mezcal Houston 1.7 yr, closed/bankrupt).",
+   "caveat": "Highest Houston rent in the set ($45 NNN). Suite 100 (9,889 SF, second scan) is too big for an independent. No sale price (Texas non-disclosure).",
+   "primarySpace": {
+    "spaceId": 21963212,
+    "listingId": 4105591,
+    "suite": "104",
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "sfMin": 2946.0,
+    "sfMax": 2946.0,
+    "rentPerSfYrLow": 45.0,
+    "rentPerSfYrHigh": 45.0,
+    "serviceType": "TripleNet",
+    "serviceTypeShort": "NNN",
+    "isLeasePending": false
+   },
+   "primarySpaceRentLabel": "$45.00/SF/yr NNN (quoted yearly)",
+   "primarySpaceAnnualRent": 132570,
+   "primarySpaceMonthlyRent": 11048,
+   "primaryMatterportModelId": "4H2JSnQ3wSj",
+   "matterportScanRelation": "exact-suite",
+   "fitSpaceCount": 3
+  }
+ },
+ {
+  "propertyId": 5697296,
+  "buildingName": "Barker Oaks Plaza",
+  "address": "14800 Westheimer Rd",
+  "city": "Houston",
+  "state": "TX",
+  "postcode": "77082",
+  "market": "Houston",
+  "lat": 29.7360111,
+  "lng": -95.6478026,
+  "propertyType": "GeneralRetail",
+  "propertySubtype": "GeneralRetail_Storefront",
+  "buildingSF": 30399.0,
+  "buildingSFBasis": "RBA",
+  "stories": 1,
+  "yearBuilt": 2007,
+  "yearRenovated": 2014,
+  "parkingRatio": 3.85,
+  "zoning": "None",
+  "primarySubmarketId": 4310,
+  "primaryPhotoUri": "https://ahprd1cdn.csgpimgs.com/i2/QNpwmr7FQOfgDy5YrXaO3DVbm7qGJHU8dSDno0ZD9N4/112/image.jpg",
+  "availableSpaceCount": 1,
+  "availableSFSmallest": 2894.0,
+  "availableSFLargest": 2894.0,
+  "minDivisibleSF": 2894.0,
+  "askingRentPerSfYrLow": 20.22,
+  "askingRentPerSfYrHigh": 20.22,
+  "askingRentServiceTypes": [
+   "NNN"
+  ],
+  "spacesWithRent": 1,
+  "listingIds": [
+   28289277
+  ],
+  "spaces": [
+   {
+    "spaceId": 20881675,
+    "listingId": 28289277,
+    "listingType": "PropertyDirectSpaceForLease",
+    "suite": "D",
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "sfMin": 2894.0,
+    "sfMax": 2894.0,
+    "sfMaxContiguous": 2894.0,
+    "rentPerSfYrLow": 20.22,
+    "rentPerSfYrHigh": 20.22,
+    "rentAsQuoted": {
+     "rateLow": 20.22,
+     "rateHigh": 20.22,
+     "rateBasis": "Yearly"
+    },
+    "serviceType": "TripleNet",
+    "serviceTypeShort": "NNN",
+    "monetaryUnit": "UnitedStatesDollar",
+    "isLeasePending": false,
+    "dateOnMarket": "2026-04-09",
+    "availableOnDate": "2026-10-01",
+    "leaseTermType": "Negotiable",
+    "floorPlanUri": "https://ahprd1cdn.csgpimgs.com/i2/Tw6TUC2I8a3Wf74kgKn0evmLtl1ADLTQPCi6geQG0Aw/112/image.jpg",
+    "spaceNotes": "SPECIAL LIMITED TIME OFFER: \n3 months FREE rent for qualified applicants. Call for details!\n\nRare opportunity to secure a fully built-out, second-generation restaurant on the high-traffic Westheimer Rd corridor. This 2,894 SF space is plug-and-play with an existing bar area, vent hood, and grease trap already in place—dramatically reducing startup time and cost.\n\nSurrounded by dense rooftops and established retail, this location offers immediate access to a strong customer base with excellent visibility and traffic exposure.\n\nAvailable October – Ideal for operators ready to move quickly\n\nHighlights:\n\nFully built-out restaurant space\nBar area \nVent hood & grease trap in place\nHigh-traffic Westheimer frontage\nMinimal TI needed = faster opening\nStrong co-tenancy & demographics\n\nPerfect for: F",
+    "restaurantKeywordsInSpaceNotes": [
+     "bar",
+     "dining",
+     "grease",
+     "hood",
+     "restaurant",
+     "second-gen"
+    ],
+    "restaurantKeywordsInListingNotes": [
+     "restaurant"
+    ],
+    "suiteTenantHistory": [
+     {
+      "occupancyId": 321079741,
+      "name": "Gayatri Bhavan",
+      "industry": "AccommodationAndFoodServices",
+      "moveIn": "2023-09-15",
+      "moveOut": "2026-09-30",
+      "durationYears": 3.0,
+      "isFood": true
+     }
+    ],
+    "matterportModelIdsForSuite": []
+   }
+  ],
+  "matterportModelIds": [
+   "zKgykpJUQ69"
+  ],
+  "matterportModels": [
+   {
+    "modelId": "zKgykpJUQ69",
+    "captions": [
+     "Suite B1"
+    ],
+    "sources": [
+     "listing 28289277",
+     "property"
+    ]
+   }
+  ],
+  "matterportRetailCaptionModelIds": [
+   "zKgykpJUQ69"
+  ],
+  "currentTenantCount": 11,
+  "totalOccupancyRecords": 52,
+  "matterportModelIdsMatchingAvailableSuite": [],
+  "foodHistory": [
+   {
+    "name": "Pinos Pizza",
+    "moveIn": "2011-02-12",
+    "moveOut": "2011-10-04",
+    "suites": [],
+    "sfOccupied": 500.0,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "matchBasis": [
+     "name-regex"
+    ],
+    "occupancyIds": [
+     118972954
+    ],
+    "isCurrent": false,
+    "durationYears": 0.6,
+    "confidence": "high"
+   },
+   {
+    "name": "Nardino Ristorante",
+    "moveIn": "2011-10-14",
+    "moveOut": "2013-08-05",
+    "suites": [],
+    "sfOccupied": 500.0,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "matchBasis": [
+     "name-regex"
+    ],
+    "occupancyIds": [
+     119632000
+    ],
+    "isCurrent": false,
+    "durationYears": 1.8,
+    "confidence": "high"
+   },
+   {
+    "name": "Turmeric Cuisine",
+    "moveIn": "2013-03-13",
+    "moveOut": "2018-01-12",
+    "suites": [],
+    "sfOccupied": 2894.0,
+    "expirationReason": "ClosedLocationOrBankrupt",
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex"
+    ],
+    "occupancyIds": [
+     121700778
+    ],
+    "isCurrent": false,
+    "durationYears": 4.8,
+    "confidence": "high"
+   },
+   {
+    "name": "Gayatri Bhavan",
+    "moveIn": "2013-10-03",
+    "moveOut": "2026-09-30",
+    "suites": [
+     "D"
+    ],
+    "sfOccupied": 2894.0,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "matchBasis": [
+     "profile.industryType=17",
+     "bio-regex"
+    ],
+    "occupancyIds": [
+     233907521,
+     321079741
+    ],
+    "isCurrent": false,
+    "durationYears": 13.0,
+    "confidence": "high"
+   }
+  ],
+  "foodHistoryRecords": [
+   {
+    "occupancyId": 118972954,
+    "tenantLocationId": 30892372,
+    "name": "Pinos Pizza",
+    "companyName": "Pinos Pizza",
+    "moveIn": "2011-02-12",
+    "moveInSource": "fromDate",
+    "moveOut": "2011-10-04",
+    "isCurrent": false,
+    "durationYears": 0.6,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "suites": [],
+    "sfOccupied": 500.0,
+    "leaseType": "Unknown",
+    "matchBasis": [
+     "name-regex"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 119632000,
+    "tenantLocationId": 31938113,
+    "name": "Nardino Ristorante",
+    "companyName": "Nardino Ristorante",
+    "moveIn": "2011-10-14",
+    "moveInSource": "fromDate",
+    "moveOut": "2013-08-05",
+    "isCurrent": false,
+    "durationYears": 1.8,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "suites": [],
+    "sfOccupied": 500.0,
+    "leaseType": "Unknown",
+    "matchBasis": [
+     "name-regex"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 121700778,
+    "tenantLocationId": 99563231,
+    "name": "Turmeric Cuisine",
+    "companyName": "Turmeric Cuisine",
+    "moveIn": "2013-03-13",
+    "moveInSource": "moveInDate",
+    "moveOut": "2018-01-12",
+    "isCurrent": false,
+    "durationYears": 4.8,
+    "expirationReason": "ClosedLocationOrBankrupt",
+    "suites": [],
+    "sfOccupied": 2894.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex"
+    ],
+    "leaseSignDate": "2013-02-11",
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 233907521,
+    "tenantLocationId": 126777271,
+    "name": "Gayatri Bhavan",
+    "companyName": "Gayatri Bhavan",
+    "moveIn": "2013-10-03",
+    "moveInSource": "moveInDate",
+    "moveOut": "2023-09-14",
+    "isCurrent": false,
+    "durationYears": 9.9,
+    "expirationReason": "MovingIntoSameBuilding",
+    "suites": [],
+    "sfOccupied": 2894.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "profile.industryType=17",
+     "bio-regex"
+    ],
+    "leaseSignDate": "2013-10-03",
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 285762411,
+    "tenantLocationId": 216602741,
+    "name": "Chi Grocery",
+    "companyName": "Chi Grocery",
+    "moveIn": "2021-07-01",
+    "moveInSource": "moveInDate",
+    "moveOut": null,
+    "isCurrent": true,
+    "durationYears": 5.4,
+    "expirationReason": null,
+    "suites": [
+     "L"
+    ],
+    "sfOccupied": 3000.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "name-regex-weak"
+    ],
+    "leaseSignDate": "2021-05-14",
+    "leaseExpirationDate": "2032-07-01"
+   },
+   {
+    "occupancyId": 321079741,
+    "tenantLocationId": 126777271,
+    "name": "Gayatri Bhavan",
+    "companyName": "Gayatri Bhavan",
+    "moveIn": "2023-09-15",
+    "moveInSource": "moveInDate",
+    "moveOut": "2026-09-30",
+    "isCurrent": false,
+    "durationYears": 3.0,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "suites": [
+     "D"
+    ],
+    "sfOccupied": 2894.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "profile.industryType=17",
+     "bio-regex"
+    ],
+    "leaseSignDate": "2023-08-16",
+    "leaseExpirationDate": null
+   }
+  ],
+  "foodHistoryCount": 4,
+  "foodPastCount": 4,
+  "foodCurrentCount": 0,
+  "foodWeakMatchCount": 1,
+  "saleCompCount": 0,
+  "lastSale": null,
+  "activeSaleListings": [],
+  "foodHistoryArtifacts": [],
+  "foodClosedOrBankruptCount": 1,
+  "selection": {
+   "top12Rank": 2,
+   "score": 16,
+   "scoreReasons": [
+    "fit-space+rent",
+    "food-past=4",
+    "mp-suite/retail-caption",
+    "restaurant-keywords",
+    "retail-building"
+   ],
+   "rationale": "Fully built 2nd-gen restaurant (hood, grease trap, bar, dining room) at $20.22 NNN with 3 months free rent offered. Suite D held Gayatri Bhavan for 13 years while three other restaurants in the plaza lasted 0.6-4.8 yrs: a survivor-vs-graveyard story.",
+   "caveat": "The Matterport scan is Suite B1 in the same plaza, not Suite D.",
+   "primarySpace": {
+    "spaceId": 20881675,
+    "listingId": 28289277,
+    "suite": "D",
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "sfMin": 2894.0,
+    "sfMax": 2894.0,
+    "rentPerSfYrLow": 20.22,
+    "rentPerSfYrHigh": 20.22,
+    "serviceType": "TripleNet",
+    "serviceTypeShort": "NNN",
+    "isLeasePending": false
+   },
+   "primarySpaceRentLabel": "$20.22/SF/yr NNN (quoted yearly)",
+   "primarySpaceAnnualRent": 58517,
+   "primarySpaceMonthlyRent": 4876,
+   "primaryMatterportModelId": "zKgykpJUQ69",
+   "matterportScanRelation": "same-center-other-suite",
+   "fitSpaceCount": 1
+  }
+ },
+ {
+  "propertyId": 680379,
+  "buildingName": null,
+  "address": "2323 Clear Lake City Blvd",
+  "city": "Houston",
+  "state": "TX",
+  "postcode": "77062",
+  "market": "Houston",
+  "lat": 29.5920144,
+  "lng": -95.1401026,
+  "propertyType": "GeneralRetail",
+  "propertySubtype": "GeneralRetail_Storefront",
+  "buildingSF": 98000.0,
+  "buildingSFBasis": "RBA",
+  "stories": 1,
+  "yearBuilt": 1993,
+  "yearRenovated": 2013,
+  "parkingRatio": 4.75,
+  "zoning": "None",
+  "primarySubmarketId": 4329,
+  "primaryPhotoUri": "https://ahprd1cdn.csgpimgs.com/i2/VxHMVCYezK-FiaIc8pctOnSHxkuS9kQL1CPAoReHXOY/112/image.jpg",
+  "availableSpaceCount": 6,
+  "availableSFSmallest": 1050.0,
+  "availableSFLargest": 40000.0,
+  "minDivisibleSF": 1050.0,
+  "askingRentPerSfYrLow": 24.0,
+  "askingRentPerSfYrHigh": 24.0,
+  "askingRentServiceTypes": [
+   "NNN"
+  ],
+  "spacesWithRent": 4,
+  "listingIds": [
+   40177957
+  ],
+  "spaces": [
+   {
+    "spaceId": 21125378,
+    "listingId": 40177957,
+    "listingType": "ShoppingCenterDirectSpaceForLease",
+    "suite": "160",
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "sfMin": 1050.0,
+    "sfMax": 1050.0,
+    "sfMaxContiguous": 1050.0,
+    "rentPerSfYrLow": 24.0,
+    "rentPerSfYrHigh": 24.0,
+    "rentAsQuoted": {
+     "rateLow": 24.0,
+     "rateHigh": 24.0,
+     "rateBasis": "Yearly"
+    },
+    "serviceType": "TripleNet",
+    "serviceTypeShort": "NNN",
+    "monetaryUnit": "UnitedStatesDollar",
+    "isLeasePending": false,
+    "dateOnMarket": "2024-04-12",
+    "availableOnDate": "2026-05-20",
+    "leaseTermType": "Negotiable",
+    "floorPlanUri": null,
+    "spaceNotes": null,
+    "restaurantKeywordsInSpaceNotes": [],
+    "restaurantKeywordsInListingNotes": [
+     "bar",
+     "dining",
+     "hood",
+     "patio",
+     "restaurant"
+    ],
+    "suiteTenantHistory": [],
+    "matterportModelIdsForSuite": []
+   },
+   {
+    "spaceId": 17178424,
+    "listingId": 40177957,
+    "listingType": "ShoppingCenterDirectSpaceForLease",
+    "suite": "152",
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "sfMin": 1400.0,
+    "sfMax": 1400.0,
+    "sfMaxContiguous": 1400.0,
+    "rentPerSfYrLow": 24.0,
+    "rentPerSfYrHigh": 24.0,
+    "rentAsQuoted": {
+     "rateLow": 24.0,
+     "rateHigh": 24.0,
+     "rateBasis": "Yearly"
+    },
+    "serviceType": "TripleNet",
+    "serviceTypeShort": "NNN",
+    "monetaryUnit": "UnitedStatesDollar",
+    "isLeasePending": false,
+    "dateOnMarket": "2023-09-25",
+    "availableOnDate": "2024-03-01",
+    "leaseTermType": "Negotiable",
+    "floorPlanUri": null,
+    "spaceNotes": null,
+    "restaurantKeywordsInSpaceNotes": [],
+    "restaurantKeywordsInListingNotes": [
+     "bar",
+     "dining",
+     "hood",
+     "patio",
+     "restaurant"
+    ],
+    "suiteTenantHistory": [
+     {
+      "occupancyId": 111203519,
+      "name": "Thomas Weiner Plastic Surgery",
+      "industry": "Unknown",
+      "moveIn": "2005-12-15",
+      "moveOut": "2015-07-18",
+      "durationYears": 9.6,
+      "isFood": false
+     }
+    ],
+    "matterportModelIdsForSuite": []
+   },
+   {
+    "spaceId": 21206570,
+    "listingId": 40177957,
+    "listingType": "ShoppingCenterDirectSpaceForLease",
+    "suite": "110",
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "sfMin": 1750.0,
+    "sfMax": 1750.0,
+    "sfMaxContiguous": 1750.0,
+    "rentPerSfYrLow": 24.0,
+    "rentPerSfYrHigh": 24.0,
+    "rentAsQuoted": {
+     "rateLow": 24.0,
+     "rateHigh": 24.0,
+     "rateBasis": "Yearly"
+    },
+    "serviceType": "TripleNet",
+    "serviceTypeShort": "NNN",
+    "monetaryUnit": "UnitedStatesDollar",
+    "isLeasePending": false,
+    "dateOnMarket": "2023-09-25",
+    "availableOnDate": "2026-05-28",
+    "leaseTermType": "Negotiable",
+    "floorPlanUri": null,
+    "spaceNotes": "2nd gen pizzeria",
+    "restaurantKeywordsInSpaceNotes": [
+     "2nd gen"
+    ],
+    "restaurantKeywordsInListingNotes": [
+     "bar",
+     "dining",
+     "hood",
+     "patio",
+     "restaurant"
+    ],
+    "suiteTenantHistory": [
+     {
+      "occupancyId": 111203511,
+      "name": "Cryer Pools",
+      "industry": "Unknown",
+      "moveIn": "2005-12-15",
+      "moveOut": "2010-01-22",
+      "durationYears": 4.1,
+      "isFood": false
+     }
+    ],
+    "matterportModelIdsForSuite": []
+   },
+   {
+    "spaceId": 17666760,
+    "listingId": 40177957,
+    "listingType": "ShoppingCenterDirectSpaceForLease",
+    "suite": "185",
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "sfMin": 1750.0,
+    "sfMax": 1750.0,
+    "sfMaxContiguous": 1750.0,
+    "rentPerSfYrLow": 24.0,
+    "rentPerSfYrHigh": 24.0,
+    "rentAsQuoted": {
+     "rateLow": 24.0,
+     "rateHigh": 24.0,
+     "rateBasis": "Yearly"
+    },
+    "serviceType": "TripleNet",
+    "serviceTypeShort": "NNN",
+    "monetaryUnit": "UnitedStatesDollar",
+    "isLeasePending": true,
+    "dateOnMarket": "2024-04-12",
+    "availableOnDate": "2024-06-01",
+    "leaseTermType": "Negotiable",
+    "floorPlanUri": null,
+    "spaceNotes": null,
+    "restaurantKeywordsInSpaceNotes": [],
+    "restaurantKeywordsInListingNotes": [
+     "bar",
+     "dining",
+     "hood",
+     "patio",
+     "restaurant"
+    ],
+    "suiteTenantHistory": [
+     {
+      "occupancyId": 270347121,
+      "name": "TGF Hair Salon",
+      "industry": "Unknown",
+      "moveIn": "1994-05-01",
+      "moveOut": "2021-05-03",
+      "durationYears": 27.0,
+      "isFood": false
+     }
+    ],
+    "matterportModelIdsForSuite": []
+   },
+   {
+    "spaceId": 21970262,
+    "listingId": 40177957,
+    "listingType": "ShoppingCenterDirectSpaceForLease",
+    "suite": "200B",
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "sfMin": 6673.0,
+    "sfMax": 6673.0,
+    "sfMaxContiguous": 6673.0,
+    "rentPerSfYrLow": null,
+    "rentPerSfYrHigh": null,
+    "rentAsQuoted": null,
+    "serviceType": "Negotiable",
+    "serviceTypeShort": "Negotiable (none quoted)",
+    "monetaryUnit": "UnitedStatesDollar",
+    "isLeasePending": false,
+    "dateOnMarket": "2022-02-22",
+    "availableOnDate": "2020-01-01",
+    "leaseTermType": "Negotiable",
+    "floorPlanUri": null,
+    "spaceNotes": "New ownership plans to redevelop the current old Randall's box into smaller multi-tenant spaces from 1,000 to 30,000 square feet. The owner will also be redoing the front façade of the building, as shown on the marketing brochure. This space is ideal to demise for a smaller retail space, restaurant, juice bar, coffee, fitness, medical, etc. Proposed demises are outlined in the attached marketing brochure, but are highly flexible.",
+    "restaurantKeywordsInSpaceNotes": [
+     "bar",
+     "coffee",
+     "restaurant"
+    ],
+    "restaurantKeywordsInListingNotes": [
+     "bar",
+     "dining",
+     "hood",
+     "patio",
+     "restaurant"
+    ],
+    "suiteTenantHistory": [],
+    "matterportModelIdsForSuite": []
+   },
+   {
+    "spaceId": 21970278,
+    "listingId": 40177957,
+    "listingType": "ShoppingCenterDirectSpaceForLease",
+    "suite": "200A",
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "sfMin": 40000.0,
+    "sfMax": 40000.0,
+    "sfMaxContiguous": 40000.0,
+    "rentPerSfYrLow": null,
+    "rentPerSfYrHigh": null,
+    "rentAsQuoted": null,
+    "serviceType": "ToBeDetermined",
+    "serviceTypeShort": "TBD (none quoted)",
+    "monetaryUnit": "UnitedStatesDollar",
+    "isLeasePending": false,
+    "dateOnMarket": "2026-09-25",
+    "availableOnDate": null,
+    "leaseTermType": "Negotiable",
+    "floorPlanUri": null,
+    "spaceNotes": null,
+    "restaurantKeywordsInSpaceNotes": [],
+    "restaurantKeywordsInListingNotes": [
+     "bar",
+     "dining",
+     "hood",
+     "patio",
+     "restaurant"
+    ],
+    "suiteTenantHistory": [],
+    "matterportModelIdsForSuite": []
+   }
+  ],
+  "matterportModelIds": [
+   "x1r8ZfTQEyb"
+  ],
+  "matterportModels": [
+   {
+    "modelId": "x1r8ZfTQEyb",
+    "captions": [
+     "Shell Space"
+    ],
+    "sources": [
+     "property"
+    ]
+   }
+  ],
+  "matterportRetailCaptionModelIds": [
+   "x1r8ZfTQEyb"
+  ],
+  "currentTenantCount": 19,
+  "totalOccupancyRecords": 148,
+  "matterportModelIdsMatchingAvailableSuite": [],
+  "foodHistory": [
+   {
+    "name": "Quiznos",
+    "moveIn": "2005-12-15",
+    "moveOut": "2015-07-18",
+    "suites": [
+     "170"
+    ],
+    "sfOccupied": 1166.0,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex",
+     "bio-regex"
+    ],
+    "occupancyIds": [
+     111203515
+    ],
+    "isCurrent": false,
+    "durationYears": 9.6,
+    "confidence": "high"
+   },
+   {
+    "name": "Starbucks",
+    "moveIn": "2006-05-10",
+    "moveOut": "2021-05-03",
+    "suites": [],
+    "sfOccupied": 1000.0,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex",
+     "bio-regex"
+    ],
+    "occupancyIds": [
+     111531372,
+     271220451
+    ],
+    "isCurrent": false,
+    "durationYears": 15.0,
+    "confidence": "high"
+   },
+   {
+    "name": "Pizza Hut",
+    "moveIn": "2007-07-10",
+    "moveOut": "2026-06-21",
+    "suites": [],
+    "sfOccupied": 2750.0,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex",
+     "bio-regex"
+    ],
+    "occupancyIds": [
+     112872088
+    ],
+    "isCurrent": false,
+    "durationYears": 18.9,
+    "confidence": "high"
+   },
+   {
+    "name": "WingStreet",
+    "moveIn": "2008-12-19",
+    "moveOut": "2015-07-18",
+    "suites": [],
+    "sfOccupied": 1000.0,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "matchBasis": [
+     "profile.industryType=17",
+     "bio-regex"
+    ],
+    "occupancyIds": [
+     114185238
+    ],
+    "isCurrent": false,
+    "durationYears": 6.6,
+    "confidence": "high"
+   },
+   {
+    "name": "Subway",
+    "moveIn": "2013-03-04",
+    "moveOut": "2018-07-11",
+    "suites": [],
+    "sfOccupied": 1250.0,
+    "expirationReason": "ClosedLocationOrBankrupt",
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex",
+     "bio-regex"
+    ],
+    "occupancyIds": [
+     121779339
+    ],
+    "isCurrent": false,
+    "durationYears": 5.4,
+    "confidence": "high"
+   },
+   {
+    "name": "Clear Lake Hunan Restaurant",
+    "moveIn": "2013-10-06",
+    "moveOut": null,
+    "suites": [],
+    "sfOccupied": 2800.0,
+    "expirationReason": null,
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex",
+     "bio-regex"
+    ],
+    "occupancyIds": [
+     122408114,
+     358988711
+    ],
+    "isCurrent": true,
+    "durationYears": 13.1,
+    "confidence": "high"
+   }
+  ],
+  "foodHistoryRecords": [
+   {
+    "occupancyId": 112007532,
+    "tenantLocationId": 4358560,
+    "name": "Foxs Den Pizza",
+    "companyName": "Foxs Den Pizza",
+    "moveIn": "2004-06-30",
+    "moveInSource": "fromDate",
+    "moveOut": "2004-07-01",
+    "isCurrent": false,
+    "durationYears": 0.0,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "suites": [],
+    "sfOccupied": null,
+    "leaseType": "Unknown",
+    "matchBasis": [
+     "name-regex"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 111203515,
+    "tenantLocationId": 3415333,
+    "name": "Quiznos",
+    "companyName": "Quiznos",
+    "moveIn": "2005-12-15",
+    "moveInSource": "fromDate",
+    "moveOut": "2015-07-18",
+    "isCurrent": false,
+    "durationYears": 9.6,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "suites": [
+     "170"
+    ],
+    "sfOccupied": 1166.0,
+    "leaseType": "Unknown",
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex",
+     "bio-regex"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 111203517,
+    "tenantLocationId": 3415335,
+    "name": "Space City Liquor",
+    "companyName": "Space City Liquor",
+    "moveIn": "2005-12-15",
+    "moveInSource": "fromDate",
+    "moveOut": "2015-07-18",
+    "isCurrent": false,
+    "durationYears": 9.6,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "suites": [
+     "195"
+    ],
+    "sfOccupied": null,
+    "leaseType": "Unknown",
+    "matchBasis": [
+     "name-regex-weak"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 111531372,
+    "tenantLocationId": 3918800,
+    "name": "Starbucks",
+    "companyName": "Starbucks",
+    "moveIn": "2006-05-10",
+    "moveInSource": "fromDate",
+    "moveOut": "2020-02-09",
+    "isCurrent": false,
+    "durationYears": 13.8,
+    "expirationReason": "ClosedLocationOrBankrupt",
+    "suites": [],
+    "sfOccupied": 1000.0,
+    "leaseType": "Unknown",
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex",
+     "bio-regex"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 112872088,
+    "tenantLocationId": 23092580,
+    "name": "Pizza Hut",
+    "companyName": "Pizza Hut",
+    "moveIn": "2007-07-10",
+    "moveInSource": "moveInDate",
+    "moveOut": "2026-06-21",
+    "isCurrent": false,
+    "durationYears": 18.9,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "suites": [],
+    "sfOccupied": 2750.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex",
+     "bio-regex"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 114185238,
+    "tenantLocationId": 24784320,
+    "name": "WingStreet",
+    "companyName": "WingStreet",
+    "moveIn": "2008-12-19",
+    "moveInSource": "fromDate",
+    "moveOut": "2015-07-18",
+    "isCurrent": false,
+    "durationYears": 6.6,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "suites": [],
+    "sfOccupied": 1000.0,
+    "leaseType": "Unknown",
+    "matchBasis": [
+     "profile.industryType=17",
+     "bio-regex"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 121779339,
+    "tenantLocationId": 34559543,
+    "name": "Subway",
+    "companyName": "Subway",
+    "moveIn": "2013-03-04",
+    "moveInSource": "fromDate",
+    "moveOut": "2018-07-11",
+    "isCurrent": false,
+    "durationYears": 5.4,
+    "expirationReason": "ClosedLocationOrBankrupt",
+    "suites": [],
+    "sfOccupied": 1250.0,
+    "leaseType": "Unknown",
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex",
+     "bio-regex"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 122408114,
+    "tenantLocationId": 55962961,
+    "name": "Clear Lake Hunan Restaurant",
+    "companyName": "Clear Lake Hunan Restaurant",
+    "moveIn": "2013-10-06",
+    "moveInSource": "moveInDate",
+    "moveOut": "2017-12-29",
+    "isCurrent": false,
+    "durationYears": 4.2,
+    "expirationReason": "Renewal",
+    "suites": [],
+    "sfOccupied": 2800.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex",
+     "bio-regex"
+    ],
+    "leaseSignDate": "2013-09-06",
+    "leaseExpirationDate": "2017-12-31"
+   },
+   {
+    "occupancyId": 358989201,
+    "tenantLocationId": 3273684,
+    "name": "Space City Liquor",
+    "companyName": "Space City Liquor",
+    "moveIn": "2015-11-29",
+    "moveInSource": "fromDate",
+    "moveOut": null,
+    "isCurrent": true,
+    "durationYears": 10.9,
+    "expirationReason": null,
+    "suites": [],
+    "sfOccupied": 2450.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "name-regex-weak"
+    ],
+    "leaseSignDate": "2015-11-29",
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 358988711,
+    "tenantLocationId": 55962961,
+    "name": "Clear Lake Hunan Restaurant",
+    "companyName": "Clear Lake Hunan Restaurant",
+    "moveIn": "2017-12-30",
+    "moveInSource": "fromDate",
+    "moveOut": null,
+    "isCurrent": true,
+    "durationYears": 8.9,
+    "expirationReason": null,
+    "suites": [],
+    "sfOccupied": 2800.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex",
+     "bio-regex"
+    ],
+    "leaseSignDate": "2017-12-30",
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 271220451,
+    "tenantLocationId": 3918800,
+    "name": "Starbucks",
+    "companyName": "Starbucks",
+    "moveIn": "2020-03-13",
+    "moveInSource": "fromDate",
+    "moveOut": "2021-05-03",
+    "isCurrent": false,
+    "durationYears": 1.1,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "suites": [],
+    "sfOccupied": 1000.0,
+    "leaseType": "Unknown",
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex",
+     "bio-regex"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   }
+  ],
+  "foodHistoryCount": 6,
+  "foodPastCount": 5,
+  "foodCurrentCount": 1,
+  "foodWeakMatchCount": 2,
+  "saleCompCount": 2,
+  "lastSale": {
+   "compId": 5831866,
+   "soldDate": "2021-12-31",
+   "soldForPrice": null,
+   "salePriceStatus": "Unknown",
+   "entityCount": 1,
+   "isPortfolio": false,
+   "allocatedPrice": null,
+   "allocatedPriceStatus": "Unknown",
+   "monetaryUnit": "UnitedStatesDollar"
+  },
+  "activeSaleListings": [],
+  "foodHistoryArtifacts": [
+   {
+    "name": "Foxs Den Pizza",
+    "moveIn": "2004-06-30",
+    "moveOut": "2004-07-01",
+    "suites": [],
+    "sfOccupied": null,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "matchBasis": [
+     "name-regex"
+    ],
+    "occupancyIds": [
+     112007532
+    ],
+    "isCurrent": false,
+    "durationYears": 0.0
+   }
+  ],
+  "foodClosedOrBankruptCount": 1,
+  "selection": {
+   "top12Rank": 3,
+   "score": 17,
+   "scoreReasons": [
+    "fit-space+rent",
+    "food-past=5",
+    "food-current=1",
+    "mp-suite/retail-caption",
+    "restaurant-keywords",
+    "retail-building"
+   ],
+   "rationale": "1,750 SF 2nd-gen pizzeria at $24 NNN in a grocery-anchored center being redeveloped; long chain history to contrast (Pizza Hut 18.9 yr, Starbucks 15 yr, Quiznos 9.6 yr, Subway closed).",
+   "caveat": "Scan is captioned \"Shell Space\" (suite not named). Center is losing its Randalls anchor box (being demised), which is itself a risk talking point.",
+   "primarySpace": {
+    "spaceId": 21206570,
+    "listingId": 40177957,
+    "suite": "110",
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "sfMin": 1750.0,
+    "sfMax": 1750.0,
+    "rentPerSfYrLow": 24.0,
+    "rentPerSfYrHigh": 24.0,
+    "serviceType": "TripleNet",
+    "serviceTypeShort": "NNN",
+    "isLeasePending": false
+   },
+   "primarySpaceRentLabel": "$24.00/SF/yr NNN (quoted yearly)",
+   "primarySpaceAnnualRent": 42000,
+   "primarySpaceMonthlyRent": 3500,
+   "primaryMatterportModelId": "x1r8ZfTQEyb",
+   "matterportScanRelation": "same-center-shell",
+   "fitSpaceCount": 3
+  }
+ },
+ {
+  "propertyId": 862130,
+  "buildingName": "Building 2",
+  "address": "13331 Kuykendahl Rd",
+  "city": "Houston",
+  "state": "TX",
+  "postcode": "77090",
+  "market": "Houston",
+  "lat": 29.978021,
+  "lng": -95.435288,
+  "propertyType": "GeneralRetail",
+  "propertySubtype": "GeneralRetail_Storefront",
+  "buildingSF": 22187.0,
+  "buildingSFBasis": "RBA",
+  "stories": 1,
+  "yearBuilt": 1985,
+  "yearRenovated": 2009,
+  "parkingRatio": 4.74,
+  "zoning": "N/A",
+  "primarySubmarketId": 4318,
+  "primaryPhotoUri": "https://ahprd1cdn.csgpimgs.com/i2/smy977NhTl4eT9COk9FYywNdIRC-UQ5CyI7Tvv_khqY/112/image.jpg",
+  "availableSpaceCount": 3,
+  "availableSFSmallest": 975.0,
+  "availableSFLargest": 1955.0,
+  "minDivisibleSF": 975.0,
+  "askingRentPerSfYrLow": 18.0,
+  "askingRentPerSfYrHigh": 18.0,
+  "askingRentServiceTypes": [
+   "NNN"
+  ],
+  "spacesWithRent": 2,
+  "listingIds": [
+   41175354
+  ],
+  "spaces": [
+   {
+    "spaceId": 22295411,
+    "listingId": 41175354,
+    "listingType": "ShoppingCenterDirectSpaceForLease",
+    "suite": "121",
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "sfMin": 975.0,
+    "sfMax": 975.0,
+    "sfMaxContiguous": 975.0,
+    "rentPerSfYrLow": null,
+    "rentPerSfYrHigh": null,
+    "rentAsQuoted": null,
+    "serviceType": "ToBeDetermined",
+    "serviceTypeShort": "TBD (none quoted)",
+    "monetaryUnit": "UnitedStatesDollar",
+    "isLeasePending": false,
+    "dateOnMarket": "2026-11-06",
+    "availableOnDate": "2026-11-07",
+    "leaseTermType": "Years",
+    "floorPlanUri": null,
+    "spaceNotes": "Versatile commercial space featuring an open layout, wood-look flooring, modern dark finishes, and bright overhead lighting. A flexible setting for retail, a showroom, tax office or a creative studio. Contact us for leasing details and to schedule a tour!",
+    "restaurantKeywordsInSpaceNotes": [],
+    "restaurantKeywordsInListingNotes": [
+     "restaurant",
+     "second-gen"
+    ],
+    "suiteTenantHistory": [
+     {
+      "occupancyId": 145079921,
+      "name": "Unknown tenant",
+      "industry": "Unknown",
+      "moveIn": "2016-04-12",
+      "moveOut": "2026-02-28",
+      "durationYears": 9.9,
+      "isFood": false
+     }
+    ],
+    "matterportModelIdsForSuite": []
+   },
+   {
+    "spaceId": 21093796,
+    "listingId": 41175354,
+    "listingType": "ShoppingCenterDirectSpaceForLease",
+    "suite": "107",
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "sfMin": 1625.0,
+    "sfMax": 1625.0,
+    "sfMaxContiguous": 1625.0,
+    "rentPerSfYrLow": 18.0,
+    "rentPerSfYrHigh": 18.0,
+    "rentAsQuoted": {
+     "rateLow": 18.0,
+     "rateHigh": 18.0,
+     "rateBasis": "Yearly"
+    },
+    "serviceType": "TripleNet",
+    "serviceTypeShort": "NNN",
+    "monetaryUnit": "UnitedStatesDollar",
+    "isLeasePending": false,
+    "dateOnMarket": "2026-05-15",
+    "availableOnDate": "2026-05-16",
+    "leaseTermType": "Years",
+    "floorPlanUri": null,
+    "spaceNotes": null,
+    "restaurantKeywordsInSpaceNotes": [],
+    "restaurantKeywordsInListingNotes": [
+     "restaurant",
+     "second-gen"
+    ],
+    "suiteTenantHistory": [],
+    "matterportModelIdsForSuite": []
+   },
+   {
+    "spaceId": 21219615,
+    "listingId": 41175354,
+    "listingType": "ShoppingCenterDirectSpaceForLease",
+    "suite": "120",
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "sfMin": 1955.0,
+    "sfMax": 1955.0,
+    "sfMaxContiguous": 1955.0,
+    "rentPerSfYrLow": 18.0,
+    "rentPerSfYrHigh": 18.0,
+    "rentAsQuoted": {
+     "rateLow": 18.0,
+     "rateHigh": 18.0,
+     "rateBasis": "Yearly"
+    },
+    "serviceType": "TripleNet",
+    "serviceTypeShort": "NNN",
+    "monetaryUnit": "UnitedStatesDollar",
+    "isLeasePending": false,
+    "dateOnMarket": "2026-05-29",
+    "availableOnDate": "2026-06-01",
+    "leaseTermType": "Negotiable",
+    "floorPlanUri": null,
+    "spaceNotes": "Studio space available in excellent condition with two restrooms. Currently operating as an exotic dance studio, the landlord has invested significantly in high-quality flooring\nThe suite is ideal for a dance studio, fitness studio, performance space, or similar business seeking a running start.",
+    "restaurantKeywordsInSpaceNotes": [],
+    "restaurantKeywordsInListingNotes": [
+     "restaurant",
+     "second-gen"
+    ],
+    "suiteTenantHistory": [],
+    "matterportModelIdsForSuite": []
+   }
+  ],
+  "matterportModelIds": [
+   "vmyKDCoq9Za"
+  ],
+  "matterportModels": [
+   {
+    "modelId": "vmyKDCoq9Za",
+    "captions": [
+     "Suite 124 - 1,550SF"
+    ],
+    "sources": [
+     "property"
+    ]
+   }
+  ],
+  "matterportRetailCaptionModelIds": [
+   "vmyKDCoq9Za"
+  ],
+  "currentTenantCount": 4,
+  "totalOccupancyRecords": 45,
+  "matterportModelIdsMatchingAvailableSuite": [],
+  "foodHistory": [
+   {
+    "name": "Golden House Chinese Restaurant",
+    "moveIn": "2005-11-20",
+    "moveOut": "2014-12-31",
+    "suites": [],
+    "sfOccupied": 5000.0,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex"
+    ],
+    "occupancyIds": [
+     110998219
+    ],
+    "isCurrent": false,
+    "durationYears": 9.1,
+    "confidence": "high"
+   },
+   {
+    "name": "Classic Pizza",
+    "moveIn": "2005-11-20",
+    "moveOut": "2015-07-18",
+    "suites": [],
+    "sfOccupied": 975.0,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "matchBasis": [
+     "name-regex"
+    ],
+    "occupancyIds": [
+     111029497
+    ],
+    "isCurrent": false,
+    "durationYears": 9.7,
+    "confidence": "high"
+   },
+   {
+    "name": "Restaurant",
+    "moveIn": "2008-05-21",
+    "moveOut": "2013-06-16",
+    "suites": [],
+    "sfOccupied": 1303.0,
+    "expirationReason": "ClosedLocationOrBankrupt",
+    "matchBasis": [
+     "name-regex"
+    ],
+    "occupancyIds": [
+     113619701
+    ],
+    "isCurrent": false,
+    "durationYears": 5.1,
+    "confidence": "high"
+   },
+   {
+    "name": "House Of Gumbo",
+    "moveIn": "2011-11-04",
+    "moveOut": "2020-02-29",
+    "suites": [],
+    "sfOccupied": 5411.0,
+    "expirationReason": "ClosedLocationOrBankrupt",
+    "matchBasis": [
+     "profile.industryType=17"
+    ],
+    "occupancyIds": [
+     119716221,
+     170290721,
+     240779581
+    ],
+    "isCurrent": false,
+    "durationYears": 8.3,
+    "confidence": "medium"
+   },
+   {
+    "name": "Taste of The Caribbean",
+    "moveIn": "2016-05-25",
+    "moveOut": null,
+    "suites": [],
+    "sfOccupied": 2278.0,
+    "expirationReason": null,
+    "matchBasis": [
+     "profile.industryType=17",
+     "bio-regex"
+    ],
+    "occupancyIds": [
+     170290591,
+     179699181,
+     364279941
+    ],
+    "isCurrent": true,
+    "durationYears": 10.5,
+    "confidence": "high"
+   },
+   {
+    "name": "Tommy's Donuts",
+    "moveIn": "2016-07-07",
+    "moveOut": "2018-06-06",
+    "suites": [],
+    "sfOccupied": null,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "matchBasis": [
+     "name-regex"
+    ],
+    "occupancyIds": [
+     157526191
+    ],
+    "isCurrent": false,
+    "durationYears": 1.9,
+    "confidence": "high"
+   },
+   {
+    "name": "International Catering Services",
+    "moveIn": "2018-02-25",
+    "moveOut": "2020-05-31",
+    "suites": [
+     "115"
+    ],
+    "sfOccupied": null,
+    "expirationReason": "ClosedLocationOrBankrupt",
+    "matchBasis": [
+     "profile.industryType=17"
+    ],
+    "occupancyIds": [
+     218845651
+    ],
+    "isCurrent": false,
+    "durationYears": 2.3,
+    "confidence": "medium"
+   },
+   {
+    "name": "Division 1 Sports Bar",
+    "moveIn": "2018-07-19",
+    "moveOut": "2020-02-29",
+    "suites": [],
+    "sfOccupied": 8392.0,
+    "expirationReason": "ClosedLocationOrBankrupt",
+    "matchBasis": [
+     "name-regex"
+    ],
+    "occupancyIds": [
+     240779871,
+     259549961
+    ],
+    "isCurrent": false,
+    "durationYears": 1.6,
+    "confidence": "high"
+   },
+   {
+    "name": "Grill One",
+    "moveIn": "2018-11-24",
+    "moveOut": "2020-05-04",
+    "suites": [],
+    "sfOccupied": null,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "matchBasis": [
+     "name-regex"
+    ],
+    "occupancyIds": [
+     249071901
+    ],
+    "isCurrent": false,
+    "durationYears": 1.4,
+    "confidence": "high"
+   }
+  ],
+  "foodHistoryRecords": [
+   {
+    "occupancyId": 110998219,
+    "tenantLocationId": 3180015,
+    "name": "Golden House Chinese Restaurant",
+    "companyName": "Golden House Chinese Restaurant",
+    "moveIn": "2005-11-20",
+    "moveInSource": "fromDate",
+    "moveOut": "2014-12-31",
+    "isCurrent": false,
+    "durationYears": 9.1,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "suites": [],
+    "sfOccupied": 5000.0,
+    "leaseType": "Unknown",
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 111029497,
+    "tenantLocationId": 3211293,
+    "name": "Classic Pizza",
+    "companyName": "Classic Pizza",
+    "moveIn": "2005-11-20",
+    "moveInSource": "fromDate",
+    "moveOut": "2015-07-18",
+    "isCurrent": false,
+    "durationYears": 9.7,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "suites": [],
+    "sfOccupied": 975.0,
+    "leaseType": "Unknown",
+    "matchBasis": [
+     "name-regex"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 111029502,
+    "tenantLocationId": 3211298,
+    "name": "Spec's Liquor",
+    "companyName": "Spec's",
+    "moveIn": "2005-11-20",
+    "moveInSource": "fromDate",
+    "moveOut": "2013-09-16",
+    "isCurrent": false,
+    "durationYears": 7.8,
+    "expirationReason": "Renewal",
+    "suites": [],
+    "sfOccupied": 6326.0,
+    "leaseType": "Unknown",
+    "matchBasis": [
+     "name-regex-weak"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 113619701,
+    "tenantLocationId": 23997156,
+    "name": "Restaurant",
+    "companyName": "Restaurant",
+    "moveIn": "2008-05-21",
+    "moveInSource": "moveInDate",
+    "moveOut": "2013-06-16",
+    "isCurrent": false,
+    "durationYears": 5.1,
+    "expirationReason": "ClosedLocationOrBankrupt",
+    "suites": [],
+    "sfOccupied": 1303.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "name-regex"
+    ],
+    "leaseSignDate": "2008-04-21",
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 119716221,
+    "tenantLocationId": 32065621,
+    "name": "House Of Gumbo",
+    "companyName": "House Of Gumbo",
+    "moveIn": "2011-11-04",
+    "moveInSource": "fromDate",
+    "moveOut": "2018-07-18",
+    "isCurrent": false,
+    "durationYears": 6.7,
+    "expirationReason": "OccupancySplit",
+    "suites": [],
+    "sfOccupied": 500.0,
+    "leaseType": "Unknown",
+    "matchBasis": [
+     "profile.industryType=17"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 122968690,
+    "tenantLocationId": 3211298,
+    "name": "Spec's Liquor",
+    "companyName": "Spec's",
+    "moveIn": "2013-09-17",
+    "moveInSource": "fromDate",
+    "moveOut": "2026-06-29",
+    "isCurrent": false,
+    "durationYears": 12.8,
+    "expirationReason": "UnableToConfirm",
+    "suites": [],
+    "sfOccupied": 6326.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "name-regex-weak"
+    ],
+    "leaseSignDate": "2013-09-17",
+    "leaseExpirationDate": "2018-09-16"
+   },
+   {
+    "occupancyId": 170290591,
+    "tenantLocationId": 89777211,
+    "name": "Taste of The Caribbean",
+    "companyName": "Taste of The Caribbean",
+    "moveIn": "2016-05-25",
+    "moveInSource": "moveInDate",
+    "moveOut": "2019-05-25",
+    "isCurrent": false,
+    "durationYears": 3.0,
+    "expirationReason": "Renewal",
+    "suites": [],
+    "sfOccupied": 2278.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "profile.industryType=17",
+     "bio-regex"
+    ],
+    "leaseSignDate": "2016-04-25",
+    "leaseExpirationDate": "2019-05-25"
+   },
+   {
+    "occupancyId": 170290721,
+    "tenantLocationId": 32065621,
+    "name": "House Of Gumbo",
+    "companyName": "House Of Gumbo",
+    "moveIn": "2016-05-29",
+    "moveInSource": "moveInDate",
+    "moveOut": "2018-07-18",
+    "isCurrent": false,
+    "durationYears": 2.1,
+    "expirationReason": "OccupancySplit",
+    "suites": [],
+    "sfOccupied": 5411.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "profile.industryType=17"
+    ],
+    "leaseSignDate": "2016-04-01",
+    "leaseExpirationDate": "2019-05-29"
+   },
+   {
+    "occupancyId": 157526191,
+    "tenantLocationId": 75674011,
+    "name": "Tommy's Donuts",
+    "companyName": "Tommy's Donuts",
+    "moveIn": "2016-07-07",
+    "moveInSource": "fromDate",
+    "moveOut": "2018-06-06",
+    "isCurrent": false,
+    "durationYears": 1.9,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "suites": [],
+    "sfOccupied": null,
+    "leaseType": "Unknown",
+    "matchBasis": [
+     "name-regex"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 179699181,
+    "tenantLocationId": 89777211,
+    "name": "Taste of The Caribbean",
+    "companyName": "Taste of The Caribbean",
+    "moveIn": "2017-07-20",
+    "moveInSource": "moveInDate",
+    "moveOut": "2017-08-01",
+    "isCurrent": false,
+    "durationYears": 0.0,
+    "expirationReason": "Renewal",
+    "suites": [],
+    "sfOccupied": 2278.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "profile.industryType=17",
+     "bio-regex"
+    ],
+    "leaseSignDate": "2017-06-20",
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 218845651,
+    "tenantLocationId": 117839271,
+    "name": "International Catering Services",
+    "companyName": "International Catering Services",
+    "moveIn": "2018-02-25",
+    "moveInSource": "fromDate",
+    "moveOut": "2020-05-31",
+    "isCurrent": false,
+    "durationYears": 2.3,
+    "expirationReason": "ClosedLocationOrBankrupt",
+    "suites": [
+     "115"
+    ],
+    "sfOccupied": null,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "profile.industryType=17"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 240779581,
+    "tenantLocationId": 32065621,
+    "name": "House Of Gumbo",
+    "companyName": "House Of Gumbo",
+    "moveIn": "2018-07-19",
+    "moveInSource": "fromDate",
+    "moveOut": "2020-02-29",
+    "isCurrent": false,
+    "durationYears": 1.6,
+    "expirationReason": "ClosedLocationOrBankrupt",
+    "suites": [],
+    "sfOccupied": 5411.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "profile.industryType=17"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 240779871,
+    "tenantLocationId": 135429821,
+    "name": "Division 1 Sports Bar",
+    "companyName": "Division 1 Sports Bar",
+    "moveIn": "2018-07-19",
+    "moveInSource": "fromDate",
+    "moveOut": "2020-02-29",
+    "isCurrent": false,
+    "durationYears": 1.6,
+    "expirationReason": "ClosedLocationOrBankrupt",
+    "suites": [],
+    "sfOccupied": 8392.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "name-regex"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 249071901,
+    "tenantLocationId": 146635351,
+    "name": "Grill One",
+    "companyName": "Grill One",
+    "moveIn": "2018-11-24",
+    "moveInSource": "fromDate",
+    "moveOut": "2020-05-04",
+    "isCurrent": false,
+    "durationYears": 1.4,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "suites": [],
+    "sfOccupied": null,
+    "leaseType": "Unknown",
+    "matchBasis": [
+     "name-regex"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 364279941,
+    "tenantLocationId": 89777211,
+    "name": "Taste of The Caribbean",
+    "companyName": "Taste of The Caribbean",
+    "moveIn": "2019-05-26",
+    "moveInSource": "fromDate",
+    "moveOut": null,
+    "isCurrent": true,
+    "durationYears": 7.5,
+    "expirationReason": null,
+    "suites": [],
+    "sfOccupied": 2278.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "profile.industryType=17",
+     "bio-regex"
+    ],
+    "leaseSignDate": "2019-05-26",
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 259549961,
+    "tenantLocationId": 135429821,
+    "name": "Division 1 Sports Bar",
+    "companyName": "Division 1 Sports Bar",
+    "moveIn": "2019-06-04",
+    "moveInSource": "fromDate",
+    "moveOut": "2020-02-29",
+    "isCurrent": false,
+    "durationYears": 0.7,
+    "expirationReason": "ClosedLocationOrBankrupt",
+    "suites": [],
+    "sfOccupied": 1927.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "name-regex"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   }
+  ],
+  "foodHistoryCount": 9,
+  "foodPastCount": 8,
+  "foodCurrentCount": 1,
+  "foodWeakMatchCount": 2,
+  "saleCompCount": 4,
+  "lastSale": {
+   "compId": 5113782,
+   "soldDate": "2020-04-03",
+   "soldForPrice": null,
+   "salePriceStatus": "Unknown",
+   "entityCount": 1,
+   "isPortfolio": false,
+   "allocatedPrice": null,
+   "allocatedPriceStatus": "Unknown",
+   "monetaryUnit": "UnitedStatesDollar"
+  },
+  "activeSaleListings": [],
+  "foodHistoryArtifacts": [],
+  "foodClosedOrBankruptCount": 4,
+  "selection": {
+   "top12Rank": 4,
+   "score": 15,
+   "scoreReasons": [
+    "fit-space+rent",
+    "food-past=8",
+    "food-current=1",
+    "mp-suite/retail-caption",
+    "retail-building"
+   ],
+   "rationale": "Deepest graveyard in Houston: 8 past food tenants, 4 of them recorded as closed/bankrupt (House of Gumbo, Division 1 Sports Bar, International Catering, \"Restaurant\"). Cheap ($18 NNN), restaurant-sized suites.",
+   "caveat": "Scan is Suite 124 (1,550 SF), not an available suite. Available suites are not described as restaurant-ready (expect full build-out cost).",
+   "primarySpace": {
+    "spaceId": 21093796,
+    "listingId": 41175354,
+    "suite": "107",
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "sfMin": 1625.0,
+    "sfMax": 1625.0,
+    "rentPerSfYrLow": 18.0,
+    "rentPerSfYrHigh": 18.0,
+    "serviceType": "TripleNet",
+    "serviceTypeShort": "NNN",
+    "isLeasePending": false
+   },
+   "primarySpaceRentLabel": "$18.00/SF/yr NNN (quoted yearly)",
+   "primarySpaceAnnualRent": 29250,
+   "primarySpaceMonthlyRent": 2438,
+   "primaryMatterportModelId": "vmyKDCoq9Za",
+   "matterportScanRelation": "same-center-other-suite",
+   "fitSpaceCount": 2
+  }
+ },
+ {
+  "propertyId": 838391,
+  "buildingName": null,
+  "address": "14829 Bellaire Blvd",
+  "city": "Houston",
+  "state": "TX",
+  "postcode": "77083",
+  "market": "Houston",
+  "lat": 29.7023471,
+  "lng": -95.6479834,
+  "propertyType": "GeneralRetail",
+  "propertySubtype": "GeneralRetail_StorefrontRetailOrOffice",
+  "buildingSF": 44559.0,
+  "buildingSFBasis": "RBA",
+  "stories": 1,
+  "yearBuilt": 1985,
+  "yearRenovated": null,
+  "parkingRatio": 3.37,
+  "zoning": null,
+  "primarySubmarketId": 4315,
+  "primaryPhotoUri": "https://ahprd1cdn.csgpimgs.com/i2/aPO5mlOYeoKKylBA5poLP4JZVTGRyUzk7iw1VUIzTZs/112/image.jpg",
+  "availableSpaceCount": 4,
+  "availableSFSmallest": 1100.0,
+  "availableSFLargest": 3700.0,
+  "minDivisibleSF": 1100.0,
+  "askingRentPerSfYrLow": 18.0,
+  "askingRentPerSfYrHigh": 18.0,
+  "askingRentServiceTypes": [
+   "NNN"
+  ],
+  "spacesWithRent": 4,
+  "listingIds": [
+   40263575
+  ],
+  "spaces": [
+   {
+    "spaceId": 20962385,
+    "listingId": 40263575,
+    "listingType": "PropertyDirectSpaceForLease",
+    "suite": "10B",
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "sfMin": 1100.0,
+    "sfMax": 1100.0,
+    "sfMaxContiguous": 1100.0,
+    "rentPerSfYrLow": 18.0,
+    "rentPerSfYrHigh": 18.0,
+    "rentAsQuoted": {
+     "rateLow": 18.0,
+     "rateHigh": 18.0,
+     "rateBasis": "Yearly"
+    },
+    "serviceType": "TripleNet",
+    "serviceTypeShort": "NNN",
+    "monetaryUnit": "UnitedStatesDollar",
+    "isLeasePending": false,
+    "dateOnMarket": "2026-04-23",
+    "availableOnDate": "2026-04-23",
+    "leaseTermType": "Years",
+    "floorPlanUri": null,
+    "spaceNotes": null,
+    "restaurantKeywordsInSpaceNotes": [],
+    "restaurantKeywordsInListingNotes": [],
+    "suiteTenantHistory": [],
+    "matterportModelIdsForSuite": []
+   },
+   {
+    "spaceId": 20962387,
+    "listingId": 40263575,
+    "listingType": "PropertyDirectSpaceForLease",
+    "suite": "2B",
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "sfMin": 2672.0,
+    "sfMax": 2672.0,
+    "sfMaxContiguous": 2672.0,
+    "rentPerSfYrLow": 18.0,
+    "rentPerSfYrHigh": 18.0,
+    "rentAsQuoted": {
+     "rateLow": 18.0,
+     "rateHigh": 18.0,
+     "rateBasis": "Yearly"
+    },
+    "serviceType": "TripleNet",
+    "serviceTypeShort": "NNN",
+    "monetaryUnit": "UnitedStatesDollar",
+    "isLeasePending": false,
+    "dateOnMarket": "2026-04-23",
+    "availableOnDate": "2026-04-23",
+    "leaseTermType": "Years",
+    "floorPlanUri": null,
+    "spaceNotes": null,
+    "restaurantKeywordsInSpaceNotes": [],
+    "restaurantKeywordsInListingNotes": [],
+    "suiteTenantHistory": [],
+    "matterportModelIdsForSuite": []
+   },
+   {
+    "spaceId": 20962388,
+    "listingId": 40263575,
+    "listingType": "PropertyDirectSpaceForLease",
+    "suite": "4",
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "sfMin": 3400.0,
+    "sfMax": 3400.0,
+    "sfMaxContiguous": 3400.0,
+    "rentPerSfYrLow": 18.0,
+    "rentPerSfYrHigh": 18.0,
+    "rentAsQuoted": {
+     "rateLow": 18.0,
+     "rateHigh": 18.0,
+     "rateBasis": "Yearly"
+    },
+    "serviceType": "TripleNet",
+    "serviceTypeShort": "NNN",
+    "monetaryUnit": "UnitedStatesDollar",
+    "isLeasePending": false,
+    "dateOnMarket": "2026-04-23",
+    "availableOnDate": "2026-04-23",
+    "leaseTermType": "Years",
+    "floorPlanUri": null,
+    "spaceNotes": null,
+    "restaurantKeywordsInSpaceNotes": [],
+    "restaurantKeywordsInListingNotes": [],
+    "suiteTenantHistory": [],
+    "matterportModelIdsForSuite": []
+   },
+   {
+    "spaceId": 20962386,
+    "listingId": 40263575,
+    "listingType": "PropertyDirectSpaceForLease",
+    "suite": "11-12",
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "sfMin": 3700.0,
+    "sfMax": 3700.0,
+    "sfMaxContiguous": 3700.0,
+    "rentPerSfYrLow": 18.0,
+    "rentPerSfYrHigh": 18.0,
+    "rentAsQuoted": {
+     "rateLow": 18.0,
+     "rateHigh": 18.0,
+     "rateBasis": "Yearly"
+    },
+    "serviceType": "TripleNet",
+    "serviceTypeShort": "NNN",
+    "monetaryUnit": "UnitedStatesDollar",
+    "isLeasePending": false,
+    "dateOnMarket": "2026-04-23",
+    "availableOnDate": "2026-04-23",
+    "leaseTermType": "Years",
+    "floorPlanUri": "https://ahprd1cdn.csgpimgs.com/i2/WAW3_SYi5uTAMzpLGdjz3bMrbFLckS8qlXsHeA29tF4/112/image.svg",
+    "spaceNotes": null,
+    "restaurantKeywordsInSpaceNotes": [],
+    "restaurantKeywordsInListingNotes": [],
+    "suiteTenantHistory": [],
+    "matterportModelIdsForSuite": [
+     "ZNwAFka5Dab"
+    ]
+   }
+  ],
+  "matterportModelIds": [
+   "ZNwAFka5Dab"
+  ],
+  "matterportModels": [
+   {
+    "modelId": "ZNwAFka5Dab",
+    "captions": [
+     "Explore Suite 11-12"
+    ],
+    "sources": [
+     "property"
+    ]
+   }
+  ],
+  "matterportRetailCaptionModelIds": [
+   "ZNwAFka5Dab"
+  ],
+  "currentTenantCount": 11,
+  "totalOccupancyRecords": 40,
+  "matterportModelIdsMatchingAvailableSuite": [
+   "ZNwAFka5Dab"
+  ],
+  "foodHistory": [
+   {
+    "name": "O Donut",
+    "moveIn": "2010-09-19",
+    "moveOut": "2011-10-04",
+    "suites": [],
+    "sfOccupied": 500.0,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "matchBasis": [
+     "name-regex"
+    ],
+    "occupancyIds": [
+     118209209
+    ],
+    "isCurrent": false,
+    "durationYears": 1.0,
+    "confidence": "high"
+   },
+   {
+    "name": "Rico Sabor Cubano",
+    "moveIn": "2020-03-13",
+    "moveOut": "2020-05-28",
+    "suites": [],
+    "sfOccupied": null,
+    "expirationReason": "ClosedLocationOrBankrupt",
+    "matchBasis": [
+     "profile.industryType=17"
+    ],
+    "occupancyIds": [
+     271069231
+    ],
+    "isCurrent": false,
+    "durationYears": 0.2,
+    "confidence": "medium"
+   }
+  ],
+  "foodHistoryRecords": [
+   {
+    "occupancyId": 112056124,
+    "tenantLocationId": 4390589,
+    "name": "Southern Maid Donuts",
+    "companyName": "Southern Maid Donuts",
+    "moveIn": "2001-05-24",
+    "moveInSource": "fromDate",
+    "moveOut": "2001-05-25",
+    "isCurrent": false,
+    "durationYears": 0.0,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "suites": [],
+    "sfOccupied": null,
+    "leaseType": "Unknown",
+    "matchBasis": [
+     "name-regex"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 118209209,
+    "tenantLocationId": 29689714,
+    "name": "O Donut",
+    "companyName": "O Donut",
+    "moveIn": "2010-09-19",
+    "moveInSource": "fromDate",
+    "moveOut": "2011-10-04",
+    "isCurrent": false,
+    "durationYears": 1.0,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "suites": [],
+    "sfOccupied": 500.0,
+    "leaseType": "Unknown",
+    "matchBasis": [
+     "name-regex"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 271069231,
+    "tenantLocationId": 173549121,
+    "name": "Rico Sabor Cubano",
+    "companyName": "Rico Sabor Cubano",
+    "moveIn": "2020-03-13",
+    "moveInSource": "fromDate",
+    "moveOut": "2020-05-28",
+    "isCurrent": false,
+    "durationYears": 0.2,
+    "expirationReason": "ClosedLocationOrBankrupt",
+    "suites": [],
+    "sfOccupied": null,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "profile.industryType=17"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   }
+  ],
+  "foodHistoryCount": 2,
+  "foodPastCount": 2,
+  "foodCurrentCount": 0,
+  "foodWeakMatchCount": 0,
+  "saleCompCount": 2,
+  "lastSale": {
+   "compId": 7163040,
+   "soldDate": "2025-04-30",
+   "soldForPrice": null,
+   "salePriceStatus": "Unknown",
+   "entityCount": 1,
+   "isPortfolio": false,
+   "allocatedPrice": null,
+   "allocatedPriceStatus": "Unknown",
+   "monetaryUnit": "UnitedStatesDollar"
+  },
+  "activeSaleListings": [],
+  "foodHistoryArtifacts": [
+   {
+    "name": "Southern Maid Donuts",
+    "moveIn": "2001-05-24",
+    "moveOut": "2001-05-25",
+    "suites": [],
+    "sfOccupied": null,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "matchBasis": [
+     "name-regex"
+    ],
+    "occupancyIds": [
+     112056124
+    ],
+    "isCurrent": false,
+    "durationYears": 0.0
+   }
+  ],
+  "foodClosedOrBankruptCount": 1,
+  "selection": {
+   "top12Rank": 5,
+   "score": 16,
+   "scoreReasons": [
+    "fit-space+rent",
+    "food-past=2",
+    "mp-of-available-suite",
+    "retail-building"
+   ],
+   "rationale": "Exact-suite scan of a 3,700 SF space at $18 NNN, four suites from 1,100 to 3,700 SF to compare. First-generation (non-restaurant) space, so it shows the full hidden build-out cost.",
+   "caveat": "Thin food history: one real past food tenant (O Donut 1.0 yr) plus Rico Sabor Cubano (0.2 yr, closed); one more record is a 1-day data artifact.",
+   "primarySpace": {
+    "spaceId": 20962386,
+    "listingId": 40263575,
+    "suite": "11-12",
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "sfMin": 3700.0,
+    "sfMax": 3700.0,
+    "rentPerSfYrLow": 18.0,
+    "rentPerSfYrHigh": 18.0,
+    "serviceType": "TripleNet",
+    "serviceTypeShort": "NNN",
+    "isLeasePending": false
+   },
+   "primarySpaceRentLabel": "$18.00/SF/yr NNN (quoted yearly)",
+   "primarySpaceAnnualRent": 66600,
+   "primarySpaceMonthlyRent": 5550,
+   "primaryMatterportModelId": "ZNwAFka5Dab",
+   "matterportScanRelation": "exact-suite",
+   "fitSpaceCount": 4
+  }
+ },
+ {
+  "propertyId": 800827,
+  "buildingName": "West Oaks Shops",
+  "address": "15015 Westheimer Rd",
+  "city": "Houston",
+  "state": "TX",
+  "postcode": "77082",
+  "market": "Houston",
+  "lat": 29.734109,
+  "lng": -95.65125,
+  "propertyType": "GeneralRetail",
+  "propertySubtype": "GeneralRetail_Restaurant",
+  "buildingSF": 24721.0,
+  "buildingSFBasis": "RBA",
+  "stories": 1,
+  "yearBuilt": 2008,
+  "yearRenovated": null,
+  "parkingRatio": 5.11,
+  "zoning": "None",
+  "primarySubmarketId": 4310,
+  "primaryPhotoUri": "https://ahprd1cdn.csgpimgs.com/i2/bh-HJLFxAp0btwsQ0Sx3XNyG9lZdkCz6Zb6Kv-6ekqc/112/image.jpg",
+  "availableSpaceCount": 5,
+  "availableSFSmallest": 985.0,
+  "availableSFLargest": 1569.0,
+  "minDivisibleSF": 985.0,
+  "askingRentPerSfYrLow": 13.66,
+  "askingRentPerSfYrHigh": 22.0,
+  "askingRentServiceTypes": [
+   "NNN"
+  ],
+  "spacesWithRent": 5,
+  "listingIds": [
+   27478819
+  ],
+  "spaces": [
+   {
+    "spaceId": 20881984,
+    "listingId": 27478819,
+    "listingType": "ShoppingCenterDirectSpaceForLease",
+    "suite": "D",
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "sfMin": 985.0,
+    "sfMax": 985.0,
+    "sfMaxContiguous": 985.0,
+    "rentPerSfYrLow": 20.0,
+    "rentPerSfYrHigh": 20.0,
+    "rentAsQuoted": {
+     "rateLow": 20.0,
+     "rateHigh": 20.0,
+     "rateBasis": "Yearly"
+    },
+    "serviceType": "TripleNet",
+    "serviceTypeShort": "NNN",
+    "monetaryUnit": "UnitedStatesDollar",
+    "isLeasePending": false,
+    "dateOnMarket": "2026-04-09",
+    "availableOnDate": "2026-10-01",
+    "leaseTermType": "Negotiable",
+    "floorPlanUri": null,
+    "spaceNotes": "SPECIAL LIMITED TIME OFFER: \nUp to 3 months FREE rent for qualified applicants. Call for details!\n\nGreat office space coming available in a prime Westherim location! This 985 SF suite, currently an Allstate office, will be available for viewing with move-in ready by September 2026. The space offers a professional layout ideal for an insurance agency, financial services or other office use. Contact us today for more details!",
+    "restaurantKeywordsInSpaceNotes": [],
+    "restaurantKeywordsInListingNotes": [],
+    "suiteTenantHistory": [],
+    "matterportModelIdsForSuite": []
+   },
+   {
+    "spaceId": 21842401,
+    "listingId": 27478819,
+    "listingType": "ShoppingCenterDirectSpaceForLease",
+    "suite": "D2",
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "sfMin": 985.0,
+    "sfMax": 985.0,
+    "sfMaxContiguous": 985.0,
+    "rentPerSfYrLow": 22.0,
+    "rentPerSfYrHigh": 22.0,
+    "rentAsQuoted": {
+     "rateLow": 22.0,
+     "rateHigh": 22.0,
+     "rateBasis": "Yearly"
+    },
+    "serviceType": "TripleNet",
+    "serviceTypeShort": "NNN",
+    "monetaryUnit": "UnitedStatesDollar",
+    "isLeasePending": false,
+    "dateOnMarket": "2026-09-08",
+    "availableOnDate": "2027-01-01",
+    "leaseTermType": "Negotiable",
+    "floorPlanUri": null,
+    "spaceNotes": "Up to 3 months FREE rent for qualified applicants. Call for details!\n\n985 SF Salon / Retail Space – Available January 1, 2027\n\nGreat leasing opportunity! This approximately 985 SF suite is currently operating as a salon and offers a functional layout that is well-suited for a salon, beauty business, retail concept, professional office, or other permitted commercial use.\n\nProperty Highlights:\n\n-985 SF\n-Available January 1, 2027\n-Currently configured as a salon\n-Existing storefront\n-Restroom facilities\n-Approximately 14’9” storefront frontage\n-Flexible layout with approximately 70’ of depth\n-3 MONTHS FREE RENT currently being offered!\n\nCall today for more details or to schedule a tour! This is a great opportunity to take advantage of the current leasing special and secure a well-positioned c",
+    "restaurantKeywordsInSpaceNotes": [],
+    "restaurantKeywordsInListingNotes": [],
+    "suiteTenantHistory": [],
+    "matterportModelIdsForSuite": []
+   },
+   {
+    "spaceId": 21842466,
+    "listingId": 27478819,
+    "listingType": "ShoppingCenterDirectSpaceForLease",
+    "suite": "I-3",
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "sfMin": 1250.0,
+    "sfMax": 1250.0,
+    "sfMaxContiguous": 1250.0,
+    "rentPerSfYrLow": 22.0,
+    "rentPerSfYrHigh": 22.0,
+    "rentAsQuoted": {
+     "rateLow": 22.0,
+     "rateHigh": 22.0,
+     "rateBasis": "Yearly"
+    },
+    "serviceType": "TripleNet",
+    "serviceTypeShort": "NNN",
+    "monetaryUnit": "UnitedStatesDollar",
+    "isLeasePending": false,
+    "dateOnMarket": "2026-09-08",
+    "availableOnDate": "2027-06-01",
+    "leaseTermType": "Negotiable",
+    "floorPlanUri": null,
+    "spaceNotes": "Up to 3 months FREE rent for qualified applicants. Call for details!\n\nGreat leasing opportunity! Suite I-3 is currently operating as a body art & piercing studio and features a versatile layout that can accommodate a variety of beauty, personal-service, retail, or professional uses.\n\nProperty Highlights:\n-Available June 1, 2027\n-Approximately 1,250 sq. ft\n-Currently configured as a body art & piercing studio\n-Open floor plan\n-1 private restroom\n-1 private office\n-Rear access\n- 3 MONTHS FREE RENT currently being offered!\n\nTake advantage of this great leasing special and secure a versatile commercial space with an open layout, private office, restroom, and convenient rear access.",
+    "restaurantKeywordsInSpaceNotes": [],
+    "restaurantKeywordsInListingNotes": [],
+    "suiteTenantHistory": [
+     {
+      "occupancyId": 290583401,
+      "name": "Body Art Piercing Studio",
+      "industry": "PersonalServices",
+      "moveIn": "2021-10-01",
+      "moveOut": null,
+      "durationYears": 5.1,
+      "isFood": false
+     }
+    ],
+    "matterportModelIdsForSuite": []
+   },
+   {
+    "spaceId": 20056061,
+    "listingId": 27478819,
+    "listingType": "ShoppingCenterDirectSpaceForLease",
+    "suite": "I-4",
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "sfMin": 1250.0,
+    "sfMax": 1250.0,
+    "sfMaxContiguous": 1250.0,
+    "rentPerSfYrLow": 17.08,
+    "rentPerSfYrHigh": 17.08,
+    "rentAsQuoted": {
+     "rateLow": 17.08,
+     "rateHigh": 17.08,
+     "rateBasis": "Yearly"
+    },
+    "serviceType": "TripleNet",
+    "serviceTypeShort": "NNN",
+    "monetaryUnit": "UnitedStatesDollar",
+    "isLeasePending": false,
+    "dateOnMarket": "2025-12-16",
+    "availableOnDate": "2025-12-17",
+    "leaseTermType": "Negotiable",
+    "floorPlanUri": "https://ahprd1cdn.csgpimgs.com/i2/AF3Zm1NdVSFTZ1ztjp3j7T9JkqnzWeev3mSm8Ixmo2g/112/image.jpg",
+    "spaceNotes": "SPECIAL LIMITED TIME OFFER: \nUp to 3 months FREE rent for qualified applicants. Call for details!\n\nMOVE-IN READY, 1,250-square-foot suite featuring new luxury vinyl flooring, fresh paint, recessed LED lighting, an open floor plan filled with natural light, private office, private restroom, and a rear exit door.\n\nStarting Base psf $17.08 - $9.28 psf NNN - $2,745.83 monthly rent",
+    "restaurantKeywordsInSpaceNotes": [],
+    "restaurantKeywordsInListingNotes": [],
+    "suiteTenantHistory": [
+     {
+      "occupancyId": 296775291,
+      "name": "DLUX",
+      "industry": null,
+      "moveIn": "2022-03-25",
+      "moveOut": "2025-05-31",
+      "durationYears": 3.2,
+      "isFood": false
+     }
+    ],
+    "matterportModelIdsForSuite": []
+   },
+   {
+    "spaceId": 19630716,
+    "listingId": 27478819,
+    "listingType": "ShoppingCenterDirectSpaceForLease",
+    "suite": "MM",
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "sfMin": 1569.0,
+    "sfMax": 1569.0,
+    "sfMaxContiguous": 1569.0,
+    "rentPerSfYrLow": 13.66,
+    "rentPerSfYrHigh": 13.66,
+    "rentAsQuoted": {
+     "rateLow": 13.66,
+     "rateHigh": 13.66,
+     "rateBasis": "Yearly"
+    },
+    "serviceType": "TripleNet",
+    "serviceTypeShort": "NNN",
+    "monetaryUnit": "UnitedStatesDollar",
+    "isLeasePending": false,
+    "dateOnMarket": "2025-09-29",
+    "availableOnDate": "2025-10-01",
+    "leaseTermType": "Negotiable",
+    "floorPlanUri": null,
+    "spaceNotes": "SPECIAL LIMITED TIME OFFER: \nUp to 3 months' FREE rent for qualified applicants. Call for details!\n\nSuite MM offers an open and inviting 1,569 square feet of space, featuring new high-end wood vinyl flooring, fresh paint, two private offices, and a bathroom.\n\nStarting Base psf $13.66 - $9.28 psf NNN - $2,999.41 monthly rent",
+    "restaurantKeywordsInSpaceNotes": [],
+    "restaurantKeywordsInListingNotes": [],
+    "suiteTenantHistory": [
+     {
+      "occupancyId": 182556941,
+      "name": "Suite Relocations",
+      "industry": "RealEstate",
+      "moveIn": "2017-08-07",
+      "moveOut": "2018-03-16",
+      "durationYears": 0.6,
+      "isFood": false
+     },
+     {
+      "occupancyId": 272902911,
+      "name": "Outliner's Barber Shop",
+      "industry": "PersonalServices",
+      "moveIn": "2021-04-01",
+      "moveOut": null,
+      "durationYears": 5.6,
+      "isFood": false
+     },
+     {
+      "occupancyId": 341121881,
+      "name": "Outliner's Barber Shop",
+      "industry": "PersonalServices",
+      "moveIn": "2025-04-01",
+      "moveOut": null,
+      "durationYears": 1.6,
+      "isFood": false
+     }
+    ],
+    "matterportModelIdsForSuite": [
+     "LxesjX9RDHT"
+    ]
+   }
+  ],
+  "matterportModelIds": [
+   "LxesjX9RDHT",
+   "mh9ozDuMTeN"
+  ],
+  "matterportModels": [
+   {
+    "modelId": "LxesjX9RDHT",
+    "captions": [
+     "Suite MM"
+    ],
+    "sources": [
+     "property"
+    ]
+   },
+   {
+    "modelId": "mh9ozDuMTeN",
+    "captions": [
+     "Suite H"
+    ],
+    "sources": [
+     "listing 27478819",
+     "property"
+    ]
+   }
+  ],
+  "matterportRetailCaptionModelIds": [
+   "LxesjX9RDHT",
+   "mh9ozDuMTeN"
+  ],
+  "currentTenantCount": 25,
+  "totalOccupancyRecords": 67,
+  "matterportModelIdsMatchingAvailableSuite": [
+   "LxesjX9RDHT"
+  ],
+  "foodHistory": [
+   {
+    "name": "Cafe Abuja",
+    "moveIn": "2015-11-01",
+    "moveOut": "2025-04-26",
+    "suites": [],
+    "sfOccupied": 1400.0,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "matchBasis": [
+     "name-regex"
+    ],
+    "occupancyIds": [
+     132699281
+    ],
+    "isCurrent": false,
+    "durationYears": 9.5,
+    "confidence": "high"
+   },
+   {
+    "name": "Larry & Laney's Soul Food",
+    "moveIn": "2016-02-01",
+    "moveOut": null,
+    "suites": [
+     "M"
+    ],
+    "sfOccupied": 1000.0,
+    "expirationReason": null,
+    "matchBasis": [
+     "profile.industryType=17",
+     "bio-regex"
+    ],
+    "occupancyIds": [
+     295684411
+    ],
+    "isCurrent": true,
+    "durationYears": 10.8,
+    "confidence": "high"
+   },
+   {
+    "name": "La Raye's Bar-B-Que Inc",
+    "moveIn": "2016-09-04",
+    "moveOut": "2021-02-15",
+    "suites": [
+     "M"
+    ],
+    "sfOccupied": 1000.0,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "matchBasis": [
+     "profile.industryType=17"
+    ],
+    "occupancyIds": [
+     167488111
+    ],
+    "isCurrent": false,
+    "durationYears": 4.4,
+    "confidence": "medium"
+   },
+   {
+    "name": "Yancey's Seafood",
+    "moveIn": "2022-01-01",
+    "moveOut": null,
+    "suites": [
+     "I-1"
+    ],
+    "sfOccupied": 1500.0,
+    "expirationReason": null,
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex",
+     "bio-regex"
+    ],
+    "occupancyIds": [
+     294281731
+    ],
+    "isCurrent": true,
+    "durationYears": 4.9,
+    "confidence": "high"
+   }
+  ],
+  "foodHistoryRecords": [
+   {
+    "occupancyId": 132699281,
+    "tenantLocationId": 48421231,
+    "name": "Cafe Abuja",
+    "companyName": "Cafe Abuja",
+    "moveIn": "2015-11-01",
+    "moveInSource": "moveInDate",
+    "moveOut": "2025-04-26",
+    "isCurrent": false,
+    "durationYears": 9.5,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "suites": [],
+    "sfOccupied": 1400.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "name-regex"
+    ],
+    "leaseSignDate": "2015-07-10",
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 295684411,
+    "tenantLocationId": 215725621,
+    "name": "Larry & Laney's Soul Food",
+    "companyName": "Larry & Laney's Soul Food",
+    "moveIn": "2016-02-01",
+    "moveInSource": "moveInDate",
+    "moveOut": null,
+    "isCurrent": true,
+    "durationYears": 10.8,
+    "expirationReason": null,
+    "suites": [
+     "M"
+    ],
+    "sfOccupied": 1000.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "profile.industryType=17",
+     "bio-regex"
+    ],
+    "leaseSignDate": "2016-01-19",
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 167488111,
+    "tenantLocationId": 86778121,
+    "name": "La Raye's Bar-B-Que Inc",
+    "companyName": "La Raye's Bar-B-Que Inc",
+    "moveIn": "2016-09-04",
+    "moveInSource": "moveInDate",
+    "moveOut": "2021-02-15",
+    "isCurrent": false,
+    "durationYears": 4.4,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "suites": [
+     "M"
+    ],
+    "sfOccupied": 1000.0,
+    "leaseType": "Unknown",
+    "matchBasis": [
+     "profile.industryType=17"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 285896681,
+    "tenantLocationId": 197750661,
+    "name": "Chi Town Hookah and Daiquiri Lounge",
+    "companyName": null,
+    "moveIn": "2021-07-16",
+    "moveInSource": "moveInDate",
+    "moveOut": "2021-12-31",
+    "isCurrent": false,
+    "durationYears": 0.5,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "suites": [
+     "I-1"
+    ],
+    "sfOccupied": 1500.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "name-regex-weak"
+    ],
+    "leaseSignDate": "2021-06-16",
+    "leaseExpirationDate": "2026-07-16"
+   },
+   {
+    "occupancyId": 294281731,
+    "tenantLocationId": 215563451,
+    "name": "Yancey's Seafood",
+    "companyName": "Yancey's Seafood",
+    "moveIn": "2022-01-01",
+    "moveInSource": "moveInDate",
+    "moveOut": null,
+    "isCurrent": true,
+    "durationYears": 4.9,
+    "expirationReason": null,
+    "suites": [
+     "I-1"
+    ],
+    "sfOccupied": 1500.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex",
+     "bio-regex"
+    ],
+    "leaseSignDate": "2021-12-16",
+    "leaseExpirationDate": null
+   }
+  ],
+  "foodHistoryCount": 4,
+  "foodPastCount": 2,
+  "foodCurrentCount": 2,
+  "foodWeakMatchCount": 1,
+  "saleCompCount": 0,
+  "lastSale": null,
+  "activeSaleListings": [],
+  "foodHistoryArtifacts": [],
+  "foodClosedOrBankruptCount": 0,
+  "selection": {
+   "top12Rank": 6,
+   "score": 18,
+   "scoreReasons": [
+    "fit-space+rent",
+    "food-past=2",
+    "food-current=2",
+    "mp-of-available-suite",
+    "retail-building"
+   ],
+   "rationale": "Property subtype is Restaurant; cheapest rent in the set ($13.66 NNN for Suite MM, 1,569 SF, with its own scan); 5 suites of 985-1,569 SF; mixed food record (2 gone, 2 operating 5-11 yrs).",
+   "caveat": "Suite MM is currently a barber shop (available while occupied); small suites, none described as having a kitchen.",
+   "primarySpace": {
+    "spaceId": 19630716,
+    "listingId": 27478819,
+    "suite": "MM",
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "sfMin": 1569.0,
+    "sfMax": 1569.0,
+    "rentPerSfYrLow": 13.66,
+    "rentPerSfYrHigh": 13.66,
+    "serviceType": "TripleNet",
+    "serviceTypeShort": "NNN",
+    "isLeasePending": false
+   },
+   "primarySpaceRentLabel": "$13.66/SF/yr NNN (quoted yearly)",
+   "primarySpaceAnnualRent": 21433,
+   "primarySpaceMonthlyRent": 1786,
+   "primaryMatterportModelId": "LxesjX9RDHT",
+   "matterportScanRelation": "exact-suite",
+   "fitSpaceCount": 5
+  }
+ },
+ {
+  "propertyId": 20219730,
+  "buildingName": null,
+  "address": "630 W 6Th St",
+  "city": "Los Angeles",
+  "state": "CA",
+  "postcode": "90017",
+  "market": "Los Angeles",
+  "lat": 34.0490675,
+  "lng": -118.2563047,
+  "propertyType": "Multifamily",
+  "propertySubtype": "MultiFamily_Apartments",
+  "buildingSF": 90000.0,
+  "buildingSFBasis": "GBA",
+  "stories": 6,
+  "yearBuilt": 1962,
+  "yearRenovated": null,
+  "parkingRatio": null,
+  "zoning": "LAC2",
+  "primarySubmarketId": 29140,
+  "primaryPhotoUri": "https://ahprd1cdn.csgpimgs.com/i2/IMHMFSLvI5YShsYA6qhxPy5g3nlhqWU2EyIhVArg-uU/112/image.jpg",
+  "availableSpaceCount": 3,
+  "availableSFSmallest": 1086.0,
+  "availableSFLargest": 3174.0,
+  "minDivisibleSF": 1086.0,
+  "askingRentPerSfYrLow": 22.2,
+  "askingRentPerSfYrHigh": 37.08,
+  "askingRentServiceTypes": [
+   "NNN"
+  ],
+  "spacesWithRent": 3,
+  "listingIds": [
+   35880855,
+   40590195
+  ],
+  "spaces": [
+   {
+    "spaceId": 17653913,
+    "listingId": 35880855,
+    "listingType": "PropertyDirectSpaceForLease",
+    "suite": "110D",
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "sfMin": 1086.0,
+    "sfMax": 1086.0,
+    "sfMaxContiguous": 1086.0,
+    "rentPerSfYrLow": 22.2,
+    "rentPerSfYrHigh": 22.2,
+    "rentAsQuoted": {
+     "rateLow": 1.85,
+     "rateHigh": 1.85,
+     "rateBasis": "Monthly"
+    },
+    "serviceType": "TripleNet",
+    "serviceTypeShort": "NNN",
+    "monetaryUnit": "UnitedStatesDollar",
+    "isLeasePending": false,
+    "dateOnMarket": "2024-04-08",
+    "availableOnDate": "2024-01-01",
+    "leaseTermType": "Negotiable",
+    "floorPlanUri": null,
+    "spaceNotes": "Space 110 D is an in-line move-in ready space suitable for a non-vented\ncafé/restaurant or a retail space with existing ADA restroom and private\noutdoor patio",
+    "restaurantKeywordsInSpaceNotes": [
+     "café",
+     "patio",
+     "restaurant",
+     "vented"
+    ],
+    "restaurantKeywordsInListingNotes": [],
+    "suiteTenantHistory": [],
+    "matterportModelIdsForSuite": []
+   },
+   {
+    "spaceId": 21117310,
+    "listingId": 40590195,
+    "listingType": "CommercialSublease",
+    "suite": "110 B",
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Sublet",
+    "sfMin": 1310.0,
+    "sfMax": 1310.0,
+    "sfMaxContiguous": 1310.0,
+    "rentPerSfYrLow": 37.08,
+    "rentPerSfYrHigh": 37.08,
+    "rentAsQuoted": {
+     "rateLow": 37.08,
+     "rateHigh": 37.08,
+     "rateBasis": "Yearly"
+    },
+    "serviceType": "TripleNet",
+    "serviceTypeShort": "NNN",
+    "monetaryUnit": "UnitedStatesDollar",
+    "isLeasePending": false,
+    "dateOnMarket": "2026-05-19",
+    "availableOnDate": "2026-05-20",
+    "leaseTermType": "Unknown",
+    "floorPlanUri": null,
+    "spaceNotes": "Asset Sale\n**Key Money - $75,000.00 \n\nContact Broker for Questions\n\nGround floor retail restaurant space with strong street frontage and visibility along 6th Street\nDense daytime population driven by surrounding office towers, residential buildings, and hotels\nWalking distance to public transportation, Metro lines, and multiple bus stops\nSurrounded by complementary food, retail, and service-oriented businesses\nExisting burger restaurant concept with dine-in and takeout functionality\nHigh pedestrian traffic corridor with strong lunch and evening demand\nConvenient access to the 110 Freeway and major Downtown LA arterials\nLocated near intersections of 6th Street, Hope Street, and Grand Avenue\nIdeal for fast casual dining, burger concepts, takeout, or ghost kitchen operations\nPositioned within",
+    "restaurantKeywordsInSpaceNotes": [
+     "dining",
+     "food",
+     "kitchen",
+     "restaurant"
+    ],
+    "restaurantKeywordsInListingNotes": [],
+    "suiteTenantHistory": [
+     {
+      "occupancyId": 288128641,
+      "name": "Unknown tenant",
+      "industry": "Unknown",
+      "moveIn": "2021-09-16",
+      "moveOut": "2024-12-03",
+      "durationYears": 3.2,
+      "isFood": false
+     },
+     {
+      "occupancyId": 338114291,
+      "name": "Unknown tenant",
+      "industry": "Unknown",
+      "moveIn": "2025-02-01",
+      "moveOut": null,
+      "durationYears": 1.8,
+      "isFood": false
+     },
+     {
+      "occupancyId": 356330841,
+      "name": "Js First Enterprise, Inc",
+      "industry": "PublicAdministration",
+      "moveIn": "2026-03-03",
+      "moveOut": null,
+      "durationYears": 0.7,
+      "isFood": false
+     }
+    ],
+    "matterportModelIdsForSuite": [
+     "kvEQYM7yddK"
+    ]
+   },
+   {
+    "spaceId": 17653405,
+    "listingId": 35880855,
+    "listingType": "PropertyDirectSpaceForLease",
+    "suite": "116BC",
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "sfMin": 3174.0,
+    "sfMax": 3174.0,
+    "sfMaxContiguous": 3174.0,
+    "rentPerSfYrLow": 30.0,
+    "rentPerSfYrHigh": 30.0,
+    "rentAsQuoted": {
+     "rateLow": 2.5,
+     "rateHigh": 2.5,
+     "rateBasis": "Monthly"
+    },
+    "serviceType": "TripleNet",
+    "serviceTypeShort": "NNN",
+    "monetaryUnit": "UnitedStatesDollar",
+    "isLeasePending": false,
+    "dateOnMarket": "2024-04-08",
+    "availableOnDate": "2023-11-01",
+    "leaseTermType": "Negotiable",
+    "floorPlanUri": null,
+    "spaceNotes": "Suite 116 BC is a 2nd generation, move-in ready restaurant spaces with Type\n1 hood, grease interceptor, walk-in fridge and freezer",
+    "restaurantKeywordsInSpaceNotes": [
+     "2nd gen",
+     "grease",
+     "hood",
+     "restaurant"
+    ],
+    "restaurantKeywordsInListingNotes": [],
+    "suiteTenantHistory": [
+     {
+      "occupancyId": 276166401,
+      "name": "Unknown tenant",
+      "industry": "Unknown",
+      "moveIn": "2020-09-04",
+      "moveOut": "2024-12-03",
+      "durationYears": 4.2,
+      "isFood": false
+     }
+    ],
+    "matterportModelIdsForSuite": [
+     "C7dRdWv7Pmf"
+    ]
+   }
+  ],
+  "matterportModelIds": [
+   "C7dRdWv7Pmf",
+   "kvEQYM7yddK"
+  ],
+  "matterportModels": [
+   {
+    "modelId": "C7dRdWv7Pmf",
+    "captions": [
+     "Suite 116BC"
+    ],
+    "sources": [
+     "property"
+    ]
+   },
+   {
+    "modelId": "kvEQYM7yddK",
+    "captions": [
+     "Suite 110B"
+    ],
+    "sources": [
+     "property"
+    ]
+   }
+  ],
+  "matterportRetailCaptionModelIds": [
+   "C7dRdWv7Pmf",
+   "kvEQYM7yddK"
+  ],
+  "currentTenantCount": 5,
+  "totalOccupancyRecords": 16,
+  "matterportModelIdsMatchingAvailableSuite": [
+   "C7dRdWv7Pmf",
+   "kvEQYM7yddK"
+  ],
+  "foodHistory": [
+   {
+    "name": "Library Bar",
+    "moveIn": "2009-07-30",
+    "moveOut": null,
+    "suites": [],
+    "sfOccupied": 2186.0,
+    "expirationReason": null,
+    "matchBasis": [
+     "profile.industryType=17",
+     "bio-regex"
+    ],
+    "occupancyIds": [
+     114940182
+    ],
+    "isCurrent": true,
+    "durationYears": 17.3,
+    "confidence": "high"
+   },
+   {
+    "name": "Subway",
+    "moveIn": "2009-07-30",
+    "moveOut": null,
+    "suites": [],
+    "sfOccupied": 1176.0,
+    "expirationReason": null,
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex",
+     "bio-regex"
+    ],
+    "occupancyIds": [
+     114940197
+    ],
+    "isCurrent": true,
+    "durationYears": 17.3,
+    "confidence": "high"
+   },
+   {
+    "name": "Wolfgang Puck Express",
+    "moveIn": "2009-07-30",
+    "moveOut": "2011-05-16",
+    "suites": [],
+    "sfOccupied": 1600.0,
+    "expirationReason": "ClosedLocationOrBankrupt",
+    "matchBasis": [
+     "profile.industryType=17",
+     "bio-regex"
+    ],
+    "occupancyIds": [
+     114940199
+    ],
+    "isCurrent": false,
+    "durationYears": 1.8,
+    "confidence": "high"
+   },
+   {
+    "name": "Mitaki Japanese Restaurant No Two",
+    "moveIn": "2010-10-07",
+    "moveOut": "2020-05-24",
+    "suites": [],
+    "sfOccupied": 500.0,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex"
+    ],
+    "occupancyIds": [
+     118579341
+    ],
+    "isCurrent": false,
+    "durationYears": 9.6,
+    "confidence": "high"
+   },
+   {
+    "name": "REDWHITE BONELESS RAMEN",
+    "moveIn": "2024-06-03",
+    "moveOut": null,
+    "suites": [
+     "110A"
+    ],
+    "sfOccupied": 1085.0,
+    "expirationReason": null,
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex",
+     "bio-regex"
+    ],
+    "occupancyIds": [
+     329027811
+    ],
+    "isCurrent": true,
+    "durationYears": 2.4,
+    "confidence": "high"
+   }
+  ],
+  "foodHistoryRecords": [
+   {
+    "occupancyId": 114940182,
+    "tenantLocationId": 23118421,
+    "name": "Library Bar",
+    "companyName": "Library Bar",
+    "moveIn": "2009-07-30",
+    "moveInSource": "fromDate",
+    "moveOut": null,
+    "isCurrent": true,
+    "durationYears": 17.3,
+    "expirationReason": null,
+    "suites": [],
+    "sfOccupied": 2186.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "profile.industryType=17",
+     "bio-regex"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 114940197,
+    "tenantLocationId": 4220348,
+    "name": "Subway",
+    "companyName": "Subway",
+    "moveIn": "2009-07-30",
+    "moveInSource": "fromDate",
+    "moveOut": null,
+    "isCurrent": true,
+    "durationYears": 17.3,
+    "expirationReason": null,
+    "suites": [],
+    "sfOccupied": 1176.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex",
+     "bio-regex"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 114940199,
+    "tenantLocationId": 22431846,
+    "name": "Wolfgang Puck Express",
+    "companyName": "Wolfgang Puck",
+    "moveIn": "2009-07-30",
+    "moveInSource": "fromDate",
+    "moveOut": "2011-05-16",
+    "isCurrent": false,
+    "durationYears": 1.8,
+    "expirationReason": "ClosedLocationOrBankrupt",
+    "suites": [],
+    "sfOccupied": 1600.0,
+    "leaseType": "Unknown",
+    "matchBasis": [
+     "profile.industryType=17",
+     "bio-regex"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 118579341,
+    "tenantLocationId": 30098640,
+    "name": "Mitaki Japanese Restaurant No Two",
+    "companyName": "Mitaki Japanese Restaurant No Two",
+    "moveIn": "2010-10-07",
+    "moveInSource": "fromDate",
+    "moveOut": "2020-05-24",
+    "isCurrent": false,
+    "durationYears": 9.6,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "suites": [],
+    "sfOccupied": 500.0,
+    "leaseType": "Unknown",
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 329027811,
+    "tenantLocationId": 275904231,
+    "name": "REDWHITE BONELESS RAMEN",
+    "companyName": "REDWHITE BONELESS RAMEN",
+    "moveIn": "2024-06-03",
+    "moveInSource": "moveInDate",
+    "moveOut": null,
+    "isCurrent": true,
+    "durationYears": 2.4,
+    "expirationReason": null,
+    "suites": [
+     "110A"
+    ],
+    "sfOccupied": 1085.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex",
+     "bio-regex"
+    ],
+    "leaseSignDate": "2024-05-15",
+    "leaseExpirationDate": "2029-06-02"
+   }
+  ],
+  "foodHistoryCount": 5,
+  "foodPastCount": 2,
+  "foodCurrentCount": 3,
+  "foodWeakMatchCount": 0,
+  "saleCompCount": 2,
+  "lastSale": {
+   "compId": 3784555,
+   "soldDate": "2016-12-13",
+   "soldForPrice": null,
+   "salePriceStatus": "Unknown",
+   "entityCount": 1,
+   "isPortfolio": false,
+   "allocatedPrice": null,
+   "allocatedPriceStatus": "Unknown",
+   "monetaryUnit": "UnitedStatesDollar"
+  },
+  "activeSaleListings": [],
+  "foodHistoryArtifacts": [],
+  "foodClosedOrBankruptCount": 1,
+  "selection": {
+   "top12Rank": 7,
+   "score": 18,
+   "scoreReasons": [
+    "fit-space+rent",
+    "food-past=2",
+    "food-current=3",
+    "mp-of-available-suite",
+    "restaurant-keywords"
+   ],
+   "rationale": "Best LA site. Suite 116BC is a 2nd-gen restaurant (Type 1 hood, grease interceptor, walk-in) at $30 NNN with its own scan; Suite 110B (restaurant sublease, $75k key money) also has a scan. Past food: Wolfgang Puck Express closed after 1.8 yr, Mitaki 9.6 yr.",
+   "caveat": "Property is typed Multifamily (retail podium). Suite-level tenant names are mostly Unknown in the occupancy data.",
+   "primarySpace": {
+    "spaceId": 17653405,
+    "listingId": 35880855,
+    "suite": "116BC",
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "sfMin": 3174.0,
+    "sfMax": 3174.0,
+    "rentPerSfYrLow": 30.0,
+    "rentPerSfYrHigh": 30.0,
+    "serviceType": "TripleNet",
+    "serviceTypeShort": "NNN",
+    "isLeasePending": false
+   },
+   "primarySpaceRentLabel": "$30.00/SF/yr NNN (quoted monthly)",
+   "primarySpaceAnnualRent": 95220,
+   "primarySpaceMonthlyRent": 7935,
+   "primaryMatterportModelId": "C7dRdWv7Pmf",
+   "matterportScanRelation": "exact-suite",
+   "fitSpaceCount": 3
+  }
+ },
+ {
+  "propertyId": 6819921,
+  "buildingName": "701 W 7th St",
+  "address": "655 S Hope St",
+  "city": "Los Angeles",
+  "state": "CA",
+  "postcode": "90017",
+  "market": "Los Angeles",
+  "lat": 34.0483251,
+  "lng": -118.2576883,
+  "propertyType": "Multifamily",
+  "propertySubtype": "MultiFamily_Apartments",
+  "buildingSF": 116651.0,
+  "buildingSFBasis": "GBA",
+  "stories": 17,
+  "yearBuilt": 1964,
+  "yearRenovated": null,
+  "parkingRatio": 1.07,
+  "zoning": "LAC2",
+  "primarySubmarketId": 29140,
+  "primaryPhotoUri": "https://ahprd1cdn.csgpimgs.com/i2/5admr8Gt5EvvKpi4FyCSSxv04g8rV3ZgqC8DQGy5WcY/112/image.jpg",
+  "availableSpaceCount": 1,
+  "availableSFSmallest": 4265.0,
+  "availableSFLargest": 4265.0,
+  "minDivisibleSF": 4265.0,
+  "askingRentPerSfYrLow": 36.0,
+  "askingRentPerSfYrHigh": 36.0,
+  "askingRentServiceTypes": [
+   "NNN"
+  ],
+  "spacesWithRent": 1,
+  "listingIds": [
+   38856970
+  ],
+  "spaces": [
+   {
+    "spaceId": 20192922,
+    "listingId": 38856970,
+    "listingType": "PropertyDirectSpaceForLease",
+    "suite": "101 - 701 W 7th St",
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "sfMin": 4265.0,
+    "sfMax": 4265.0,
+    "sfMaxContiguous": 4265.0,
+    "rentPerSfYrLow": 36.0,
+    "rentPerSfYrHigh": 36.0,
+    "rentAsQuoted": {
+     "rateLow": 3.0,
+     "rateHigh": 3.0,
+     "rateBasis": "Monthly"
+    },
+    "serviceType": "TripleNet",
+    "serviceTypeShort": "NNN",
+    "monetaryUnit": "UnitedStatesDollar",
+    "isLeasePending": false,
+    "dateOnMarket": "2025-12-22",
+    "availableOnDate": "2025-12-22",
+    "leaseTermType": "Negotiable",
+    "floorPlanUri": "https://ahprd1cdn.csgpimgs.com/i2/shRcfjuR50FShJHaWw8XoTdldN5KrqFCOLcwpmgcQJQ/112/image.svg",
+    "spaceNotes": "*Property is listed by owner. Cooperating broker fee is a generous  6%.\nThis space is a two-level retail or restaurant shell, delivered with plumbing, electrical, and HVAC in place, offering a versatile layout for easy tenant customization. This 4,265-square-foot space includes an open storefront, a rear kitchen area, a monumental staircase, upper-level bar or lounge space, and a gated outdoor patio. This space is suitable for art galleries, restaurants, bars, nightclubs, QSRs, pop-up exhibits, wedding venues, parties, and other uses, such as fitness studios or community spaces. \n\nPlease see the Matterport video",
+    "restaurantKeywordsInSpaceNotes": [
+     "bar",
+     "kitchen",
+     "patio",
+     "restaurant"
+    ],
+    "restaurantKeywordsInListingNotes": [
+     "restaurant"
+    ],
+    "suiteTenantHistory": [],
+    "matterportModelIdsForSuite": [
+     "MHAy54smDJN",
+     "tjGGQpSXu1v"
+    ]
+   }
+  ],
+  "matterportModelIds": [
+   "1vkCX47hAwB",
+   "EdUaDeaEpRv",
+   "MHAy54smDJN",
+   "tjGGQpSXu1v"
+  ],
+  "matterportModels": [
+   {
+    "modelId": "1vkCX47hAwB",
+    "captions": [
+     "Matterport - Automatically plays a Walkthrough Tour of property"
+    ],
+    "sources": [
+     "property"
+    ]
+   },
+   {
+    "modelId": "EdUaDeaEpRv",
+    "captions": [
+     "Suite LM 100",
+     "View the Floor Plan for 655 S Hope Street"
+    ],
+    "sources": [
+     "listing 38856970",
+     "property"
+    ]
+   },
+   {
+    "modelId": "MHAy54smDJN",
+    "captions": [
+     "701 W 7th St",
+     "Suite 101"
+    ],
+    "sources": [
+     "property"
+    ]
+   },
+   {
+    "modelId": "tjGGQpSXu1v",
+    "captions": [
+     "#101 floor plan, 701 W 7th Street, First Floor",
+     "Suite 101",
+     "View the F#LM100 Metro level store",
+     "View the Floor Plan for Suite 101, 701 W 7th Street"
+    ],
+    "sources": [
+     "listing 38856970",
+     "property"
+    ]
+   }
+  ],
+  "matterportRetailCaptionModelIds": [
+   "EdUaDeaEpRv",
+   "MHAy54smDJN",
+   "tjGGQpSXu1v"
+  ],
+  "currentTenantCount": 10,
+  "totalOccupancyRecords": 15,
+  "matterportModelIdsMatchingAvailableSuite": [
+   "MHAy54smDJN",
+   "tjGGQpSXu1v"
+  ],
+  "foodHistory": [
+   {
+    "name": "QDOBA",
+    "moveIn": "2009-02-01",
+    "moveOut": "2025-03-28",
+    "suites": [],
+    "sfOccupied": 3800.0,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "matchBasis": [
+     "profile.industryType=17",
+     "bio-regex"
+    ],
+    "occupancyIds": [
+     114206956,
+     271309871
+    ],
+    "isCurrent": false,
+    "durationYears": 16.2,
+    "confidence": "high"
+   },
+   {
+    "name": "Ono Hawaiian BBQ",
+    "moveIn": "2025-09-05",
+    "moveOut": null,
+    "suites": [
+     "105"
+    ],
+    "sfOccupied": 3200.0,
+    "expirationReason": null,
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex",
+     "bio-regex"
+    ],
+    "occupancyIds": [
+     320889231
+    ],
+    "isCurrent": true,
+    "durationYears": 1.2,
+    "confidence": "high"
+   }
+  ],
+  "foodHistoryRecords": [
+   {
+    "occupancyId": 114206956,
+    "tenantLocationId": 3716637,
+    "name": "QDOBA",
+    "companyName": "QDOBA",
+    "moveIn": "2009-02-01",
+    "moveInSource": "moveInDate",
+    "moveOut": "2025-03-28",
+    "isCurrent": false,
+    "durationYears": 16.2,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "suites": [],
+    "sfOccupied": 3800.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "profile.industryType=17",
+     "bio-regex"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 271309871,
+    "tenantLocationId": 3716637,
+    "name": "QDOBA",
+    "companyName": "QDOBA",
+    "moveIn": "2020-03-14",
+    "moveInSource": "fromDate",
+    "moveOut": "2025-03-28",
+    "isCurrent": false,
+    "durationYears": 5.0,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "suites": [],
+    "sfOccupied": null,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "profile.industryType=17",
+     "bio-regex"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 320889231,
+    "tenantLocationId": 257635371,
+    "name": "Ono Hawaiian BBQ",
+    "companyName": "Ono Hawaiian BBQ",
+    "moveIn": "2025-09-05",
+    "moveInSource": "fromDate",
+    "moveOut": null,
+    "isCurrent": true,
+    "durationYears": 1.2,
+    "expirationReason": null,
+    "suites": [
+     "105"
+    ],
+    "sfOccupied": 3200.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex",
+     "bio-regex"
+    ],
+    "leaseSignDate": "2023-07-30",
+    "leaseExpirationDate": null
+   }
+  ],
+  "foodHistoryCount": 2,
+  "foodPastCount": 1,
+  "foodCurrentCount": 1,
+  "foodWeakMatchCount": 0,
+  "saleCompCount": 4,
+  "lastSale": {
+   "compId": 7827361,
+   "soldDate": "2026-04-14",
+   "soldForPrice": 960000,
+   "salePriceStatus": "FullValue",
+   "entityCount": 1,
+   "isPortfolio": false,
+   "allocatedPrice": null,
+   "allocatedPriceStatus": "Unknown",
+   "monetaryUnit": "UnitedStatesDollar"
+  },
+  "activeSaleListings": [],
+  "foodHistoryArtifacts": [],
+  "foodClosedOrBankruptCount": 0,
+  "selection": {
+   "top12Rank": 8,
+   "score": 17,
+   "scoreReasons": [
+    "fit-space+rent",
+    "food-past=1",
+    "food-current=1",
+    "mp-of-available-suite",
+    "restaurant-keywords"
+   ],
+   "rationale": "Two-level 4,265 SF restaurant shell with patio at 7th & Hope, $36 NNN, scanned (Suite 101). QDOBA held the building for 16 years then left in 2025.",
+   "caveat": "Top of the size range; delivered as shell (plumbing/electrical/HVAC only). Last sale $960k (FullValue, 2026) looks like a partial interest, do not show as building value.",
+   "primarySpace": {
+    "spaceId": 20192922,
+    "listingId": 38856970,
+    "suite": "101 - 701 W 7th St",
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "sfMin": 4265.0,
+    "sfMax": 4265.0,
+    "rentPerSfYrLow": 36.0,
+    "rentPerSfYrHigh": 36.0,
+    "serviceType": "TripleNet",
+    "serviceTypeShort": "NNN",
+    "isLeasePending": false
+   },
+   "primarySpaceRentLabel": "$36.00/SF/yr NNN (quoted monthly)",
+   "primarySpaceAnnualRent": 153540,
+   "primarySpaceMonthlyRent": 12795,
+   "primaryMatterportModelId": "MHAy54smDJN",
+   "matterportScanRelation": "exact-suite",
+   "fitSpaceCount": 1
+  }
+ },
+ {
+  "propertyId": 6038733,
+  "buildingName": "Nari Koreatown",
+  "address": "3150 Wilshire Blvd",
+  "city": "Los Angeles",
+  "state": "CA",
+  "postcode": "90010",
+  "market": "Los Angeles",
+  "lat": 34.0614245,
+  "lng": -118.2909395,
+  "propertyType": "Multifamily",
+  "propertySubtype": "MultiFamily_Apartments",
+  "buildingSF": 391304.0,
+  "buildingSFBasis": "GBA",
+  "stories": 18,
+  "yearBuilt": 2014,
+  "yearRenovated": null,
+  "parkingRatio": 1.85,
+  "zoning": "LAC4",
+  "primarySubmarketId": 8667,
+  "primaryPhotoUri": "https://ahprd1cdn.csgpimgs.com/i2/vFoB-y4KOQAbn8nwH-XvpiyfayMuLW9n6808XF-ViVw/112/image.jpg",
+  "availableSpaceCount": 1,
+  "availableSFSmallest": 1879.0,
+  "availableSFLargest": 1879.0,
+  "minDivisibleSF": 1879.0,
+  "askingRentPerSfYrLow": 48.0,
+  "askingRentPerSfYrHigh": 48.0,
+  "askingRentServiceTypes": [
+   "NNN"
+  ],
+  "spacesWithRent": 1,
+  "listingIds": [
+   42742989
+  ],
+  "spaces": [
+   {
+    "spaceId": 22165591,
+    "listingId": 42742989,
+    "listingType": "PropertyDirectSpaceForLease",
+    "suite": "112",
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "sfMin": 1879.0,
+    "sfMax": 1879.0,
+    "sfMaxContiguous": 1879.0,
+    "rentPerSfYrLow": 48.0,
+    "rentPerSfYrHigh": 48.0,
+    "rentAsQuoted": {
+     "rateLow": 48.0,
+     "rateHigh": 48.0,
+     "rateBasis": "Yearly"
+    },
+    "serviceType": "TripleNet",
+    "serviceTypeShort": "NNN",
+    "monetaryUnit": "UnitedStatesDollar",
+    "isLeasePending": false,
+    "dateOnMarket": "2026-10-19",
+    "availableOnDate": "2026-10-19",
+    "leaseTermType": "Years",
+    "floorPlanUri": null,
+    "spaceNotes": "Prime ±1,879 SF ground-floor retail space (former Starbucks) available at NARI, a luxury mixed-use development featuring 464 residential apartments at the prominent intersection of Wilshire Boulevard and Vermont Avenue in Koreatown.\n\nIdeal for coffee shops, cafés, and restaurant concepts, this restaurant-ready space offers a shared grease interceptor, 225-amp/480V electrical service, 2-inch gas meter, and existing HVAC.\n\nLocated directly across from the Wilshire/Vermont Metro Station (B and D Lines), the property benefits from excellent transit accessibility, strong street visibility, and a dense residential and daytime employment population.\n\nNARI features on-site structured parking and established co-tenants including Kura Sushi, The Kickin' Crab, Buffalo Wild Wings, Wells Fargo, and Hot",
+    "restaurantKeywordsInSpaceNotes": [
+     "café",
+     "coffee",
+     "grease",
+     "restaurant"
+    ],
+    "restaurantKeywordsInListingNotes": [],
+    "suiteTenantHistory": [],
+    "matterportModelIdsForSuite": []
+   }
+  ],
+  "matterportModelIds": [
+   "JdstXeubbif",
+   "JkvWR2dREPH",
+   "KxHYhPAYGuT",
+   "cdY5uAwXRrf",
+   "hFxeuqHM3uJ",
+   "qBKN4q6GDbQ",
+   "u85KTwSTdvV"
+  ],
+  "matterportModels": [
+   {
+    "modelId": "JdstXeubbif",
+    "captions": [
+     "Studio - 768SF"
+    ],
+    "sources": [
+     "property"
+    ]
+   },
+   {
+    "modelId": "JkvWR2dREPH",
+    "captions": [
+     "Pool"
+    ],
+    "sources": [
+     "property"
+    ]
+   },
+   {
+    "modelId": "KxHYhPAYGuT",
+    "captions": [
+     "1BR, 1BA - 606SF"
+    ],
+    "sources": [
+     "property"
+    ]
+   },
+   {
+    "modelId": "cdY5uAwXRrf",
+    "captions": [
+     "2BR,2BA - 963SF"
+    ],
+    "sources": [
+     "apartment-floorplan"
+    ]
+   },
+   {
+    "modelId": "hFxeuqHM3uJ",
+    "captions": [
+     "2BR, 2BA - 1007SF"
+    ],
+    "sources": [
+     "property"
+    ]
+   },
+   {
+    "modelId": "qBKN4q6GDbQ",
+    "captions": [
+     "0BR,1BA Model - 768SF"
+    ],
+    "sources": [
+     "property"
+    ]
+   },
+   {
+    "modelId": "u85KTwSTdvV",
+    "captions": [
+     "Guest Suite"
+    ],
+    "sources": [
+     "property"
+    ]
+   }
+  ],
+  "matterportRetailCaptionModelIds": [
+   "u85KTwSTdvV"
+  ],
+  "currentTenantCount": 9,
+  "totalOccupancyRecords": 27,
+  "matterportModelIdsMatchingAvailableSuite": [],
+  "foodHistory": [
+   {
+    "name": "Fatburger",
+    "moveIn": "2014-07-01",
+    "moveOut": "2025-03-29",
+    "suites": [],
+    "sfOccupied": 2183.0,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "matchBasis": [
+     "profile.industryType=17",
+     "bio-regex"
+    ],
+    "occupancyIds": [
+     122603324
+    ],
+    "isCurrent": false,
+    "durationYears": 10.7,
+    "confidence": "high"
+   },
+   {
+    "name": "Pizza Rev",
+    "moveIn": "2014-08-01",
+    "moveOut": "2018-06-30",
+    "suites": [],
+    "sfOccupied": 2501.0,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex",
+     "bio-regex"
+    ],
+    "occupancyIds": [
+     122603320
+    ],
+    "isCurrent": false,
+    "durationYears": 3.9,
+    "confidence": "high"
+   },
+   {
+    "name": "Jimmy John's",
+    "moveIn": "2016-07-18",
+    "moveOut": "2019-12-28",
+    "suites": [],
+    "sfOccupied": 3000.0,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex",
+     "bio-regex"
+    ],
+    "occupancyIds": [
+     164916791
+    ],
+    "isCurrent": false,
+    "durationYears": 3.4,
+    "confidence": "high"
+   },
+   {
+    "name": "Buffalo Wild Wings",
+    "moveIn": "2017-11-18",
+    "moveOut": null,
+    "suites": [],
+    "sfOccupied": 6300.0,
+    "expirationReason": null,
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex",
+     "bio-regex"
+    ],
+    "occupancyIds": [
+     186948991
+    ],
+    "isCurrent": true,
+    "durationYears": 9.0,
+    "confidence": "high"
+   },
+   {
+    "name": "Starbucks",
+    "moveIn": "2020-11-10",
+    "moveOut": "2025-10-31",
+    "suites": [],
+    "sfOccupied": 1000.0,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex",
+     "bio-regex"
+    ],
+    "occupancyIds": [
+     279361711
+    ],
+    "isCurrent": false,
+    "durationYears": 5.0,
+    "confidence": "high"
+   },
+   {
+    "name": "Kura Sushi",
+    "moveIn": "2020-11-10",
+    "moveOut": null,
+    "suites": [
+     "114"
+    ],
+    "sfOccupied": 2501.0,
+    "expirationReason": null,
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex",
+     "bio-regex"
+    ],
+    "occupancyIds": [
+     279361721
+    ],
+    "isCurrent": true,
+    "durationYears": 6.0,
+    "confidence": "high"
+   },
+   {
+    "name": "The Kickin' Crab",
+    "moveIn": "2024-12-12",
+    "moveOut": "2025-12-31",
+    "suites": [
+     "F-116",
+     "G-118",
+     "H-120"
+    ],
+    "sfOccupied": 5914.0,
+    "expirationReason": "ClosedLocationOrBankrupt",
+    "matchBasis": [
+     "profile.industryType=17"
+    ],
+    "occupancyIds": [
+     334293401
+    ],
+    "isCurrent": false,
+    "durationYears": 1.1,
+    "confidence": "medium"
+   }
+  ],
+  "foodHistoryRecords": [
+   {
+    "occupancyId": 122603324,
+    "tenantLocationId": 35671061,
+    "name": "Fatburger",
+    "companyName": "Fatburger",
+    "moveIn": "2014-07-01",
+    "moveInSource": "moveInDate",
+    "moveOut": "2025-03-29",
+    "isCurrent": false,
+    "durationYears": 10.7,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "suites": [],
+    "sfOccupied": 2183.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "profile.industryType=17",
+     "bio-regex"
+    ],
+    "leaseSignDate": "2013-11-15",
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 122603320,
+    "tenantLocationId": 35671058,
+    "name": "Pizza Rev",
+    "companyName": "PizzaRev",
+    "moveIn": "2014-08-01",
+    "moveInSource": "moveInDate",
+    "moveOut": "2018-06-30",
+    "isCurrent": false,
+    "durationYears": 3.9,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "suites": [],
+    "sfOccupied": 2501.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex",
+     "bio-regex"
+    ],
+    "leaseSignDate": "2014-01-13",
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 164916791,
+    "tenantLocationId": 83447701,
+    "name": "Jimmy John's",
+    "companyName": "Jimmy John's",
+    "moveIn": "2016-07-18",
+    "moveInSource": "fromDate",
+    "moveOut": "2019-12-28",
+    "isCurrent": false,
+    "durationYears": 3.4,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "suites": [],
+    "sfOccupied": 3000.0,
+    "leaseType": "Unknown",
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex",
+     "bio-regex"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 186948991,
+    "tenantLocationId": 114036741,
+    "name": "Buffalo Wild Wings",
+    "companyName": "Buffalo Wild Wings",
+    "moveIn": "2017-11-18",
+    "moveInSource": "moveInDate",
+    "moveOut": null,
+    "isCurrent": true,
+    "durationYears": 9.0,
+    "expirationReason": null,
+    "suites": [],
+    "sfOccupied": 6300.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex",
+     "bio-regex"
+    ],
+    "leaseSignDate": "2017-10-18",
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 279361711,
+    "tenantLocationId": 184430181,
+    "name": "Starbucks",
+    "companyName": "Starbucks",
+    "moveIn": "2020-11-10",
+    "moveInSource": "fromDate",
+    "moveOut": "2025-10-31",
+    "isCurrent": false,
+    "durationYears": 5.0,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "suites": [],
+    "sfOccupied": 1000.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex",
+     "bio-regex"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 279361721,
+    "tenantLocationId": 184430191,
+    "name": "Kura Sushi",
+    "companyName": "Kura Sushi",
+    "moveIn": "2020-11-10",
+    "moveInSource": "fromDate",
+    "moveOut": null,
+    "isCurrent": true,
+    "durationYears": 6.0,
+    "expirationReason": null,
+    "suites": [
+     "114"
+    ],
+    "sfOccupied": 2501.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex",
+     "bio-regex"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 334293401,
+    "tenantLocationId": 330294521,
+    "name": "The Kickin' Crab",
+    "companyName": "The Kickin' Crab",
+    "moveIn": "2024-12-12",
+    "moveInSource": "moveInDate",
+    "moveOut": "2025-12-31",
+    "isCurrent": false,
+    "durationYears": 1.1,
+    "expirationReason": "ClosedLocationOrBankrupt",
+    "suites": [
+     "F-116",
+     "G-118",
+     "H-120"
+    ],
+    "sfOccupied": 5914.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "profile.industryType=17"
+    ],
+    "leaseSignDate": "2024-10-13",
+    "leaseExpirationDate": null
+   }
+  ],
+  "foodHistoryCount": 7,
+  "foodPastCount": 5,
+  "foodCurrentCount": 2,
+  "foodWeakMatchCount": 0,
+  "saleCompCount": 2,
+  "lastSale": {
+   "compId": 6212505,
+   "soldDate": "2022-11-16",
+   "soldForPrice": 235000000,
+   "salePriceStatus": "Confirmed",
+   "entityCount": 1,
+   "isPortfolio": false,
+   "allocatedPrice": null,
+   "allocatedPriceStatus": "Unknown",
+   "monetaryUnit": "UnitedStatesDollar"
+  },
+  "activeSaleListings": [],
+  "foodHistoryArtifacts": [],
+  "foodClosedOrBankruptCount": 1,
+  "selection": {
+   "top12Rank": 9,
+   "score": 14,
+   "scoreReasons": [
+    "fit-space+rent",
+    "food-past=5",
+    "food-current=2",
+    "mp-suite/retail-caption",
+    "restaurant-keywords",
+    "MF: scans are apartments/amenities"
+   ],
+   "rationale": "Former Starbucks (1,879 SF, $48 NNN, grease interceptor mentioned) at Wilshire & Vermont; strong graveyard: Fatburger 10.7 yr, Pizza Rev 3.9, Jimmy John's 3.4, Starbucks 5.0, Kickin' Crab 1.1 (closed).",
+   "caveat": "All 7 Matterport scans are apartments/amenities, none of the retail space.",
+   "primarySpace": {
+    "spaceId": 22165591,
+    "listingId": 42742989,
+    "suite": "112",
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "sfMin": 1879.0,
+    "sfMax": 1879.0,
+    "rentPerSfYrLow": 48.0,
+    "rentPerSfYrHigh": 48.0,
+    "serviceType": "TripleNet",
+    "serviceTypeShort": "NNN",
+    "isLeasePending": false
+   },
+   "primarySpaceRentLabel": "$48.00/SF/yr NNN (quoted yearly)",
+   "primarySpaceAnnualRent": 90192,
+   "primarySpaceMonthlyRent": 7516,
+   "primaryMatterportModelId": null,
+   "matterportScanRelation": "no-retail-scan",
+   "fitSpaceCount": 1
+  }
+ },
+ {
+  "propertyId": 4205077,
+  "buildingName": "Golden Family Plaza",
+  "address": "1870-1890 S Western Ave",
+  "city": "Los Angeles",
+  "state": "CA",
+  "postcode": "90006",
+  "market": "Los Angeles",
+  "lat": 34.040349,
+  "lng": -118.308612,
+  "propertyType": "GeneralRetail",
+  "propertySubtype": "GeneralRetail_Freestanding",
+  "buildingSF": 11103.0,
+  "buildingSFBasis": "RBA",
+  "stories": 1,
+  "yearBuilt": 1986,
+  "yearRenovated": null,
+  "parkingRatio": 2.07,
+  "zoning": "C2",
+  "primarySubmarketId": 1154,
+  "primaryPhotoUri": "https://ahprd1cdn.csgpimgs.com/i2/1muQNuvsZbuLG70ewALspiKJcTb0rAUTky0LbCxMzGw/112/image.jpg",
+  "availableSpaceCount": 1,
+  "availableSFSmallest": 1500.0,
+  "availableSFLargest": 1500.0,
+  "minDivisibleSF": 1500.0,
+  "askingRentPerSfYrLow": 30.6,
+  "askingRentPerSfYrHigh": 30.6,
+  "askingRentServiceTypes": [
+   "NNN"
+  ],
+  "spacesWithRent": 1,
+  "listingIds": [
+   40308509
+  ],
+  "spaces": [
+   {
+    "spaceId": 20972587,
+    "listingId": 40308509,
+    "listingType": "ShoppingCenterDirectSpaceForLease",
+    "suite": null,
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "sfMin": 1500.0,
+    "sfMax": 1500.0,
+    "sfMaxContiguous": 1500.0,
+    "rentPerSfYrLow": 30.6,
+    "rentPerSfYrHigh": 30.6,
+    "rentAsQuoted": {
+     "rateLow": 2.55,
+     "rateHigh": 2.55,
+     "rateBasis": "Monthly"
+    },
+    "serviceType": "TripleNet",
+    "serviceTypeShort": "NNN",
+    "monetaryUnit": "UnitedStatesDollar",
+    "isLeasePending": false,
+    "dateOnMarket": "2026-04-24",
+    "availableOnDate": "2026-04-01",
+    "leaseTermType": "Negotiable",
+    "floorPlanUri": null,
+    "spaceNotes": null,
+    "restaurantKeywordsInSpaceNotes": [],
+    "restaurantKeywordsInListingNotes": [
+     "hood"
+    ],
+    "suiteTenantHistory": [],
+    "matterportModelIdsForSuite": []
+   }
+  ],
+  "matterportModelIds": [
+   "WevFANR2s1h"
+  ],
+  "matterportModels": [
+   {
+    "modelId": "WevFANR2s1h",
+    "captions": [
+     "Golden Family Plaza Virtual Tour"
+    ],
+    "sources": [
+     "property"
+    ]
+   }
+  ],
+  "matterportRetailCaptionModelIds": [],
+  "currentTenantCount": 14,
+  "totalOccupancyRecords": 21,
+  "matterportModelIdsMatchingAvailableSuite": [],
+  "foodHistory": [
+   {
+    "name": "El Sonsonateco Restaurant",
+    "moveIn": "2010-08-21",
+    "moveOut": null,
+    "suites": [],
+    "sfOccupied": null,
+    "expirationReason": null,
+    "matchBasis": [
+     "name-regex"
+    ],
+    "occupancyIds": [
+     117682124
+    ],
+    "isCurrent": true,
+    "durationYears": 16.2,
+    "confidence": "high"
+   },
+   {
+    "name": "Deli World No 2",
+    "moveIn": "2010-08-21",
+    "moveOut": "2015-07-18",
+    "suites": [],
+    "sfOccupied": 500.0,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "matchBasis": [
+     "name-regex"
+    ],
+    "occupancyIds": [
+     117682133
+    ],
+    "isCurrent": false,
+    "durationYears": 4.9,
+    "confidence": "high"
+   },
+   {
+    "name": "Boba Grande Ice Tea",
+    "moveIn": "2023-09-06",
+    "moveOut": null,
+    "suites": [
+     "1876",
+     "1882"
+    ],
+    "sfOccupied": 2300.0,
+    "expirationReason": null,
+    "matchBasis": [
+     "name-regex"
+    ],
+    "occupancyIds": [
+     321405581
+    ],
+    "isCurrent": true,
+    "durationYears": 3.2,
+    "confidence": "high"
+   }
+  ],
+  "foodHistoryRecords": [
+   {
+    "occupancyId": 117682124,
+    "tenantLocationId": 29016624,
+    "name": "El Sonsonateco Restaurant",
+    "companyName": "El Sonsonateco Restaurant",
+    "moveIn": "2010-08-21",
+    "moveInSource": "fromDate",
+    "moveOut": null,
+    "isCurrent": true,
+    "durationYears": 16.2,
+    "expirationReason": null,
+    "suites": [],
+    "sfOccupied": null,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "name-regex"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 117682133,
+    "tenantLocationId": 29016634,
+    "name": "Deli World No 2",
+    "companyName": "Deli World No 2",
+    "moveIn": "2010-08-21",
+    "moveInSource": "fromDate",
+    "moveOut": "2015-07-18",
+    "isCurrent": false,
+    "durationYears": 4.9,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "suites": [],
+    "sfOccupied": 500.0,
+    "leaseType": "Unknown",
+    "matchBasis": [
+     "name-regex"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 321405581,
+    "tenantLocationId": 259054901,
+    "name": "Boba Grande Ice Tea",
+    "companyName": null,
+    "moveIn": "2023-09-06",
+    "moveInSource": "moveInDate",
+    "moveOut": null,
+    "isCurrent": true,
+    "durationYears": 3.2,
+    "expirationReason": null,
+    "suites": [
+     "1876",
+     "1882"
+    ],
+    "sfOccupied": 2300.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "name-regex"
+    ],
+    "leaseSignDate": "2023-09-05",
+    "leaseExpirationDate": null
+   }
+  ],
+  "foodHistoryCount": 3,
+  "foodPastCount": 1,
+  "foodCurrentCount": 2,
+  "foodWeakMatchCount": 0,
+  "saleCompCount": 2,
+  "lastSale": {
+   "compId": 4287019,
+   "soldDate": "2018-05-24",
+   "soldForPrice": null,
+   "salePriceStatus": "Unknown",
+   "entityCount": 1,
+   "isPortfolio": false,
+   "allocatedPrice": null,
+   "allocatedPriceStatus": "Unknown",
+   "monetaryUnit": "UnitedStatesDollar"
+  },
+  "activeSaleListings": [],
+  "foodHistoryArtifacts": [],
+  "foodClosedOrBankruptCount": 0,
+  "selection": {
+   "top12Rank": 10,
+   "score": 12,
+   "scoreReasons": [
+    "fit-space+rent",
+    "food-past=1",
+    "food-current=2",
+    "retail-building"
+   ],
+   "rationale": "Only LA retail-typed building with rent, fit size and a plaza scan: 1,500 SF at $30.60 NNN in a Koreatown-adjacent strip; El Sonsonateco operating 16 yrs, Deli World closed after 4.9 yrs.",
+   "caveat": "Available space has no suite number or notes; food matches are by name only.",
+   "primarySpace": {
+    "spaceId": 20972587,
+    "listingId": 40308509,
+    "suite": null,
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "sfMin": 1500.0,
+    "sfMax": 1500.0,
+    "rentPerSfYrLow": 30.6,
+    "rentPerSfYrHigh": 30.6,
+    "serviceType": "TripleNet",
+    "serviceTypeShort": "NNN",
+    "isLeasePending": false
+   },
+   "primarySpaceRentLabel": "$30.60/SF/yr NNN (quoted monthly)",
+   "primarySpaceAnnualRent": 45900,
+   "primarySpaceMonthlyRent": 3825,
+   "primaryMatterportModelId": "WevFANR2s1h",
+   "matterportScanRelation": "center-tour",
+   "fitSpaceCount": 1
+  }
+ },
+ {
+  "propertyId": 431465,
+  "buildingName": "The Premiere in Hollywood",
+  "address": "6922 Hollywood Blvd",
+  "city": "Los Angeles",
+  "state": "CA",
+  "postcode": "90028",
+  "market": "Los Angeles",
+  "lat": 34.1013326,
+  "lng": -118.341031,
+  "propertyType": "Office",
+  "propertySubtype": "Unknown",
+  "buildingSF": 210312.0,
+  "buildingSFBasis": "RBA",
+  "stories": 12,
+  "yearBuilt": 1966,
+  "yearRenovated": 2024,
+  "parkingRatio": 2.4,
+  "zoning": "LAC4",
+  "primarySubmarketId": 30822,
+  "primaryPhotoUri": "https://ahprd1cdn.csgpimgs.com/i2/TrcoTGoSr_b8MgzRfHUcBLY_VWfMZFEjapYsHq2ria8/112/image.jpg",
+  "availableSpaceCount": 2,
+  "availableSFSmallest": 3185.0,
+  "availableSFLargest": 7719.0,
+  "minDivisibleSF": 3185.0,
+  "askingRentPerSfYrLow": 51.0,
+  "askingRentPerSfYrHigh": 51.0,
+  "askingRentServiceTypes": [
+   "NNN"
+  ],
+  "spacesWithRent": 2,
+  "listingIds": [
+   33385857
+  ],
+  "spaces": [
+   {
+    "spaceId": 20341149,
+    "listingId": 33385857,
+    "listingType": "PropertyDirectSpaceForLease",
+    "suite": "106",
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "sfMin": 3185.0,
+    "sfMax": 3185.0,
+    "sfMaxContiguous": 3185.0,
+    "rentPerSfYrLow": 51.0,
+    "rentPerSfYrHigh": 51.0,
+    "rentAsQuoted": {
+     "rateLow": 4.25,
+     "rateHigh": 4.25,
+     "rateBasis": "Monthly"
+    },
+    "serviceType": "TripleNet",
+    "serviceTypeShort": "NNN",
+    "monetaryUnit": "UnitedStatesDollar",
+    "isLeasePending": false,
+    "dateOnMarket": "2026-01-12",
+    "availableOnDate": "2024-10-03",
+    "leaseTermType": "Negotiable",
+    "floorPlanUri": null,
+    "spaceNotes": "(±2,173 SF Ground; ±1,012 SF 2nd Floor)",
+    "restaurantKeywordsInSpaceNotes": [],
+    "restaurantKeywordsInListingNotes": [],
+    "suiteTenantHistory": [],
+    "matterportModelIdsForSuite": []
+   },
+   {
+    "spaceId": 18076793,
+    "listingId": 33385857,
+    "listingType": "PropertyDirectSpaceForLease",
+    "suite": "109",
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "sfMin": 7719.0,
+    "sfMax": 7719.0,
+    "sfMaxContiguous": 7719.0,
+    "rentPerSfYrLow": 51.0,
+    "rentPerSfYrHigh": 51.0,
+    "rentAsQuoted": {
+     "rateLow": 4.25,
+     "rateHigh": 4.25,
+     "rateBasis": "Monthly"
+    },
+    "serviceType": "TripleNet",
+    "serviceTypeShort": "NNN",
+    "monetaryUnit": "UnitedStatesDollar",
+    "isLeasePending": false,
+    "dateOnMarket": "2024-10-02",
+    "availableOnDate": "2024-10-03",
+    "leaseTermType": "Negotiable",
+    "floorPlanUri": null,
+    "spaceNotes": "(±4,269 SF Ground; ±3,450 SF Second Floor)",
+    "restaurantKeywordsInSpaceNotes": [],
+    "restaurantKeywordsInListingNotes": [],
+    "suiteTenantHistory": [
+     {
+      "occupancyId": 111396474,
+      "name": "Hooters",
+      "industry": "AccommodationAndFoodServices",
+      "moveIn": "2006-04-01",
+      "moveOut": "2018-04-21",
+      "durationYears": 12.1,
+      "isFood": true
+     },
+     {
+      "occupancyId": 264814751,
+      "name": "Hooters",
+      "industry": "AccommodationAndFoodServices",
+      "moveIn": "2019-11-22",
+      "moveOut": "2020-09-09",
+      "durationYears": 0.8,
+      "isFood": true
+     },
+     {
+      "occupancyId": 277548771,
+      "name": "Hooters",
+      "industry": "AccommodationAndFoodServices",
+      "moveIn": "2020-09-11",
+      "moveOut": "2021-09-07",
+      "durationYears": 1.0,
+      "isFood": true
+     },
+     {
+      "occupancyId": 278218771,
+      "name": "Hudson Pacific Properties Inc",
+      "industry": "RealEstate",
+      "moveIn": "2020-10-04",
+      "moveOut": "2020-11-16",
+      "durationYears": 0.1,
+      "isFood": false
+     }
+    ],
+    "matterportModelIdsForSuite": []
+   }
+  ],
+  "matterportModelIds": [
+   "LhkQZ3ALmbj",
+   "thJzkkH8aqk"
+  ],
+  "matterportModels": [
+   {
+    "modelId": "LhkQZ3ALmbj",
+    "captions": [
+     "Floor 8"
+    ],
+    "sources": [
+     "property"
+    ]
+   },
+   {
+    "modelId": "thJzkkH8aqk",
+    "captions": [
+     "Suite 302"
+    ],
+    "sources": [
+     "property"
+    ]
+   }
+  ],
+  "matterportRetailCaptionModelIds": [
+   "thJzkkH8aqk"
+  ],
+  "currentTenantCount": 8,
+  "totalOccupancyRecords": 116,
+  "matterportModelIdsMatchingAvailableSuite": [],
+  "foodHistory": [
+   {
+    "name": "Hooters",
+    "moveIn": "2006-04-01",
+    "moveOut": "2021-09-07",
+    "suites": [
+     "109"
+    ],
+    "sfOccupied": 4400.0,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "matchBasis": [
+     "profile.industryType=17",
+     "bio-regex"
+    ],
+    "occupancyIds": [
+     111396474,
+     236832451,
+     264814751,
+     277548771
+    ],
+    "isCurrent": false,
+    "durationYears": 15.4,
+    "confidence": "high"
+   },
+   {
+    "name": "The Coffee Bean & Tea Leaf",
+    "moveIn": "2006-05-16",
+    "moveOut": null,
+    "suites": [],
+    "sfOccupied": 3355.0,
+    "expirationReason": null,
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex",
+     "bio-regex"
+    ],
+    "occupancyIds": [
+     111548029,
+     145417251
+    ],
+    "isCurrent": true,
+    "durationYears": 20.5,
+    "confidence": "high"
+   },
+   {
+    "name": "Baja Fresh Mexican Grill",
+    "moveIn": "2011-10-07",
+    "moveOut": "2021-12-31",
+    "suites": [],
+    "sfOccupied": 500.0,
+    "expirationReason": "ClosedLocationOrBankrupt",
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex",
+     "bio-regex"
+    ],
+    "occupancyIds": [
+     119552215
+    ],
+    "isCurrent": false,
+    "durationYears": 10.2,
+    "confidence": "high"
+   },
+   {
+    "name": "Polka Dot Cupcakes Inc",
+    "moveIn": "2013-07-01",
+    "moveOut": "2015-07-28",
+    "suites": [],
+    "sfOccupied": 1000.0,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "matchBasis": [
+     "name-regex"
+    ],
+    "occupancyIds": [
+     122081068
+    ],
+    "isCurrent": false,
+    "durationYears": 2.1,
+    "confidence": "high"
+   },
+   {
+    "name": "Wetzel's Pretzels",
+    "moveIn": "2014-01-15",
+    "moveOut": "2021-09-21",
+    "suites": [],
+    "sfOccupied": 500.0,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "matchBasis": [
+     "profile.industryType=17",
+     "bio-regex"
+    ],
+    "occupancyIds": [
+     122871934
+    ],
+    "isCurrent": false,
+    "durationYears": 7.7,
+    "confidence": "high"
+   },
+   {
+    "name": "Mixue Ice Cream & Tea",
+    "moveIn": "2025-10-23",
+    "moveOut": null,
+    "suites": [
+     "107"
+    ],
+    "sfOccupied": 752.0,
+    "expirationReason": null,
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex",
+     "bio-regex"
+    ],
+    "occupancyIds": [
+     348064191
+    ],
+    "isCurrent": true,
+    "durationYears": 1.0,
+    "confidence": "high"
+   }
+  ],
+  "foodHistoryRecords": [
+   {
+    "occupancyId": 111396474,
+    "tenantLocationId": 3653153,
+    "name": "Hooters",
+    "companyName": "Hooters",
+    "moveIn": "2006-04-01",
+    "moveInSource": "fromDate",
+    "moveOut": "2018-04-21",
+    "isCurrent": false,
+    "durationYears": 12.1,
+    "expirationReason": "ClosedLocationOrBankrupt",
+    "suites": [
+     "109"
+    ],
+    "sfOccupied": 4400.0,
+    "leaseType": "Unknown",
+    "matchBasis": [
+     "profile.industryType=17",
+     "bio-regex"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 111548029,
+    "tenantLocationId": 3936232,
+    "name": "The Coffee Bean & Tea Leaf",
+    "companyName": "The Coffee Bean & Tea Leaf",
+    "moveIn": "2006-05-16",
+    "moveInSource": "fromDate",
+    "moveOut": "2016-02-09",
+    "isCurrent": false,
+    "durationYears": 9.7,
+    "expirationReason": "ClosedLocationOrBankrupt",
+    "suites": [],
+    "sfOccupied": 1200.0,
+    "leaseType": "Unknown",
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex",
+     "bio-regex"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 119552215,
+    "tenantLocationId": 31851767,
+    "name": "Baja Fresh Mexican Grill",
+    "companyName": "Baja Fresh",
+    "moveIn": "2011-10-07",
+    "moveInSource": "fromDate",
+    "moveOut": "2021-12-31",
+    "isCurrent": false,
+    "durationYears": 10.2,
+    "expirationReason": "ClosedLocationOrBankrupt",
+    "suites": [],
+    "sfOccupied": 500.0,
+    "leaseType": "Unknown",
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex",
+     "bio-regex"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 122081068,
+    "tenantLocationId": 34981735,
+    "name": "Polka Dot Cupcakes Inc",
+    "companyName": "Polka Dot Cupcakes Inc",
+    "moveIn": "2013-07-01",
+    "moveInSource": "moveInDate",
+    "moveOut": "2015-07-28",
+    "isCurrent": false,
+    "durationYears": 2.1,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "suites": [],
+    "sfOccupied": 1000.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "name-regex"
+    ],
+    "leaseSignDate": "2013-06-14",
+    "leaseExpirationDate": "2018-06-30"
+   },
+   {
+    "occupancyId": 122871934,
+    "tenantLocationId": 36021020,
+    "name": "Wetzel's Pretzels",
+    "companyName": "Wetzel's Pretzels",
+    "moveIn": "2014-01-15",
+    "moveInSource": "fromDate",
+    "moveOut": "2021-09-21",
+    "isCurrent": false,
+    "durationYears": 7.7,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "suites": [],
+    "sfOccupied": 500.0,
+    "leaseType": "Unknown",
+    "matchBasis": [
+     "profile.industryType=17",
+     "bio-regex"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 145417251,
+    "tenantLocationId": 58545221,
+    "name": "The Coffee Bean & Tea Leaf",
+    "companyName": "The Coffee Bean & Tea Leaf",
+    "moveIn": "2015-04-22",
+    "moveInSource": "fromDate",
+    "moveOut": null,
+    "isCurrent": true,
+    "durationYears": 11.6,
+    "expirationReason": null,
+    "suites": [],
+    "sfOccupied": 3355.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex",
+     "bio-regex"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 236832451,
+    "tenantLocationId": 129915681,
+    "name": "Hooters",
+    "companyName": "Hooters",
+    "moveIn": "2018-06-14",
+    "moveInSource": "fromDate",
+    "moveOut": "2019-11-21",
+    "isCurrent": false,
+    "durationYears": 1.4,
+    "expirationReason": "MovingIntoSameBuilding",
+    "suites": [],
+    "sfOccupied": 4400.0,
+    "leaseType": "Unknown",
+    "matchBasis": [
+     "profile.industryType=17",
+     "bio-regex"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 264814751,
+    "tenantLocationId": 129915681,
+    "name": "Hooters",
+    "companyName": "Hooters",
+    "moveIn": "2019-11-22",
+    "moveInSource": "fromDate",
+    "moveOut": "2020-09-09",
+    "isCurrent": false,
+    "durationYears": 0.8,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "suites": [
+     "109"
+    ],
+    "sfOccupied": 1500.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "profile.industryType=17",
+     "bio-regex"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 277548771,
+    "tenantLocationId": 3653153,
+    "name": "Hooters",
+    "companyName": "Hooters",
+    "moveIn": "2020-09-11",
+    "moveInSource": "moveInDate",
+    "moveOut": "2021-09-07",
+    "isCurrent": false,
+    "durationYears": 1.0,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "suites": [
+     "109"
+    ],
+    "sfOccupied": null,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "profile.industryType=17",
+     "bio-regex"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 348064191,
+    "tenantLocationId": 321907601,
+    "name": "Mixue Ice Cream & Tea",
+    "companyName": "Mixue Ice Cream & Tea",
+    "moveIn": "2025-10-23",
+    "moveInSource": "moveInDate",
+    "moveOut": null,
+    "isCurrent": true,
+    "durationYears": 1.0,
+    "expirationReason": null,
+    "suites": [
+     "107"
+    ],
+    "sfOccupied": 752.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex",
+     "bio-regex"
+    ],
+    "leaseSignDate": "2025-09-23",
+    "leaseExpirationDate": null
+   }
+  ],
+  "foodHistoryCount": 6,
+  "foodPastCount": 4,
+  "foodCurrentCount": 2,
+  "foodWeakMatchCount": 0,
+  "saleCompCount": 2,
+  "lastSale": {
+   "compId": 6194315,
+   "soldDate": "2022-10-20",
+   "soldForPrice": 96000000,
+   "salePriceStatus": "Confirmed",
+   "entityCount": 2,
+   "isPortfolio": true,
+   "allocatedPrice": 65367558,
+   "allocatedPriceStatus": "Allocated",
+   "monetaryUnit": "UnitedStatesDollar"
+  },
+  "activeSaleListings": [],
+  "foodHistoryArtifacts": [],
+  "foodClosedOrBankruptCount": 1,
+  "selection": {
+   "top12Rank": 11,
+   "score": 14,
+   "scoreReasons": [
+    "fit-space+rent",
+    "food-past=4",
+    "food-current=2",
+    "mp-suite/retail-caption"
+   ],
+   "rationale": "Hollywood Blvd tourist corridor: 3,185 SF two-level retail at $51 NNN. Graveyard includes Hooters (15.4 yr, the other available suite 109), Baja Fresh (10.2 yr, closed), Wetzel's, Polka Dot Cupcakes.",
+   "caveat": "Scans are office floors, not the retail. Highest rent in the top 12.",
+   "primarySpace": {
+    "spaceId": 20341149,
+    "listingId": 33385857,
+    "suite": "106",
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "sfMin": 3185.0,
+    "sfMax": 3185.0,
+    "rentPerSfYrLow": 51.0,
+    "rentPerSfYrHigh": 51.0,
+    "serviceType": "TripleNet",
+    "serviceTypeShort": "NNN",
+    "isLeasePending": false
+   },
+   "primarySpaceRentLabel": "$51.00/SF/yr NNN (quoted monthly)",
+   "primarySpaceAnnualRent": 162435,
+   "primarySpaceMonthlyRent": 13536,
+   "primaryMatterportModelId": "thJzkkH8aqk",
+   "matterportScanRelation": "building-office-suite",
+   "fitSpaceCount": 1
+  }
+ },
+ {
+  "propertyId": 256760,
+  "buildingName": null,
+  "address": "5757 W Century Blvd",
+  "city": "Los Angeles",
+  "state": "CA",
+  "postcode": "90045",
+  "market": "Los Angeles",
+  "lat": 33.945941,
+  "lng": -118.3826554,
+  "propertyType": "Office",
+  "propertySubtype": "Unknown",
+  "buildingSF": 341110.0,
+  "buildingSFBasis": "RBA",
+  "stories": 8,
+  "yearBuilt": 1982,
+  "yearRenovated": 1992,
+  "parkingRatio": 3.0,
+  "zoning": "C2",
+  "primarySubmarketId": 1002,
+  "primaryPhotoUri": "https://ahprd1cdn.csgpimgs.com/i2/6uGCjvU4RcA9KWHZV3QtdI75a5sm4vMY8x3EkgXtaBQ/112/image.jpg",
+  "availableSpaceCount": 2,
+  "availableSFSmallest": 1071.0,
+  "availableSFLargest": 1200.0,
+  "minDivisibleSF": 100.0,
+  "askingRentPerSfYrLow": 17.4,
+  "askingRentPerSfYrHigh": 21.0,
+  "askingRentServiceTypes": [
+   "FSG"
+  ],
+  "spacesWithRent": 2,
+  "listingIds": [
+   15044934
+  ],
+  "spaces": [
+   {
+    "spaceId": 17588764,
+    "listingId": 15044934,
+    "listingType": "BuildingParkDirectSpaceLease",
+    "suite": "100",
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "sfMin": 1071.0,
+    "sfMax": 1071.0,
+    "sfMaxContiguous": 1071.0,
+    "rentPerSfYrLow": 21.0,
+    "rentPerSfYrHigh": 21.0,
+    "rentAsQuoted": {
+     "rateLow": 1.75,
+     "rateHigh": 1.75,
+     "rateBasis": "Monthly"
+    },
+    "serviceType": "FullService",
+    "serviceTypeShort": "FSG",
+    "monetaryUnit": "UnitedStatesDollar",
+    "isLeasePending": false,
+    "dateOnMarket": "2024-03-21",
+    "availableOnDate": "2024-03-21",
+    "leaseTermType": "Years",
+    "floorPlanUri": null,
+    "spaceNotes": "Unique 1,000 sf Retail space on the Lobby Level is Now Available!",
+    "restaurantKeywordsInSpaceNotes": [],
+    "restaurantKeywordsInListingNotes": [
+     "kitchen",
+     "patio",
+     "restaurant",
+     "second-gen"
+    ],
+    "suiteTenantHistory": [],
+    "matterportModelIdsForSuite": []
+   },
+   {
+    "spaceId": 16309815,
+    "listingId": 15044934,
+    "listingType": "BuildingParkDirectSpaceLease",
+    "suite": null,
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "sfMin": 100.0,
+    "sfMax": 1200.0,
+    "sfMaxContiguous": 1200.0,
+    "rentPerSfYrLow": 17.4,
+    "rentPerSfYrHigh": 17.4,
+    "rentAsQuoted": {
+     "rateLow": 1.45,
+     "rateHigh": 1.45,
+     "rateBasis": "Monthly"
+    },
+    "serviceType": "FullService",
+    "serviceTypeShort": "FSG",
+    "monetaryUnit": "UnitedStatesDollar",
+    "isLeasePending": false,
+    "dateOnMarket": "2022-09-01",
+    "availableOnDate": "2022-09-01",
+    "leaseTermType": "Years",
+    "floorPlanUri": null,
+    "spaceNotes": "The available kiosk space presents an exciting opportunity for various retail ventures, with its flexible square footage and prime location in a bustling lobby alongside amenities like a cafe, shuttle service to the airport, not to mention the proximity to Starbucks. One appealing option could be a flower shop offering vibrant blooms and elegant arrangements, catering to visitors looking for a touch of natural beauty. The space could also accommodate pop-up boutiques, rotating throughout the year to feature different themes and merchandise. With its versatile setting and convenient amenities, this kiosk space holds great potential for a creative and thriving retail business.",
+    "restaurantKeywordsInSpaceNotes": [
+     "cafe"
+    ],
+    "restaurantKeywordsInListingNotes": [
+     "kitchen",
+     "patio",
+     "restaurant",
+     "second-gen"
+    ],
+    "suiteTenantHistory": [],
+    "matterportModelIdsForSuite": []
+   }
+  ],
+  "matterportModelIds": [
+   "FfaKwwGL7ni",
+   "HTBzS5NNWod",
+   "R3Nj53ps6f9",
+   "aCNHNZRbpfZ"
+  ],
+  "matterportModels": [
+   {
+    "modelId": "FfaKwwGL7ni",
+    "captions": [
+     "Suite 480 - Virtual Tour"
+    ],
+    "sources": [
+     "property"
+    ]
+   },
+   {
+    "modelId": "HTBzS5NNWod",
+    "captions": [
+     "Suite 2000 - Virtual Tour"
+    ],
+    "sources": [
+     "property"
+    ]
+   },
+   {
+    "modelId": "R3Nj53ps6f9",
+    "captions": [
+     "Suite 102 - Virtual Tour"
+    ],
+    "sources": [
+     "property"
+    ]
+   },
+   {
+    "modelId": "aCNHNZRbpfZ",
+    "captions": [
+     "Suite 500 - Virtual Tour"
+    ],
+    "sources": [
+     "property"
+    ]
+   }
+  ],
+  "matterportRetailCaptionModelIds": [
+   "FfaKwwGL7ni",
+   "HTBzS5NNWod",
+   "R3Nj53ps6f9",
+   "aCNHNZRbpfZ"
+  ],
+  "currentTenantCount": 99,
+  "totalOccupancyRecords": 568,
+  "matterportModelIdsMatchingAvailableSuite": [],
+  "foodHistory": [
+   {
+    "name": "Trimana",
+    "moveIn": "2016-07-03",
+    "moveOut": "2023-11-06",
+    "suites": [
+     "101"
+    ],
+    "sfOccupied": 5000.0,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex",
+     "bio-regex"
+    ],
+    "occupancyIds": [
+     149905381
+    ],
+    "isCurrent": false,
+    "durationYears": 7.3,
+    "confidence": "high"
+   },
+   {
+    "name": "Twiz",
+    "moveIn": "2019-04-20",
+    "moveOut": "2020-02-13",
+    "suites": [
+     "301"
+    ],
+    "sfOccupied": 1997.0,
+    "expirationReason": "MoveIntoAnotherProperty",
+    "matchBasis": [
+     "profile.industryType=17"
+    ],
+    "occupancyIds": [
+     257264961
+    ],
+    "isCurrent": false,
+    "durationYears": 0.8,
+    "confidence": "medium"
+   },
+   {
+    "name": "Versailles Restaurant",
+    "moveIn": "2026-01-06",
+    "moveOut": null,
+    "suites": [
+     "700-4"
+    ],
+    "sfOccupied": 800.0,
+    "expirationReason": null,
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex",
+     "bio-regex"
+    ],
+    "occupancyIds": [
+     354055511
+    ],
+    "isCurrent": true,
+    "durationYears": 0.8,
+    "confidence": "high"
+   },
+   {
+    "name": "Taza Cafe",
+    "moveIn": "2026-01-06",
+    "moveOut": null,
+    "suites": [],
+    "sfOccupied": 1600.0,
+    "expirationReason": null,
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex",
+     "bio-regex"
+    ],
+    "occupancyIds": [
+     354055881
+    ],
+    "isCurrent": true,
+    "durationYears": 0.8,
+    "confidence": "high"
+   }
+  ],
+  "foodHistoryRecords": [
+   {
+    "occupancyId": 119813639,
+    "tenantLocationId": 32201897,
+    "name": "Prestigious Catering",
+    "companyName": "Prestigious Catering",
+    "moveIn": "2011-12-07",
+    "moveInSource": "fromDate",
+    "moveOut": "2013-12-13",
+    "isCurrent": false,
+    "durationYears": 2.0,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "suites": [],
+    "sfOccupied": 500.0,
+    "leaseType": "Unknown",
+    "matchBasis": [
+     "name-regex-weak"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 149905381,
+    "tenantLocationId": 68107501,
+    "name": "Trimana",
+    "companyName": "Trimana",
+    "moveIn": "2016-07-03",
+    "moveInSource": "moveInDate",
+    "moveOut": "2023-11-06",
+    "isCurrent": false,
+    "durationYears": 7.3,
+    "expirationReason": "MovingOutNewAddressUnknown",
+    "suites": [
+     "101"
+    ],
+    "sfOccupied": 5000.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex",
+     "bio-regex"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 257264961,
+    "tenantLocationId": 185643091,
+    "name": "Twiz",
+    "companyName": "Twiz",
+    "moveIn": "2019-04-20",
+    "moveInSource": "moveInDate",
+    "moveOut": "2020-02-13",
+    "isCurrent": false,
+    "durationYears": 0.8,
+    "expirationReason": "MoveIntoAnotherProperty",
+    "suites": [
+     "301"
+    ],
+    "sfOccupied": 1997.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "profile.industryType=17"
+    ],
+    "leaseSignDate": "2019-03-21",
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 323953231,
+    "tenantLocationId": 329934501,
+    "name": "Spread Your Wings, LLC",
+    "companyName": "Spread Your Wings",
+    "moveIn": "2023-12-27",
+    "moveInSource": "moveInDate",
+    "moveOut": null,
+    "isCurrent": true,
+    "durationYears": 2.9,
+    "expirationReason": null,
+    "suites": [
+     "558"
+    ],
+    "sfOccupied": 3259.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "name-regex-weak"
+    ],
+    "leaseSignDate": "2023-11-27",
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 354055511,
+    "tenantLocationId": 329933951,
+    "name": "Versailles Restaurant",
+    "companyName": "Versailles Restaurant",
+    "moveIn": "2026-01-06",
+    "moveInSource": "fromDate",
+    "moveOut": null,
+    "isCurrent": true,
+    "durationYears": 0.8,
+    "expirationReason": null,
+    "suites": [
+     "700-4"
+    ],
+    "sfOccupied": 800.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex",
+     "bio-regex"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 354055651,
+    "tenantLocationId": 329934231,
+    "name": "The Unncutt Lounge",
+    "companyName": "The Unncutt Lounge",
+    "moveIn": "2026-01-06",
+    "moveInSource": "fromDate",
+    "moveOut": null,
+    "isCurrent": true,
+    "durationYears": 0.8,
+    "expirationReason": null,
+    "suites": [
+     "540"
+    ],
+    "sfOccupied": 1600.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "name-regex-weak"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   },
+   {
+    "occupancyId": 354055881,
+    "tenantLocationId": 329934341,
+    "name": "Taza Cafe",
+    "companyName": "Taza Cafe",
+    "moveIn": "2026-01-06",
+    "moveInSource": "fromDate",
+    "moveOut": null,
+    "isCurrent": true,
+    "durationYears": 0.8,
+    "expirationReason": null,
+    "suites": [],
+    "sfOccupied": 1600.0,
+    "leaseType": "Direct",
+    "matchBasis": [
+     "profile.industryType=17",
+     "name-regex",
+     "bio-regex"
+    ],
+    "leaseSignDate": null,
+    "leaseExpirationDate": null
+   }
+  ],
+  "foodHistoryCount": 4,
+  "foodPastCount": 2,
+  "foodCurrentCount": 2,
+  "foodWeakMatchCount": 3,
+  "saleCompCount": 3,
+  "lastSale": {
+   "compId": 3397105,
+   "soldDate": "2015-09-22",
+   "soldForPrice": 61250000,
+   "salePriceStatus": "Confirmed",
+   "entityCount": 2,
+   "isPortfolio": true,
+   "allocatedPrice": 24799072,
+   "allocatedPriceStatus": "Allocated",
+   "monetaryUnit": "UnitedStatesDollar"
+  },
+  "activeSaleListings": [],
+  "foodHistoryArtifacts": [],
+  "foodClosedOrBankruptCount": 0,
+  "selection": {
+   "top12Rank": 12,
+   "score": 15,
+   "scoreReasons": [
+    "fit-space+rent",
+    "food-past=2",
+    "food-current=2",
+    "mp-suite/retail-caption",
+    "restaurant-keywords"
+   ],
+   "rationale": "Only full-service-gross rent in the top 12 ($21 FSG, 1,071 SF lobby retail near LAX): shows the NNN-vs-gross comparison. Trimana cafe left next-door Suite 101 after 7.3 yrs; Suite 102 scan is on the same lobby level.",
+   "caveat": "Lobby/kiosk retail in an office tower, limited venting; scan is Suite 102 not Suite 100.",
+   "primarySpace": {
+    "spaceId": 17588764,
+    "listingId": 15044934,
+    "suite": "100",
+    "floor": "FirstFloor",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "sfMin": 1071.0,
+    "sfMax": 1071.0,
+    "rentPerSfYrLow": 21.0,
+    "rentPerSfYrHigh": 21.0,
+    "serviceType": "FullService",
+    "serviceTypeShort": "FSG",
+    "isLeasePending": false
+   },
+   "primarySpaceRentLabel": "$21.00/SF/yr FSG (quoted monthly)",
+   "primarySpaceAnnualRent": 22491,
+   "primarySpaceMonthlyRent": 1874,
+   "primaryMatterportModelId": "R3Nj53ps6f9",
+   "matterportScanRelation": "adjacent-suite",
+   "fitSpaceCount": 2
+  }
+ }
+]

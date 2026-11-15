@@ -1,0 +1,679 @@
+{
+  "id": "5697296",
+  "address": "14800 Westheimer Rd",
+  "city": "Houston",
+  "state": "TX",
+  "postcode": "77082",
+  "lat": 29.7360111,
+  "lng": -95.6478026,
+  "buildingName": "Barker Oaks Plaza",
+  "propertyType": "GeneralRetail",
+  "propertySubtype": "GeneralRetail_Storefront",
+  "buildingSf": 30399.0,
+  "yearBuilt": 2007,
+  "yearRenovated": 2014,
+  "stories": 1,
+  "zoning": "None",
+  "photoUrl": "https://ahprd1cdn.csgpimgs.com/i2/QNpwmr7FQOfgDy5YrXaO3DVbm7qGJHU8dSDno0ZD9N4/112/image.jpg",
+  "space": {
+    "spaceId": 20881675,
+    "listingId": 28289277,
+    "suite": "D",
+    "floor": "FirstFloor",
+    "sf": 2894.0,
+    "sfMin": 2894.0,
+    "rentPerSfYr": 20.22,
+    "serviceType": "NNN",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "notes": "SPECIAL LIMITED TIME OFFER: \n3 months FREE rent for qualified applicants. Call for details!\n\nRare opportunity to secure a fully built-out, second-generation restaurant on the high-traffic Westheimer Rd corridor. This 2,894 SF space is plug-and-play with an existing bar area, vent hood, and grease trap already in place—dramatically reducing startup time and cost.\n\nSurrounded by dense rooftops and established retail, this location offers immediate access to a strong customer base with excellent visibility and traffic exposure.\n\nAvailable October – Ideal for operators ready to move quickly\n\nHighlights:\n\nFully built-out restaurant space\nBar area \nVent hood & grease trap in place\nHigh-traffic Westheimer frontage\nMinimal TI needed = faster opening\nStrong co-tenancy & demographics\n\nPerfect for: F",
+    "availableOn": "2026-10-01",
+    "floorPlanUrl": "https://ahprd1cdn.csgpimgs.com/i2/Tw6TUC2I8a3Wf74kgKn0evmLtl1ADLTQPCi6geQG0Aw/112/image.jpg",
+    "restaurantKeywords": [
+      "bar",
+      "dining",
+      "grease",
+      "hood",
+      "restaurant",
+      "second-gen"
+    ]
+  },
+  "otherSpaces": [],
+  "tenantHistory": [
+    {
+      "name": "Pinos Pizza",
+      "industry": "AccommodationAndFoodServices",
+      "isFood": true,
+      "moveIn": "2011-02-12",
+      "moveOut": "2011-10-04",
+      "years": 0.6,
+      "suite": null,
+      "sameSuite": false,
+      "current": false,
+      "outcome": "moved",
+      "matchBasis": "name-regex"
+    },
+    {
+      "name": "Nardino Ristorante",
+      "industry": "AccommodationAndFoodServices",
+      "isFood": true,
+      "moveIn": "2011-10-14",
+      "moveOut": "2013-08-05",
+      "years": 1.8,
+      "suite": null,
+      "sameSuite": false,
+      "current": false,
+      "outcome": "moved",
+      "matchBasis": "name-regex"
+    },
+    {
+      "name": "Turmeric Cuisine",
+      "industry": "AccommodationAndFoodServices",
+      "isFood": true,
+      "moveIn": "2013-03-13",
+      "moveOut": "2018-01-12",
+      "years": 4.8,
+      "suite": null,
+      "sameSuite": false,
+      "current": false,
+      "outcome": "closed",
+      "matchBasis": "profile.industryType=17, name-regex"
+    },
+    {
+      "name": "Gayatri Bhavan",
+      "industry": "AccommodationAndFoodServices",
+      "isFood": true,
+      "moveIn": "2013-10-03",
+      "moveOut": "2026-09-30",
+      "years": 13.0,
+      "suite": "D",
+      "sameSuite": true,
+      "current": false,
+      "outcome": "moved",
+      "matchBasis": "profile.industryType=17, bio-regex"
+    }
+  ],
+  "sales": [],
+  "matterport": {
+    "modelId": "zKgykpJUQ69",
+    "defurnishedViewId": "rzf6d8c7f0zgy8kzq0uusqaid",
+    "scanOfExactSuite": false,
+    "scanName": "Suite B1",
+    "areaSf": 962,
+    "rooms": [
+      {
+        "label": "Unlabeled space",
+        "areaSf": 825.0,
+        "widthFt": null,
+        "depthFt": null,
+        "heightFt": 10.0,
+        "polygon": [
+          [
+            -23.698,
+            -0.03
+          ],
+          [
+            -21.437,
+            -0.032
+          ],
+          [
+            -21.438,
+            -0.296
+          ],
+          [
+            -17.775,
+            -0.298
+          ],
+          [
+            -17.773,
+            2.152
+          ],
+          [
+            1.038,
+            2.137
+          ],
+          [
+            1.035,
+            -1.655
+          ],
+          [
+            -23.699,
+            -1.635
+          ]
+        ]
+      },
+      {
+        "label": "Unlabeled space",
+        "areaSf": 89.4,
+        "widthFt": 11.7,
+        "depthFt": 7.7,
+        "heightFt": 10.1,
+        "polygon": [
+          [
+            -21.436,
+            2.155
+          ],
+          [
+            -21.437,
+            -0.032
+          ],
+          [
+            -21.438,
+            -0.296
+          ],
+          [
+            -17.775,
+            -0.298
+          ],
+          [
+            -17.773,
+            2.152
+          ]
+        ]
+      },
+      {
+        "label": "Unlabeled space",
+        "areaSf": 47.3,
+        "widthFt": 7.0,
+        "depthFt": 6.8,
+        "heightFt": 10.1,
+        "polygon": [
+          [
+            -23.698,
+            -0.03
+          ],
+          [
+            -21.437,
+            -0.032
+          ],
+          [
+            -21.436,
+            2.155
+          ],
+          [
+            -23.696,
+            2.157
+          ]
+        ]
+      }
+    ],
+    "panos": [
+      {
+        "id": "6acsx3m35nyurznd3h97umh0d",
+        "position": {
+          "x": -22.005,
+          "y": -0.971,
+          "z": 1.428
+        },
+        "label": "12"
+      },
+      {
+        "id": "fmpdqt96q73cgx19nheki8sdb",
+        "position": {
+          "x": -14.074,
+          "y": 1.377,
+          "z": 1.422
+        },
+        "label": "6"
+      },
+      {
+        "id": "qm7wx23i2tdeqs78fm57mit3b",
+        "position": {
+          "x": -3.461,
+          "y": 1.325,
+          "z": 1.421
+        },
+        "label": "2",
+        "rotation": {
+          "x": 0.0033461013808846474,
+          "y": 0.004693758208304644,
+          "z": 0.9725369811058044,
+          "w": -0.23267708718776703
+        },
+        "skybox": [
+          "/sites/5697296/pano/qm7wx23i2tdeqs78fm57mit3b/f0.jpg",
+          "/sites/5697296/pano/qm7wx23i2tdeqs78fm57mit3b/f1.jpg",
+          "/sites/5697296/pano/qm7wx23i2tdeqs78fm57mit3b/f2.jpg",
+          "/sites/5697296/pano/qm7wx23i2tdeqs78fm57mit3b/f3.jpg",
+          "/sites/5697296/pano/qm7wx23i2tdeqs78fm57mit3b/f4.jpg",
+          "/sites/5697296/pano/qm7wx23i2tdeqs78fm57mit3b/f5.jpg"
+        ],
+        "skyboxEmpty": [
+          "/sites/5697296/pano/qm7wx23i2tdeqs78fm57mit3b/empty/f0.jpg",
+          "/sites/5697296/pano/qm7wx23i2tdeqs78fm57mit3b/empty/f1.jpg",
+          "/sites/5697296/pano/qm7wx23i2tdeqs78fm57mit3b/empty/f2.jpg",
+          "/sites/5697296/pano/qm7wx23i2tdeqs78fm57mit3b/empty/f3.jpg",
+          "/sites/5697296/pano/qm7wx23i2tdeqs78fm57mit3b/empty/f4.jpg",
+          "/sites/5697296/pano/qm7wx23i2tdeqs78fm57mit3b/empty/f5.jpg"
+        ]
+      },
+      {
+        "id": "tczyqfzedi55tpt510wcdqstd",
+        "position": {
+          "x": -16.88,
+          "y": -1.03,
+          "z": 1.429
+        },
+        "label": "8",
+        "rotation": {
+          "x": 0.0046581388451159,
+          "y": 0.005393920931965113,
+          "z": 0.31033453345298767,
+          "w": 0.9506006836891174
+        },
+        "skybox": [
+          "/sites/5697296/pano/tczyqfzedi55tpt510wcdqstd/f0.jpg",
+          "/sites/5697296/pano/tczyqfzedi55tpt510wcdqstd/f1.jpg",
+          "/sites/5697296/pano/tczyqfzedi55tpt510wcdqstd/f2.jpg",
+          "/sites/5697296/pano/tczyqfzedi55tpt510wcdqstd/f3.jpg",
+          "/sites/5697296/pano/tczyqfzedi55tpt510wcdqstd/f4.jpg",
+          "/sites/5697296/pano/tczyqfzedi55tpt510wcdqstd/f5.jpg"
+        ],
+        "skyboxEmpty": [
+          "/sites/5697296/pano/tczyqfzedi55tpt510wcdqstd/empty/f0.jpg",
+          "/sites/5697296/pano/tczyqfzedi55tpt510wcdqstd/empty/f1.jpg",
+          "/sites/5697296/pano/tczyqfzedi55tpt510wcdqstd/empty/f2.jpg",
+          "/sites/5697296/pano/tczyqfzedi55tpt510wcdqstd/empty/f3.jpg",
+          "/sites/5697296/pano/tczyqfzedi55tpt510wcdqstd/empty/f4.jpg",
+          "/sites/5697296/pano/tczyqfzedi55tpt510wcdqstd/empty/f5.jpg"
+        ]
+      },
+      {
+        "id": "04m823s27pn99afsxdrz9fztc",
+        "position": {
+          "x": -18.451,
+          "y": 1.087,
+          "z": 1.411
+        },
+        "label": "10",
+        "rotation": {
+          "x": -9.875264368019998e-05,
+          "y": 0.010080934502184391,
+          "z": 0.9309439659118652,
+          "w": 0.36502283811569214
+        },
+        "skybox": [
+          "/sites/5697296/pano/04m823s27pn99afsxdrz9fztc/f0.jpg",
+          "/sites/5697296/pano/04m823s27pn99afsxdrz9fztc/f1.jpg",
+          "/sites/5697296/pano/04m823s27pn99afsxdrz9fztc/f2.jpg",
+          "/sites/5697296/pano/04m823s27pn99afsxdrz9fztc/f3.jpg",
+          "/sites/5697296/pano/04m823s27pn99afsxdrz9fztc/f4.jpg",
+          "/sites/5697296/pano/04m823s27pn99afsxdrz9fztc/f5.jpg"
+        ],
+        "skyboxEmpty": [
+          "/sites/5697296/pano/04m823s27pn99afsxdrz9fztc/empty/f0.jpg",
+          "/sites/5697296/pano/04m823s27pn99afsxdrz9fztc/empty/f1.jpg",
+          "/sites/5697296/pano/04m823s27pn99afsxdrz9fztc/empty/f2.jpg",
+          "/sites/5697296/pano/04m823s27pn99afsxdrz9fztc/empty/f3.jpg",
+          "/sites/5697296/pano/04m823s27pn99afsxdrz9fztc/empty/f4.jpg",
+          "/sites/5697296/pano/04m823s27pn99afsxdrz9fztc/empty/f5.jpg"
+        ]
+      },
+      {
+        "id": "dds4fa0yqmp4aygczizi4fubd",
+        "position": {
+          "x": -20.731,
+          "y": 1.069,
+          "z": 1.415
+        },
+        "label": "11"
+      },
+      {
+        "id": "nd0fcecy2k9n23pha6dsr3qib",
+        "position": {
+          "x": -2.995,
+          "y": -0.953,
+          "z": 1.412
+        },
+        "label": "1"
+      },
+      {
+        "id": "nnmzqsia396y863kgiz4g35dd",
+        "position": {
+          "x": -8.469,
+          "y": 1.201,
+          "z": 1.434
+        },
+        "label": "3",
+        "rotation": {
+          "x": 0.0030995721463114023,
+          "y": -0.006066152360290289,
+          "z": -0.3902278542518616,
+          "w": 0.9206930994987488
+        },
+        "skybox": [
+          "/sites/5697296/pano/nnmzqsia396y863kgiz4g35dd/f0.jpg",
+          "/sites/5697296/pano/nnmzqsia396y863kgiz4g35dd/f1.jpg",
+          "/sites/5697296/pano/nnmzqsia396y863kgiz4g35dd/f2.jpg",
+          "/sites/5697296/pano/nnmzqsia396y863kgiz4g35dd/f3.jpg",
+          "/sites/5697296/pano/nnmzqsia396y863kgiz4g35dd/f4.jpg",
+          "/sites/5697296/pano/nnmzqsia396y863kgiz4g35dd/f5.jpg"
+        ],
+        "skyboxEmpty": [
+          "/sites/5697296/pano/nnmzqsia396y863kgiz4g35dd/empty/f0.jpg",
+          "/sites/5697296/pano/nnmzqsia396y863kgiz4g35dd/empty/f1.jpg",
+          "/sites/5697296/pano/nnmzqsia396y863kgiz4g35dd/empty/f2.jpg",
+          "/sites/5697296/pano/nnmzqsia396y863kgiz4g35dd/empty/f3.jpg",
+          "/sites/5697296/pano/nnmzqsia396y863kgiz4g35dd/empty/f4.jpg",
+          "/sites/5697296/pano/nnmzqsia396y863kgiz4g35dd/empty/f5.jpg"
+        ]
+      },
+      {
+        "id": "qdnfyukxmm0t39cgc7t4ydcmb",
+        "position": {
+          "x": -8.496,
+          "y": -0.787,
+          "z": 1.437
+        },
+        "label": "4"
+      },
+      {
+        "id": "6x92ufafe11arb7yretb9289d",
+        "position": {
+          "x": 0.039,
+          "y": 0.061,
+          "z": 1.406
+        },
+        "label": "0",
+        "rotation": {
+          "x": 0.0008960236446000636,
+          "y": 0.003485308261588216,
+          "z": 0.9928154349327087,
+          "w": -0.11960205435752869
+        },
+        "skybox": [
+          "/sites/5697296/pano/6x92ufafe11arb7yretb9289d/f0.jpg",
+          "/sites/5697296/pano/6x92ufafe11arb7yretb9289d/f1.jpg",
+          "/sites/5697296/pano/6x92ufafe11arb7yretb9289d/f2.jpg",
+          "/sites/5697296/pano/6x92ufafe11arb7yretb9289d/f3.jpg",
+          "/sites/5697296/pano/6x92ufafe11arb7yretb9289d/f4.jpg",
+          "/sites/5697296/pano/6x92ufafe11arb7yretb9289d/f5.jpg"
+        ],
+        "skyboxEmpty": [
+          "/sites/5697296/pano/6x92ufafe11arb7yretb9289d/empty/f0.jpg",
+          "/sites/5697296/pano/6x92ufafe11arb7yretb9289d/empty/f1.jpg",
+          "/sites/5697296/pano/6x92ufafe11arb7yretb9289d/empty/f2.jpg",
+          "/sites/5697296/pano/6x92ufafe11arb7yretb9289d/empty/f3.jpg",
+          "/sites/5697296/pano/6x92ufafe11arb7yretb9289d/empty/f4.jpg",
+          "/sites/5697296/pano/6x92ufafe11arb7yretb9289d/empty/f5.jpg"
+        ]
+      },
+      {
+        "id": "afeg40wbpzy36h42h685sg5id",
+        "position": {
+          "x": -22.225,
+          "y": 0.554,
+          "z": 1.431
+        },
+        "label": "13",
+        "rotation": {
+          "x": -0.007008564192801714,
+          "y": 0.005785105284303427,
+          "z": 0.9893152117729187,
+          "w": -0.14550860226154327
+        },
+        "skybox": [
+          "/sites/5697296/pano/afeg40wbpzy36h42h685sg5id/f0.jpg",
+          "/sites/5697296/pano/afeg40wbpzy36h42h685sg5id/f1.jpg",
+          "/sites/5697296/pano/afeg40wbpzy36h42h685sg5id/f2.jpg",
+          "/sites/5697296/pano/afeg40wbpzy36h42h685sg5id/f3.jpg",
+          "/sites/5697296/pano/afeg40wbpzy36h42h685sg5id/f4.jpg",
+          "/sites/5697296/pano/afeg40wbpzy36h42h685sg5id/f5.jpg"
+        ],
+        "skyboxEmpty": [
+          "/sites/5697296/pano/afeg40wbpzy36h42h685sg5id/empty/f0.jpg",
+          "/sites/5697296/pano/afeg40wbpzy36h42h685sg5id/empty/f1.jpg",
+          "/sites/5697296/pano/afeg40wbpzy36h42h685sg5id/empty/f2.jpg",
+          "/sites/5697296/pano/afeg40wbpzy36h42h685sg5id/empty/f3.jpg",
+          "/sites/5697296/pano/afeg40wbpzy36h42h685sg5id/empty/f4.jpg",
+          "/sites/5697296/pano/afeg40wbpzy36h42h685sg5id/empty/f5.jpg"
+        ]
+      },
+      {
+        "id": "uzttp096h0yaeaqg1nngbf6dd",
+        "position": {
+          "x": -14.086,
+          "y": -1.066,
+          "z": 1.428
+        },
+        "label": "5",
+        "rotation": {
+          "x": 0.006195444613695145,
+          "y": 0.0024137578438967466,
+          "z": 0.7933858036994934,
+          "w": 0.6086828708648682
+        },
+        "skybox": [
+          "/sites/5697296/pano/uzttp096h0yaeaqg1nngbf6dd/f0.jpg",
+          "/sites/5697296/pano/uzttp096h0yaeaqg1nngbf6dd/f1.jpg",
+          "/sites/5697296/pano/uzttp096h0yaeaqg1nngbf6dd/f2.jpg",
+          "/sites/5697296/pano/uzttp096h0yaeaqg1nngbf6dd/f3.jpg",
+          "/sites/5697296/pano/uzttp096h0yaeaqg1nngbf6dd/f4.jpg",
+          "/sites/5697296/pano/uzttp096h0yaeaqg1nngbf6dd/f5.jpg"
+        ],
+        "skyboxEmpty": [
+          "/sites/5697296/pano/uzttp096h0yaeaqg1nngbf6dd/empty/f0.jpg",
+          "/sites/5697296/pano/uzttp096h0yaeaqg1nngbf6dd/empty/f1.jpg",
+          "/sites/5697296/pano/uzttp096h0yaeaqg1nngbf6dd/empty/f2.jpg",
+          "/sites/5697296/pano/uzttp096h0yaeaqg1nngbf6dd/empty/f3.jpg",
+          "/sites/5697296/pano/uzttp096h0yaeaqg1nngbf6dd/empty/f4.jpg",
+          "/sites/5697296/pano/uzttp096h0yaeaqg1nngbf6dd/empty/f5.jpg"
+        ]
+      },
+      {
+        "id": "608556e4fm4k7b3xffxmzzi2c",
+        "position": {
+          "x": -16.781,
+          "y": 1.268,
+          "z": 1.421
+        },
+        "label": "7"
+      },
+      {
+        "id": "qhz2s0k1s98xzk4cr4dzaz6qb",
+        "position": {
+          "x": -22.216,
+          "y": 1.696,
+          "z": 1.427
+        },
+        "label": "14"
+      },
+      {
+        "id": "09ptcmn5neye91aedkp7bcwcb",
+        "position": {
+          "x": -18.414,
+          "y": -1.018,
+          "z": 1.432
+        },
+        "label": "9"
+      }
+    ],
+    "beforeAfter": [
+      {
+        "panoId": "6x92ufafe11arb7yretb9289d",
+        "before": "/sites/5697296/before-6x92ufafe11arb7yretb9289d.jpg",
+        "after": "/sites/5697296/after-6x92ufafe11arb7yretb9289d.jpg",
+        "caption": "Dining area"
+      },
+      {
+        "panoId": "nnmzqsia396y863kgiz4g35dd",
+        "before": "/sites/5697296/before-nnmzqsia396y863kgiz4g35dd.jpg",
+        "after": "/sites/5697296/after-nnmzqsia396y863kgiz4g35dd.jpg",
+        "caption": "Dining area"
+      }
+    ],
+    "photos": [
+      "/sites/5697296/photo-1.jpg",
+      "/sites/5697296/photo-2.jpg",
+      "/sites/5697296/photo-3.jpg"
+    ],
+    "floorplanImage": "/sites/5697296/floorplan.jpg",
+    "description": "Commercial space at 14800 Westheimer Rd, Houston, TX featuring an open floor plan, wood-look flooring, a drop ceiling with recessed lighting, and a bathroom."
+  },
+  "aerial": {
+    "widthPx": 1024,
+    "heightPx": 1024,
+    "orthoPath": "/sites/5697296/aerial.jpg",
+    "obliquePath": "/sites/5697296/oblique.jpg",
+    "captureDate": "2025-12-31",
+    "extentM": 120.0,
+    "gsdM": 0.1172,
+    "vehicleCount": 39,
+    "hardscapeSf": 277,
+    "footprintSf": 30611,
+    "parkingSpaces": 1,
+    "patioCandidateSf": 0,
+    "detections": [
+      {
+        "label": "parking space",
+        "confidence": 0.517,
+        "polygon": [
+          [
+            29.5,
+            638.7
+          ],
+          [
+            1015.7,
+            638.7
+          ],
+          [
+            1015.7,
+            816.8
+          ],
+          [
+            29.5,
+            816.8
+          ],
+          [
+            29.5,
+            638.7
+          ]
+        ]
+      }
+    ]
+  },
+  "findings": [
+    {
+      "id": "costar-hood",
+      "kind": "hood",
+      "status": "present",
+      "confidence": 0.6,
+      "evidence": "Listing notes mention an existing hood or venting.",
+      "source": "costar-notes"
+    },
+    {
+      "id": "costar-grease-trap",
+      "kind": "grease-trap",
+      "status": "present",
+      "confidence": 0.6,
+      "evidence": "Listing notes mention a grease trap or interceptor.",
+      "source": "costar-notes"
+    },
+    {
+      "id": "costar-prior-use",
+      "kind": "prior-use",
+      "status": "present",
+      "confidence": 0.8,
+      "evidence": "Listed as a second-generation restaurant space.",
+      "source": "costar-notes"
+    },
+    {
+      "id": "5697296-vision-hood",
+      "kind": "hood",
+      "status": "absent",
+      "confidence": 0.82,
+      "evidence": "The full length of the open retail shell shows only drop ceiling tiles, light troffers and HVAC diffusers, with no exhaust hood or canopy.",
+      "source": "matterport-vision",
+      "imagePath": "/sites/5697296/vision-uzttp096h0yaeaqg1nngbf6dd.jpg",
+      "position": {
+        "x": -14.086,
+        "y": -1.066,
+        "z": 1.428
+      },
+      "panoId": "uzttp096h0yaeaqg1nngbf6dd"
+    },
+    {
+      "id": "5697296-vision-kitchen-line",
+      "kind": "kitchen-line",
+      "status": "absent",
+      "confidence": 0.85,
+      "evidence": "The space is an empty shell with bare walls and vinyl plank flooring, holding only a folding table and no cooking or prep equipment.",
+      "source": "matterport-vision",
+      "imagePath": "/sites/5697296/vision-uzttp096h0yaeaqg1nngbf6dd.jpg",
+      "position": {
+        "x": -14.086,
+        "y": -1.066,
+        "z": 1.428
+      },
+      "panoId": "uzttp096h0yaeaqg1nngbf6dd"
+    },
+    {
+      "id": "5697296-vision-walk-in",
+      "kind": "walk-in",
+      "status": "unknown",
+      "confidence": 0.6,
+      "evidence": "No insulated cooler box or refrigerated door is visible in the open area, but the rear rooms are not fully shown.",
+      "source": "matterport-vision"
+    },
+    {
+      "id": "5697296-vision-restrooms",
+      "kind": "restrooms",
+      "status": "unknown",
+      "confidence": 0.5,
+      "evidence": "No restroom doors or fixtures are visible in the views provided, and the rear area is only partly shown.",
+      "source": "matterport-vision"
+    },
+    {
+      "id": "5697296-vision-grease-trap",
+      "kind": "grease-trap",
+      "status": "unknown",
+      "confidence": 0.5,
+      "evidence": "The visible floor is continuous vinyl plank with no floor sink or interceptor lid seen, but not all of the floor area is shown.",
+      "source": "matterport-vision"
+    },
+    {
+      "id": "5697296-vision-electrical",
+      "kind": "electrical",
+      "status": "present",
+      "confidence": 0.95,
+      "evidence": "Two gray wall-mounted electrical panels with multiple metal conduits running up to the ceiling are visible in a back room.",
+      "source": "matterport-vision",
+      "imagePath": "/sites/5697296/vision-afeg40wbpzy36h42h685sg5id.jpg",
+      "position": {
+        "x": -22.225,
+        "y": 0.554,
+        "z": 1.431
+      },
+      "panoId": "afeg40wbpzy36h42h685sg5id"
+    },
+    {
+      "id": "5697296-vision-storefront",
+      "kind": "storefront",
+      "status": "present",
+      "confidence": 0.95,
+      "evidence": "Floor-to-ceiling aluminum-framed storefront glazing with a glass entry door and exit sign faces the parking lot.",
+      "source": "matterport-vision",
+      "imagePath": "/sites/5697296/before-nnmzqsia396y863kgiz4g35dd.jpg",
+      "position": {
+        "x": -8.469,
+        "y": 1.201,
+        "z": 1.434
+      },
+      "panoId": "nnmzqsia396y863kgiz4g35dd"
+    },
+    {
+      "id": "5697296-vision-ada",
+      "kind": "ada",
+      "status": "unknown",
+      "confidence": 0.4,
+      "evidence": "The glass entry door appears to be at grade, but no ramp, grab bars or accessible restroom can be confirmed.",
+      "source": "matterport-vision"
+    }
+  ],
+  "headline": "Second-generation restaurant suite with a hood; 1 food tenant left it after ~13 yr, $20.22/SF NNN.",
+  "sources": [
+    {
+      "label": "CoStar hackathon data kit (Nov 2026)"
+    }
+  ]
+}

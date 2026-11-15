@@ -1,0 +1,1179 @@
+{
+  "meta": {
+    "description": "Every constant the Foreground money engine uses. Each entry has value(s), a unit and a source. \"Foreground estimate\" means we could not open a public source for the value; it is our own planning assumption and must be shown as an estimate.",
+    "retrieved": "2026-11-13"
+  },
+  "salesPerSfYr": {
+    "quick-service": {
+      "low": 500, "mid": 650, "high": 800, "unit": "USD per SF per year",
+      "source": { "label": "Teamz Lab restaurant revenue per square foot benchmark (QSR $500-800)", "url": "https://tool.teamzlab.com/tax/restaurant-revenue-per-square-foot-2026-benchmark-calculator/" }
+    },
+    "fast-casual": {
+      "low": 400, "mid": 550, "high": 700, "unit": "USD per SF per year",
+      "note": "Conservative band for an independent operator, from the team plan doc. The published fast-casual segment range is $600-900/SF (Teamz Lab) and is led by chains such as Chipotle and Cava.",
+      "source": { "label": "Foreground estimate" }
+    },
+    "full-service": {
+      "low": 400, "mid": 550, "high": 700, "unit": "USD per SF per year",
+      "note": "Complete Controller gives $450-550 for full-service restaurants.",
+      "source": { "label": "Teamz Lab restaurant revenue per square foot benchmark (casual dining $400-700)", "url": "https://tool.teamzlab.com/tax/restaurant-revenue-per-square-foot-2026-benchmark-calculator/" }
+    },
+    "cafe": {
+      "low": 700, "mid": 850, "high": 1000, "unit": "USD per SF per year",
+      "note": "The high end reflects mature Starbucks stores.",
+      "source": { "label": "Teamz Lab restaurant revenue per square foot benchmark (cafe $700-1,000)", "url": "https://tool.teamzlab.com/tax/restaurant-revenue-per-square-foot-2026-benchmark-calculator/" }
+    },
+    "bar": {
+      "low": 500, "mid": 700, "high": 900, "unit": "USD per SF per year",
+      "source": { "label": "Teamz Lab restaurant revenue per square foot benchmark (bar/pub $500-900)", "url": "https://tool.teamzlab.com/tax/restaurant-revenue-per-square-foot-2026-benchmark-calculator/" }
+    }
+  },
+  "costShares": {
+    "food": {
+      "value": 0.30, "low": 0.28, "high": 0.36, "unit": "share of sales",
+      "note": "QSR 28-30%, full service 34-36%. ChowNow gives 25-35%.",
+      "source": { "label": "Complete Controller, key benchmarks in the restaurant industry", "url": "https://www.completecontroller.com/key-benchmarks-in-the-restaurant-industry/" }
+    },
+    "labor": {
+      "value": 0.31, "low": 0.30, "high": 0.40, "unit": "share of sales",
+      "note": "QSR 30-32%, full service 36-40%. ChowNow gives 20-30%.",
+      "source": { "label": "Complete Controller, key benchmarks in the restaurant industry", "url": "https://www.completecontroller.com/key-benchmarks-in-the-restaurant-industry/" }
+    },
+    "other": {
+      "value": 0.23, "low": 0.20, "high": 0.26, "unit": "share of sales",
+      "note": "Operating costs other than food, labor and occupancy. Bloom Intelligence's illustrative full-service split uses about 26%; the plan doc uses 23%.",
+      "source": { "label": "Foreground estimate" }
+    }
+  },
+  "primeCost": {
+    "value": 0.61, "low": 0.55, "high": 0.65, "unit": "share of sales (food + labor)",
+    "note": "ChowNow: 55-65%. Complete Controller: at or below 60%.",
+    "source": { "label": "ChowNow restaurant industry benchmarks", "url": "https://get.chownow.com/blog/restaurant-industry-benchmarks/" }
+  },
+  "occupancyShare": {
+    "target": 0.08, "low": 0.06, "high": 0.10, "unit": "share of sales",
+    "note": "Complete Controller: typical occupancy costs 6-10%. Paytronix: aim for rent at 5-8% of sales. Teamz Lab: above 10% the lease eats the margin. 8% is the planning target.",
+    "source": { "label": "Paytronix, average restaurant rent as a percentage of sales", "url": "https://www.paytronix.com/blog/average-restaurant-rent-as-a-percentage-of-sales" }
+  },
+  "netMargin": {
+    "quick-service": { "low": 0.06, "high": 0.09, "unit": "share of sales", "source": { "label": "ChowNow restaurant industry benchmarks", "url": "https://get.chownow.com/blog/restaurant-industry-benchmarks/" } },
+    "fast-casual": { "low": 0.02, "high": 0.06, "unit": "share of sales", "source": { "label": "ChowNow restaurant industry benchmarks", "url": "https://get.chownow.com/blog/restaurant-industry-benchmarks/" } },
+    "full-service": { "low": 0.03, "high": 0.09, "unit": "share of sales", "note": "Bloom Intelligence reports a 2.8% median for full service.", "source": { "label": "ChowNow restaurant industry benchmarks", "url": "https://get.chownow.com/blog/restaurant-industry-benchmarks/" } },
+    "cafe": { "low": 0.03, "high": 0.09, "unit": "share of sales", "source": { "label": "Foreground estimate" } },
+    "bar": { "low": 0.05, "high": 0.10, "unit": "share of sales", "source": { "label": "Foreground estimate" } }
+  },
+  "avgCheckUsd": {
+    "quick-service": { "value": 12, "unit": "USD per cover", "source": { "label": "Foreground estimate" } },
+    "fast-casual": { "value": 18, "unit": "USD per cover", "note": "Foundra's worked example uses an $18 average check.", "source": { "label": "Foundra, start a restaurant (worked example)", "url": "https://www.foundra.ai/start/restaurant" } },
+    "full-service": { "value": 30, "unit": "USD per cover", "source": { "label": "Foreground estimate" } },
+    "cafe": { "value": 9, "unit": "USD per cover", "source": { "label": "Foreground estimate" } },
+    "bar": { "value": 25, "unit": "USD per cover", "source": { "label": "Foreground estimate" } }
+  },
+  "sfPerSeat": {
+    "quick-service": { "low": 10, "mid": 11, "high": 12, "unit": "dining SF per seat", "source": { "label": "Foreground estimate" } },
+    "fast-casual": { "low": 11, "mid": 12.5, "high": 14, "unit": "dining SF per seat", "source": { "label": "Oak Street Manufacturing seating layout guide (fast casual 11-14)", "url": "https://www.oakstreetmfg.com/the-ultimate-restaurant-seating-layout-guide-with-real-numbers/" } },
+    "full-service": { "low": 15, "mid": 16.5, "high": 18, "unit": "dining SF per seat", "source": { "label": "Oak Street Manufacturing seating layout guide (casual dining 15-18)", "url": "https://www.oakstreetmfg.com/the-ultimate-restaurant-seating-layout-guide-with-real-numbers/" } },
+    "cafe": { "low": 12, "mid": 13, "high": 14, "unit": "dining SF per seat", "source": { "label": "Oak Street Manufacturing seating layout guide (general 12-14)", "url": "https://www.oakstreetmfg.com/the-ultimate-restaurant-seating-layout-guide-with-real-numbers/" } },
+    "bar": { "low": 12, "mid": 13.5, "high": 15, "unit": "dining SF per seat", "source": { "label": "Oak Street Manufacturing seating layout guide (bar/lounge 12-15)", "url": "https://www.oakstreetmfg.com/the-ultimate-restaurant-seating-layout-guide-with-real-numbers/" } }
+  },
+  "diningAreaShare": {
+    "value": 0.6, "unit": "share of total area used for seating",
+    "note": "Common 60/40 dining-to-kitchen rule of thumb.",
+    "source": { "label": "Foreground estimate" }
+  },
+  "openDaysPerYear": { "value": 360, "unit": "days", "source": { "label": "Foreground estimate" } },
+  "turnsVerdict": {
+    "unit": "seat turns per day",
+    "note": "Applies to true break-even (profit zero). Turns are break-even covers per day divided by the seats the owner will operate (the smaller of the seats wanted and the seats that fit). comfortable when turns/day <= comfortableMax; stretch when <= stretchMax; otherwise unlikely. Anchor: Foundra's example counter-service restaurant does 175 covers on 50 seats (3.5 turns/day) on a normal day. Break-even needing a full normal day is the stretch limit; needing under about 60% of one is comfortable. Table-service concepts turn slower (ChowNow: about 1 hour 15 minutes per table), quick-service and cafes faster. The limits themselves are ours.",
+    "source": { "label": "Foreground estimate" },
+    "quick-service": { "comfortableMax": 3, "stretchMax": 5 },
+    "fast-casual": { "comfortableMax": 2, "stretchMax": 3.5 },
+    "full-service": { "comfortableMax": 1.5, "stretchMax": 2.5 },
+    "cafe": { "comfortableMax": 3, "stretchMax": 5 },
+    "bar": { "comfortableMax": 1.5, "stretchMax": 2.5 }
+  },
+  "nnnExtrasPerSfYr": {
+    "Houston": { "low": 5, "mid": 8, "high": 12, "unit": "USD per SF per year (taxes + insurance + CAM)", "note": "No public per-SF Houston figure could be opened. Ask the landlord for the actual NNN schedule.", "source": { "label": "Foreground estimate" } },
+    "Los Angeles": { "low": 5, "mid": 7, "high": 12, "unit": "USD per SF per year (taxes + insurance + CAM)", "note": "No public per-SF Los Angeles figure could be opened. Ask the landlord for the actual NNN schedule.", "source": { "label": "Foreground estimate" } }
+  },
+  "fallbackRentPerSfYr": {
+    "Houston": { "value": 22, "unit": "USD per SF per year", "note": "Used only when the listing quotes no rent.", "source": { "label": "Foreground estimate" } },
+    "Los Angeles": { "value": 36, "unit": "USD per SF per year", "note": "Used only when the listing quotes no rent.", "source": { "label": "Foreground estimate" } }
+  },
+  "xray": {
+    "hood": { "low": 20000, "high": 60000, "unit": "USD", "note": "Exhaust hood install or modification including ductwork, fire suppression and roof penetration.", "source": { "label": "Block Renovation, restaurant renovation costs", "url": "https://www.blockrenovation.com/guides/restaurant-renovation-costs-commercial" } },
+    "greasePointOfUse": { "low": 5000, "high": 8000, "unit": "USD", "note": "Lower part of Block Renovation's $5,000-25,000 grease interceptor range; the split between point-of-use and in-ground is ours.", "source": { "label": "Foreground estimate" } },
+    "greaseInGround": { "low": 8000, "high": 25000, "unit": "USD", "note": "Exterior in-ground interceptor including excavation. Block Renovation gives $5,000-25,000 for interceptors overall.", "source": { "label": "Projul restaurant and bar build-out guide", "url": "https://projul.com/blog/construction-restaurant-bar-build-out-guide/" } },
+    "walkIn": { "low": 4000, "high": 30000, "unit": "USD", "source": { "label": "NineGuides restaurant buildout guide", "url": "https://nineguides.pages.dev/starting/restaurant-buildout" } },
+    "adaRestroom": { "low": 5000, "high": 25000, "unit": "USD", "note": "Single ADA restroom retrofit. Path-of-travel work can add more.", "source": { "label": "Pulse RevOps, ADA restroom and path-of-travel cost in a buildout", "url": "https://pulserevops.com/knowledge/q13770" } },
+    "electrical": { "low": 10000, "high": 40000, "unit": "USD", "note": "Electrical service upgrade.", "source": { "label": "Block Renovation, restaurant renovation costs", "url": "https://www.blockrenovation.com/guides/restaurant-renovation-costs-commercial" } },
+    "gas": { "low": 2000, "high": 15000, "unit": "USD", "source": { "label": "Foreground estimate" } },
+    "sewer": { "low": 5000, "high": 25000, "unit": "USD", "note": "Connection or capacity fees vary widely by city.", "source": { "label": "Foreground estimate" } },
+    "baseBuildoutPerSf": {
+      "secondGen": { "low": 25, "high": 60, "unit": "USD per SF", "note": "Refresh of a former restaurant (finishes, layout tweaks, repairs) with kitchen systems, FF&E and permits priced as separate X-Ray lines. No public source could be opened for a refresh-only rate. Published all-in second-generation figures are higher because they include equipment and systems: $73/SF survey median (RestaurantOwner.com 2018 via UpMenu), $150-300/SF (NineGuides).", "source": { "label": "Foreground estimate" } },
+      "shell": { "low": 193, "high": 300, "unit": "USD per SF", "note": "First-generation shell, or a space with no sign of a past restaurant. Low: RestaurantOwner.com 2018 survey median for new construction ($193/SF; converting a non-restaurant space was $146/SF). High: low end of NineGuides' $300-600/SF shell range. Kitchen systems are priced as separate X-Ray lines.", "source": { "label": "UpMenu (RestaurantOwner.com survey) and NineGuides", "url": "https://www.upmenu.com/blog/how-much-does-it-cost-to-open-a-small-restaurant/" } }
+    },
+    "ffePerSeat": {
+      "secondGen": { "low": 300, "high": 1200, "unit": "USD per seat", "note": "Former restaurant, kitchen fixtures largely in place: mostly furniture, fixtures and decor. Derived from Foundra's $10,000-50,000 for furniture, fixtures and decor spread over a 40-seat room; the per-seat conversion is ours.", "source": { "label": "Foreground estimate" } },
+      "shell": { "low": 800, "high": 3800, "unit": "USD per seat", "note": "Full kitchen equipment plus furniture. Derived from Foundra's $20,000-100,000 kitchen equipment plus $10,000-50,000 furniture, fixtures and decor spread over a 40-seat room; the per-seat conversion is ours.", "source": { "label": "Foreground estimate" } }
+    },
+    "permits": { "low": 3000, "high": 20000, "unit": "USD", "source": { "label": "Block Renovation, restaurant renovation costs", "url": "https://www.blockrenovation.com/guides/restaurant-renovation-costs-commercial" } }
+  },
+  "layout": {
+    "note": "Used by the Layout Studio (lib/layout). Costs are added on top of the X-Ray when the drawn plan asks for them. No public per-unit source could be opened for these; they are planning assumptions and are shown as estimates.",
+    "barCounterPerM": { "low": 1300, "high": 3300, "unit": "USD per metre of bar", "note": "About $400-1,000 per linear foot for a plumbed bar with millwork, sinks and a back bar.", "source": { "label": "Foreground estimate" } },
+    "serviceCounterPerM": { "low": 650, "high": 1600, "unit": "USD per metre of counter", "note": "About $200-500 per linear foot for an order or pickup counter.", "source": { "label": "Foreground estimate" } },
+    "extraRestroom": { "low": 15000, "high": 35000, "unit": "USD per restroom beyond the first", "note": "A new plumbed, accessible restroom room. The first restroom is priced by the X-Ray ADA restroom line.", "source": { "label": "Foreground estimate" } },
+    "hoodRelocation": { "low": 12000, "high": 35000, "unit": "USD", "note": "Moving an existing cook line means a new roof penetration, duct run and fire-suppression re-pipe.", "source": { "label": "Foreground estimate" } },
+    "kitchenPlumbingReroute": { "low": 4000, "high": 15000, "unit": "USD", "note": "Gas, floor drains and grease waste rerouted to a moved cook line.", "source": { "label": "Foreground estimate" } },
+    "extraWalkIn": { "low": 4000, "high": 30000, "unit": "USD per walk-in beyond the first", "note": "Same range as the X-Ray walk-in line.", "source": { "label": "NineGuides restaurant buildout guide", "url": "https://nineguides.pages.dev/starting/restaurant-buildout" } },
+    "patioSetup": { "low": 2000, "high": 10000, "unit": "USD", "note": "Sidewalk or patio permit, barriers and outdoor-rated furniture. Needs the landlord's and the city's consent.", "source": { "label": "Foreground estimate" } },
+    "relocationToleranceM": { "value": 1.5, "unit": "metres a cook line can shift under the same hood before it counts as moved", "source": { "label": "Foreground estimate" } },
+    "aisleM": { "value": 1.1, "unit": "metres, main aisle between table rows", "source": { "label": "Foreground estimate" } },
+    "accessiblePathM": { "value": 0.9, "unit": "metres, clear accessible route (36 in)", "source": { "label": "ADA Standards 403.5.1 (36 in clear width)", "url": "https://www.ada.gov/law-and-regs/design-standards/2010-stds/" } },
+    "dwellMinutes": {
+      "unit": "minutes a guest holds a seat",
+      "note": "Used only by the day simulator. Table service about 1 hour 15 minutes per table (ChowNow); the others are ours.",
+      "source": { "label": "Foreground estimate" },
+      "quick-service": 20, "fast-casual": 35, "full-service": 75, "cafe": 40, "bar": 90
+    },
+    "serviceDay": {
+      "unit": "open hour, close hour, and the hours demand peaks",
+      "note": "Used only by the day simulator: a lunch peak and a dinner peak; guests who wait longer than patienceMinutes leave.",
+      "source": { "label": "Foreground estimate" },
+      "openHour": 11, "closeHour": 22, "lunchPeakHour": 12.5, "dinnerPeakHour": 19, "peakSpreadHours": 1.1, "patienceMinutes": 15,
+      "lunchShare": { "quick-service": 0.6, "fast-casual": 0.55, "full-service": 0.35, "cafe": 0.7, "bar": 0.15 }
+    }
+  },
+  "maybeShare": {
+    "value": 0.5, "unit": "share of an unknown (maybe) line counted in the total",
+    "source": { "label": "Foreground estimate" }
+  },
+  "contingency": {
+    "value": 0.30, "unit": "share of build-out subtotal",
+    "note": "Foundra: budget for costs 30% higher than planned.",
+    "source": { "label": "Foundra, start a restaurant", "url": "https://www.foundra.ai/start/restaurant" }
+  },
+  "timeToOpenMonths": {
+    "secondGenWithHood": { "low": 3, "high": 6, "unit": "months", "note": "Renovation of an existing restaurant space: 3-6 months.", "source": { "label": "NineGuides restaurant buildout guide (citing Mastt)", "url": "https://nineguides.pages.dev/starting/restaurant-buildout" } },
+    "secondGen": { "low": 4, "high": 9, "unit": "months", "note": "Second-generation space without a confirmed hood: between the renovation and new-construction ranges.", "source": { "label": "Foreground estimate" } },
+    "shell": { "low": 6, "high": 12, "unit": "months", "note": "New construction buildout: 6-12+ months.", "source": { "label": "NineGuides restaurant buildout guide (citing Mastt)", "url": "https://nineguides.pages.dev/starting/restaurant-buildout" } }
+  },
+  "year1Ramp": {
+    "value": 0.8, "unit": "share of steady-state sales reached in year 1",
+    "note": "Foundra: 6-18 months to reach profitability. Years 2 and 3 run at steady state.",
+    "source": { "label": "Foreground estimate" }
+  },
+  "failure": {
+    "firstYearFailureShare": 0.17,
+    "medianLifespanYears": 4.5,
+    "unit": "share of independent full-service startups failing in year 1; years",
+    "source": { "label": "Luo & Stark 2014, Only the Bad Die Young: Restaurant Mortality in the Western US", "url": "https://pdf.arxiv.org/pdf/1410.8603" }
+  },
+  "feasibility": {
+    "note": "Used by lib/feasibility (Imagine mode). Code facts cite the model code; Houston and Los Angeles adopt amended editions, so the local section number can differ. Dollar ranges and timelines are planning ranges from our research, not quotes; where no public source could be opened they are marked Foreground estimate and must be shown as estimates.",
+    "hood": {
+      "typeI": {
+        "low": 35000,
+        "high": 80000,
+        "unit": "USD",
+        "note": "New Type I hood with listed grease duct to the roof, exhaust and make-up air fans, and a wet-chemical suppression system. Long duct runs, rated shafts through an upper floor, or pollution-control units push it past the high end.",
+        "source": {
+          "label": "Foreground estimate"
+        }
+      },
+      "relocate": {
+        "low": 12000,
+        "high": 35000,
+        "unit": "USD",
+        "note": "Moving an existing hood: new roof penetration, duct run and suppression re-pipe. Same range as layout.hoodRelocation.",
+        "source": {
+          "label": "Foreground estimate"
+        }
+      },
+      "recertify": {
+        "low": 800,
+        "high": 3500,
+        "unit": "USD",
+        "note": "Hood cleaning, suppression inspection and tag, and an air-balance check when a new operator takes over an existing hood.",
+        "source": {
+          "label": "Foreground estimate"
+        }
+      },
+      "clearanceIn": {
+        "value": 18,
+        "unit": "inches to combustible construction",
+        "note": "IMC 507.2.6 (hood) and 506.3.6 (grease duct). Listed reduced-clearance wraps can lower it.",
+        "source": {
+          "label": "2021 International Mechanical Code, chapter 5 (exhaust systems)",
+          "url": "https://codes.iccsafe.org/content/IMC2021P1/chapter-5-exhaust-systems"
+        }
+      },
+      "weeks": {
+        "low": 4,
+        "high": 10,
+        "unit": "weeks to fabricate and install",
+        "source": {
+          "label": "Foreground estimate"
+        }
+      },
+      "code": [
+        {
+          "code": "IMC 507.2",
+          "text": "Type I hood required over appliances that produce grease or smoke",
+          "source": {
+            "label": "2021 International Mechanical Code, chapter 5 (exhaust systems)",
+            "url": "https://codes.iccsafe.org/content/IMC2021P1/chapter-5-exhaust-systems"
+          }
+        },
+        {
+          "code": "IMC 506.3",
+          "text": "Grease duct: welded steel, 18 in clearance to combustibles, discharge above the roof",
+          "source": {
+            "label": "2021 International Mechanical Code, chapter 5 (exhaust systems)",
+            "url": "https://codes.iccsafe.org/content/IMC2021P1/chapter-5-exhaust-systems"
+          }
+        },
+        {
+          "code": "NFPA 96",
+          "text": "Hood, duct and suppression system installed and inspected as one system",
+          "source": {
+            "label": "NFPA 96, ventilation control and fire protection of commercial cooking operations",
+            "url": "https://www.nfpa.org/codes-and-standards/nfpa-96-standard-development/96"
+          }
+        }
+      ]
+    },
+    "greaseInterceptor": {
+      "underSink": {
+        "low": 1500,
+        "high": 5000,
+        "unit": "USD",
+        "note": "Hydromechanical (point-of-use) interceptor at the sinks, installed.",
+        "source": {
+          "label": "Foreground estimate"
+        }
+      },
+      "inGround": {
+        "low": 15000,
+        "high": 45000,
+        "unit": "USD",
+        "note": "Gravity interceptor (750-1,500 gal) outside in the ground: excavation, tank, vents, sampling well, paving repair.",
+        "source": {
+          "label": "Foreground estimate"
+        }
+      },
+      "weeks": {
+        "low": 1,
+        "high": 4,
+        "unit": "weeks",
+        "source": {
+          "label": "Foreground estimate"
+        }
+      },
+      "code": [
+        {
+          "code": "IPC 1003.3",
+          "text": "Grease interceptor required on food-service drains; sized by flow and placed where it can be cleaned",
+          "source": {
+            "label": "2021 International Plumbing Code, chapter 10 (traps, interceptors and separators)",
+            "url": "https://codes.iccsafe.org/content/IPC2021P1/chapter-10-traps-interceptors-and-separators"
+          }
+        }
+      ]
+    },
+    "wallRemoval": {
+      "nonBearing": {
+        "low": 2000,
+        "high": 10000,
+        "unit": "USD per opening up to 10 ft",
+        "note": "Partition demolition, patching floor and ceiling, rerouting the wiring inside it.",
+        "source": {
+          "label": "Foreground estimate"
+        }
+      },
+      "bearing": {
+        "low": 10000,
+        "high": 30000,
+        "unit": "USD per opening up to 10 ft",
+        "note": "Shoring, steel or engineered beam, posts and footings. Wider openings and exterior walls cost more.",
+        "source": {
+          "label": "Foreground estimate"
+        }
+      },
+      "engineer": {
+        "low": 1500,
+        "high": 5000,
+        "unit": "USD",
+        "note": "Structural engineer's site visit, calculations and stamped drawing for the permit.",
+        "source": {
+          "label": "Foreground estimate"
+        }
+      },
+      "baseLengthFt": {
+        "value": 10,
+        "unit": "ft",
+        "source": {
+          "label": "Foreground estimate"
+        }
+      },
+      "weeks": {
+        "low": 2,
+        "high": 6,
+        "unit": "weeks of design and construction",
+        "source": {
+          "label": "Foreground estimate"
+        }
+      },
+      "code": [
+        {
+          "code": "IEBC 2021",
+          "text": "An alteration must not reduce the structure's capacity; structural changes need stamped drawings",
+          "source": {
+            "label": "2021 International Existing Building Code (alterations)",
+            "url": "https://codes.iccsafe.org/content/IEBC2021P1"
+          }
+        }
+      ]
+    },
+    "ceiling": {
+      "minHeightFt": {
+        "value": 7.5,
+        "unit": "ft",
+        "note": "IBC 1208.2: occupiable spaces need a ceiling of at least 7 ft 6 in.",
+        "source": {
+          "label": "2021 International Building Code, chapter 12 (interior environment)",
+          "url": "https://codes.iccsafe.org/content/IBC2021P1/chapter-12-interior-environment"
+        }
+      },
+      "sfPerSprinklerHead": {
+        "value": 130,
+        "unit": "SF per head",
+        "note": "NFPA 13 ordinary-hazard spacing; one head per 130 SF is the planning count.",
+        "source": {
+          "label": "NFPA 13, installation of sprinkler systems",
+          "url": "https://www.nfpa.org/codes-and-standards/nfpa-13-standard-development/13"
+        }
+      },
+      "sprinklerHeadRelocation": {
+        "low": 250,
+        "high": 600,
+        "unit": "USD per head",
+        "note": "Drop or relocate a head to the new ceiling plane, including the fire-sprinkler permit share.",
+        "source": {
+          "label": "Foreground estimate"
+        }
+      },
+      "ductAndDiffusers": {
+        "low": 2,
+        "high": 6,
+        "unit": "USD per SF of ceiling",
+        "note": "Extending supply drops, diffusers, returns and lights down to a lower ceiling.",
+        "source": {
+          "label": "Foreground estimate"
+        }
+      },
+      "weeks": {
+        "low": 2,
+        "high": 5,
+        "unit": "weeks",
+        "source": {
+          "label": "Foreground estimate"
+        }
+      },
+      "code": [
+        {
+          "code": "IBC 1208.2",
+          "text": "Minimum ceiling height 7 ft 6 in",
+          "source": {
+            "label": "2021 International Building Code, chapter 12 (interior environment)",
+            "url": "https://codes.iccsafe.org/content/IBC2021P1/chapter-12-interior-environment"
+          }
+        },
+        {
+          "code": "NFPA 13",
+          "text": "Sprinkler heads must sit at the new ceiling; a deep space above it may need heads too",
+          "source": {
+            "label": "NFPA 13, installation of sprinkler systems",
+            "url": "https://www.nfpa.org/codes-and-standards/nfpa-13-standard-development/13"
+          }
+        },
+        {
+          "code": "IMC 507.2.6",
+          "text": "Keep 18 in between the hood or grease duct and combustible ceiling framing",
+          "source": {
+            "label": "2021 International Mechanical Code, chapter 5 (exhaust systems)",
+            "url": "https://codes.iccsafe.org/content/IMC2021P1/chapter-5-exhaust-systems"
+          }
+        }
+      ]
+    },
+    "plumbing": {
+      "trenchPerFt": {
+        "low": 75,
+        "high": 200,
+        "unit": "USD per linear ft",
+        "note": "Saw-cut the slab, trench, lay drain and vent, backfill and patch.",
+        "source": {
+          "label": "Foreground estimate"
+        }
+      },
+      "slabScan": {
+        "low": 500,
+        "high": 1500,
+        "unit": "USD",
+        "note": "Ground-penetrating radar scan before cutting; a post-tensioned slab cannot be trenched freely.",
+        "source": {
+          "label": "Foreground estimate"
+        }
+      },
+      "defaultRunFt": {
+        "low": 15,
+        "high": 40,
+        "unit": "ft",
+        "note": "Assumed run to the nearest drain when the distance is not known.",
+        "source": {
+          "label": "Foreground estimate"
+        }
+      },
+      "weeks": {
+        "low": 1,
+        "high": 3,
+        "unit": "weeks",
+        "source": {
+          "label": "Foreground estimate"
+        }
+      },
+      "code": [
+        {
+          "code": "IPC ch. 7 and 9",
+          "text": "New drains need slope, venting and an inspection before the slab is closed",
+          "source": {
+            "label": "2021 International Plumbing Code",
+            "url": "https://codes.iccsafe.org/content/IPC2021P1"
+          }
+        }
+      ]
+    },
+    "restrooms": {
+      "waterClosetPer": {
+        "value": 75,
+        "unit": "occupants per water closet, each sex (restaurants)",
+        "note": "IPC Table 403.1, assembly A-2 restaurants: 1 per 75 male and 1 per 75 female; lavatories 1 per 200.",
+        "source": {
+          "label": "2021 International Plumbing Code, chapter 4 (fixtures)",
+          "url": "https://codes.iccsafe.org/content/IPC2021P1/chapter-4-fixtures-faucets-and-fixture-fittings"
+        }
+      },
+      "lavatoryPer": {
+        "value": 200,
+        "unit": "occupants per lavatory",
+        "source": {
+          "label": "2021 International Plumbing Code, chapter 4 (fixtures)",
+          "url": "https://codes.iccsafe.org/content/IPC2021P1/chapter-4-fixtures-faucets-and-fixture-fittings"
+        }
+      },
+      "singleRoomMaxLoad": {
+        "value": 15,
+        "unit": "occupants",
+        "note": "IPC 403.2: separate facilities are not required at 15 occupants or fewer.",
+        "source": {
+          "label": "2021 International Plumbing Code, chapter 4 (fixtures)",
+          "url": "https://codes.iccsafe.org/content/IPC2021P1/chapter-4-fixtures-faucets-and-fixture-fittings"
+        }
+      },
+      "newRestroom": {
+        "low": 15000,
+        "high": 35000,
+        "unit": "USD per restroom",
+        "note": "A new plumbed accessible single-user room. Same range as layout.extraRestroom.",
+        "source": {
+          "label": "Foreground estimate"
+        }
+      },
+      "adaRetrofit": {
+        "low": 5000,
+        "high": 25000,
+        "unit": "USD",
+        "note": "Same range as xray.adaRestroom.",
+        "source": {
+          "label": "Pulse RevOps, ADA restroom and path-of-travel cost in a buildout",
+          "url": "https://pulserevops.com/knowledge/q13770"
+        }
+      },
+      "pathOfTravelShare": {
+        "value": 0.2,
+        "unit": "share of the alteration cost",
+        "note": "Path-of-travel upgrades are required up to 20% of the cost of altering a primary function area.",
+        "source": {
+          "label": "28 CFR 36.403, alterations: path of travel",
+          "url": "https://www.ecfr.gov/current/title-28/section-36.403"
+        }
+      },
+      "weeks": {
+        "low": 3,
+        "high": 6,
+        "unit": "weeks",
+        "source": {
+          "label": "Foreground estimate"
+        }
+      },
+      "code": [
+        {
+          "code": "IPC 403.1",
+          "text": "Fixture counts by occupant load: one water closet per 75 of each sex in a restaurant",
+          "source": {
+            "label": "2021 International Plumbing Code, chapter 4 (fixtures)",
+            "url": "https://codes.iccsafe.org/content/IPC2021P1/chapter-4-fixtures-faucets-and-fixture-fittings"
+          }
+        },
+        {
+          "code": "ADA 2010 Standards",
+          "text": "Accessible restroom, door clearances and route",
+          "source": {
+            "label": "2010 ADA Standards for Accessible Design",
+            "url": "https://www.ada.gov/law-and-regs/design-standards/2010-stds/"
+          }
+        },
+        {
+          "code": "28 CFR 36.403",
+          "text": "Path of travel: up to 20% of the alteration cost goes to the route, restrooms and entrance",
+          "source": {
+            "label": "28 CFR 36.403, alterations: path of travel",
+            "url": "https://www.ecfr.gov/current/title-28/section-36.403"
+          }
+        }
+      ]
+    },
+    "occupancy": {
+      "diningNetSfPerPerson": {
+        "value": 15,
+        "unit": "net SF per person",
+        "note": "IBC Table 1004.5, assembly without fixed seats, tables and chairs.",
+        "source": {
+          "label": "2021 International Building Code, chapter 10 (means of egress)",
+          "url": "https://codes.iccsafe.org/content/IBC2021P1/chapter-10-means-of-egress"
+        }
+      },
+      "kitchenGrossSfPerPerson": {
+        "value": 200,
+        "unit": "gross SF per person",
+        "note": "IBC Table 1004.5, commercial kitchens.",
+        "source": {
+          "label": "2021 International Building Code, chapter 10 (means of egress)",
+          "url": "https://codes.iccsafe.org/content/IBC2021P1/chapter-10-means-of-egress"
+        }
+      },
+      "singleExitMaxLoad": {
+        "value": 49,
+        "unit": "occupants",
+        "note": "IBC Table 1006.2.1: an assembly space with one exit is limited to 49 occupants. IBC 303.1.1: under 50 persons a food space is classed B, not A-2.",
+        "source": {
+          "label": "2021 International Building Code, chapter 10 (means of egress)",
+          "url": "https://codes.iccsafe.org/content/IBC2021P1/chapter-10-means-of-egress"
+        }
+      },
+      "sprinklerLoad": {
+        "value": 100,
+        "unit": "occupants",
+        "note": "IBC 903.2.1.2: an A-2 fire area with 100 or more occupants (or over 5,000 SF) must be sprinklered.",
+        "source": {
+          "label": "2021 International Building Code, chapter 9 (fire protection)",
+          "url": "https://codes.iccsafe.org/content/IBC2021P1/chapter-9-fire-protection-and-life-safety-systems"
+        }
+      },
+      "secondExit": {
+        "low": 5000,
+        "high": 15000,
+        "unit": "USD",
+        "note": "A new exit door with panic hardware, exit sign and landing, where a wall to the outside or a corridor exists.",
+        "source": {
+          "label": "Foreground estimate"
+        }
+      },
+      "code": [
+        {
+          "code": "IBC 1004.5",
+          "text": "Occupant load: 15 net SF per person in dining, 200 gross SF in the kitchen",
+          "source": {
+            "label": "2021 International Building Code, chapter 10 (means of egress)",
+            "url": "https://codes.iccsafe.org/content/IBC2021P1/chapter-10-means-of-egress"
+          }
+        },
+        {
+          "code": "IBC 1006.2.1",
+          "text": "More than 49 occupants: two exits, doors that swing out, panic hardware",
+          "source": {
+            "label": "2021 International Building Code, chapter 10 (means of egress)",
+            "url": "https://codes.iccsafe.org/content/IBC2021P1/chapter-10-means-of-egress"
+          }
+        },
+        {
+          "code": "IBC 303.1.1",
+          "text": "50 or more occupants makes the space Assembly A-2",
+          "source": {
+            "label": "2021 International Building Code, chapter 3 (occupancy classification)",
+            "url": "https://codes.iccsafe.org/content/IBC2021P1/chapter-3-occupancy-classification-and-use"
+          }
+        },
+        {
+          "code": "IBC 903.2.1.2",
+          "text": "A-2 with 100 or more occupants needs sprinklers",
+          "source": {
+            "label": "2021 International Building Code, chapter 9 (fire protection)",
+            "url": "https://codes.iccsafe.org/content/IBC2021P1/chapter-9-fire-protection-and-life-safety-systems"
+          }
+        }
+      ]
+    },
+    "electrical": {
+      "circuits": {
+        "low": 1500,
+        "high": 6000,
+        "unit": "USD",
+        "note": "Dedicated circuits or a sub-panel for added equipment, within the existing service.",
+        "source": {
+          "label": "Foreground estimate"
+        }
+      },
+      "serviceUpgrade": {
+        "low": 10000,
+        "high": 40000,
+        "unit": "USD",
+        "note": "Same range as xray.electrical.",
+        "source": {
+          "label": "Block Renovation, restaurant renovation costs",
+          "url": "https://www.blockrenovation.com/guides/restaurant-renovation-costs-commercial"
+        }
+      },
+      "typicalAmps": {
+        "cafe": 200,
+        "restaurant": 400,
+        "unit": "amps at 208 V three-phase",
+        "note": "Planning figures: a cafe runs on about 200 A, a full cooking kitchen on 400 A or more.",
+        "source": {
+          "label": "Foreground estimate"
+        }
+      },
+      "weeks": {
+        "low": 1,
+        "high": 3,
+        "unit": "weeks",
+        "source": {
+          "label": "Foreground estimate"
+        }
+      },
+      "code": [
+        {
+          "code": "NEC 220",
+          "text": "A load calculation by a licensed electrician decides whether the service is enough",
+          "source": {
+            "label": "NFPA 70 (National Electrical Code), article 220 load calculations",
+            "url": "https://www.nfpa.org/codes-and-standards/nfpa-70-standard-development/70"
+          }
+        }
+      ]
+    },
+    "gas": {
+      "line": {
+        "low": 2000,
+        "high": 15000,
+        "unit": "USD",
+        "note": "Same range as xray.gas: new branch piping, regulator, shut-offs.",
+        "source": {
+          "label": "Foreground estimate"
+        }
+      },
+      "weeks": {
+        "low": 1,
+        "high": 3,
+        "unit": "weeks",
+        "source": {
+          "label": "Foreground estimate"
+        }
+      },
+      "code": [
+        {
+          "code": "IFGC 402",
+          "text": "Pipe and meter are sized to the total connected BTU load",
+          "source": {
+            "label": "2021 International Fuel Gas Code, chapter 4 (gas piping installations)",
+            "url": "https://codes.iccsafe.org/content/IFGC2021P1/chapter-4-gas-piping-installations"
+          }
+        }
+      ]
+    },
+    "changeOfUse": {
+      "designAndFees": {
+        "low": 3000,
+        "high": 15000,
+        "unit": "USD",
+        "note": "Architect's code analysis and drawings plus plan-check and certificate of occupancy fees for a change of occupancy.",
+        "source": {
+          "label": "Foreground estimate"
+        }
+      },
+      "code": [
+        {
+          "code": "IEBC ch. 10",
+          "text": "A change of occupancy must meet the new use's egress, fire and plumbing rules",
+          "source": {
+            "label": "2021 International Existing Building Code, chapter 10 (change of occupancy)",
+            "url": "https://codes.iccsafe.org/content/IEBC2021P1/chapter-10-change-of-occupancy"
+          }
+        },
+        {
+          "code": "IBC 111",
+          "text": "No use or change of use without a certificate of occupancy",
+          "source": {
+            "label": "2021 International Building Code, chapter 1 (certificate of occupancy)",
+            "url": "https://codes.iccsafe.org/content/IBC2021P1/chapter-1-scope-and-administration"
+          }
+        }
+      ]
+    },
+    "changeCosts": {
+      "weeks": { "finish": { "low": 1, "high": 3 }, "storefront": { "low": 3, "high": 8 }, "exterior": { "low": 2, "high": 4 }, "equipment": { "low": 1, "high": 2 }, "layout": { "low": 0, "high": 1 }, "unit": "weeks of work on site, including lead time", "source": { "label": "Foreground estimate" } },
+      "note": "Per-unit prices for the imagined change itself (finishes, storefront, ceiling, patio, millwork). Planning ranges only.",
+      "brickVeneerPerSf": {
+        "low": 12,
+        "high": 28,
+        "unit": "USD per SF of wall",
+        "note": "Thin brick veneer installed over existing walls.",
+        "source": {
+          "label": "Foreground estimate"
+        }
+      },
+      "wallFinishPerSf": {
+        "low": 3,
+        "high": 10,
+        "unit": "USD per SF of wall",
+        "note": "Paint, plaster skim, tile wainscot or wood slat, averaged.",
+        "source": {
+          "label": "Foreground estimate"
+        }
+      },
+      "concreteFloorPerSf": {
+        "low": 4,
+        "high": 12,
+        "unit": "USD per SF of floor",
+        "note": "Remove old flooring, grind, polish or seal the slab.",
+        "source": {
+          "label": "Foreground estimate"
+        }
+      },
+      "floorFinishPerSf": {
+        "low": 6,
+        "high": 18,
+        "unit": "USD per SF of floor",
+        "note": "New tile, LVT or wood over the slab.",
+        "source": {
+          "label": "Foreground estimate"
+        }
+      },
+      "ceilingPerSf": {
+        "low": 5,
+        "high": 14,
+        "unit": "USD per SF of ceiling",
+        "note": "Suspended grid or drywall ceiling with lights.",
+        "source": {
+          "label": "Foreground estimate"
+        }
+      },
+      "storefrontPerFt": {
+        "low": 700,
+        "high": 1600,
+        "unit": "USD per linear ft of storefront",
+        "note": "Aluminium storefront framing with insulated glass, about 10 ft tall, including a door pair.",
+        "source": {
+          "label": "Foreground estimate"
+        }
+      },
+      "signage": {
+        "low": 3000,
+        "high": 12000,
+        "unit": "USD",
+        "note": "Illuminated building sign with permit.",
+        "source": {
+          "label": "Foreground estimate"
+        }
+      },
+      "patio": {
+        "low": 8000,
+        "high": 30000,
+        "unit": "USD",
+        "note": "Barriers, paving repair, outdoor furniture and lighting for a small patio; permits separate.",
+        "source": {
+          "label": "Foreground estimate"
+        }
+      },
+      "barPerFt": {
+        "low": 400,
+        "high": 1000,
+        "unit": "USD per linear ft of bar",
+        "note": "Plumbed bar with millwork, sinks and a back bar. Same as layout.barCounterPerM.",
+        "source": {
+          "label": "Foreground estimate"
+        }
+      },
+      "equipmentEach": {
+        "low": 3000,
+        "high": 15000,
+        "unit": "USD per piece",
+        "note": "One commercial appliance (espresso machine, fryer, range, reach-in), bought and connected.",
+        "source": {
+          "label": "Foreground estimate"
+        }
+      },
+      "furniturePerSeat": {
+        "low": 300,
+        "high": 1200,
+        "unit": "USD per seat",
+        "note": "Same range as xray.ffePerSeat.secondGen.",
+        "source": {
+          "label": "Foreground estimate"
+        }
+      },
+      "allowance": {
+        "low": 2000,
+        "high": 10000,
+        "unit": "USD",
+        "note": "Placeholder for a change we cannot size from the description.",
+        "source": {
+          "label": "Foreground estimate"
+        }
+      },
+      "defaultWallHeightFt": {
+        "value": 10,
+        "unit": "ft",
+        "source": {
+          "label": "Foreground estimate"
+        }
+      },
+      "defaultStorefrontFt": {
+        "value": 24,
+        "unit": "ft",
+        "source": {
+          "label": "Foreground estimate"
+        }
+      },
+      "defaultBarFt": {
+        "value": 16,
+        "unit": "ft",
+        "source": {
+          "label": "Foreground estimate"
+        }
+      },
+      "defaultPatioSf": {
+        "value": 300,
+        "unit": "SF",
+        "source": {
+          "label": "Foreground estimate"
+        }
+      }
+    },
+    "cityPacks": {
+      "Houston": {
+        "codeBasis": "City of Houston Construction Code (2021 IBC, IMC, IPC, IFGC with Houston amendments).",
+        "note": "Houston has no zoning, but deed restrictions and the off-street parking ordinance (Code of Ordinances ch. 26) still apply to a restaurant or bar.",
+        "steps": {
+          "building": {
+            "label": "Commercial building permit (plan review)",
+            "agency": "Houston Permitting Center",
+            "weeks": {
+              "low": 4,
+              "high": 10
+            },
+            "source": {
+              "label": "Foreground estimate"
+            },
+            "url": "https://www.houstonpermittingcenter.org/"
+          },
+          "structural": {
+            "label": "Structural plan review (stamped drawings)",
+            "agency": "Houston Permitting Center",
+            "weeks": {
+              "low": 4,
+              "high": 10
+            },
+            "source": {
+              "label": "Foreground estimate"
+            },
+            "url": "https://www.houstonpermittingcenter.org/"
+          },
+          "trades": {
+            "label": "Mechanical, electrical and plumbing permits",
+            "agency": "Houston Permitting Center",
+            "weeks": {
+              "low": 1,
+              "high": 3
+            },
+            "source": {
+              "label": "Foreground estimate"
+            },
+            "url": "https://www.houstonpermittingcenter.org/"
+          },
+          "health": {
+            "label": "Food establishment plan review",
+            "agency": "Houston Health Department",
+            "weeks": {
+              "low": 2,
+              "high": 6
+            },
+            "source": {
+              "label": "Foreground estimate"
+            },
+            "url": "https://www.houstonhealth.org/"
+          },
+          "fire": {
+            "label": "Hood suppression and sprinkler permits",
+            "agency": "Houston Fire Marshal",
+            "weeks": {
+              "low": 2,
+              "high": 4
+            },
+            "source": {
+              "label": "Foreground estimate"
+            },
+            "url": "https://www.houstonpermittingcenter.org/"
+          },
+          "grease": {
+            "label": "Grease interceptor sizing and FOG registration",
+            "agency": "Houston Public Works",
+            "weeks": {
+              "low": 2,
+              "high": 4
+            },
+            "source": {
+              "label": "Foreground estimate"
+            },
+            "url": "https://www.houstonpermittingcenter.org/"
+          },
+          "occupancy": {
+            "label": "Certificate of Occupancy (change of use)",
+            "agency": "Houston Permitting Center, Occupancy Inspections",
+            "weeks": {
+              "low": 4,
+              "high": 12
+            },
+            "source": {
+              "label": "Foreground estimate"
+            },
+            "url": "https://www.houstonpermittingcenter.org/"
+          },
+          "accessibility": {
+            "label": "Texas Accessibility Standards review (projects of $50,000 or more)",
+            "agency": "TDLR registered accessibility specialist",
+            "weeks": {
+              "low": 2,
+              "high": 4
+            },
+            "source": {
+              "label": "Texas Department of Licensing and Regulation, Architectural Barriers (TAS)",
+              "url": "https://www.tdlr.texas.gov/ab/"
+            },
+            "url": "https://www.tdlr.texas.gov/ab/"
+          },
+          "patio": {
+            "label": "Sidewalk cafe permit (if the patio sits in the public right-of-way)",
+            "agency": "Houston Public Works",
+            "weeks": {
+              "low": 4,
+              "high": 8
+            },
+            "source": {
+              "label": "Foreground estimate"
+            },
+            "url": "https://www.houstonpermittingcenter.org/"
+          },
+          "alcohol": {
+            "label": "Mixed beverage permit",
+            "agency": "Texas Alcoholic Beverage Commission",
+            "weeks": {
+              "low": 6,
+              "high": 12
+            },
+            "source": {
+              "label": "Foreground estimate"
+            },
+            "url": "https://www.tabc.texas.gov/"
+          },
+          "sign": {
+            "label": "Sign permit",
+            "agency": "Houston Sign Administration",
+            "weeks": {
+              "low": 2,
+              "high": 4
+            },
+            "source": {
+              "label": "Foreground estimate"
+            },
+            "url": "https://www.houstonpermittingcenter.org/"
+          },
+          "utility": {
+            "label": "Electric or gas service upgrade",
+            "agency": "CenterPoint Energy",
+            "weeks": {
+              "low": 6,
+              "high": 16
+            },
+            "source": {
+              "label": "Foreground estimate"
+            },
+            "url": "https://www.centerpointenergy.com/"
+          }
+        }
+      },
+      "Los Angeles": {
+        "codeBasis": "Los Angeles Building Code (California Building, Mechanical, Plumbing and Electrical Codes with city amendments). Section numbers shown are the model-code equivalents.",
+        "note": "Los Angeles zoning applies: a change of use can change required parking, and alcohol service needs a Conditional Use Beverage approval from City Planning.",
+        "steps": {
+          "building": {
+            "label": "Building permit (LADBS plan check)",
+            "agency": "Los Angeles Department of Building and Safety",
+            "weeks": {
+              "low": 6,
+              "high": 16
+            },
+            "source": {
+              "label": "Foreground estimate"
+            },
+            "url": "https://www.ladbs.org/"
+          },
+          "structural": {
+            "label": "Structural plan check (stamped drawings)",
+            "agency": "Los Angeles Department of Building and Safety",
+            "weeks": {
+              "low": 6,
+              "high": 16
+            },
+            "source": {
+              "label": "Foreground estimate"
+            },
+            "url": "https://www.ladbs.org/"
+          },
+          "trades": {
+            "label": "Mechanical, electrical and plumbing permits",
+            "agency": "Los Angeles Department of Building and Safety",
+            "weeks": {
+              "low": 2,
+              "high": 6
+            },
+            "source": {
+              "label": "Foreground estimate"
+            },
+            "url": "https://www.ladbs.org/"
+          },
+          "health": {
+            "label": "Food facility plan check",
+            "agency": "Los Angeles County Department of Public Health",
+            "weeks": {
+              "low": 4,
+              "high": 10
+            },
+            "source": {
+              "label": "Foreground estimate"
+            },
+            "url": "http://publichealth.lacounty.gov/eh/"
+          },
+          "fire": {
+            "label": "Hood suppression and sprinkler plan check",
+            "agency": "Los Angeles Fire Department",
+            "weeks": {
+              "low": 3,
+              "high": 8
+            },
+            "source": {
+              "label": "Foreground estimate"
+            },
+            "url": "https://www.lafd.org/"
+          },
+          "grease": {
+            "label": "Industrial waste permit and grease interceptor approval (FOG program)",
+            "agency": "LA Sanitation and Environment",
+            "weeks": {
+              "low": 3,
+              "high": 8
+            },
+            "source": {
+              "label": "Foreground estimate"
+            },
+            "url": "https://www.lacitysan.org/"
+          },
+          "occupancy": {
+            "label": "Change of use and Certificate of Occupancy",
+            "agency": "LADBS with City Planning clearance",
+            "weeks": {
+              "low": 8,
+              "high": 20
+            },
+            "source": {
+              "label": "Foreground estimate"
+            },
+            "url": "https://www.ladbs.org/"
+          },
+          "accessibility": {
+            "label": "Disabled access plan check (a CASp inspection is recommended)",
+            "agency": "LADBS Disabled Access Section",
+            "weeks": {
+              "low": 2,
+              "high": 6
+            },
+            "source": {
+              "label": "Foreground estimate"
+            },
+            "url": "https://www.ladbs.org/"
+          },
+          "patio": {
+            "label": "Outdoor dining permit (Al Fresco program or revocable permit)",
+            "agency": "LA Bureau of Engineering and City Planning",
+            "weeks": {
+              "low": 6,
+              "high": 16
+            },
+            "source": {
+              "label": "Foreground estimate"
+            },
+            "url": "https://engpermits.lacity.org/"
+          },
+          "alcohol": {
+            "label": "Conditional Use Beverage approval and ABC license",
+            "agency": "Los Angeles City Planning and California ABC",
+            "weeks": {
+              "low": 16,
+              "high": 36
+            },
+            "source": {
+              "label": "Foreground estimate"
+            },
+            "url": "https://planning.lacity.gov/"
+          },
+          "sign": {
+            "label": "Sign permit",
+            "agency": "Los Angeles Department of Building and Safety",
+            "weeks": {
+              "low": 2,
+              "high": 6
+            },
+            "source": {
+              "label": "Foreground estimate"
+            },
+            "url": "https://www.ladbs.org/"
+          },
+          "utility": {
+            "label": "Electric or gas service upgrade",
+            "agency": "LADWP / SoCalGas",
+            "weeks": {
+              "low": 8,
+              "high": 24
+            },
+            "source": {
+              "label": "Foreground estimate"
+            },
+            "url": "https://www.ladwp.com/"
+          }
+        }
+      }
+    }
+  }
+}

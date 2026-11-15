@@ -1,0 +1,692 @@
+{
+ "name": "Foreground restaurant survival model",
+ "version": "1.0",
+ "trainedOn": "2026-11-13",
+ "dataDate": "2026-11-09",
+ "target": "Probability that a food tenancy is still in the same space 3 years after move-in",
+ "algorithm": "HistGradientBoostingClassifier (max_depth=3, max_iter=100, lr=0.05) + sigmoid calibration on property-grouped out-of-fold scores",
+ "dataset": {
+  "rows": 895,
+  "survived": 610,
+  "notSurvived": 285,
+  "baseRate": 0.682,
+  "properties": 333,
+  "byMarket": {
+   "Houston": 474,
+   "LosAngeles": 421
+  },
+  "byMatchBasis": {
+   "name-regex": 268,
+   "profile.industryType=17, name-regex": 102,
+   "name-regex, bio-regex": 16,
+   "profile.industryType=17": 131,
+   "profile.industryType=17, bio-regex": 145,
+   "profile.industryType=17, name-regex, bio-regex": 231,
+   "occupancy.industryType=17": 2
+  },
+  "moveInRange": [
+   "1992-06-01",
+   "2023-10-22"
+  ],
+  "exclusions": {
+   "censored: began < 3y before data date (open)": 144,
+   "censored: began < 3y before data date (closed)": 16,
+   "move-in before 1990": 2
+  },
+  "artifactStintsDropped": 54,
+  "features": [
+   "submarket",
+   "market",
+   "property_type",
+   "property_subtype",
+   "space_position",
+   "building_sf",
+   "building_age",
+   "years_since_renov",
+   "stories",
+   "parking_ratio",
+   "sf_occupied",
+   "sf_share_of_building",
+   "move_in_year",
+   "prior_food_prop",
+   "prior_food_closed_prop",
+   "prior_food_closed_5y_prop",
+   "prior_food_short_closed_prop",
+   "food_active_prop",
+   "tenants_active_bldg",
+   "tenant_moveouts_3y_bldg",
+   "record_depth_years",
+   "suite_known",
+   "prior_food_closed_suite",
+   "prior_food_closed_5y_suite",
+   "prior_any_closed_5y_suite",
+   "predecessor_years",
+   "suite_vacant_years",
+   "second_gen_food_suite",
+   "food_active_500m",
+   "food_closed_3y_500m",
+   "tenants_active_500m",
+   "kit_properties_500m",
+   "tenant_known",
+   "chain_locations",
+   "is_chain",
+   "operator_prior_sites"
+  ],
+  "featureFill": {
+   "submarket": 1.0,
+   "market": 1.0,
+   "property_type": 1.0,
+   "property_subtype": 1.0,
+   "space_position": 1.0,
+   "building_sf": 1.0,
+   "building_age": 0.999,
+   "years_since_renov": 0.275,
+   "stories": 1.0,
+   "parking_ratio": 0.858,
+   "sf_occupied": 0.812,
+   "sf_share_of_building": 0.812,
+   "move_in_year": 1.0,
+   "prior_food_prop": 1.0,
+   "prior_food_closed_prop": 1.0,
+   "prior_food_closed_5y_prop": 1.0,
+   "prior_food_short_closed_prop": 1.0,
+   "food_active_prop": 1.0,
+   "tenants_active_bldg": 1.0,
+   "tenant_moveouts_3y_bldg": 1.0,
+   "record_depth_years": 1.0,
+   "suite_known": 1.0,
+   "prior_food_closed_suite": 0.294,
+   "prior_food_closed_5y_suite": 0.294,
+   "prior_any_closed_5y_suite": 0.294,
+   "predecessor_years": 0.063,
+   "suite_vacant_years": 0.063,
+   "second_gen_food_suite": 0.294,
+   "food_active_500m": 1.0,
+   "food_closed_3y_500m": 1.0,
+   "tenants_active_500m": 1.0,
+   "kit_properties_500m": 1.0,
+   "tenant_known": 1.0,
+   "chain_locations": 0.998,
+   "is_chain": 1.0,
+   "operator_prior_sites": 1.0
+  },
+  "excludedFeatures": {
+   "fields": [
+    "lease_type",
+    "service_type",
+    "space_type",
+    "has_lease_deal",
+    "rent_psf_yr",
+    "lease_term_months"
+   ],
+   "reason": "Lease-record fields mark how thoroughly a tenancy was researched, which grows with survival (78% survive with a lease deal vs 49% without). Kept only as the hgbWithLeaseRecordFields ablation."
+  }
+ },
+ "metrics": {
+  "timeSplit": {
+   "train": {
+    "period": "move-in before 2019",
+    "n": 583,
+    "baseRate": 0.688
+   },
+   "test": {
+    "period": "move-in 2019 to 2023-11",
+    "n": 312,
+    "baseRate": 0.67
+   },
+   "models": {
+    "baseRate": {
+     "rocAuc": 0.5,
+     "prAuc": 0.67,
+     "brier": 0.2215
+    },
+    "logistic": {
+     "rocAuc": 0.592,
+     "prAuc": 0.757,
+     "brier": 0.2193
+    },
+    "hgb": {
+     "rocAuc": 0.635,
+     "prAuc": 0.768,
+     "brier": 0.2109,
+     "rocAucCi95": [
+      0.57,
+      0.696
+     ]
+    },
+    "hgbNoMoveInYear": {
+     "rocAuc": 0.627,
+     "prAuc": 0.759,
+     "brier": 0.211
+    },
+    "hgbWithLeaseRecordFields": {
+     "rocAuc": 0.582,
+     "prAuc": 0.723,
+     "brier": 0.2251
+    }
+   },
+   "calibrationBins": [
+    {
+     "lo": 0,
+     "hi": 0.5,
+     "n": 43,
+     "meanPredicted": 0.414,
+     "observed": 0.442
+    },
+    {
+     "lo": 0.5,
+     "hi": 0.6,
+     "n": 50,
+     "meanPredicted": 0.554,
+     "observed": 0.58
+    },
+    {
+     "lo": 0.6,
+     "hi": 0.7,
+     "n": 61,
+     "meanPredicted": 0.661,
+     "observed": 0.656
+    },
+    {
+     "lo": 0.7,
+     "hi": 0.8,
+     "n": 85,
+     "meanPredicted": 0.751,
+     "observed": 0.788
+    },
+    {
+     "lo": 0.8,
+     "hi": 1.0,
+     "n": 73,
+     "meanPredicted": 0.856,
+     "observed": 0.74
+    }
+   ]
+  },
+  "groupedCv": {
+   "folds": 5,
+   "groupedBy": "property",
+   "n": 895,
+   "baseRate": 0.682,
+   "models": {
+    "baseRate": {
+     "rocAuc": 0.5,
+     "prAuc": 0.682,
+     "brier": 0.2171
+    },
+    "logistic": {
+     "rocAuc": 0.62,
+     "prAuc": 0.769,
+     "brier": 0.2137
+    },
+    "hgb": {
+     "rocAuc": 0.704,
+     "prAuc": 0.813,
+     "brier": 0.1933
+    }
+   },
+   "calibrationBins": [
+    {
+     "lo": 0,
+     "hi": 0.5,
+     "n": 156,
+     "meanPredicted": 0.416,
+     "observed": 0.481
+    },
+    {
+     "lo": 0.5,
+     "hi": 0.6,
+     "n": 121,
+     "meanPredicted": 0.551,
+     "observed": 0.438
+    },
+    {
+     "lo": 0.6,
+     "hi": 0.7,
+     "n": 146,
+     "meanPredicted": 0.647,
+     "observed": 0.658
+    },
+    {
+     "lo": 0.7,
+     "hi": 0.8,
+     "n": 232,
+     "meanPredicted": 0.753,
+     "observed": 0.784
+    },
+    {
+     "lo": 0.8,
+     "hi": 1.0,
+     "n": 240,
+     "meanPredicted": 0.852,
+     "observed": 0.85
+    }
+   ]
+  }
+ },
+ "calibration": {
+  "method": "sigmoid",
+  "bins": [
+   {
+    "lo": 0,
+    "hi": 0.5,
+    "n": 156,
+    "meanPredicted": 0.416,
+    "observed": 0.481
+   },
+   {
+    "lo": 0.5,
+    "hi": 0.6,
+    "n": 121,
+    "meanPredicted": 0.551,
+    "observed": 0.438
+   },
+   {
+    "lo": 0.6,
+    "hi": 0.7,
+    "n": 146,
+    "meanPredicted": 0.647,
+    "observed": 0.658
+   },
+   {
+    "lo": 0.7,
+    "hi": 0.8,
+    "n": 232,
+    "meanPredicted": 0.753,
+    "observed": 0.784
+   },
+   {
+    "lo": 0.8,
+    "hi": 1.0,
+    "n": 240,
+    "meanPredicted": 0.852,
+    "observed": 0.85
+   }
+  ],
+  "binsSource": "grouped CV, out-of-fold"
+ },
+ "featureImportance": {
+  "method": "permutation importance, ROC-AUC drop on the time-split test set, 30 repeats",
+  "groups": [
+   {
+    "group": "space",
+    "label": "Space size and position",
+    "aucDrop": 0.0771,
+    "std": 0.0272
+   },
+   {
+    "group": "roster",
+    "label": "Building tenant roster and turnover",
+    "aucDrop": 0.0387,
+    "std": 0.0157
+   },
+   {
+    "group": "building",
+    "label": "Building type, size and age",
+    "aucDrop": 0.0084,
+    "std": 0.0151
+   },
+   {
+    "group": "propertyFood",
+    "label": "Food tenants at this property",
+    "aucDrop": 0.0011,
+    "std": 0.0034
+   },
+   {
+    "group": "location",
+    "label": "Market and submarket",
+    "aucDrop": -0.0,
+    "std": 0.0085
+   },
+   {
+    "group": "era",
+    "label": "Move-in year",
+    "aucDrop": 0.0,
+    "std": 0.0
+   },
+   {
+    "group": "operator",
+    "label": "Operator: chain or independent",
+    "aucDrop": -0.0041,
+    "std": 0.0021
+   },
+   {
+    "group": "area",
+    "label": "Food and tenant density within 500 m",
+    "aucDrop": -0.0092,
+    "std": 0.0073
+   },
+   {
+    "group": "suite",
+    "label": "History of this exact suite",
+    "aucDrop": -0.0165,
+    "std": 0.0042
+   }
+  ],
+  "features": [
+   {
+    "feature": "sf_occupied",
+    "group": "space",
+    "aucDrop": 0.0789,
+    "std": 0.0238
+   },
+   {
+    "feature": "record_depth_years",
+    "group": "roster",
+    "aucDrop": 0.0237,
+    "std": 0.0099
+   },
+   {
+    "feature": "parking_ratio",
+    "group": "building",
+    "aucDrop": 0.013,
+    "std": 0.0064
+   },
+   {
+    "feature": "tenants_active_bldg",
+    "group": "roster",
+    "aucDrop": 0.0097,
+    "std": 0.0063
+   },
+   {
+    "feature": "years_since_renov",
+    "group": "building",
+    "aucDrop": 0.0043,
+    "std": 0.0049
+   },
+   {
+    "feature": "property_type",
+    "group": "building",
+    "aucDrop": 0.0016,
+    "std": 0.0024
+   },
+   {
+    "feature": "food_active_prop",
+    "group": "propertyFood",
+    "aucDrop": 0.0014,
+    "std": 0.0016
+   },
+   {
+    "feature": "tenants_active_500m",
+    "group": "area",
+    "aucDrop": 0.0013,
+    "std": 0.0037
+   },
+   {
+    "feature": "prior_food_closed_prop",
+    "group": "propertyFood",
+    "aucDrop": 0.0011,
+    "std": 0.0024
+   },
+   {
+    "feature": "market",
+    "group": "location",
+    "aucDrop": 0.001,
+    "std": 0.0014
+   },
+   {
+    "feature": "building_age",
+    "group": "building",
+    "aucDrop": 0.001,
+    "std": 0.0117
+   },
+   {
+    "feature": "tenant_moveouts_3y_bldg",
+    "group": "roster",
+    "aucDrop": 0.0008,
+    "std": 0.001
+   },
+   {
+    "feature": "prior_food_prop",
+    "group": "propertyFood",
+    "aucDrop": 0.0006,
+    "std": 0.0016
+   },
+   {
+    "feature": "sf_share_of_building",
+    "group": "space",
+    "aucDrop": 0.0005,
+    "std": 0.0025
+   },
+   {
+    "feature": "stories",
+    "group": "building",
+    "aucDrop": 0.0001,
+    "std": 0.0033
+   },
+   {
+    "feature": "space_position",
+    "group": "space",
+    "aucDrop": 0.0,
+    "std": 0.0
+   },
+   {
+    "feature": "move_in_year",
+    "group": "era",
+    "aucDrop": 0.0,
+    "std": 0.0
+   },
+   {
+    "feature": "prior_food_short_closed_prop",
+    "group": "propertyFood",
+    "aucDrop": 0.0,
+    "std": 0.0
+   },
+   {
+    "feature": "prior_food_closed_suite",
+    "group": "suite",
+    "aucDrop": 0.0,
+    "std": 0.0
+   },
+   {
+    "feature": "prior_food_closed_5y_suite",
+    "group": "suite",
+    "aucDrop": 0.0,
+    "std": 0.0
+   },
+   {
+    "feature": "predecessor_years",
+    "group": "suite",
+    "aucDrop": 0.0,
+    "std": 0.0
+   },
+   {
+    "feature": "second_gen_food_suite",
+    "group": "suite",
+    "aucDrop": 0.0,
+    "std": 0.0
+   },
+   {
+    "feature": "tenant_known",
+    "group": "operator",
+    "aucDrop": 0.0,
+    "std": 0.0
+   },
+   {
+    "feature": "is_chain",
+    "group": "operator",
+    "aucDrop": 0.0,
+    "std": 0.0
+   },
+   {
+    "feature": "operator_prior_sites",
+    "group": "operator",
+    "aucDrop": 0.0,
+    "std": 0.0
+   },
+   {
+    "feature": "suite_known",
+    "group": "suite",
+    "aucDrop": -0.0003,
+    "std": 0.0006
+   },
+   {
+    "feature": "prior_food_closed_5y_prop",
+    "group": "propertyFood",
+    "aucDrop": -0.0005,
+    "std": 0.0005
+   },
+   {
+    "feature": "prior_any_closed_5y_suite",
+    "group": "suite",
+    "aucDrop": -0.0005,
+    "std": 0.0007
+   },
+   {
+    "feature": "building_sf",
+    "group": "building",
+    "aucDrop": -0.002,
+    "std": 0.0031
+   },
+   {
+    "feature": "submarket",
+    "group": "location",
+    "aucDrop": -0.0032,
+    "std": 0.0082
+   },
+   {
+    "feature": "food_active_500m",
+    "group": "area",
+    "aucDrop": -0.0032,
+    "std": 0.0026
+   },
+   {
+    "feature": "chain_locations",
+    "group": "operator",
+    "aucDrop": -0.0048,
+    "std": 0.0015
+   },
+   {
+    "feature": "property_subtype",
+    "group": "building",
+    "aucDrop": -0.0049,
+    "std": 0.0043
+   },
+   {
+    "feature": "kit_properties_500m",
+    "group": "area",
+    "aucDrop": -0.0062,
+    "std": 0.0026
+   },
+   {
+    "feature": "food_closed_3y_500m",
+    "group": "area",
+    "aucDrop": -0.0067,
+    "std": 0.0054
+   },
+   {
+    "feature": "suite_vacant_years",
+    "group": "suite",
+    "aucDrop": -0.0162,
+    "std": 0.004
+   }
+  ]
+ },
+ "explanations": {
+  "method": "Monte-Carlo Shapley values on the calibrated probability, 400 samples per site, background = tenancies that began 2015 or later with move-in year set to the site's; summed into factor groups",
+  "groups": {
+   "suite": {
+    "label": "History of this exact suite",
+    "features": [
+     "suite_known",
+     "prior_food_closed_suite",
+     "prior_food_closed_5y_suite",
+     "prior_any_closed_5y_suite",
+     "predecessor_years",
+     "suite_vacant_years",
+     "second_gen_food_suite"
+    ]
+   },
+   "propertyFood": {
+    "label": "Food tenants at this property",
+    "features": [
+     "prior_food_prop",
+     "prior_food_closed_prop",
+     "prior_food_closed_5y_prop",
+     "prior_food_short_closed_prop",
+     "food_active_prop"
+    ]
+   },
+   "roster": {
+    "label": "Building tenant roster and turnover",
+    "features": [
+     "tenants_active_bldg",
+     "tenant_moveouts_3y_bldg",
+     "record_depth_years"
+    ]
+   },
+   "area": {
+    "label": "Food and tenant density within 500 m",
+    "features": [
+     "food_active_500m",
+     "food_closed_3y_500m",
+     "tenants_active_500m",
+     "kit_properties_500m"
+    ]
+   },
+   "building": {
+    "label": "Building type, size and age",
+    "features": [
+     "property_type",
+     "property_subtype",
+     "building_sf",
+     "building_age",
+     "years_since_renov",
+     "stories",
+     "parking_ratio"
+    ]
+   },
+   "location": {
+    "label": "Market and submarket",
+    "features": [
+     "market",
+     "submarket"
+    ]
+   },
+   "space": {
+    "label": "Space size and position",
+    "features": [
+     "sf_occupied",
+     "sf_share_of_building",
+     "space_position"
+    ]
+   },
+   "operator": {
+    "label": "Operator: chain or independent",
+    "features": [
+     "tenant_known",
+     "chain_locations",
+     "is_chain",
+     "operator_prior_sites"
+    ]
+   },
+   "era": {
+    "label": "Move-in year",
+    "features": [
+     "move_in_year"
+    ]
+   }
+  }
+ },
+ "modelCard": {
+  "data": "CoStar hackathon kit (Houston and Los Angeles): location-occupancy joined to company-detail and commercial-property.",
+  "unit": "One food tenancy (renewals and suite moves by the same tenant in the same property merged).",
+  "label": "1 if the tenant was still in place 3 years after move-in, else 0. Tenancies that began after 2023-11-09 are left out because their 3 years are not up.",
+  "features": "Only facts known at move-in: building, location, space, earlier food tenants in the suite and property, building roster, density within 500 m, chain or independent.",
+  "intendedUse": "A rough, explained prior for a new food tenant in a listed space, shown next to the site evidence. Not for lending, underwriting or any decision about a named business.",
+  "limits": [
+   "Small sample: 895 tenancies on 333 properties; the test set has 312 rows, so every metric carries wide error bars.",
+   "Overconfident at the top: on the 2019-2023 test set, tenancies scored above 80% survived 74% of the time. Read anything above 80% as roughly three in four.",
+   "Weak signal: ranking skill is modest (see metrics). Treat the output as a nudge on the base rate, not a forecast.",
+   "The label is 'still in this space after 3 years'. A restaurant that relocated or was bought out counts the same as one that failed.",
+   "Recording bias: CoStar back-fills history. Older short-lived tenants are under-recorded, and about half of move-in dates are record start dates, not confirmed move-ins.",
+   "No SIC/NAICS in the kit: food tenants are found by industry code 17 plus name and bio patterns, so some rows are not restaurants and some restaurants are missed.",
+   "Kit coverage only: 3,339 properties in Houston and Los Angeles, mostly apartment and office buildings. 'Food tenants within 500 m' counts kit properties only, not the real street.",
+   "Rent and lease terms are not used. Rent is filled on 12% of rows, and having a lease record at all is a marker of a tenant that stayed long enough to be researched (leakage), so the whole lease group was removed.",
+   "Suite number is known on about 29% of rows, so suite history rests on few rows.",
+   "Not in the data: cuisine, price point, operator experience or capital, sales, foot traffic, visibility, parking counts, reviews, competition outside the kit.",
+   "The test period includes 2020. Predictions for 2026 move-ins extrapolate past the last labelled move-in (2023-11)."
+  ],
+  "date": "2026-11-13"
+ }
+}

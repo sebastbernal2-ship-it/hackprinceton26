@@ -1,0 +1,63 @@
+{
+  "kind": "layout",
+  "instruction": "Add a bar along the window",
+  "order": "plan > checks > numbers > image > images > qa > done",
+  "plannedBy": "claude",
+  "summary": "Add a bar with stools running along the storefront window wall in the main dining room.",
+  "changes": [
+    "layout: Storefront window wall in the main dining room | {\"lengthFt\":20,\"seats\":10} | seating,plumbing-fixture,alcohol"
+  ],
+  "layoutOps": [
+    {
+      "op": "add",
+      "type": "bar-counter",
+      "count": 2,
+      "near": "window"
+    },
+    {
+      "op": "add",
+      "type": "bar-stool",
+      "count": 10,
+      "near": "bar-counter"
+    }
+  ],
+  "flags": [
+    "A new bar sink and drain need a connection to existing plumbing. The city must approve it, and it may need a floor cut in the slab.",
+    "The city and the TABC (Texas Alcoholic Beverage Commission) must approve alcohol service, including the bar layout and the seat count.",
+    "A bar in front of the storefront must keep the entry doors and the exit path clear. Check this with the fire marshal."
+  ],
+  "lines": [
+    "none"
+  ],
+  "checks": [
+    "plumbing: needs-professional $1,625-9,500 [IPC ch. 7 and 9]",
+    "restrooms: needs-professional $5,000-25,000 (not counted) [IPC 403.1; ADA 2010 Standards; 28 CFR 36.403]",
+    "use: needs-professional [IEBC ch. 10; IBC 111]",
+    "egress: likely-fine [IBC 1004.5; IBC 1006.2.1; IBC 303.1.1; IBC 903.2.1.2]"
+  ],
+  "permits": [
+    "trades 1-3wk",
+    "health 2-6wk",
+    "accessibility 2-4wk",
+    "alcohol 6-12wk"
+  ],
+  "weeks": "9-22",
+  "costDelta": "$15,665-50,840",
+  "total": "$119,873-342,680 -> $135,538-393,520",
+  "turns": "3.76 -> 3.01",
+  "payback": "2.75 -> 3.07",
+  "images": [
+    "/imagine/1018657/vmwg2f3dzqk0o-1.jpg"
+  ],
+  "viewPrompt": "Add a long freestanding bar counter running parallel to the storefront glazing, a few feet in from the glass. Give it a solid front panel in dark wood, a butcher-block or stone top, and a footrail. Put a row of bar stools on the window side so guests face the street. Leave the walls, glazing, ceiling, floor and doors as they are.",
+  "imagesError": null,
+  "qa": [],
+  "ms": {
+    "plan": 5853,
+    "checks": 5854,
+    "numbers": 5854,
+    "images": 14413,
+    "qa": 18835,
+    "total": 21162
+  }
+}

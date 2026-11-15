@@ -1,0 +1,970 @@
+{
+  "id": "838391",
+  "address": "14829 Bellaire Blvd",
+  "city": "Houston",
+  "state": "TX",
+  "postcode": "77083",
+  "lat": 29.7023471,
+  "lng": -95.6479834,
+  "propertyType": "GeneralRetail",
+  "propertySubtype": "GeneralRetail_StorefrontRetailOrOffice",
+  "buildingSf": 44559.0,
+  "yearBuilt": 1985,
+  "stories": 1,
+  "photoUrl": "https://ahprd1cdn.csgpimgs.com/i2/aPO5mlOYeoKKylBA5poLP4JZVTGRyUzk7iw1VUIzTZs/112/image.jpg",
+  "space": {
+    "spaceId": 20962386,
+    "listingId": 40263575,
+    "suite": "11-12",
+    "floor": "FirstFloor",
+    "sf": 3700.0,
+    "sfMin": 3700.0,
+    "rentPerSfYr": 18.0,
+    "serviceType": "NNN",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "notes": null,
+    "availableOn": "2026-04-23",
+    "floorPlanUrl": "https://ahprd1cdn.csgpimgs.com/i2/WAW3_SYi5uTAMzpLGdjz3bMrbFLckS8qlXsHeA29tF4/112/image.svg",
+    "restaurantKeywords": []
+  },
+  "otherSpaces": [
+    {
+      "spaceId": 20962385,
+      "listingId": 40263575,
+      "suite": "10B",
+      "floor": "FirstFloor",
+      "sf": 1100.0,
+      "sfMin": 1100.0,
+      "rentPerSfYr": 18.0,
+      "serviceType": "NNN",
+      "spaceUse": "Retail",
+      "spaceType": "Relet",
+      "notes": null,
+      "availableOn": "2026-04-23",
+      "floorPlanUrl": null,
+      "restaurantKeywords": []
+    },
+    {
+      "spaceId": 20962387,
+      "listingId": 40263575,
+      "suite": "2B",
+      "floor": "FirstFloor",
+      "sf": 2672.0,
+      "sfMin": 2672.0,
+      "rentPerSfYr": 18.0,
+      "serviceType": "NNN",
+      "spaceUse": "Retail",
+      "spaceType": "Relet",
+      "notes": null,
+      "availableOn": "2026-04-23",
+      "floorPlanUrl": null,
+      "restaurantKeywords": []
+    },
+    {
+      "spaceId": 20962388,
+      "listingId": 40263575,
+      "suite": "4",
+      "floor": "FirstFloor",
+      "sf": 3400.0,
+      "sfMin": 3400.0,
+      "rentPerSfYr": 18.0,
+      "serviceType": "NNN",
+      "spaceUse": "Retail",
+      "spaceType": "Relet",
+      "notes": null,
+      "availableOn": "2026-04-23",
+      "floorPlanUrl": null,
+      "restaurantKeywords": []
+    }
+  ],
+  "tenantHistory": [
+    {
+      "name": "O Donut",
+      "industry": "AccommodationAndFoodServices",
+      "isFood": true,
+      "moveIn": "2010-09-19",
+      "moveOut": "2011-10-04",
+      "years": 1.0,
+      "suite": null,
+      "sameSuite": false,
+      "current": false,
+      "outcome": "moved",
+      "matchBasis": "name-regex"
+    },
+    {
+      "name": "Rico Sabor Cubano",
+      "industry": "AccommodationAndFoodServices",
+      "isFood": true,
+      "moveIn": "2020-03-13",
+      "moveOut": "2020-05-28",
+      "years": 0.2,
+      "suite": null,
+      "sameSuite": false,
+      "current": false,
+      "outcome": "closed",
+      "matchBasis": "profile.industryType=17"
+    }
+  ],
+  "sales": [
+    {
+      "date": "2025-04-30",
+      "priceUsd": null,
+      "note": "Unknown"
+    }
+  ],
+  "matterport": {
+    "modelId": "ZNwAFka5Dab",
+    "defurnishedViewId": "37w5sfxcsrne2sg01zabz4fra",
+    "scanOfExactSuite": true,
+    "scanName": "Explore Suite 11-12",
+    "areaSf": 3619,
+    "rooms": [
+      {
+        "label": "Main Floor",
+        "areaSf": 2410.9,
+        "widthFt": null,
+        "depthFt": null,
+        "heightFt": 9.8,
+        "polygon": [
+          [
+            11.138,
+            4.081
+          ],
+          [
+            -1.412,
+            4.09
+          ],
+          [
+            -3.066,
+            -1.968
+          ],
+          [
+            0.255,
+            -14.457
+          ],
+          [
+            12.941,
+            -11.083
+          ],
+          [
+            12.426,
+            -9.27
+          ],
+          [
+            11.957,
+            -7.624
+          ],
+          [
+            10.358,
+            -2.0
+          ],
+          [
+            11.133,
+            -2.001
+          ],
+          [
+            11.135,
+            1.079
+          ],
+          [
+            11.136,
+            2.314
+          ]
+        ]
+      },
+      {
+        "label": "Unlabeled space",
+        "areaSf": 346.2,
+        "widthFt": null,
+        "depthFt": null,
+        "heightFt": 9.8,
+        "polygon": [
+          [
+            14.468,
+            -6.951
+          ],
+          [
+            11.957,
+            -7.624
+          ],
+          [
+            10.358,
+            -2.0
+          ],
+          [
+            11.133,
+            -2.001
+          ],
+          [
+            15.486,
+            -2.004
+          ],
+          [
+            16.74,
+            -2.005
+          ],
+          [
+            17.422,
+            -4.6
+          ],
+          [
+            19.379,
+            -4.084
+          ],
+          [
+            19.762,
+            -5.534
+          ]
+        ]
+      },
+      {
+        "label": "Unlabeled space",
+        "areaSf": 273.1,
+        "widthFt": null,
+        "depthFt": null,
+        "heightFt": 9.8,
+        "polygon": [
+          [
+            11.136,
+            2.314
+          ],
+          [
+            15.009,
+            2.311
+          ],
+          [
+            15.011,
+            4.078
+          ],
+          [
+            20.551,
+            4.074
+          ],
+          [
+            19.44,
+            0.148
+          ],
+          [
+            16.943,
+            0.15
+          ],
+          [
+            16.941,
+            -2.005
+          ],
+          [
+            16.74,
+            -2.005
+          ],
+          [
+            15.486,
+            -2.004
+          ],
+          [
+            15.488,
+            1.075
+          ],
+          [
+            11.135,
+            1.079
+          ]
+        ]
+      },
+      {
+        "label": "Unlabeled space",
+        "areaSf": 199.1,
+        "widthFt": 17.5,
+        "depthFt": 11.4,
+        "heightFt": 9.8,
+        "polygon": [
+          [
+            19.762,
+            -5.534
+          ],
+          [
+            20.686,
+            -8.987
+          ],
+          [
+            15.416,
+            -10.425
+          ],
+          [
+            14.468,
+            -6.951
+          ]
+        ]
+      },
+      {
+        "label": "Unlabeled space",
+        "areaSf": 136.3,
+        "widthFt": 14.0,
+        "depthFt": 9.8,
+        "heightFt": 9.9,
+        "polygon": [
+          [
+            15.486,
+            -2.004
+          ],
+          [
+            15.488,
+            1.075
+          ],
+          [
+            11.135,
+            1.079
+          ],
+          [
+            11.133,
+            -2.001
+          ]
+        ]
+      },
+      {
+        "label": "Unlabeled space",
+        "areaSf": 92.8,
+        "widthFt": 8.2,
+        "depthFt": 11.4,
+        "heightFt": 9.8,
+        "polygon": [
+          [
+            14.468,
+            -6.951
+          ],
+          [
+            11.957,
+            -7.624
+          ],
+          [
+            12.426,
+            -9.27
+          ],
+          [
+            12.941,
+            -11.083
+          ],
+          [
+            15.416,
+            -10.425
+          ]
+        ]
+      },
+      {
+        "label": "Unlabeled space",
+        "areaSf": 66.1,
+        "widthFt": 12.3,
+        "depthFt": 5.4,
+        "heightFt": 9.8,
+        "polygon": [
+          [
+            11.136,
+            2.314
+          ],
+          [
+            15.009,
+            2.311
+          ],
+          [
+            15.011,
+            4.078
+          ],
+          [
+            11.138,
+            4.081
+          ]
+        ]
+      },
+      {
+        "label": "Unlabeled space",
+        "areaSf": 48.2,
+        "widthFt": null,
+        "depthFt": null,
+        "heightFt": 9.9,
+        "polygon": [
+          [
+            16.941,
+            -2.005
+          ],
+          [
+            16.74,
+            -2.005
+          ],
+          [
+            17.422,
+            -4.6
+          ],
+          [
+            19.379,
+            -4.084
+          ],
+          [
+            18.83,
+            -2.006
+          ]
+        ]
+      },
+      {
+        "label": "Unlabeled space",
+        "areaSf": 46.3,
+        "widthFt": null,
+        "depthFt": null,
+        "heightFt": 10.0,
+        "polygon": [
+          [
+            16.943,
+            0.15
+          ],
+          [
+            16.941,
+            -2.005
+          ],
+          [
+            18.83,
+            -2.006
+          ],
+          [
+            19.44,
+            0.148
+          ]
+        ]
+      }
+    ],
+    "panos": [
+      {
+        "id": "ea0qb882sya1rhcxg7ge37yka",
+        "position": {
+          "x": 0.905,
+          "y": -9.847,
+          "z": 1.38
+        },
+        "label": "7",
+        "rotation": {
+          "x": 0.013316836208105087,
+          "y": 0.0073368060402572155,
+          "z": -0.5986199378967285,
+          "w": 0.8008888959884644
+        },
+        "skybox": [
+          "/sites/838391/pano/ea0qb882sya1rhcxg7ge37yka/f0.jpg",
+          "/sites/838391/pano/ea0qb882sya1rhcxg7ge37yka/f1.jpg",
+          "/sites/838391/pano/ea0qb882sya1rhcxg7ge37yka/f2.jpg",
+          "/sites/838391/pano/ea0qb882sya1rhcxg7ge37yka/f3.jpg",
+          "/sites/838391/pano/ea0qb882sya1rhcxg7ge37yka/f4.jpg",
+          "/sites/838391/pano/ea0qb882sya1rhcxg7ge37yka/f5.jpg"
+        ],
+        "skyboxEmpty": [
+          "/sites/838391/pano/ea0qb882sya1rhcxg7ge37yka/empty/f0.jpg",
+          "/sites/838391/pano/ea0qb882sya1rhcxg7ge37yka/empty/f1.jpg",
+          "/sites/838391/pano/ea0qb882sya1rhcxg7ge37yka/empty/f2.jpg",
+          "/sites/838391/pano/ea0qb882sya1rhcxg7ge37yka/empty/f3.jpg",
+          "/sites/838391/pano/ea0qb882sya1rhcxg7ge37yka/empty/f4.jpg",
+          "/sites/838391/pano/ea0qb882sya1rhcxg7ge37yka/empty/f5.jpg"
+        ]
+      },
+      {
+        "id": "8ihd7u38e22xni78mdyftzs2c",
+        "position": {
+          "x": 10.325,
+          "y": -3.909,
+          "z": 1.402
+        },
+        "label": "10"
+      },
+      {
+        "id": "fkitnshdc5xb6wa9mq3gpex5a",
+        "position": {
+          "x": 18.047,
+          "y": -0.829,
+          "z": 1.399
+        },
+        "label": "21"
+      },
+      {
+        "id": "guzzt6nrytphqhanagmyaya4b",
+        "position": {
+          "x": 14.35,
+          "y": 2.721,
+          "z": 1.385
+        },
+        "label": "25"
+      },
+      {
+        "id": "pb5g5uzg7xrq6kpc5wbt9z7xd",
+        "position": {
+          "x": 11.455,
+          "y": -3.637,
+          "z": 1.402
+        },
+        "label": "11"
+      },
+      {
+        "id": "1kk1dpxqhctsuzp5hnu65c5za",
+        "position": {
+          "x": 14.439,
+          "y": 1.668,
+          "z": 1.383
+        },
+        "label": "24"
+      },
+      {
+        "id": "6uchwsiqx9wt0ihepmwhg5kkd",
+        "position": {
+          "x": 4.901,
+          "y": -4.703,
+          "z": 1.374
+        },
+        "label": "5"
+      },
+      {
+        "id": "im4mqs1n5wmw686pb3fdz4zzc",
+        "position": {
+          "x": 14.081,
+          "y": -4.398,
+          "z": 1.403
+        },
+        "label": "17",
+        "rotation": {
+          "x": -0.005332540720701218,
+          "y": -2.9785547667415813e-05,
+          "z": 0.8777596950531006,
+          "w": 0.4790715277194977
+        },
+        "skybox": [
+          "/sites/838391/pano/im4mqs1n5wmw686pb3fdz4zzc/f0.jpg",
+          "/sites/838391/pano/im4mqs1n5wmw686pb3fdz4zzc/f1.jpg",
+          "/sites/838391/pano/im4mqs1n5wmw686pb3fdz4zzc/f2.jpg",
+          "/sites/838391/pano/im4mqs1n5wmw686pb3fdz4zzc/f3.jpg",
+          "/sites/838391/pano/im4mqs1n5wmw686pb3fdz4zzc/f4.jpg",
+          "/sites/838391/pano/im4mqs1n5wmw686pb3fdz4zzc/f5.jpg"
+        ],
+        "skyboxEmpty": [
+          "/sites/838391/pano/im4mqs1n5wmw686pb3fdz4zzc/empty/f0.jpg",
+          "/sites/838391/pano/im4mqs1n5wmw686pb3fdz4zzc/empty/f1.jpg",
+          "/sites/838391/pano/im4mqs1n5wmw686pb3fdz4zzc/empty/f2.jpg",
+          "/sites/838391/pano/im4mqs1n5wmw686pb3fdz4zzc/empty/f3.jpg",
+          "/sites/838391/pano/im4mqs1n5wmw686pb3fdz4zzc/empty/f4.jpg",
+          "/sites/838391/pano/im4mqs1n5wmw686pb3fdz4zzc/empty/f5.jpg"
+        ]
+      },
+      {
+        "id": "wm8f5776tyusm2umy84gykq5d",
+        "position": {
+          "x": 13.766,
+          "y": -6.629,
+          "z": 1.402
+        },
+        "label": "15"
+      },
+      {
+        "id": "9m3k6kq8kpua9trs1wn7t41qa",
+        "position": {
+          "x": 16.151,
+          "y": -2.869,
+          "z": 1.411
+        },
+        "label": "12"
+      },
+      {
+        "id": "fdnzaxpy8720yw08ia4bxyq7b",
+        "position": {
+          "x": 5.123,
+          "y": -8.63,
+          "z": 1.373
+        },
+        "label": "8",
+        "rotation": {
+          "x": -4.091782830073498e-05,
+          "y": 0.013062548823654652,
+          "z": 0.12410469353199005,
+          "w": 0.9921831488609314
+        },
+        "skybox": [
+          "/sites/838391/pano/fdnzaxpy8720yw08ia4bxyq7b/f0.jpg",
+          "/sites/838391/pano/fdnzaxpy8720yw08ia4bxyq7b/f1.jpg",
+          "/sites/838391/pano/fdnzaxpy8720yw08ia4bxyq7b/f2.jpg",
+          "/sites/838391/pano/fdnzaxpy8720yw08ia4bxyq7b/f3.jpg",
+          "/sites/838391/pano/fdnzaxpy8720yw08ia4bxyq7b/f4.jpg",
+          "/sites/838391/pano/fdnzaxpy8720yw08ia4bxyq7b/f5.jpg"
+        ],
+        "skyboxEmpty": [
+          "/sites/838391/pano/fdnzaxpy8720yw08ia4bxyq7b/empty/f0.jpg",
+          "/sites/838391/pano/fdnzaxpy8720yw08ia4bxyq7b/empty/f1.jpg",
+          "/sites/838391/pano/fdnzaxpy8720yw08ia4bxyq7b/empty/f2.jpg",
+          "/sites/838391/pano/fdnzaxpy8720yw08ia4bxyq7b/empty/f3.jpg",
+          "/sites/838391/pano/fdnzaxpy8720yw08ia4bxyq7b/empty/f4.jpg",
+          "/sites/838391/pano/fdnzaxpy8720yw08ia4bxyq7b/empty/f5.jpg"
+        ]
+      },
+      {
+        "id": "35ax1xk3wdex72pf22u2rti3c",
+        "position": {
+          "x": -0.037,
+          "y": -0.079,
+          "z": 1.384
+        },
+        "label": "0",
+        "rotation": {
+          "x": 0.005122745875269175,
+          "y": -0.00943997036665678,
+          "z": -0.05601882189512253,
+          "w": 0.998371958732605
+        },
+        "skybox": [
+          "/sites/838391/pano/35ax1xk3wdex72pf22u2rti3c/f0.jpg",
+          "/sites/838391/pano/35ax1xk3wdex72pf22u2rti3c/f1.jpg",
+          "/sites/838391/pano/35ax1xk3wdex72pf22u2rti3c/f2.jpg",
+          "/sites/838391/pano/35ax1xk3wdex72pf22u2rti3c/f3.jpg",
+          "/sites/838391/pano/35ax1xk3wdex72pf22u2rti3c/f4.jpg",
+          "/sites/838391/pano/35ax1xk3wdex72pf22u2rti3c/f5.jpg"
+        ],
+        "skyboxEmpty": [
+          "/sites/838391/pano/35ax1xk3wdex72pf22u2rti3c/empty/f0.jpg",
+          "/sites/838391/pano/35ax1xk3wdex72pf22u2rti3c/empty/f1.jpg",
+          "/sites/838391/pano/35ax1xk3wdex72pf22u2rti3c/empty/f2.jpg",
+          "/sites/838391/pano/35ax1xk3wdex72pf22u2rti3c/empty/f3.jpg",
+          "/sites/838391/pano/35ax1xk3wdex72pf22u2rti3c/empty/f4.jpg",
+          "/sites/838391/pano/35ax1xk3wdex72pf22u2rti3c/empty/f5.jpg"
+        ]
+      },
+      {
+        "id": "9x5z4xfcttpre2mbc3732nx9a",
+        "position": {
+          "x": 0.5,
+          "y": -5.532,
+          "z": 1.401
+        },
+        "label": "6"
+      },
+      {
+        "id": "beb46as4hs9q39fiiaan93dxd",
+        "position": {
+          "x": 14.89,
+          "y": -6.425,
+          "z": 1.404
+        },
+        "label": "16"
+      },
+      {
+        "id": "0eimdnmk8ubu9x4b19fq2u9yb",
+        "position": {
+          "x": 16.28,
+          "y": 0.977,
+          "z": 1.384
+        },
+        "label": "19",
+        "rotation": {
+          "x": 0.0060774157755076885,
+          "y": 0.0004376265569590032,
+          "z": -0.7630285620689392,
+          "w": 0.6463360786437988
+        },
+        "skybox": [
+          "/sites/838391/pano/0eimdnmk8ubu9x4b19fq2u9yb/f0.jpg",
+          "/sites/838391/pano/0eimdnmk8ubu9x4b19fq2u9yb/f1.jpg",
+          "/sites/838391/pano/0eimdnmk8ubu9x4b19fq2u9yb/f2.jpg",
+          "/sites/838391/pano/0eimdnmk8ubu9x4b19fq2u9yb/f3.jpg",
+          "/sites/838391/pano/0eimdnmk8ubu9x4b19fq2u9yb/f4.jpg",
+          "/sites/838391/pano/0eimdnmk8ubu9x4b19fq2u9yb/f5.jpg"
+        ],
+        "skyboxEmpty": [
+          "/sites/838391/pano/0eimdnmk8ubu9x4b19fq2u9yb/empty/f0.jpg",
+          "/sites/838391/pano/0eimdnmk8ubu9x4b19fq2u9yb/empty/f1.jpg",
+          "/sites/838391/pano/0eimdnmk8ubu9x4b19fq2u9yb/empty/f2.jpg",
+          "/sites/838391/pano/0eimdnmk8ubu9x4b19fq2u9yb/empty/f3.jpg",
+          "/sites/838391/pano/0eimdnmk8ubu9x4b19fq2u9yb/empty/f4.jpg",
+          "/sites/838391/pano/0eimdnmk8ubu9x4b19fq2u9yb/empty/f5.jpg"
+        ]
+      },
+      {
+        "id": "i7tkn5s717dq143z6ubnf6f6a",
+        "position": {
+          "x": 17.608,
+          "y": 0.702,
+          "z": 1.386
+        },
+        "label": "20"
+      },
+      {
+        "id": "wzhbtngqw3z2tcx0rrqc8gync",
+        "position": {
+          "x": 16.125,
+          "y": -0.847,
+          "z": 1.396
+        },
+        "label": "18"
+      },
+      {
+        "id": "xq03x5dpm69i7kfdcfub4d0qb",
+        "position": {
+          "x": 8.075,
+          "y": 1.118,
+          "z": 1.405
+        },
+        "label": "2"
+      },
+      {
+        "id": "9zc8is1qqg8x5ptyxcfuz55cc",
+        "position": {
+          "x": 8.904,
+          "y": -4.048,
+          "z": 1.397
+        },
+        "label": "4",
+        "rotation": {
+          "x": 0.005711051635444164,
+          "y": -0.009746906347572803,
+          "z": -0.23195314407348633,
+          "w": 0.9726613759994507
+        },
+        "skybox": [
+          "/sites/838391/pano/9zc8is1qqg8x5ptyxcfuz55cc/f0.jpg",
+          "/sites/838391/pano/9zc8is1qqg8x5ptyxcfuz55cc/f1.jpg",
+          "/sites/838391/pano/9zc8is1qqg8x5ptyxcfuz55cc/f2.jpg",
+          "/sites/838391/pano/9zc8is1qqg8x5ptyxcfuz55cc/f3.jpg",
+          "/sites/838391/pano/9zc8is1qqg8x5ptyxcfuz55cc/f4.jpg",
+          "/sites/838391/pano/9zc8is1qqg8x5ptyxcfuz55cc/f5.jpg"
+        ],
+        "skyboxEmpty": [
+          "/sites/838391/pano/9zc8is1qqg8x5ptyxcfuz55cc/empty/f0.jpg",
+          "/sites/838391/pano/9zc8is1qqg8x5ptyxcfuz55cc/empty/f1.jpg",
+          "/sites/838391/pano/9zc8is1qqg8x5ptyxcfuz55cc/empty/f2.jpg",
+          "/sites/838391/pano/9zc8is1qqg8x5ptyxcfuz55cc/empty/f3.jpg",
+          "/sites/838391/pano/9zc8is1qqg8x5ptyxcfuz55cc/empty/f4.jpg",
+          "/sites/838391/pano/9zc8is1qqg8x5ptyxcfuz55cc/empty/f5.jpg"
+        ]
+      },
+      {
+        "id": "k0fufyirwmhhd61pfg077cgid",
+        "position": {
+          "x": 14.338,
+          "y": 0.648,
+          "z": 1.389
+        },
+        "label": "26"
+      },
+      {
+        "id": "5rgs029p3q399x5fgu71d9iea",
+        "position": {
+          "x": 19.514,
+          "y": 2.758,
+          "z": 1.385
+        },
+        "label": "22"
+      },
+      {
+        "id": "e9tquqdx7xxyrn9x9f1ks9zqa",
+        "position": {
+          "x": 10.339,
+          "y": 1.603,
+          "z": 1.408
+        },
+        "label": "3",
+        "rotation": {
+          "x": 0.007927658036351204,
+          "y": 0.0025348004419356585,
+          "z": 0.7661389112472534,
+          "w": 0.6426210999488831
+        },
+        "skybox": [
+          "/sites/838391/pano/e9tquqdx7xxyrn9x9f1ks9zqa/f0.jpg",
+          "/sites/838391/pano/e9tquqdx7xxyrn9x9f1ks9zqa/f1.jpg",
+          "/sites/838391/pano/e9tquqdx7xxyrn9x9f1ks9zqa/f2.jpg",
+          "/sites/838391/pano/e9tquqdx7xxyrn9x9f1ks9zqa/f3.jpg",
+          "/sites/838391/pano/e9tquqdx7xxyrn9x9f1ks9zqa/f4.jpg",
+          "/sites/838391/pano/e9tquqdx7xxyrn9x9f1ks9zqa/f5.jpg"
+        ],
+        "skyboxEmpty": [
+          "/sites/838391/pano/e9tquqdx7xxyrn9x9f1ks9zqa/empty/f0.jpg",
+          "/sites/838391/pano/e9tquqdx7xxyrn9x9f1ks9zqa/empty/f1.jpg",
+          "/sites/838391/pano/e9tquqdx7xxyrn9x9f1ks9zqa/empty/f2.jpg",
+          "/sites/838391/pano/e9tquqdx7xxyrn9x9f1ks9zqa/empty/f3.jpg",
+          "/sites/838391/pano/e9tquqdx7xxyrn9x9f1ks9zqa/empty/f4.jpg",
+          "/sites/838391/pano/e9tquqdx7xxyrn9x9f1ks9zqa/empty/f5.jpg"
+        ]
+      },
+      {
+        "id": "qhdqan2fhz7828chf3h5m36kc",
+        "position": {
+          "x": 9.38,
+          "y": -7.954,
+          "z": 1.388
+        },
+        "label": "9"
+      },
+      {
+        "id": "wsfreiwtb8bycw7d80uci3pcd",
+        "position": {
+          "x": 15.634,
+          "y": 1.737,
+          "z": 1.382
+        },
+        "label": "23"
+      },
+      {
+        "id": "x9zw564869m0912ftes5ttefb",
+        "position": {
+          "x": 18.297,
+          "y": -5.227,
+          "z": 1.42
+        },
+        "label": "14"
+      },
+      {
+        "id": "z9dbii5au9sftrzxwms7hhy3a",
+        "position": {
+          "x": 16.906,
+          "y": -5.674,
+          "z": 1.415
+        },
+        "label": "13",
+        "rotation": {
+          "x": -0.005000358447432518,
+          "y": 0.0018656468018889427,
+          "z": 0.8270938396453857,
+          "w": 0.5620384812355042
+        },
+        "skybox": [
+          "/sites/838391/pano/z9dbii5au9sftrzxwms7hhy3a/f0.jpg",
+          "/sites/838391/pano/z9dbii5au9sftrzxwms7hhy3a/f1.jpg",
+          "/sites/838391/pano/z9dbii5au9sftrzxwms7hhy3a/f2.jpg",
+          "/sites/838391/pano/z9dbii5au9sftrzxwms7hhy3a/f3.jpg",
+          "/sites/838391/pano/z9dbii5au9sftrzxwms7hhy3a/f4.jpg",
+          "/sites/838391/pano/z9dbii5au9sftrzxwms7hhy3a/f5.jpg"
+        ],
+        "skyboxEmpty": [
+          "/sites/838391/pano/z9dbii5au9sftrzxwms7hhy3a/empty/f0.jpg",
+          "/sites/838391/pano/z9dbii5au9sftrzxwms7hhy3a/empty/f1.jpg",
+          "/sites/838391/pano/z9dbii5au9sftrzxwms7hhy3a/empty/f2.jpg",
+          "/sites/838391/pano/z9dbii5au9sftrzxwms7hhy3a/empty/f3.jpg",
+          "/sites/838391/pano/z9dbii5au9sftrzxwms7hhy3a/empty/f4.jpg",
+          "/sites/838391/pano/z9dbii5au9sftrzxwms7hhy3a/empty/f5.jpg"
+        ]
+      },
+      {
+        "id": "61ceq6kfw8y6z0415i6ntzuub",
+        "position": {
+          "x": 4.143,
+          "y": 0.793,
+          "z": 1.379
+        },
+        "label": "1"
+      }
+    ],
+    "beforeAfter": [
+      {
+        "panoId": "9zc8is1qqg8x5ptyxcfuz55cc",
+        "before": "/sites/838391/before-9zc8is1qqg8x5ptyxcfuz55cc.jpg",
+        "after": "/sites/838391/after-9zc8is1qqg8x5ptyxcfuz55cc.jpg",
+        "caption": "Main Floor"
+      },
+      {
+        "panoId": "0eimdnmk8ubu9x4b19fq2u9yb",
+        "before": "/sites/838391/before-0eimdnmk8ubu9x4b19fq2u9yb.jpg",
+        "after": "/sites/838391/after-0eimdnmk8ubu9x4b19fq2u9yb.jpg",
+        "caption": "Dining area"
+      }
+    ],
+    "photos": [
+      "/sites/838391/photo-1.jpg",
+      "/sites/838391/photo-2.jpg",
+      "/sites/838391/photo-3.jpg"
+    ],
+    "floorplanImage": "/sites/838391/floorplan.jpg",
+    "description": "Spacious single-floor commercial space at 14829 Bellaire Blvd, Houston, TX, featuring open floor plan, multiple rooms, 2 bathrooms, drop ceilings, and laminate flooring throughout."
+  },
+  "aerial": {
+    "widthPx": 1024,
+    "heightPx": 1024,
+    "orthoPath": "/sites/838391/aerial.jpg",
+    "obliquePath": "/sites/838391/oblique.jpg",
+    "captureDate": "2025-12-31",
+    "extentM": 120.0,
+    "gsdM": 0.1172,
+    "vehicleCount": null,
+    "hardscapeSf": null,
+    "footprintSf": 49532,
+    "parkingSpaces": 0,
+    "patioCandidateSf": 0,
+    "detections": []
+  },
+  "findings": [
+    {
+      "id": "838391-vision-hood",
+      "kind": "hood",
+      "status": "unknown",
+      "confidence": 0.3,
+      "evidence": "Only open retail floor, painted partition rooms and storefront are visible; no cooking area or exhaust canopy appears in any view.",
+      "source": "matterport-vision"
+    },
+    {
+      "id": "838391-vision-kitchen-line",
+      "kind": "kitchen-line",
+      "status": "unknown",
+      "confidence": 0.3,
+      "evidence": "The visible rooms are empty with no cooking equipment, prep tables or dish area, but the full space is not shown.",
+      "source": "matterport-vision"
+    },
+    {
+      "id": "838391-vision-walk-in",
+      "kind": "walk-in",
+      "status": "unknown",
+      "confidence": 0.3,
+      "evidence": "No insulated box or refrigerated door is visible in the views provided, and back-of-house areas are not fully shown.",
+      "source": "matterport-vision"
+    },
+    {
+      "id": "838391-vision-restrooms",
+      "kind": "restrooms",
+      "status": "unknown",
+      "confidence": 0.3,
+      "evidence": "A dark tiled room with purple and teal walls is visible through a doorway, but no restroom fixtures or signage can be seen.",
+      "source": "matterport-vision"
+    },
+    {
+      "id": "838391-vision-grease-trap",
+      "kind": "grease-trap",
+      "status": "unknown",
+      "confidence": 0.3,
+      "evidence": "Floors shown are vinyl plank and tile with no visible floor sink or interceptor lid, though coverage is partial.",
+      "source": "matterport-vision"
+    },
+    {
+      "id": "838391-vision-electrical",
+      "kind": "electrical",
+      "status": "unknown",
+      "confidence": 0.3,
+      "evidence": "Only a wall outlet and loose wiring are visible; no electrical panel or service gear appears in any view.",
+      "source": "matterport-vision"
+    },
+    {
+      "id": "838391-vision-storefront",
+      "kind": "storefront",
+      "status": "present",
+      "confidence": 0.97,
+      "evidence": "Full-height aluminum-framed storefront glazing with a glass entry door and EXIT sign faces the parking lot.",
+      "source": "matterport-vision",
+      "imagePath": "/sites/838391/vision-ea0qb882sya1rhcxg7ge37yka.jpg",
+      "position": {
+        "x": 0.905,
+        "y": -9.847,
+        "z": 1.38
+      },
+      "panoId": "ea0qb882sya1rhcxg7ge37yka"
+    },
+    {
+      "id": "838391-vision-ada",
+      "kind": "ada",
+      "status": "unknown",
+      "confidence": 0.4,
+      "evidence": "The glass entry door appears to open at grade onto a flush covered walkway, but no ramp, grab bars, accessible restroom or accessibility signage is clearly visible.",
+      "source": "matterport-vision"
+    }
+  ],
+  "headline": "Second-generation suite; $18/SF NNN.",
+  "sources": [
+    {
+      "label": "CoStar hackathon data kit (Nov 2026)"
+    }
+  ]
+}

@@ -1,0 +1,269 @@
+{
+ "dataDate": "2026-11-09",
+ "labelCutoff": "2023-11-09",
+ "horizonYears": 3.0,
+ "rows": 895,
+ "survived": 610,
+ "notSurvived": 285,
+ "baseRate": 0.6816,
+ "properties": 333,
+ "byMarket": {
+  "Houston": 474,
+  "LosAngeles": 421
+ },
+ "byMatchBasis": {
+  "name-regex": 268,
+  "profile.industryType=17, name-regex": 102,
+  "name-regex, bio-regex": 16,
+  "profile.industryType=17": 131,
+  "profile.industryType=17, bio-regex": 145,
+  "profile.industryType=17, name-regex, bio-regex": 231,
+  "occupancy.industryType=17": 2
+ },
+ "byMoveInSource": {
+  "moveInDate": 412,
+  "fromDate": 483
+ },
+ "byEndReasonWithin3y": {
+  "MovingOutNewAddressUnknown": 203,
+  "NoLongerInCustomerMarket": 6,
+  "Renewal": 2,
+  "ClosedLocationOrBankrupt": 52,
+  "MoveIntoAnotherProperty": 14,
+  "Unknown": 4,
+  "MovingIntoHomeOffice": 1,
+  "UnableToConfirm": 1,
+  "MovingIntoExecutiveSuite": 2
+ },
+ "byMoveInYear": {
+  "1992": {
+   "n": 1,
+   "survived": 1
+  },
+  "1993": {
+   "n": 1,
+   "survived": 1
+  },
+  "1994": {
+   "n": 1,
+   "survived": 1
+  },
+  "1995": {
+   "n": 1,
+   "survived": 1
+  },
+  "1997": {
+   "n": 2,
+   "survived": 2
+  },
+  "1998": {
+   "n": 4,
+   "survived": 4
+  },
+  "1999": {
+   "n": 3,
+   "survived": 2
+  },
+  "2000": {
+   "n": 19,
+   "survived": 8
+  },
+  "2001": {
+   "n": 6,
+   "survived": 3
+  },
+  "2002": {
+   "n": 1,
+   "survived": 1
+  },
+  "2003": {
+   "n": 30,
+   "survived": 29
+  },
+  "2004": {
+   "n": 6,
+   "survived": 6
+  },
+  "2005": {
+   "n": 10,
+   "survived": 9
+  },
+  "2006": {
+   "n": 12,
+   "survived": 11
+  },
+  "2007": {
+   "n": 19,
+   "survived": 17
+  },
+  "2008": {
+   "n": 24,
+   "survived": 21
+  },
+  "2009": {
+   "n": 33,
+   "survived": 19
+  },
+  "2010": {
+   "n": 88,
+   "survived": 48
+  },
+  "2011": {
+   "n": 48,
+   "survived": 30
+  },
+  "2012": {
+   "n": 22,
+   "survived": 16
+  },
+  "2013": {
+   "n": 39,
+   "survived": 29
+  },
+  "2014": {
+   "n": 16,
+   "survived": 13
+  },
+  "2015": {
+   "n": 36,
+   "survived": 23
+  },
+  "2016": {
+   "n": 70,
+   "survived": 40
+  },
+  "2017": {
+   "n": 44,
+   "survived": 31
+  },
+  "2018": {
+   "n": 47,
+   "survived": 35
+  },
+  "2019": {
+   "n": 64,
+   "survived": 40
+  },
+  "2020": {
+   "n": 88,
+   "survived": 58
+  },
+  "2021": {
+   "n": 60,
+   "survived": 40
+  },
+  "2022": {
+   "n": 69,
+   "survived": 52
+  },
+  "2023": {
+   "n": 31,
+   "survived": 19
+  }
+ },
+ "exclusions": {
+  "censored: began < 3y before data date (open)": 144,
+  "censored: began < 3y before data date (closed)": 16,
+  "move-in before 1990": 2
+ },
+ "artifactStintsDropped": 54,
+ "foodOccupancyRecordsByBasis": {
+  "name-regex-weak": 169,
+  "name-regex": 343,
+  "profile.industryType=17, name-regex": 144,
+  "profile.industryType=17": 187,
+  "profile.industryType=17, name-regex, bio-regex": 301,
+  "profile.industryType=17, bio-regex": 215,
+  "name-regex, bio-regex": 22,
+  "occupancy.industryType=17": 3
+ },
+ "featureFill": {
+  "market": 1.0,
+  "submarket": 1.0,
+  "property_type": 1.0,
+  "property_subtype": 1.0,
+  "building_sf": 1.0,
+  "building_age": 0.999,
+  "years_since_renov": 0.275,
+  "stories": 1.0,
+  "parking_ratio": 0.858,
+  "sf_occupied": 0.812,
+  "sf_share_of_building": 0.812,
+  "move_in_year": 1.0,
+  "prior_food_prop": 1.0,
+  "prior_food_closed_prop": 1.0,
+  "prior_food_closed_5y_prop": 1.0,
+  "prior_food_short_closed_prop": 1.0,
+  "food_active_prop": 1.0,
+  "tenants_active_bldg": 1.0,
+  "tenant_moveouts_3y_bldg": 1.0,
+  "record_depth_years": 1.0,
+  "suite_known": 1.0,
+  "prior_food_closed_suite": 0.294,
+  "prior_food_closed_5y_suite": 0.294,
+  "prior_any_closed_5y_suite": 0.294,
+  "predecessor_years": 0.063,
+  "suite_vacant_years": 0.063,
+  "second_gen_food_suite": 0.294,
+  "food_active_500m": 1.0,
+  "food_closed_3y_500m": 1.0,
+  "tenants_active_500m": 1.0,
+  "kit_properties_500m": 1.0,
+  "tenant_known": 1.0,
+  "chain_locations": 0.998,
+  "is_chain": 1.0,
+  "operator_prior_sites": 1.0,
+  "lease_type": 1.0,
+  "has_lease_deal": 1.0,
+  "rent_psf_yr": 0.124,
+  "lease_term_months": 0.113,
+  "service_type": 1.0,
+  "space_type": 1.0,
+  "space_position": 1.0
+ },
+ "features": [
+  "market",
+  "submarket",
+  "property_type",
+  "property_subtype",
+  "building_sf",
+  "building_age",
+  "years_since_renov",
+  "stories",
+  "parking_ratio",
+  "sf_occupied",
+  "sf_share_of_building",
+  "move_in_year",
+  "prior_food_prop",
+  "prior_food_closed_prop",
+  "prior_food_closed_5y_prop",
+  "prior_food_short_closed_prop",
+  "food_active_prop",
+  "tenants_active_bldg",
+  "tenant_moveouts_3y_bldg",
+  "record_depth_years",
+  "suite_known",
+  "prior_food_closed_suite",
+  "prior_food_closed_5y_suite",
+  "prior_any_closed_5y_suite",
+  "predecessor_years",
+  "suite_vacant_years",
+  "second_gen_food_suite",
+  "food_active_500m",
+  "food_closed_3y_500m",
+  "tenants_active_500m",
+  "kit_properties_500m",
+  "tenant_known",
+  "chain_locations",
+  "is_chain",
+  "operator_prior_sites",
+  "lease_type",
+  "has_lease_deal",
+  "rent_psf_yr",
+  "lease_term_months",
+  "service_type",
+  "space_type",
+  "space_position"
+ ],
+ "sites": 12
+}

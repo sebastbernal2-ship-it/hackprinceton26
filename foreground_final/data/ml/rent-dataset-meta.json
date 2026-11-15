@@ -1,0 +1,134 @@
+{
+ "builtOn": "2026-11-13",
+ "dataDate": "2026-11-09",
+ "rows": 16656,
+ "properties": 500,
+ "bySource": {
+  "deal": 14779,
+  "listing": 1877
+ },
+ "byFlavor": {
+  "deal_ask": 13037,
+  "listing_ask": 1877,
+  "deal_contract": 1742
+ },
+ "byUse": {
+  "office": 15460,
+  "retail": 1196
+ },
+ "byMarket": {
+  "Houston": 11160,
+  "LosAngeles": 5496
+ },
+ "byServiceGroup": {
+  "GROSS": 12843,
+  "NNN": 3813
+ },
+ "retailRows": 1196,
+ "dropCounts": {
+  "listing: no rate (0)": 1089,
+  "coworking listing": 47,
+  "off market / unknown property": 236,
+  "deal: no rate": 25246,
+  "deal: no SF": 11
+ },
+ "outliersDropped": 81,
+ "rowsBeforeOutlierRule": 16737,
+ "outlierRule": "after NNN conversion: keep $3..$250/SF/yr; drop |log rent - median| > 3.5 x 1.4826 x MAD within (market, use class)",
+ "nnnAdjustment": {
+  "chosen": "all_uses",
+  "grossToNnnFactor": 0.8648472856415873,
+  "grossOverNnnRatio": 1.1562735023885164,
+  "estimates": {
+   "all_uses": {
+    "label": "all uses",
+    "n": 16737,
+    "n_gross": 12897,
+    "n_nnn": 3840,
+    "coef_log": 0.145202336027988,
+    "se": 0.0062255009053517165,
+    "ratio_gross_over_nnn": 1.1562735023885164,
+    "ci95_ratio": [
+     1.1422504029770242,
+     1.1704687596006034
+    ]
+   },
+   "retail_use": {
+    "label": "retail-use only",
+    "n": 1204,
+    "n_gross": 362,
+    "n_nnn": 842,
+    "coef_log": -0.2200958779571464,
+    "se": 0.02828509926316069,
+    "ratio_gross_over_nnn": 0.8024418577880505,
+    "ci95_ratio": [
+     0.7591661094409611,
+     0.8481845107713069
+    ]
+   },
+   "office_use": {
+    "label": "office only",
+    "n": 15533,
+    "n_gross": 12535,
+    "n_nnn": 2998,
+    "coef_log": 0.18669098419428165,
+    "se": 0.006242481587365463,
+    "ratio_gross_over_nnn": 1.205254784720248,
+    "ci95_ratio": [
+     1.190598021874383,
+     1.2200919784866864
+    ]
+   }
+  },
+  "rawMedians": [
+   {
+    "is_retail_use": 0,
+    "svc_group": "GROSS",
+    "count": 12535,
+    "median": 19.0
+   },
+   {
+    "is_retail_use": 0,
+    "svc_group": "NNN",
+    "count": 2998,
+    "median": 19.0
+   },
+   {
+    "is_retail_use": 1,
+    "svc_group": "GROSS",
+    "count": 362,
+    "median": 25.04
+   },
+   {
+    "is_retail_use": 1,
+    "svc_group": "NNN",
+    "count": 842,
+    "median": 35.46
+   }
+  ],
+  "groups": {
+   "NNN": [
+    10,
+    12,
+    13
+   ],
+   "GROSS": [
+    1,
+    2,
+    4,
+    6,
+    7,
+    8,
+    9,
+    19
+   ],
+   "UNKNOWN": "0, Negotiable(11), ToBeDetermined(14), others"
+  },
+  "unknownServiceRowsDropped": 1021,
+  "retailOnlyEstimateNotApplied": "retail-only gross/NNN ratio is below 1 (mix effect); see comments in build script"
+ },
+ "dateRange": [
+  "1989-12-14",
+  "2026-11-09"
+ ]
+}

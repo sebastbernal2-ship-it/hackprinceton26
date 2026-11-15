@@ -1,0 +1,1277 @@
+{
+ "generatedOn": "2026-11-13",
+ "asOf": "2026-11-09",
+ "horizonYears": 3,
+ "scenario": "A new independent food tenant moves into the featured space on the data date",
+ "datasetBaseRate": 0.682,
+ "disclosure": "Trained on 895 Houston/LA food tenancies; out-of-time AUC 0.64 — a weak signal, use as context",
+ "noSkillGroups": [
+  "area",
+  "location",
+  "operator",
+  "suite"
+ ],
+ "factorNote": "Effects are percentage points against a typical food tenancy since 2015; all factors of a site add up to probability minus baselineProbability.",
+ "sites": [
+  {
+   "siteId": "1018657",
+   "address": "2600 Travis St",
+   "city": "Houston",
+   "suite": "104",
+   "probability": 0.899,
+   "baselineProbability": 0.689,
+   "band": "strong",
+   "bandLabel": "Better odds than most",
+   "displayProbability": 0.75,
+   "displayText": "about 3 in 4",
+   "relativeBand": "above typical",
+   "topFactors": [
+    {
+     "group": "space",
+     "label": "Space size and position",
+     "text": "Space of 2,946 SF, 8% of the building",
+     "effectPts": 9.2,
+     "measuredSkill": true,
+     "summary": "Space of 2,946 SF, 8% of the building: +9 pts"
+    },
+    {
+     "group": "roster",
+     "label": "Building tenant roster and turnover",
+     "text": "2 tenants in the building, 5 move-outs in the last 3 years",
+     "effectPts": 5.3,
+     "measuredSkill": true,
+     "summary": "2 tenants in the building, 5 move-outs in the last 3 years: +5 pts"
+    },
+    {
+     "group": "building",
+     "label": "Building type, size and age",
+     "text": "Retail building, 36,932 SF, 66 years old",
+     "effectPts": 3.2,
+     "measuredSkill": true,
+     "summary": "Retail building, 36,932 SF, 66 years old: +3 pts"
+    }
+   ],
+   "allFactors": [
+    {
+     "group": "space",
+     "label": "Space size and position",
+     "text": "Space of 2,946 SF, 8% of the building",
+     "effectPts": 9.2,
+     "measuredSkill": true,
+     "summary": "Space of 2,946 SF, 8% of the building: +9 pts"
+    },
+    {
+     "group": "roster",
+     "label": "Building tenant roster and turnover",
+     "text": "2 tenants in the building, 5 move-outs in the last 3 years",
+     "effectPts": 5.3,
+     "measuredSkill": true,
+     "summary": "2 tenants in the building, 5 move-outs in the last 3 years: +5 pts"
+    },
+    {
+     "group": "suite",
+     "label": "History of this exact suite",
+     "text": "1 food tenant left this suite in the last 5 years",
+     "effectPts": 4.1,
+     "measuredSkill": false,
+     "summary": "1 food tenant left this suite in the last 5 years: +4 pts"
+    },
+    {
+     "group": "building",
+     "label": "Building type, size and age",
+     "text": "Retail building, 36,932 SF, 66 years old",
+     "effectPts": 3.2,
+     "measuredSkill": true,
+     "summary": "Retail building, 36,932 SF, 66 years old: +3 pts"
+    },
+    {
+     "group": "location",
+     "label": "Market and submarket",
+     "text": "Houston, submarket 4321",
+     "effectPts": -1.9,
+     "measuredSkill": false,
+     "summary": "Houston, submarket 4321: −2 pts"
+    },
+    {
+     "group": "area",
+     "label": "Food and tenant density within 500 m",
+     "text": "4 recorded food tenants open within 500 m, 0 closed there in 3 years",
+     "effectPts": 1.6,
+     "measuredSkill": false,
+     "summary": "4 recorded food tenants open within 500 m, 0 closed there in 3 years: +2 pts"
+    },
+    {
+     "group": "propertyFood",
+     "label": "Food tenants at this property",
+     "text": "0 food tenants here now; 2 left in the last 5 years; 3 ever closed within 3 years",
+     "effectPts": -0.5,
+     "measuredSkill": true,
+     "summary": "0 food tenants here now; 2 left in the last 5 years; 3 ever closed within 3 years: −0 pts"
+    },
+    {
+     "group": "operator",
+     "label": "Operator: chain or independent",
+     "text": "Independent operator with no other locations",
+     "effectPts": -0.0,
+     "measuredSkill": false,
+     "summary": "Independent operator with no other locations: +0 pts"
+    }
+   ]
+  },
+  {
+   "siteId": "20219730",
+   "address": "630 W 6th St",
+   "city": "Los Angeles",
+   "suite": "116BC",
+   "probability": 0.876,
+   "baselineProbability": 0.689,
+   "band": "strong",
+   "bandLabel": "Better odds than most",
+   "displayProbability": 0.75,
+   "displayText": "about 3 in 4",
+   "relativeBand": "above typical",
+   "topFactors": [
+    {
+     "group": "roster",
+     "label": "Building tenant roster and turnover",
+     "text": "5 tenants in the building, 4 move-outs in the last 3 years",
+     "effectPts": 6.4,
+     "measuredSkill": true,
+     "summary": "5 tenants in the building, 4 move-outs in the last 3 years: +6 pts"
+    },
+    {
+     "group": "space",
+     "label": "Space size and position",
+     "text": "Space of 3,174 SF, 4% of the building",
+     "effectPts": 5.5,
+     "measuredSkill": true,
+     "summary": "Space of 3,174 SF, 4% of the building: +6 pts"
+    },
+    {
+     "group": "building",
+     "label": "Building type, size and age",
+     "text": "Apartment building, 90,000 SF, 64 years old",
+     "effectPts": 4.6,
+     "measuredSkill": true,
+     "summary": "Apartment building, 90,000 SF, 64 years old: +5 pts"
+    }
+   ],
+   "allFactors": [
+    {
+     "group": "roster",
+     "label": "Building tenant roster and turnover",
+     "text": "5 tenants in the building, 4 move-outs in the last 3 years",
+     "effectPts": 6.4,
+     "measuredSkill": true,
+     "summary": "5 tenants in the building, 4 move-outs in the last 3 years: +6 pts"
+    },
+    {
+     "group": "space",
+     "label": "Space size and position",
+     "text": "Space of 3,174 SF, 4% of the building",
+     "effectPts": 5.5,
+     "measuredSkill": true,
+     "summary": "Space of 3,174 SF, 4% of the building: +6 pts"
+    },
+    {
+     "group": "building",
+     "label": "Building type, size and age",
+     "text": "Apartment building, 90,000 SF, 64 years old",
+     "effectPts": 4.6,
+     "measuredSkill": true,
+     "summary": "Apartment building, 90,000 SF, 64 years old: +5 pts"
+    },
+    {
+     "group": "location",
+     "label": "Market and submarket",
+     "text": "Los Angeles, submarket 29140",
+     "effectPts": 3.0,
+     "measuredSkill": false,
+     "summary": "Los Angeles, submarket 29140: +3 pts"
+    },
+    {
+     "group": "area",
+     "label": "Food and tenant density within 500 m",
+     "text": "28 recorded food tenants open within 500 m, 6 closed there in 3 years",
+     "effectPts": -0.6,
+     "measuredSkill": false,
+     "summary": "28 recorded food tenants open within 500 m, 6 closed there in 3 years: −1 pts"
+    },
+    {
+     "group": "propertyFood",
+     "label": "Food tenants at this property",
+     "text": "3 food tenants here now; 0 left in the last 5 years; 1 ever closed within 3 years",
+     "effectPts": -0.1,
+     "measuredSkill": true,
+     "summary": "3 food tenants here now; 0 left in the last 5 years; 1 ever closed within 3 years: −0 pts"
+    },
+    {
+     "group": "suite",
+     "label": "History of this exact suite",
+     "text": "1 tenant (not food) left this suite in the last 5 years",
+     "effectPts": -0.1,
+     "measuredSkill": false,
+     "summary": "1 tenant (not food) left this suite in the last 5 years: −0 pts"
+    },
+    {
+     "group": "operator",
+     "label": "Operator: chain or independent",
+     "text": "Independent operator with no other locations",
+     "effectPts": -0.0,
+     "measuredSkill": false,
+     "summary": "Independent operator with no other locations: +0 pts"
+    }
+   ]
+  },
+  {
+   "siteId": "256760",
+   "address": "5757 W Century Blvd",
+   "city": "Los Angeles",
+   "suite": null,
+   "probability": 0.523,
+   "baselineProbability": 0.689,
+   "band": "weak",
+   "bandLabel": "Below-average odds",
+   "displayProbability": 0.523,
+   "displayText": "about 52%",
+   "relativeBand": "below typical",
+   "topFactors": [
+    {
+     "group": "roster",
+     "label": "Building tenant roster and turnover",
+     "text": "96 tenants in the building, 43 move-outs in the last 3 years",
+     "effectPts": -13.5,
+     "measuredSkill": true,
+     "summary": "96 tenants in the building, 43 move-outs in the last 3 years: −14 pts"
+    },
+    {
+     "group": "building",
+     "label": "Building type, size and age",
+     "text": "Office building, 341,110 SF, 44 years old",
+     "effectPts": -6.5,
+     "measuredSkill": true,
+     "summary": "Office building, 341,110 SF, 44 years old: −6 pts"
+    },
+    {
+     "group": "space",
+     "label": "Space size and position",
+     "text": "Space of 1,200 SF, under 1% of the building",
+     "effectPts": 3.6,
+     "measuredSkill": true,
+     "summary": "Space of 1,200 SF, under 1% of the building: +4 pts"
+    }
+   ],
+   "allFactors": [
+    {
+     "group": "roster",
+     "label": "Building tenant roster and turnover",
+     "text": "96 tenants in the building, 43 move-outs in the last 3 years",
+     "effectPts": -13.5,
+     "measuredSkill": true,
+     "summary": "96 tenants in the building, 43 move-outs in the last 3 years: −14 pts"
+    },
+    {
+     "group": "building",
+     "label": "Building type, size and age",
+     "text": "Office building, 341,110 SF, 44 years old",
+     "effectPts": -6.5,
+     "measuredSkill": true,
+     "summary": "Office building, 341,110 SF, 44 years old: −6 pts"
+    },
+    {
+     "group": "space",
+     "label": "Space size and position",
+     "text": "Space of 1,200 SF, under 1% of the building",
+     "effectPts": 3.6,
+     "measuredSkill": true,
+     "summary": "Space of 1,200 SF, under 1% of the building: +4 pts"
+    },
+    {
+     "group": "area",
+     "label": "Food and tenant density within 500 m",
+     "text": "1 recorded food tenant open within 500 m, 0 closed there in 3 years",
+     "effectPts": 1.0,
+     "measuredSkill": false,
+     "summary": "1 recorded food tenant open within 500 m, 0 closed there in 3 years: +1 pts"
+    },
+    {
+     "group": "propertyFood",
+     "label": "Food tenants at this property",
+     "text": "2 food tenants here now; 1 left in the last 5 years; 1 ever closed within 3 years",
+     "effectPts": -0.6,
+     "measuredSkill": true,
+     "summary": "2 food tenants here now; 1 left in the last 5 years; 1 ever closed within 3 years: −1 pts"
+    },
+    {
+     "group": "location",
+     "label": "Market and submarket",
+     "text": "Los Angeles, submarket 1002",
+     "effectPts": -0.3,
+     "measuredSkill": false,
+     "summary": "Los Angeles, submarket 1002: −0 pts"
+    },
+    {
+     "group": "suite",
+     "label": "History of this exact suite",
+     "text": "No suite number, so no suite history",
+     "effectPts": -0.1,
+     "measuredSkill": false,
+     "summary": "No suite number, so no suite history: −0 pts"
+    },
+    {
+     "group": "operator",
+     "label": "Operator: chain or independent",
+     "text": "Independent operator with no other locations",
+     "effectPts": -0.1,
+     "measuredSkill": false,
+     "summary": "Independent operator with no other locations: −0 pts"
+    }
+   ]
+  },
+  {
+   "siteId": "4205077",
+   "address": "1870-1890 S Western Ave",
+   "city": "Los Angeles",
+   "suite": null,
+   "probability": 0.862,
+   "baselineProbability": 0.689,
+   "band": "strong",
+   "bandLabel": "Better odds than most",
+   "displayProbability": 0.75,
+   "displayText": "about 3 in 4",
+   "relativeBand": "above typical",
+   "topFactors": [
+    {
+     "group": "space",
+     "label": "Space size and position",
+     "text": "Space of 1,500 SF, 14% of the building",
+     "effectPts": 9.7,
+     "measuredSkill": true,
+     "summary": "Space of 1,500 SF, 14% of the building: +10 pts"
+    },
+    {
+     "group": "roster",
+     "label": "Building tenant roster and turnover",
+     "text": "14 tenants in the building, 0 move-outs in the last 3 years",
+     "effectPts": 5.2,
+     "measuredSkill": true,
+     "summary": "14 tenants in the building, 0 move-outs in the last 3 years: +5 pts"
+    },
+    {
+     "group": "building",
+     "label": "Building type, size and age",
+     "text": "Retail building, 11,103 SF, 40 years old",
+     "effectPts": 4.5,
+     "measuredSkill": true,
+     "summary": "Retail building, 11,103 SF, 40 years old: +4 pts"
+    }
+   ],
+   "allFactors": [
+    {
+     "group": "space",
+     "label": "Space size and position",
+     "text": "Space of 1,500 SF, 14% of the building",
+     "effectPts": 9.7,
+     "measuredSkill": true,
+     "summary": "Space of 1,500 SF, 14% of the building: +10 pts"
+    },
+    {
+     "group": "roster",
+     "label": "Building tenant roster and turnover",
+     "text": "14 tenants in the building, 0 move-outs in the last 3 years",
+     "effectPts": 5.2,
+     "measuredSkill": true,
+     "summary": "14 tenants in the building, 0 move-outs in the last 3 years: +5 pts"
+    },
+    {
+     "group": "building",
+     "label": "Building type, size and age",
+     "text": "Retail building, 11,103 SF, 40 years old",
+     "effectPts": 4.5,
+     "measuredSkill": true,
+     "summary": "Retail building, 11,103 SF, 40 years old: +4 pts"
+    },
+    {
+     "group": "location",
+     "label": "Market and submarket",
+     "text": "Los Angeles, submarket 1154",
+     "effectPts": -2.2,
+     "measuredSkill": false,
+     "summary": "Los Angeles, submarket 1154: −2 pts"
+    },
+    {
+     "group": "suite",
+     "label": "History of this exact suite",
+     "text": "No suite number, so no suite history",
+     "effectPts": 0.4,
+     "measuredSkill": false,
+     "summary": "No suite number, so no suite history: +0 pts"
+    },
+    {
+     "group": "propertyFood",
+     "label": "Food tenants at this property",
+     "text": "2 food tenants here now; 0 left in the last 5 years; 0 ever closed within 3 years",
+     "effectPts": -0.2,
+     "measuredSkill": true,
+     "summary": "2 food tenants here now; 0 left in the last 5 years; 0 ever closed within 3 years: −0 pts"
+    },
+    {
+     "group": "area",
+     "label": "Food and tenant density within 500 m",
+     "text": "0 recorded food tenants open within 500 m, 0 closed there in 3 years",
+     "effectPts": -0.1,
+     "measuredSkill": false,
+     "summary": "0 recorded food tenants open within 500 m, 0 closed there in 3 years: −0 pts"
+    },
+    {
+     "group": "operator",
+     "label": "Operator: chain or independent",
+     "text": "Independent operator with no other locations",
+     "effectPts": -0.1,
+     "measuredSkill": false,
+     "summary": "Independent operator with no other locations: −0 pts"
+    }
+   ]
+  },
+  {
+   "siteId": "431465",
+   "address": "6922 Hollywood Blvd",
+   "city": "Los Angeles",
+   "suite": "106",
+   "probability": 0.729,
+   "baselineProbability": 0.689,
+   "band": "typical",
+   "bandLabel": "About average odds",
+   "displayProbability": 0.729,
+   "displayText": "about 73%",
+   "relativeBand": "typical",
+   "topFactors": [
+    {
+     "group": "space",
+     "label": "Space size and position",
+     "text": "Space of 3,185 SF, 2% of the building",
+     "effectPts": 9.3,
+     "measuredSkill": true,
+     "summary": "Space of 3,185 SF, 2% of the building: +9 pts"
+    },
+    {
+     "group": "building",
+     "label": "Building type, size and age",
+     "text": "Office building, 210,312 SF, 60 years old",
+     "effectPts": -3.2,
+     "measuredSkill": true,
+     "summary": "Office building, 210,312 SF, 60 years old: −3 pts"
+    },
+    {
+     "group": "roster",
+     "label": "Building tenant roster and turnover",
+     "text": "8 tenants in the building, 8 move-outs in the last 3 years",
+     "effectPts": -2.3,
+     "measuredSkill": true,
+     "summary": "8 tenants in the building, 8 move-outs in the last 3 years: −2 pts"
+    }
+   ],
+   "allFactors": [
+    {
+     "group": "space",
+     "label": "Space size and position",
+     "text": "Space of 3,185 SF, 2% of the building",
+     "effectPts": 9.3,
+     "measuredSkill": true,
+     "summary": "Space of 3,185 SF, 2% of the building: +9 pts"
+    },
+    {
+     "group": "building",
+     "label": "Building type, size and age",
+     "text": "Office building, 210,312 SF, 60 years old",
+     "effectPts": -3.2,
+     "measuredSkill": true,
+     "summary": "Office building, 210,312 SF, 60 years old: −3 pts"
+    },
+    {
+     "group": "roster",
+     "label": "Building tenant roster and turnover",
+     "text": "8 tenants in the building, 8 move-outs in the last 3 years",
+     "effectPts": -2.3,
+     "measuredSkill": true,
+     "summary": "8 tenants in the building, 8 move-outs in the last 3 years: −2 pts"
+    },
+    {
+     "group": "area",
+     "label": "Food and tenant density within 500 m",
+     "text": "5 recorded food tenants open within 500 m, 1 closed there in 3 years",
+     "effectPts": 2.0,
+     "measuredSkill": false,
+     "summary": "5 recorded food tenants open within 500 m, 1 closed there in 3 years: +2 pts"
+    },
+    {
+     "group": "location",
+     "label": "Market and submarket",
+     "text": "Los Angeles, submarket 30822",
+     "effectPts": -0.8,
+     "measuredSkill": false,
+     "summary": "Los Angeles, submarket 30822: −1 pts"
+    },
+    {
+     "group": "propertyFood",
+     "label": "Food tenants at this property",
+     "text": "2 food tenants here now; 1 left in the last 5 years; 1 ever closed within 3 years",
+     "effectPts": -0.8,
+     "measuredSkill": true,
+     "summary": "2 food tenants here now; 1 left in the last 5 years; 1 ever closed within 3 years: −1 pts"
+    },
+    {
+     "group": "suite",
+     "label": "History of this exact suite",
+     "text": "No recorded tenant has left this suite",
+     "effectPts": -0.1,
+     "measuredSkill": false,
+     "summary": "No recorded tenant has left this suite: −0 pts"
+    },
+    {
+     "group": "operator",
+     "label": "Operator: chain or independent",
+     "text": "Independent operator with no other locations",
+     "effectPts": -0.0,
+     "measuredSkill": false,
+     "summary": "Independent operator with no other locations: +0 pts"
+    }
+   ]
+  },
+  {
+   "siteId": "5697296",
+   "address": "14800 Westheimer Rd",
+   "city": "Houston",
+   "suite": "D",
+   "probability": 0.832,
+   "baselineProbability": 0.689,
+   "band": "strong",
+   "bandLabel": "Better odds than most",
+   "displayProbability": 0.75,
+   "displayText": "about 3 in 4",
+   "relativeBand": "above typical",
+   "topFactors": [
+    {
+     "group": "space",
+     "label": "Space size and position",
+     "text": "Space of 2,894 SF, 10% of the building",
+     "effectPts": 11.2,
+     "measuredSkill": true,
+     "summary": "Space of 2,894 SF, 10% of the building: +11 pts"
+    },
+    {
+     "group": "propertyFood",
+     "label": "Food tenants at this property",
+     "text": "0 food tenants here now; 1 left in the last 5 years; 2 ever closed within 3 years",
+     "effectPts": 2.2,
+     "measuredSkill": true,
+     "summary": "0 food tenants here now; 1 left in the last 5 years; 2 ever closed within 3 years: +2 pts"
+    },
+    {
+     "group": "roster",
+     "label": "Building tenant roster and turnover",
+     "text": "11 tenants in the building, 11 move-outs in the last 3 years",
+     "effectPts": -0.8,
+     "measuredSkill": true,
+     "summary": "11 tenants in the building, 11 move-outs in the last 3 years: −1 pts"
+    }
+   ],
+   "allFactors": [
+    {
+     "group": "space",
+     "label": "Space size and position",
+     "text": "Space of 2,894 SF, 10% of the building",
+     "effectPts": 11.2,
+     "measuredSkill": true,
+     "summary": "Space of 2,894 SF, 10% of the building: +11 pts"
+    },
+    {
+     "group": "suite",
+     "label": "History of this exact suite",
+     "text": "1 tenant (not food) left this suite in the last 5 years",
+     "effectPts": 3.8,
+     "measuredSkill": false,
+     "summary": "1 tenant (not food) left this suite in the last 5 years: +4 pts"
+    },
+    {
+     "group": "propertyFood",
+     "label": "Food tenants at this property",
+     "text": "0 food tenants here now; 1 left in the last 5 years; 2 ever closed within 3 years",
+     "effectPts": 2.2,
+     "measuredSkill": true,
+     "summary": "0 food tenants here now; 1 left in the last 5 years; 2 ever closed within 3 years: +2 pts"
+    },
+    {
+     "group": "location",
+     "label": "Market and submarket",
+     "text": "Houston, submarket 4310",
+     "effectPts": -2.1,
+     "measuredSkill": false,
+     "summary": "Houston, submarket 4310: −2 pts"
+    },
+    {
+     "group": "roster",
+     "label": "Building tenant roster and turnover",
+     "text": "11 tenants in the building, 11 move-outs in the last 3 years",
+     "effectPts": -0.8,
+     "measuredSkill": true,
+     "summary": "11 tenants in the building, 11 move-outs in the last 3 years: −1 pts"
+    },
+    {
+     "group": "area",
+     "label": "Food and tenant density within 500 m",
+     "text": "2 recorded food tenants open within 500 m, 1 closed there in 3 years",
+     "effectPts": 0.8,
+     "measuredSkill": false,
+     "summary": "2 recorded food tenants open within 500 m, 1 closed there in 3 years: +1 pts"
+    },
+    {
+     "group": "building",
+     "label": "Building type, size and age",
+     "text": "Retail building, 30,399 SF, 19 years old",
+     "effectPts": -0.7,
+     "measuredSkill": true,
+     "summary": "Retail building, 30,399 SF, 19 years old: −1 pts"
+    },
+    {
+     "group": "operator",
+     "label": "Operator: chain or independent",
+     "text": "Independent operator with no other locations",
+     "effectPts": -0.1,
+     "measuredSkill": false,
+     "summary": "Independent operator with no other locations: −0 pts"
+    }
+   ]
+  },
+  {
+   "siteId": "6038733",
+   "address": "3150 Wilshire Blvd",
+   "city": "Los Angeles",
+   "suite": "112",
+   "probability": 0.885,
+   "baselineProbability": 0.689,
+   "band": "strong",
+   "bandLabel": "Better odds than most",
+   "displayProbability": 0.75,
+   "displayText": "about 3 in 4",
+   "relativeBand": "above typical",
+   "topFactors": [
+    {
+     "group": "space",
+     "label": "Space size and position",
+     "text": "Space of 1,879 SF, under 1% of the building",
+     "effectPts": 9.3,
+     "measuredSkill": true,
+     "summary": "Space of 1,879 SF, under 1% of the building: +9 pts"
+    },
+    {
+     "group": "building",
+     "label": "Building type, size and age",
+     "text": "Apartment building, 391,304 SF, 12 years old",
+     "effectPts": 3.9,
+     "measuredSkill": true,
+     "summary": "Apartment building, 391,304 SF, 12 years old: +4 pts"
+    },
+    {
+     "group": "roster",
+     "label": "Building tenant roster and turnover",
+     "text": "9 tenants in the building, 3 move-outs in the last 3 years",
+     "effectPts": 3.5,
+     "measuredSkill": true,
+     "summary": "9 tenants in the building, 3 move-outs in the last 3 years: +4 pts"
+    }
+   ],
+   "allFactors": [
+    {
+     "group": "space",
+     "label": "Space size and position",
+     "text": "Space of 1,879 SF, under 1% of the building",
+     "effectPts": 9.3,
+     "measuredSkill": true,
+     "summary": "Space of 1,879 SF, under 1% of the building: +9 pts"
+    },
+    {
+     "group": "building",
+     "label": "Building type, size and age",
+     "text": "Apartment building, 391,304 SF, 12 years old",
+     "effectPts": 3.9,
+     "measuredSkill": true,
+     "summary": "Apartment building, 391,304 SF, 12 years old: +4 pts"
+    },
+    {
+     "group": "roster",
+     "label": "Building tenant roster and turnover",
+     "text": "9 tenants in the building, 3 move-outs in the last 3 years",
+     "effectPts": 3.5,
+     "measuredSkill": true,
+     "summary": "9 tenants in the building, 3 move-outs in the last 3 years: +4 pts"
+    },
+    {
+     "group": "location",
+     "label": "Market and submarket",
+     "text": "Los Angeles, submarket 8667",
+     "effectPts": 2.4,
+     "measuredSkill": false,
+     "summary": "Los Angeles, submarket 8667: +2 pts"
+    },
+    {
+     "group": "area",
+     "label": "Food and tenant density within 500 m",
+     "text": "9 recorded food tenants open within 500 m, 3 closed there in 3 years",
+     "effectPts": 1.4,
+     "measuredSkill": false,
+     "summary": "9 recorded food tenants open within 500 m, 3 closed there in 3 years: +1 pts"
+    },
+    {
+     "group": "propertyFood",
+     "label": "Food tenants at this property",
+     "text": "2 food tenants here now; 3 left in the last 5 years; 1 ever closed within 3 years",
+     "effectPts": -0.6,
+     "measuredSkill": true,
+     "summary": "2 food tenants here now; 3 left in the last 5 years; 1 ever closed within 3 years: −1 pts"
+    },
+    {
+     "group": "suite",
+     "label": "History of this exact suite",
+     "text": "No recorded tenant has left this suite",
+     "effectPts": -0.2,
+     "measuredSkill": false,
+     "summary": "No recorded tenant has left this suite: −0 pts"
+    },
+    {
+     "group": "operator",
+     "label": "Operator: chain or independent",
+     "text": "Independent operator with no other locations",
+     "effectPts": -0.1,
+     "measuredSkill": false,
+     "summary": "Independent operator with no other locations: −0 pts"
+    }
+   ]
+  },
+  {
+   "siteId": "680379",
+   "address": "2323 Clear Lake City Blvd",
+   "city": "Houston",
+   "suite": "110",
+   "probability": 0.756,
+   "baselineProbability": 0.689,
+   "band": "strong",
+   "bandLabel": "Better odds than most",
+   "displayProbability": 0.75,
+   "displayText": "about 75%",
+   "relativeBand": "above typical",
+   "topFactors": [
+    {
+     "group": "space",
+     "label": "Space size and position",
+     "text": "Space of 1,750 SF, 2% of the building",
+     "effectPts": 11.2,
+     "measuredSkill": true,
+     "summary": "Space of 1,750 SF, 2% of the building: +11 pts"
+    },
+    {
+     "group": "roster",
+     "label": "Building tenant roster and turnover",
+     "text": "19 tenants in the building, 18 move-outs in the last 3 years",
+     "effectPts": -7.1,
+     "measuredSkill": true,
+     "summary": "19 tenants in the building, 18 move-outs in the last 3 years: −7 pts"
+    },
+    {
+     "group": "propertyFood",
+     "label": "Food tenants at this property",
+     "text": "1 food tenant here now; 1 left in the last 5 years; 0 ever closed within 3 years",
+     "effectPts": -0.8,
+     "measuredSkill": true,
+     "summary": "1 food tenant here now; 1 left in the last 5 years; 0 ever closed within 3 years: −1 pts"
+    }
+   ],
+   "allFactors": [
+    {
+     "group": "space",
+     "label": "Space size and position",
+     "text": "Space of 1,750 SF, 2% of the building",
+     "effectPts": 11.2,
+     "measuredSkill": true,
+     "summary": "Space of 1,750 SF, 2% of the building: +11 pts"
+    },
+    {
+     "group": "roster",
+     "label": "Building tenant roster and turnover",
+     "text": "19 tenants in the building, 18 move-outs in the last 3 years",
+     "effectPts": -7.1,
+     "measuredSkill": true,
+     "summary": "19 tenants in the building, 18 move-outs in the last 3 years: −7 pts"
+    },
+    {
+     "group": "location",
+     "label": "Market and submarket",
+     "text": "Houston, submarket 4329",
+     "effectPts": 3.3,
+     "measuredSkill": false,
+     "summary": "Houston, submarket 4329: +3 pts"
+    },
+    {
+     "group": "propertyFood",
+     "label": "Food tenants at this property",
+     "text": "1 food tenant here now; 1 left in the last 5 years; 0 ever closed within 3 years",
+     "effectPts": -0.8,
+     "measuredSkill": true,
+     "summary": "1 food tenant here now; 1 left in the last 5 years; 0 ever closed within 3 years: −1 pts"
+    },
+    {
+     "group": "suite",
+     "label": "History of this exact suite",
+     "text": "No recorded tenant has left this suite",
+     "effectPts": 0.8,
+     "measuredSkill": false,
+     "summary": "No recorded tenant has left this suite: +1 pts"
+    },
+    {
+     "group": "building",
+     "label": "Building type, size and age",
+     "text": "Retail building, 98,000 SF, 33 years old",
+     "effectPts": -0.6,
+     "measuredSkill": true,
+     "summary": "Retail building, 98,000 SF, 33 years old: −1 pts"
+    },
+    {
+     "group": "area",
+     "label": "Food and tenant density within 500 m",
+     "text": "0 recorded food tenants open within 500 m, 0 closed there in 3 years",
+     "effectPts": 0.1,
+     "measuredSkill": false,
+     "summary": "0 recorded food tenants open within 500 m, 0 closed there in 3 years: +0 pts"
+    },
+    {
+     "group": "operator",
+     "label": "Operator: chain or independent",
+     "text": "Independent operator with no other locations",
+     "effectPts": -0.1,
+     "measuredSkill": false,
+     "summary": "Independent operator with no other locations: −0 pts"
+    }
+   ]
+  },
+  {
+   "siteId": "6819921",
+   "address": "655 S Hope St",
+   "city": "Los Angeles",
+   "suite": "101 - 701 W 7th St",
+   "probability": 0.869,
+   "baselineProbability": 0.689,
+   "band": "strong",
+   "bandLabel": "Better odds than most",
+   "displayProbability": 0.75,
+   "displayText": "about 3 in 4",
+   "relativeBand": "above typical",
+   "topFactors": [
+    {
+     "group": "space",
+     "label": "Space size and position",
+     "text": "Space of 4,265 SF, 4% of the building",
+     "effectPts": 6.2,
+     "measuredSkill": true,
+     "summary": "Space of 4,265 SF, 4% of the building: +6 pts"
+    },
+    {
+     "group": "building",
+     "label": "Building type, size and age",
+     "text": "Apartment building, 116,651 SF, 62 years old",
+     "effectPts": 5.3,
+     "measuredSkill": true,
+     "summary": "Apartment building, 116,651 SF, 62 years old: +5 pts"
+    },
+    {
+     "group": "roster",
+     "label": "Building tenant roster and turnover",
+     "text": "10 tenants in the building, 2 move-outs in the last 3 years",
+     "effectPts": 5.3,
+     "measuredSkill": true,
+     "summary": "10 tenants in the building, 2 move-outs in the last 3 years: +5 pts"
+    }
+   ],
+   "allFactors": [
+    {
+     "group": "space",
+     "label": "Space size and position",
+     "text": "Space of 4,265 SF, 4% of the building",
+     "effectPts": 6.2,
+     "measuredSkill": true,
+     "summary": "Space of 4,265 SF, 4% of the building: +6 pts"
+    },
+    {
+     "group": "building",
+     "label": "Building type, size and age",
+     "text": "Apartment building, 116,651 SF, 62 years old",
+     "effectPts": 5.3,
+     "measuredSkill": true,
+     "summary": "Apartment building, 116,651 SF, 62 years old: +5 pts"
+    },
+    {
+     "group": "roster",
+     "label": "Building tenant roster and turnover",
+     "text": "10 tenants in the building, 2 move-outs in the last 3 years",
+     "effectPts": 5.3,
+     "measuredSkill": true,
+     "summary": "10 tenants in the building, 2 move-outs in the last 3 years: +5 pts"
+    },
+    {
+     "group": "location",
+     "label": "Market and submarket",
+     "text": "Los Angeles, submarket 29140",
+     "effectPts": 3.2,
+     "measuredSkill": false,
+     "summary": "Los Angeles, submarket 29140: +3 pts"
+    },
+    {
+     "group": "area",
+     "label": "Food and tenant density within 500 m",
+     "text": "24 recorded food tenants open within 500 m, 5 closed there in 3 years",
+     "effectPts": -1.1,
+     "measuredSkill": false,
+     "summary": "24 recorded food tenants open within 500 m, 5 closed there in 3 years: −1 pts"
+    },
+    {
+     "group": "suite",
+     "label": "History of this exact suite",
+     "text": "No recorded tenant has left this suite",
+     "effectPts": -0.8,
+     "measuredSkill": false,
+     "summary": "No recorded tenant has left this suite: −1 pts"
+    },
+    {
+     "group": "propertyFood",
+     "label": "Food tenants at this property",
+     "text": "1 food tenant here now; 1 left in the last 5 years; 0 ever closed within 3 years",
+     "effectPts": -0.2,
+     "measuredSkill": true,
+     "summary": "1 food tenant here now; 1 left in the last 5 years; 0 ever closed within 3 years: −0 pts"
+    },
+    {
+     "group": "operator",
+     "label": "Operator: chain or independent",
+     "text": "Independent operator with no other locations",
+     "effectPts": -0.0,
+     "measuredSkill": false,
+     "summary": "Independent operator with no other locations: +0 pts"
+    }
+   ]
+  },
+  {
+   "siteId": "800827",
+   "address": "15015 Westheimer Rd",
+   "city": "Houston",
+   "suite": "MM",
+   "probability": 0.717,
+   "baselineProbability": 0.689,
+   "band": "typical",
+   "bandLabel": "About average odds",
+   "displayProbability": 0.717,
+   "displayText": "about 72%",
+   "relativeBand": "typical",
+   "topFactors": [
+    {
+     "group": "space",
+     "label": "Space size and position",
+     "text": "Space of 1,569 SF, 6% of the building",
+     "effectPts": 9.7,
+     "measuredSkill": true,
+     "summary": "Space of 1,569 SF, 6% of the building: +10 pts"
+    },
+    {
+     "group": "building",
+     "label": "Building type, size and age",
+     "text": "Retail building, 24,721 SF, 18 years old",
+     "effectPts": -3.9,
+     "measuredSkill": true,
+     "summary": "Retail building, 24,721 SF, 18 years old: −4 pts"
+    },
+    {
+     "group": "roster",
+     "label": "Building tenant roster and turnover",
+     "text": "23 tenants in the building, 20 move-outs in the last 3 years",
+     "effectPts": -1.7,
+     "measuredSkill": true,
+     "summary": "23 tenants in the building, 20 move-outs in the last 3 years: −2 pts"
+    }
+   ],
+   "allFactors": [
+    {
+     "group": "space",
+     "label": "Space size and position",
+     "text": "Space of 1,569 SF, 6% of the building",
+     "effectPts": 9.7,
+     "measuredSkill": true,
+     "summary": "Space of 1,569 SF, 6% of the building: +10 pts"
+    },
+    {
+     "group": "building",
+     "label": "Building type, size and age",
+     "text": "Retail building, 24,721 SF, 18 years old",
+     "effectPts": -3.9,
+     "measuredSkill": true,
+     "summary": "Retail building, 24,721 SF, 18 years old: −4 pts"
+    },
+    {
+     "group": "location",
+     "label": "Market and submarket",
+     "text": "Houston, submarket 4310",
+     "effectPts": -1.8,
+     "measuredSkill": false,
+     "summary": "Houston, submarket 4310: −2 pts"
+    },
+    {
+     "group": "roster",
+     "label": "Building tenant roster and turnover",
+     "text": "23 tenants in the building, 20 move-outs in the last 3 years",
+     "effectPts": -1.7,
+     "measuredSkill": true,
+     "summary": "23 tenants in the building, 20 move-outs in the last 3 years: −2 pts"
+    },
+    {
+     "group": "area",
+     "label": "Food and tenant density within 500 m",
+     "text": "1 recorded food tenant open within 500 m, 1 closed there in 3 years",
+     "effectPts": 1.0,
+     "measuredSkill": false,
+     "summary": "1 recorded food tenant open within 500 m, 1 closed there in 3 years: +1 pts"
+    },
+    {
+     "group": "propertyFood",
+     "label": "Food tenants at this property",
+     "text": "2 food tenants here now; 1 left in the last 5 years; 0 ever closed within 3 years",
+     "effectPts": -0.2,
+     "measuredSkill": true,
+     "summary": "2 food tenants here now; 1 left in the last 5 years; 0 ever closed within 3 years: −0 pts"
+    },
+    {
+     "group": "operator",
+     "label": "Operator: chain or independent",
+     "text": "Independent operator with no other locations",
+     "effectPts": -0.1,
+     "measuredSkill": false,
+     "summary": "Independent operator with no other locations: −0 pts"
+    },
+    {
+     "group": "suite",
+     "label": "History of this exact suite",
+     "text": "No recorded tenant has left this suite",
+     "effectPts": -0.0,
+     "measuredSkill": false,
+     "summary": "No recorded tenant has left this suite: +0 pts"
+    }
+   ]
+  },
+  {
+   "siteId": "838391",
+   "address": "14829 Bellaire Blvd",
+   "city": "Houston",
+   "suite": "11-12",
+   "probability": 0.744,
+   "baselineProbability": 0.689,
+   "band": "typical",
+   "bandLabel": "About average odds",
+   "displayProbability": 0.744,
+   "displayText": "about 74%",
+   "relativeBand": "above typical",
+   "topFactors": [
+    {
+     "group": "space",
+     "label": "Space size and position",
+     "text": "Space of 3,700 SF, 8% of the building",
+     "effectPts": 7.9,
+     "measuredSkill": true,
+     "summary": "Space of 3,700 SF, 8% of the building: +8 pts"
+    },
+    {
+     "group": "building",
+     "label": "Building type, size and age",
+     "text": "Retail building, 44,559 SF, 41 years old",
+     "effectPts": -5.7,
+     "measuredSkill": true,
+     "summary": "Retail building, 44,559 SF, 41 years old: −6 pts"
+    },
+    {
+     "group": "propertyFood",
+     "label": "Food tenants at this property",
+     "text": "0 food tenants here now; 0 left in the last 5 years; 2 ever closed within 3 years",
+     "effectPts": 4.0,
+     "measuredSkill": true,
+     "summary": "0 food tenants here now; 0 left in the last 5 years; 2 ever closed within 3 years: +4 pts"
+    }
+   ],
+   "allFactors": [
+    {
+     "group": "space",
+     "label": "Space size and position",
+     "text": "Space of 3,700 SF, 8% of the building",
+     "effectPts": 7.9,
+     "measuredSkill": true,
+     "summary": "Space of 3,700 SF, 8% of the building: +8 pts"
+    },
+    {
+     "group": "building",
+     "label": "Building type, size and age",
+     "text": "Retail building, 44,559 SF, 41 years old",
+     "effectPts": -5.7,
+     "measuredSkill": true,
+     "summary": "Retail building, 44,559 SF, 41 years old: −6 pts"
+    },
+    {
+     "group": "propertyFood",
+     "label": "Food tenants at this property",
+     "text": "0 food tenants here now; 0 left in the last 5 years; 2 ever closed within 3 years",
+     "effectPts": 4.0,
+     "measuredSkill": true,
+     "summary": "0 food tenants here now; 0 left in the last 5 years; 2 ever closed within 3 years: +4 pts"
+    },
+    {
+     "group": "location",
+     "label": "Market and submarket",
+     "text": "Houston, submarket 4315",
+     "effectPts": -3.8,
+     "measuredSkill": false,
+     "summary": "Houston, submarket 4315: −4 pts"
+    },
+    {
+     "group": "roster",
+     "label": "Building tenant roster and turnover",
+     "text": "11 tenants in the building, 3 move-outs in the last 3 years",
+     "effectPts": 3.3,
+     "measuredSkill": true,
+     "summary": "11 tenants in the building, 3 move-outs in the last 3 years: +3 pts"
+    },
+    {
+     "group": "suite",
+     "label": "History of this exact suite",
+     "text": "No recorded tenant has left this suite",
+     "effectPts": -0.2,
+     "measuredSkill": false,
+     "summary": "No recorded tenant has left this suite: −0 pts"
+    },
+    {
+     "group": "operator",
+     "label": "Operator: chain or independent",
+     "text": "Independent operator with no other locations",
+     "effectPts": -0.1,
+     "measuredSkill": false,
+     "summary": "Independent operator with no other locations: −0 pts"
+    },
+    {
+     "group": "area",
+     "label": "Food and tenant density within 500 m",
+     "text": "0 recorded food tenants open within 500 m, 0 closed there in 3 years",
+     "effectPts": 0.0,
+     "measuredSkill": false,
+     "summary": "0 recorded food tenants open within 500 m, 0 closed there in 3 years: +0 pts"
+    }
+   ]
+  },
+  {
+   "siteId": "862130",
+   "address": "13331 Kuykendahl Rd",
+   "city": "Houston",
+   "suite": "107",
+   "probability": 0.789,
+   "baselineProbability": 0.689,
+   "band": "strong",
+   "bandLabel": "Better odds than most",
+   "displayProbability": 0.75,
+   "displayText": "about 75%",
+   "relativeBand": "above typical",
+   "topFactors": [
+    {
+     "group": "space",
+     "label": "Space size and position",
+     "text": "Space of 1,625 SF, 7% of the building",
+     "effectPts": 13.2,
+     "measuredSkill": true,
+     "summary": "Space of 1,625 SF, 7% of the building: +13 pts"
+    },
+    {
+     "group": "propertyFood",
+     "label": "Food tenants at this property",
+     "text": "1 food tenant here now; 0 left in the last 5 years; 4 ever closed within 3 years",
+     "effectPts": 2.7,
+     "measuredSkill": true,
+     "summary": "1 food tenant here now; 0 left in the last 5 years; 4 ever closed within 3 years: +3 pts"
+    },
+    {
+     "group": "roster",
+     "label": "Building tenant roster and turnover",
+     "text": "4 tenants in the building, 15 move-outs in the last 3 years",
+     "effectPts": -1.7,
+     "measuredSkill": true,
+     "summary": "4 tenants in the building, 15 move-outs in the last 3 years: −2 pts"
+    }
+   ],
+   "allFactors": [
+    {
+     "group": "space",
+     "label": "Space size and position",
+     "text": "Space of 1,625 SF, 7% of the building",
+     "effectPts": 13.2,
+     "measuredSkill": true,
+     "summary": "Space of 1,625 SF, 7% of the building: +13 pts"
+    },
+    {
+     "group": "propertyFood",
+     "label": "Food tenants at this property",
+     "text": "1 food tenant here now; 0 left in the last 5 years; 4 ever closed within 3 years",
+     "effectPts": 2.7,
+     "measuredSkill": true,
+     "summary": "1 food tenant here now; 0 left in the last 5 years; 4 ever closed within 3 years: +3 pts"
+    },
+    {
+     "group": "location",
+     "label": "Market and submarket",
+     "text": "Houston, submarket 4318",
+     "effectPts": -2.4,
+     "measuredSkill": false,
+     "summary": "Houston, submarket 4318: −2 pts"
+    },
+    {
+     "group": "roster",
+     "label": "Building tenant roster and turnover",
+     "text": "4 tenants in the building, 15 move-outs in the last 3 years",
+     "effectPts": -1.7,
+     "measuredSkill": true,
+     "summary": "4 tenants in the building, 15 move-outs in the last 3 years: −2 pts"
+    },
+    {
+     "group": "building",
+     "label": "Building type, size and age",
+     "text": "Retail building, 22,187 SF, 41 years old",
+     "effectPts": -1.6,
+     "measuredSkill": true,
+     "summary": "Retail building, 22,187 SF, 41 years old: −2 pts"
+    },
+    {
+     "group": "area",
+     "label": "Food and tenant density within 500 m",
+     "text": "0 recorded food tenants open within 500 m, 0 closed there in 3 years",
+     "effectPts": -0.2,
+     "measuredSkill": false,
+     "summary": "0 recorded food tenants open within 500 m, 0 closed there in 3 years: −0 pts"
+    },
+    {
+     "group": "operator",
+     "label": "Operator: chain or independent",
+     "text": "Independent operator with no other locations",
+     "effectPts": -0.1,
+     "measuredSkill": false,
+     "summary": "Independent operator with no other locations: −0 pts"
+    },
+    {
+     "group": "suite",
+     "label": "History of this exact suite",
+     "text": "No recorded tenant has left this suite",
+     "effectPts": -0.0,
+     "measuredSkill": false,
+     "summary": "No recorded tenant has left this suite: +0 pts"
+    }
+   ]
+  }
+ ]
+}

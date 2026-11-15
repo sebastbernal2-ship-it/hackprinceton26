@@ -1,0 +1,400 @@
+{
+  "id": "256760",
+  "address": "5757 W Century Blvd",
+  "city": "Los Angeles",
+  "state": "CA",
+  "postcode": "90045",
+  "lat": 33.945941,
+  "lng": -118.3826554,
+  "propertyType": "Office",
+  "propertySubtype": "Unknown",
+  "buildingSf": 341110.0,
+  "yearBuilt": 1982,
+  "yearRenovated": 1992,
+  "stories": 8,
+  "zoning": "C2",
+  "photoUrl": "https://ahprd1cdn.csgpimgs.com/i2/6uGCjvU4RcA9KWHZV3QtdI75a5sm4vMY8x3EkgXtaBQ/112/image.jpg",
+  "space": {
+    "spaceId": 16309815,
+    "listingId": 15044934,
+    "suite": null,
+    "floor": "FirstFloor",
+    "sf": 1200.0,
+    "sfMin": 100.0,
+    "rentPerSfYr": 17.4,
+    "serviceType": "FSG",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "notes": "The available kiosk space presents an exciting opportunity for various retail ventures, with its flexible square footage and prime location in a bustling lobby alongside amenities like a cafe, shuttle service to the airport, not to mention the proximity to Starbucks. One appealing option could be a flower shop offering vibrant blooms and elegant arrangements, catering to visitors looking for a touch of natural beauty. The space could also accommodate pop-up boutiques, rotating throughout the year to feature different themes and merchandise. With its versatile setting and convenient amenities, this kiosk space holds great potential for a creative and thriving retail business.",
+    "availableOn": "2022-09-01",
+    "floorPlanUrl": null,
+    "restaurantKeywords": [
+      "cafe",
+      "kitchen",
+      "patio",
+      "restaurant",
+      "second-gen"
+    ]
+  },
+  "otherSpaces": [
+    {
+      "spaceId": 17588764,
+      "listingId": 15044934,
+      "suite": "100",
+      "floor": "FirstFloor",
+      "sf": 1071.0,
+      "sfMin": 1071.0,
+      "rentPerSfYr": 21.0,
+      "serviceType": "FSG",
+      "spaceUse": "Retail",
+      "spaceType": "Relet",
+      "notes": "Unique 1,000 sf Retail space on the Lobby Level is Now Available!",
+      "availableOn": "2024-03-21",
+      "floorPlanUrl": null,
+      "restaurantKeywords": [
+        "kitchen",
+        "patio",
+        "restaurant",
+        "second-gen"
+      ]
+    }
+  ],
+  "tenantHistory": [
+    {
+      "name": "Trimana",
+      "industry": "AccommodationAndFoodServices",
+      "isFood": true,
+      "moveIn": "2016-07-03",
+      "moveOut": "2023-11-06",
+      "years": 7.3,
+      "suite": "101",
+      "sameSuite": false,
+      "current": false,
+      "outcome": "moved",
+      "matchBasis": "profile.industryType=17, name-regex, bio-regex"
+    },
+    {
+      "name": "Twiz",
+      "industry": "AccommodationAndFoodServices",
+      "isFood": true,
+      "moveIn": "2019-04-20",
+      "moveOut": "2020-02-13",
+      "years": 0.8,
+      "suite": "301",
+      "sameSuite": false,
+      "current": false,
+      "outcome": "unknown",
+      "matchBasis": "profile.industryType=17"
+    },
+    {
+      "name": "Versailles Restaurant",
+      "industry": "AccommodationAndFoodServices",
+      "isFood": true,
+      "moveIn": "2026-01-06",
+      "moveOut": null,
+      "years": 0.8,
+      "suite": "700-4",
+      "sameSuite": false,
+      "current": true,
+      "outcome": "current",
+      "matchBasis": "profile.industryType=17, name-regex, bio-regex"
+    },
+    {
+      "name": "Taza Cafe",
+      "industry": "AccommodationAndFoodServices",
+      "isFood": true,
+      "moveIn": "2026-01-06",
+      "moveOut": null,
+      "years": 0.8,
+      "suite": null,
+      "sameSuite": false,
+      "current": true,
+      "outcome": "current",
+      "matchBasis": "profile.industryType=17, name-regex, bio-regex"
+    }
+  ],
+  "sales": [
+    {
+      "date": "2015-09-22",
+      "priceUsd": 61250000,
+      "note": "Confirmed"
+    }
+  ],
+  "matterport": {
+    "modelId": "FfaKwwGL7ni",
+    "defurnishedViewId": null,
+    "scanOfExactSuite": false,
+    "scanName": "Suite 480 - Virtual Tour",
+    "areaSf": null,
+    "rooms": [],
+    "panos": [
+      {
+        "id": "2t0gx6127fc4exzd76w45r51b",
+        "position": {
+          "x": -4.521,
+          "y": 2.285,
+          "z": 1.366
+        },
+        "label": "3",
+        "rotation": {
+          "x": 0.0022959159687161446,
+          "y": -0.01356885489076376,
+          "z": -0.7776256799697876,
+          "w": 0.628576934337616
+        },
+        "skybox": [
+          "/sites/256760/pano/2t0gx6127fc4exzd76w45r51b/f0.jpg",
+          "/sites/256760/pano/2t0gx6127fc4exzd76w45r51b/f1.jpg",
+          "/sites/256760/pano/2t0gx6127fc4exzd76w45r51b/f2.jpg",
+          "/sites/256760/pano/2t0gx6127fc4exzd76w45r51b/f3.jpg",
+          "/sites/256760/pano/2t0gx6127fc4exzd76w45r51b/f4.jpg",
+          "/sites/256760/pano/2t0gx6127fc4exzd76w45r51b/f5.jpg"
+        ]
+      },
+      {
+        "id": "q6b9qq930c50qdpgse50e8gcb",
+        "position": {
+          "x": -0.012,
+          "y": -0.004,
+          "z": 1.368
+        },
+        "label": "0",
+        "rotation": {
+          "x": 0.01118712779134512,
+          "y": -0.004226529039442539,
+          "z": -0.35986432433128357,
+          "w": 0.9329280257225037
+        },
+        "skybox": [
+          "/sites/256760/pano/q6b9qq930c50qdpgse50e8gcb/f0.jpg",
+          "/sites/256760/pano/q6b9qq930c50qdpgse50e8gcb/f1.jpg",
+          "/sites/256760/pano/q6b9qq930c50qdpgse50e8gcb/f2.jpg",
+          "/sites/256760/pano/q6b9qq930c50qdpgse50e8gcb/f3.jpg",
+          "/sites/256760/pano/q6b9qq930c50qdpgse50e8gcb/f4.jpg",
+          "/sites/256760/pano/q6b9qq930c50qdpgse50e8gcb/f5.jpg"
+        ]
+      },
+      {
+        "id": "075th6dshq6geddn2a2mns74d",
+        "position": {
+          "x": -17.863,
+          "y": 4.429,
+          "z": 1.364
+        },
+        "label": "5",
+        "rotation": {
+          "x": 0.004550165496766567,
+          "y": 0.016590623185038567,
+          "z": 0.9759676456451416,
+          "w": -0.21723565459251404
+        },
+        "skybox": [
+          "/sites/256760/pano/075th6dshq6geddn2a2mns74d/f0.jpg",
+          "/sites/256760/pano/075th6dshq6geddn2a2mns74d/f1.jpg",
+          "/sites/256760/pano/075th6dshq6geddn2a2mns74d/f2.jpg",
+          "/sites/256760/pano/075th6dshq6geddn2a2mns74d/f3.jpg",
+          "/sites/256760/pano/075th6dshq6geddn2a2mns74d/f4.jpg",
+          "/sites/256760/pano/075th6dshq6geddn2a2mns74d/f5.jpg"
+        ]
+      },
+      {
+        "id": "aru3cyfafy2fe0xws0ur260qc",
+        "position": {
+          "x": 0.496,
+          "y": 5.318,
+          "z": 1.355
+        },
+        "label": "1",
+        "rotation": {
+          "x": 0.0039046721067279577,
+          "y": 0.005084257107228041,
+          "z": 0.7454257607460022,
+          "w": 0.6665578484535217
+        },
+        "skybox": [
+          "/sites/256760/pano/aru3cyfafy2fe0xws0ur260qc/f0.jpg",
+          "/sites/256760/pano/aru3cyfafy2fe0xws0ur260qc/f1.jpg",
+          "/sites/256760/pano/aru3cyfafy2fe0xws0ur260qc/f2.jpg",
+          "/sites/256760/pano/aru3cyfafy2fe0xws0ur260qc/f3.jpg",
+          "/sites/256760/pano/aru3cyfafy2fe0xws0ur260qc/f4.jpg",
+          "/sites/256760/pano/aru3cyfafy2fe0xws0ur260qc/f5.jpg"
+        ]
+      },
+      {
+        "id": "m0yh5gwtyquqnd0gmr2ci0zma",
+        "position": {
+          "x": -10.874,
+          "y": 5.102,
+          "z": 1.365
+        },
+        "label": "4",
+        "rotation": {
+          "x": 0.0019352115923538804,
+          "y": 0.00713843060657382,
+          "z": 0.9982332587242126,
+          "w": -0.05895538255572319
+        },
+        "skybox": [
+          "/sites/256760/pano/m0yh5gwtyquqnd0gmr2ci0zma/f0.jpg",
+          "/sites/256760/pano/m0yh5gwtyquqnd0gmr2ci0zma/f1.jpg",
+          "/sites/256760/pano/m0yh5gwtyquqnd0gmr2ci0zma/f2.jpg",
+          "/sites/256760/pano/m0yh5gwtyquqnd0gmr2ci0zma/f3.jpg",
+          "/sites/256760/pano/m0yh5gwtyquqnd0gmr2ci0zma/f4.jpg",
+          "/sites/256760/pano/m0yh5gwtyquqnd0gmr2ci0zma/f5.jpg"
+        ]
+      },
+      {
+        "id": "90eh1m40du9z9ymp1c8tpz01a",
+        "position": {
+          "x": -4.429,
+          "y": 5.3,
+          "z": 1.358
+        },
+        "label": "2",
+        "rotation": {
+          "x": 0.0007513634045608342,
+          "y": 0.011222967877984047,
+          "z": 0.9999299049377441,
+          "w": 0.003707188181579113
+        },
+        "skybox": [
+          "/sites/256760/pano/90eh1m40du9z9ymp1c8tpz01a/f0.jpg",
+          "/sites/256760/pano/90eh1m40du9z9ymp1c8tpz01a/f1.jpg",
+          "/sites/256760/pano/90eh1m40du9z9ymp1c8tpz01a/f2.jpg",
+          "/sites/256760/pano/90eh1m40du9z9ymp1c8tpz01a/f3.jpg",
+          "/sites/256760/pano/90eh1m40du9z9ymp1c8tpz01a/f4.jpg",
+          "/sites/256760/pano/90eh1m40du9z9ymp1c8tpz01a/f5.jpg"
+        ]
+      }
+    ],
+    "beforeAfter": [
+      {
+        "panoId": "2t0gx6127fc4exzd76w45r51b",
+        "before": "/sites/256760/before-2t0gx6127fc4exzd76w45r51b.jpg",
+        "after": null,
+        "caption": "Main space"
+      },
+      {
+        "panoId": "075th6dshq6geddn2a2mns74d",
+        "before": "/sites/256760/before-075th6dshq6geddn2a2mns74d.jpg",
+        "after": null,
+        "caption": "Dining area"
+      }
+    ],
+    "photos": [
+      "/sites/256760/photo-1.jpg",
+      "/sites/256760/photo-2.jpg",
+      "/sites/256760/photo-3.jpg"
+    ],
+    "floorplanImage": "/sites/256760/floorplan.jpg",
+    "description": "A bright, open-plan commercial office space spanning a single floor, featuring expansive windows with outdoor views, neutral tones, and flexible layout potential."
+  },
+  "aerial": {
+    "widthPx": 1024,
+    "heightPx": 1024,
+    "orthoPath": "/sites/256760/aerial.jpg",
+    "obliquePath": "/sites/256760/oblique.jpg",
+    "captureDate": "2025-12-04",
+    "extentM": 120.0,
+    "gsdM": 0.1172,
+    "vehicleCount": null,
+    "hardscapeSf": 135,
+    "footprintSf": 162578,
+    "parkingSpaces": 0,
+    "patioCandidateSf": 0,
+    "detections": []
+  },
+  "findings": [
+    {
+      "id": "256760-vision-hood",
+      "kind": "hood",
+      "status": "absent",
+      "confidence": 0.85,
+      "evidence": "The open carpeted office floor has a continuous acoustic-tile ceiling with only light fixtures and HVAC diffusers, and no exhaust hood anywhere.",
+      "source": "matterport-vision",
+      "imagePath": "/sites/256760/vision-aru3cyfafy2fe0xws0ur260qc.jpg",
+      "position": {
+        "x": 0.496,
+        "y": 5.318,
+        "z": 1.355
+      },
+      "panoId": "aru3cyfafy2fe0xws0ur260qc"
+    },
+    {
+      "id": "256760-vision-kitchen-line",
+      "kind": "kitchen-line",
+      "status": "absent",
+      "confidence": 0.85,
+      "evidence": "The whole open floor is empty carpeted office space with no cooking equipment, prep tables or dish area.",
+      "source": "matterport-vision",
+      "imagePath": "/sites/256760/vision-aru3cyfafy2fe0xws0ur260qc.jpg",
+      "position": {
+        "x": 0.496,
+        "y": 5.318,
+        "z": 1.355
+      },
+      "panoId": "aru3cyfafy2fe0xws0ur260qc"
+    },
+    {
+      "id": "256760-vision-walk-in",
+      "kind": "walk-in",
+      "status": "unknown",
+      "confidence": 0.5,
+      "evidence": "No insulated box or refrigerated door is visible in the open area, but the side rooms are not shown.",
+      "source": "matterport-vision"
+    },
+    {
+      "id": "256760-vision-restrooms",
+      "kind": "restrooms",
+      "status": "unknown",
+      "confidence": 0.5,
+      "evidence": "Only plain wood office doors and openings to side rooms are visible, with no restroom signage or fixtures.",
+      "source": "matterport-vision"
+    },
+    {
+      "id": "256760-vision-grease-trap",
+      "kind": "grease-trap",
+      "status": "unknown",
+      "confidence": 0.5,
+      "evidence": "The floor is fully covered in carpet tile with no visible floor sink or interceptor lid, though plumbing could be concealed.",
+      "source": "matterport-vision"
+    },
+    {
+      "id": "256760-vision-electrical",
+      "kind": "electrical",
+      "status": "present",
+      "confidence": 0.8,
+      "evidence": "A gray wall-mounted electrical panel box with conduit running up to the ceiling is on the wall at the right end of the window line.",
+      "source": "matterport-vision",
+      "imagePath": "/sites/256760/before-2t0gx6127fc4exzd76w45r51b.jpg",
+      "position": {
+        "x": -4.521,
+        "y": 2.285,
+        "z": 1.366
+      },
+      "panoId": "2t0gx6127fc4exzd76w45r51b"
+    },
+    {
+      "id": "256760-vision-storefront",
+      "kind": "storefront",
+      "status": "unknown",
+      "confidence": 0.5,
+      "evidence": "The ribbon windows look out over treetops from an upper floor, and no street-level entry door or signage wall is visible.",
+      "source": "matterport-vision"
+    },
+    {
+      "id": "256760-vision-ada",
+      "kind": "ada",
+      "status": "unknown",
+      "confidence": 0.4,
+      "evidence": "Interior doors and open level flooring are visible, but there are no clear accessibility features such as grab bars, ramps or accessible restroom signage.",
+      "source": "matterport-vision"
+    }
+  ],
+  "headline": "Second-generation suite, non-vented; on market since 2022, $17.4/SF FSG.",
+  "sources": [
+    {
+      "label": "CoStar hackathon data kit (Nov 2026)"
+    }
+  ]
+}

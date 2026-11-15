@@ -1,0 +1,678 @@
+{
+  "id": "862130",
+  "address": "13331 Kuykendahl Rd",
+  "city": "Houston",
+  "state": "TX",
+  "postcode": "77090",
+  "lat": 29.978021,
+  "lng": -95.435288,
+  "buildingName": "Building 2",
+  "propertyType": "GeneralRetail",
+  "propertySubtype": "GeneralRetail_Storefront",
+  "buildingSf": 22187.0,
+  "yearBuilt": 1985,
+  "yearRenovated": 2009,
+  "stories": 1,
+  "zoning": "N/A",
+  "photoUrl": "https://ahprd1cdn.csgpimgs.com/i2/smy977NhTl4eT9COk9FYywNdIRC-UQ5CyI7Tvv_khqY/112/image.jpg",
+  "space": {
+    "spaceId": 21093796,
+    "listingId": 41175354,
+    "suite": "107",
+    "floor": "FirstFloor",
+    "sf": 1625.0,
+    "sfMin": 1625.0,
+    "rentPerSfYr": 18.0,
+    "serviceType": "NNN",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "notes": null,
+    "availableOn": "2026-05-16",
+    "floorPlanUrl": null,
+    "restaurantKeywords": [
+      "restaurant",
+      "second-gen"
+    ]
+  },
+  "otherSpaces": [
+    {
+      "spaceId": 22295411,
+      "listingId": 41175354,
+      "suite": "121",
+      "floor": "FirstFloor",
+      "sf": 975.0,
+      "sfMin": 975.0,
+      "rentPerSfYr": null,
+      "serviceType": "TBD (none quoted)",
+      "spaceUse": "Retail",
+      "spaceType": "Relet",
+      "notes": "Versatile commercial space featuring an open layout, wood-look flooring, modern dark finishes, and bright overhead lighting. A flexible setting for retail, a showroom, tax office or a creative studio. Contact us for leasing details and to schedule a tour!",
+      "availableOn": "2026-11-07",
+      "floorPlanUrl": null,
+      "restaurantKeywords": [
+        "restaurant",
+        "second-gen"
+      ]
+    },
+    {
+      "spaceId": 21219615,
+      "listingId": 41175354,
+      "suite": "120",
+      "floor": "FirstFloor",
+      "sf": 1955.0,
+      "sfMin": 1955.0,
+      "rentPerSfYr": 18.0,
+      "serviceType": "NNN",
+      "spaceUse": "Retail",
+      "spaceType": "Relet",
+      "notes": "Studio space available in excellent condition with two restrooms. Currently operating as an exotic dance studio, the landlord has invested significantly in high-quality flooring\nThe suite is ideal for a dance studio, fitness studio, performance space, or similar business seeking a running start.",
+      "availableOn": "2026-06-01",
+      "floorPlanUrl": null,
+      "restaurantKeywords": [
+        "restaurant",
+        "second-gen"
+      ]
+    }
+  ],
+  "tenantHistory": [
+    {
+      "name": "Golden House Chinese Restaurant",
+      "industry": "AccommodationAndFoodServices",
+      "isFood": true,
+      "moveIn": "2005-11-20",
+      "moveOut": "2014-12-31",
+      "years": 9.1,
+      "suite": null,
+      "sameSuite": false,
+      "current": false,
+      "outcome": "moved",
+      "matchBasis": "profile.industryType=17, name-regex"
+    },
+    {
+      "name": "Classic Pizza",
+      "industry": "AccommodationAndFoodServices",
+      "isFood": true,
+      "moveIn": "2005-11-20",
+      "moveOut": "2015-07-18",
+      "years": 9.7,
+      "suite": null,
+      "sameSuite": false,
+      "current": false,
+      "outcome": "moved",
+      "matchBasis": "name-regex"
+    },
+    {
+      "name": "Restaurant",
+      "industry": "AccommodationAndFoodServices",
+      "isFood": true,
+      "moveIn": "2008-05-21",
+      "moveOut": "2013-06-16",
+      "years": 5.1,
+      "suite": null,
+      "sameSuite": false,
+      "current": false,
+      "outcome": "closed",
+      "matchBasis": "name-regex"
+    },
+    {
+      "name": "House Of Gumbo",
+      "industry": "AccommodationAndFoodServices",
+      "isFood": true,
+      "moveIn": "2011-11-04",
+      "moveOut": "2020-02-29",
+      "years": 8.3,
+      "suite": null,
+      "sameSuite": false,
+      "current": false,
+      "outcome": "closed",
+      "matchBasis": "profile.industryType=17"
+    },
+    {
+      "name": "Taste of The Caribbean",
+      "industry": "AccommodationAndFoodServices",
+      "isFood": true,
+      "moveIn": "2016-05-25",
+      "moveOut": null,
+      "years": 10.5,
+      "suite": null,
+      "sameSuite": false,
+      "current": true,
+      "outcome": "current",
+      "matchBasis": "profile.industryType=17, bio-regex"
+    },
+    {
+      "name": "Tommy's Donuts",
+      "industry": "AccommodationAndFoodServices",
+      "isFood": true,
+      "moveIn": "2016-07-07",
+      "moveOut": "2018-06-06",
+      "years": 1.9,
+      "suite": null,
+      "sameSuite": false,
+      "current": false,
+      "outcome": "moved",
+      "matchBasis": "name-regex"
+    },
+    {
+      "name": "International Catering Services",
+      "industry": "AccommodationAndFoodServices",
+      "isFood": true,
+      "moveIn": "2018-02-25",
+      "moveOut": "2020-05-31",
+      "years": 2.3,
+      "suite": "115",
+      "sameSuite": false,
+      "current": false,
+      "outcome": "closed",
+      "matchBasis": "profile.industryType=17"
+    },
+    {
+      "name": "Division 1 Sports Bar",
+      "industry": "AccommodationAndFoodServices",
+      "isFood": true,
+      "moveIn": "2018-07-19",
+      "moveOut": "2020-02-29",
+      "years": 1.6,
+      "suite": null,
+      "sameSuite": false,
+      "current": false,
+      "outcome": "closed",
+      "matchBasis": "name-regex"
+    },
+    {
+      "name": "Grill One",
+      "industry": "AccommodationAndFoodServices",
+      "isFood": true,
+      "moveIn": "2018-11-24",
+      "moveOut": "2020-05-04",
+      "years": 1.4,
+      "suite": null,
+      "sameSuite": false,
+      "current": false,
+      "outcome": "moved",
+      "matchBasis": "name-regex"
+    }
+  ],
+  "sales": [
+    {
+      "date": "2020-04-03",
+      "priceUsd": null,
+      "note": "Unknown"
+    }
+  ],
+  "matterport": {
+    "modelId": "vmyKDCoq9Za",
+    "defurnishedViewId": "z5keyu536m3dw9zpib14ir08a",
+    "scanOfExactSuite": false,
+    "scanName": "Suite 124 - 1,550SF",
+    "areaSf": 1217,
+    "rooms": [
+      {
+        "label": "Unlabeled space",
+        "areaSf": 1114.3,
+        "widthFt": null,
+        "depthFt": null,
+        "heightFt": 9.4,
+        "polygon": [
+          [
+            -12.47,
+            -7.735
+          ],
+          [
+            -12.468,
+            -5.311
+          ],
+          [
+            -9.912,
+            -5.313
+          ],
+          [
+            -9.912,
+            -3.802
+          ],
+          [
+            0.567,
+            -3.808
+          ],
+          [
+            0.569,
+            0.527
+          ],
+          [
+            -16.311,
+            0.536
+          ],
+          [
+            -16.311,
+            -0.078
+          ],
+          [
+            -16.312,
+            -1.777
+          ],
+          [
+            -18.428,
+            -1.776
+          ],
+          [
+            -18.783,
+            -1.776
+          ],
+          [
+            -18.787,
+            -7.732
+          ]
+        ]
+      },
+      {
+        "label": "Unlabeled space",
+        "areaSf": 69.2,
+        "widthFt": 8.0,
+        "depthFt": 8.7,
+        "heightFt": 9.4,
+        "polygon": [
+          [
+            -9.912,
+            -5.313
+          ],
+          [
+            -9.914,
+            -8.074
+          ],
+          [
+            -12.47,
+            -8.073
+          ],
+          [
+            -12.47,
+            -7.735
+          ],
+          [
+            -12.468,
+            -5.311
+          ]
+        ]
+      },
+      {
+        "label": "Unlabeled space",
+        "areaSf": 33.7,
+        "widthFt": 6.5,
+        "depthFt": 5.2,
+        "heightFt": 8.0,
+        "polygon": [
+          [
+            -18.428,
+            -1.776
+          ],
+          [
+            -18.427,
+            -0.077
+          ],
+          [
+            -16.311,
+            -0.078
+          ],
+          [
+            -16.312,
+            -1.777
+          ]
+        ]
+      }
+    ],
+    "panos": [
+      {
+        "id": "z2bhuze3n4msy323kbuu75x4d",
+        "position": {
+          "x": -10.478,
+          "y": -4.705,
+          "z": 1.511
+        },
+        "label": "5",
+        "rotation": {
+          "x": 0.0003601599601097405,
+          "y": -0.0027118667494505644,
+          "z": -0.27153918147087097,
+          "w": 0.9624235033988953
+        },
+        "skybox": [
+          "/sites/862130/pano/z2bhuze3n4msy323kbuu75x4d/f0.jpg",
+          "/sites/862130/pano/z2bhuze3n4msy323kbuu75x4d/f1.jpg",
+          "/sites/862130/pano/z2bhuze3n4msy323kbuu75x4d/f2.jpg",
+          "/sites/862130/pano/z2bhuze3n4msy323kbuu75x4d/f3.jpg",
+          "/sites/862130/pano/z2bhuze3n4msy323kbuu75x4d/f4.jpg",
+          "/sites/862130/pano/z2bhuze3n4msy323kbuu75x4d/f5.jpg"
+        ],
+        "skyboxEmpty": [
+          "/sites/862130/pano/z2bhuze3n4msy323kbuu75x4d/empty/f0.jpg",
+          "/sites/862130/pano/z2bhuze3n4msy323kbuu75x4d/empty/f1.jpg",
+          "/sites/862130/pano/z2bhuze3n4msy323kbuu75x4d/empty/f2.jpg",
+          "/sites/862130/pano/z2bhuze3n4msy323kbuu75x4d/empty/f3.jpg",
+          "/sites/862130/pano/z2bhuze3n4msy323kbuu75x4d/empty/f4.jpg",
+          "/sites/862130/pano/z2bhuze3n4msy323kbuu75x4d/empty/f5.jpg"
+        ]
+      },
+      {
+        "id": "hm88708ikdsac7sm30tbzr7aa",
+        "position": {
+          "x": -0.003,
+          "y": -0.018,
+          "z": 1.49
+        },
+        "label": "0",
+        "rotation": {
+          "x": -0.01107010431587696,
+          "y": 6.375973316607997e-05,
+          "z": -0.17456908524036407,
+          "w": 0.9845827221870422
+        },
+        "skybox": [
+          "/sites/862130/pano/hm88708ikdsac7sm30tbzr7aa/f0.jpg",
+          "/sites/862130/pano/hm88708ikdsac7sm30tbzr7aa/f1.jpg",
+          "/sites/862130/pano/hm88708ikdsac7sm30tbzr7aa/f2.jpg",
+          "/sites/862130/pano/hm88708ikdsac7sm30tbzr7aa/f3.jpg",
+          "/sites/862130/pano/hm88708ikdsac7sm30tbzr7aa/f4.jpg",
+          "/sites/862130/pano/hm88708ikdsac7sm30tbzr7aa/f5.jpg"
+        ],
+        "skyboxEmpty": [
+          "/sites/862130/pano/hm88708ikdsac7sm30tbzr7aa/empty/f0.jpg",
+          "/sites/862130/pano/hm88708ikdsac7sm30tbzr7aa/empty/f1.jpg",
+          "/sites/862130/pano/hm88708ikdsac7sm30tbzr7aa/empty/f2.jpg",
+          "/sites/862130/pano/hm88708ikdsac7sm30tbzr7aa/empty/f3.jpg",
+          "/sites/862130/pano/hm88708ikdsac7sm30tbzr7aa/empty/f4.jpg",
+          "/sites/862130/pano/hm88708ikdsac7sm30tbzr7aa/empty/f5.jpg"
+        ]
+      },
+      {
+        "id": "sexbxsdcfwfdhmuuut95skpyd",
+        "position": {
+          "x": -15.2,
+          "y": -4.65,
+          "z": 1.516
+        },
+        "label": "4",
+        "rotation": {
+          "x": -0.005720027256757021,
+          "y": -0.004362260457128286,
+          "z": -0.8482033610343933,
+          "w": 0.5296218991279602
+        },
+        "skybox": [
+          "/sites/862130/pano/sexbxsdcfwfdhmuuut95skpyd/f0.jpg",
+          "/sites/862130/pano/sexbxsdcfwfdhmuuut95skpyd/f1.jpg",
+          "/sites/862130/pano/sexbxsdcfwfdhmuuut95skpyd/f2.jpg",
+          "/sites/862130/pano/sexbxsdcfwfdhmuuut95skpyd/f3.jpg",
+          "/sites/862130/pano/sexbxsdcfwfdhmuuut95skpyd/f4.jpg",
+          "/sites/862130/pano/sexbxsdcfwfdhmuuut95skpyd/f5.jpg"
+        ],
+        "skyboxEmpty": [
+          "/sites/862130/pano/sexbxsdcfwfdhmuuut95skpyd/empty/f0.jpg",
+          "/sites/862130/pano/sexbxsdcfwfdhmuuut95skpyd/empty/f1.jpg",
+          "/sites/862130/pano/sexbxsdcfwfdhmuuut95skpyd/empty/f2.jpg",
+          "/sites/862130/pano/sexbxsdcfwfdhmuuut95skpyd/empty/f3.jpg",
+          "/sites/862130/pano/sexbxsdcfwfdhmuuut95skpyd/empty/f4.jpg",
+          "/sites/862130/pano/sexbxsdcfwfdhmuuut95skpyd/empty/f5.jpg"
+        ]
+      },
+      {
+        "id": "0pdbd61f32y78txt8wh8sy63b",
+        "position": {
+          "x": -10.729,
+          "y": -6.326,
+          "z": 1.503
+        },
+        "label": "6"
+      },
+      {
+        "id": "rz7qd20begky213s7wrw2g85a",
+        "position": {
+          "x": -15.105,
+          "y": -0.84,
+          "z": 1.518
+        },
+        "label": "3"
+      },
+      {
+        "id": "z8hcr4qxt1txn4yrw8hwazuyb",
+        "position": {
+          "x": -17.481,
+          "y": -0.873,
+          "z": 1.534
+        },
+        "label": "7",
+        "rotation": {
+          "x": 0.004298325162380934,
+          "y": -0.0035529700107872486,
+          "z": 0.9721358418464661,
+          "w": 0.23435212671756744
+        },
+        "skybox": [
+          "/sites/862130/pano/z8hcr4qxt1txn4yrw8hwazuyb/f0.jpg",
+          "/sites/862130/pano/z8hcr4qxt1txn4yrw8hwazuyb/f1.jpg",
+          "/sites/862130/pano/z8hcr4qxt1txn4yrw8hwazuyb/f2.jpg",
+          "/sites/862130/pano/z8hcr4qxt1txn4yrw8hwazuyb/f3.jpg",
+          "/sites/862130/pano/z8hcr4qxt1txn4yrw8hwazuyb/f4.jpg",
+          "/sites/862130/pano/z8hcr4qxt1txn4yrw8hwazuyb/f5.jpg"
+        ],
+        "skyboxEmpty": [
+          "/sites/862130/pano/z8hcr4qxt1txn4yrw8hwazuyb/empty/f0.jpg",
+          "/sites/862130/pano/z8hcr4qxt1txn4yrw8hwazuyb/empty/f1.jpg",
+          "/sites/862130/pano/z8hcr4qxt1txn4yrw8hwazuyb/empty/f2.jpg",
+          "/sites/862130/pano/z8hcr4qxt1txn4yrw8hwazuyb/empty/f3.jpg",
+          "/sites/862130/pano/z8hcr4qxt1txn4yrw8hwazuyb/empty/f4.jpg",
+          "/sites/862130/pano/z8hcr4qxt1txn4yrw8hwazuyb/empty/f5.jpg"
+        ]
+      },
+      {
+        "id": "wsi6tc9hqb32322p1mx3p2rxc",
+        "position": {
+          "x": -4.278,
+          "y": -0.054,
+          "z": 1.499
+        },
+        "label": "1",
+        "rotation": {
+          "x": -0.005918154492974281,
+          "y": -0.00023039360530674458,
+          "z": 0.33184051513671875,
+          "w": 0.9433169364929199
+        },
+        "skybox": [
+          "/sites/862130/pano/wsi6tc9hqb32322p1mx3p2rxc/f0.jpg",
+          "/sites/862130/pano/wsi6tc9hqb32322p1mx3p2rxc/f1.jpg",
+          "/sites/862130/pano/wsi6tc9hqb32322p1mx3p2rxc/f2.jpg",
+          "/sites/862130/pano/wsi6tc9hqb32322p1mx3p2rxc/f3.jpg",
+          "/sites/862130/pano/wsi6tc9hqb32322p1mx3p2rxc/f4.jpg",
+          "/sites/862130/pano/wsi6tc9hqb32322p1mx3p2rxc/f5.jpg"
+        ],
+        "skyboxEmpty": [
+          "/sites/862130/pano/wsi6tc9hqb32322p1mx3p2rxc/empty/f0.jpg",
+          "/sites/862130/pano/wsi6tc9hqb32322p1mx3p2rxc/empty/f1.jpg",
+          "/sites/862130/pano/wsi6tc9hqb32322p1mx3p2rxc/empty/f2.jpg",
+          "/sites/862130/pano/wsi6tc9hqb32322p1mx3p2rxc/empty/f3.jpg",
+          "/sites/862130/pano/wsi6tc9hqb32322p1mx3p2rxc/empty/f4.jpg",
+          "/sites/862130/pano/wsi6tc9hqb32322p1mx3p2rxc/empty/f5.jpg"
+        ]
+      },
+      {
+        "id": "zsum646fwgq5qbkhch50tci8c",
+        "position": {
+          "x": -10.514,
+          "y": -0.063,
+          "z": 1.511
+        },
+        "label": "2",
+        "rotation": {
+          "x": -0.001303967903368175,
+          "y": 0.0017545553855597973,
+          "z": 0.9691017866134644,
+          "w": 0.24665167927742004
+        },
+        "skybox": [
+          "/sites/862130/pano/zsum646fwgq5qbkhch50tci8c/f0.jpg",
+          "/sites/862130/pano/zsum646fwgq5qbkhch50tci8c/f1.jpg",
+          "/sites/862130/pano/zsum646fwgq5qbkhch50tci8c/f2.jpg",
+          "/sites/862130/pano/zsum646fwgq5qbkhch50tci8c/f3.jpg",
+          "/sites/862130/pano/zsum646fwgq5qbkhch50tci8c/f4.jpg",
+          "/sites/862130/pano/zsum646fwgq5qbkhch50tci8c/f5.jpg"
+        ],
+        "skyboxEmpty": [
+          "/sites/862130/pano/zsum646fwgq5qbkhch50tci8c/empty/f0.jpg",
+          "/sites/862130/pano/zsum646fwgq5qbkhch50tci8c/empty/f1.jpg",
+          "/sites/862130/pano/zsum646fwgq5qbkhch50tci8c/empty/f2.jpg",
+          "/sites/862130/pano/zsum646fwgq5qbkhch50tci8c/empty/f3.jpg",
+          "/sites/862130/pano/zsum646fwgq5qbkhch50tci8c/empty/f4.jpg",
+          "/sites/862130/pano/zsum646fwgq5qbkhch50tci8c/empty/f5.jpg"
+        ]
+      }
+    ],
+    "beforeAfter": [
+      {
+        "panoId": "z8hcr4qxt1txn4yrw8hwazuyb",
+        "before": "/sites/862130/before-z8hcr4qxt1txn4yrw8hwazuyb.jpg",
+        "after": "/sites/862130/after-z8hcr4qxt1txn4yrw8hwazuyb.jpg",
+        "caption": "Dining area"
+      },
+      {
+        "panoId": "hm88708ikdsac7sm30tbzr7aa",
+        "before": "/sites/862130/before-hm88708ikdsac7sm30tbzr7aa.jpg",
+        "after": "/sites/862130/after-hm88708ikdsac7sm30tbzr7aa.jpg",
+        "caption": "Dining area"
+      }
+    ],
+    "photos": [
+      "/sites/862130/photo-1.jpg",
+      "/sites/862130/photo-2.jpg",
+      "/sites/862130/photo-3.jpg"
+    ],
+    "floorplanImage": "/sites/862130/floorplan.jpg",
+    "description": "A versatile single-floor commercial space in Houston, TX, featuring open rooms, polished tile flooring, recessed lighting, and distinctive decorative touches — ideal for a variety of business uses."
+  },
+  "aerial": {
+    "widthPx": 1024,
+    "heightPx": 1024,
+    "orthoPath": "/sites/862130/aerial.jpg",
+    "obliquePath": "/sites/862130/oblique.jpg",
+    "captureDate": "2026-01-02",
+    "extentM": 120.0,
+    "gsdM": 0.1172,
+    "vehicleCount": 9,
+    "hardscapeSf": 1730,
+    "footprintSf": 25428,
+    "parkingSpaces": 1,
+    "patioCandidateSf": 0,
+    "detections": [
+      {
+        "label": "parking space",
+        "confidence": 0.53,
+        "polygon": [
+          [
+            18.7,
+            -0.2
+          ],
+          [
+            1022.9,
+            -0.2
+          ],
+          [
+            1022.9,
+            775.1
+          ],
+          [
+            18.7,
+            775.1
+          ],
+          [
+            18.7,
+            -0.2
+          ]
+        ]
+      }
+    ]
+  },
+  "findings": [
+    {
+      "id": "862130-vision-hood",
+      "kind": "hood",
+      "status": "unknown",
+      "confidence": 0.3,
+      "evidence": "No cooking area or exhaust canopy appears in any view; only open tiled hall, a restroom and a small striped room are shown.",
+      "source": "matterport-vision"
+    },
+    {
+      "id": "862130-vision-kitchen-line",
+      "kind": "kitchen-line",
+      "status": "unknown",
+      "confidence": 0.35,
+      "evidence": "Only a residential-style black top-freezer refrigerator in a striped side room is visible, with no cooking line, prep tables or dish area shown.",
+      "source": "matterport-vision"
+    },
+    {
+      "id": "862130-vision-walk-in",
+      "kind": "walk-in",
+      "status": "unknown",
+      "confidence": 0.3,
+      "evidence": "No insulated box or heavy refrigerated door is visible in any view.",
+      "source": "matterport-vision"
+    },
+    {
+      "id": "862130-vision-restrooms",
+      "kind": "restrooms",
+      "status": "present",
+      "confidence": 0.92,
+      "evidence": "A toilet tank, a vanity sink with a toilet paper roll and a framed mirror are visible in a wallpapered restroom.",
+      "source": "matterport-vision",
+      "imagePath": "/sites/862130/before-z8hcr4qxt1txn4yrw8hwazuyb.jpg",
+      "position": {
+        "x": -17.481,
+        "y": -0.873,
+        "z": 1.534
+      },
+      "panoId": "z8hcr4qxt1txn4yrw8hwazuyb"
+    },
+    {
+      "id": "862130-vision-grease-trap",
+      "kind": "grease-trap",
+      "status": "unknown",
+      "confidence": 0.3,
+      "evidence": "The visible tile floors show no floor sink or interceptor lid, but no kitchen or back-of-house floor is shown.",
+      "source": "matterport-vision"
+    },
+    {
+      "id": "862130-vision-electrical",
+      "kind": "electrical",
+      "status": "present",
+      "confidence": 0.55,
+      "evidence": "A grey wall-mounted panel box is visible on the far wall next to the red fire alarm panel.",
+      "source": "matterport-vision",
+      "imagePath": "/sites/862130/before-hm88708ikdsac7sm30tbzr7aa.jpg",
+      "position": {
+        "x": -0.003,
+        "y": -0.018,
+        "z": 1.49
+      },
+      "panoId": "hm88708ikdsac7sm30tbzr7aa"
+    },
+    {
+      "id": "862130-vision-storefront",
+      "kind": "storefront",
+      "status": "unknown",
+      "confidence": 0.4,
+      "evidence": "The far end of the hall shows black curtains that may cover front glazing, but no glass or entry door is clearly visible.",
+      "source": "matterport-vision"
+    },
+    {
+      "id": "862130-vision-ada",
+      "kind": "ada",
+      "status": "unknown",
+      "confidence": 0.35,
+      "evidence": "No grab bars are visible on the restroom walls near the toilet, but the view is partial and door widths and entries cannot be assessed.",
+      "source": "matterport-vision"
+    }
+  ],
+  "headline": "Second-generation suite; $18/SF NNN.",
+  "sources": [
+    {
+      "label": "CoStar hackathon data kit (Nov 2026)"
+    }
+  ]
+}

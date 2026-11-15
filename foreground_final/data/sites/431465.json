@@ -1,0 +1,872 @@
+{
+  "id": "431465",
+  "address": "6922 Hollywood Blvd",
+  "city": "Los Angeles",
+  "state": "CA",
+  "postcode": "90028",
+  "lat": 34.1013326,
+  "lng": -118.341031,
+  "buildingName": "The Premiere in Hollywood",
+  "propertyType": "Office",
+  "propertySubtype": "Unknown",
+  "buildingSf": 210312.0,
+  "yearBuilt": 1966,
+  "yearRenovated": 2024,
+  "stories": 12,
+  "zoning": "LAC4",
+  "photoUrl": "https://ahprd1cdn.csgpimgs.com/i2/TrcoTGoSr_b8MgzRfHUcBLY_VWfMZFEjapYsHq2ria8/112/image.jpg",
+  "space": {
+    "spaceId": 20341149,
+    "listingId": 33385857,
+    "suite": "106",
+    "floor": "FirstFloor",
+    "sf": 3185.0,
+    "sfMin": 3185.0,
+    "rentPerSfYr": 51.0,
+    "serviceType": "NNN",
+    "spaceUse": "Retail",
+    "spaceType": "Relet",
+    "notes": "(±2,173 SF Ground; ±1,012 SF 2nd Floor)",
+    "availableOn": "2024-10-03",
+    "floorPlanUrl": null,
+    "restaurantKeywords": []
+  },
+  "otherSpaces": [
+    {
+      "spaceId": 18076793,
+      "listingId": 33385857,
+      "suite": "109",
+      "floor": "FirstFloor",
+      "sf": 7719.0,
+      "sfMin": 7719.0,
+      "rentPerSfYr": 51.0,
+      "serviceType": "NNN",
+      "spaceUse": "Retail",
+      "spaceType": "Relet",
+      "notes": "(±4,269 SF Ground; ±3,450 SF Second Floor)",
+      "availableOn": "2024-10-03",
+      "floorPlanUrl": null,
+      "restaurantKeywords": []
+    }
+  ],
+  "tenantHistory": [
+    {
+      "name": "Hooters",
+      "industry": "AccommodationAndFoodServices",
+      "isFood": true,
+      "moveIn": "2006-04-01",
+      "moveOut": "2021-09-07",
+      "years": 15.4,
+      "suite": "109",
+      "sameSuite": false,
+      "current": false,
+      "outcome": "moved",
+      "matchBasis": "profile.industryType=17, bio-regex"
+    },
+    {
+      "name": "The Coffee Bean & Tea Leaf",
+      "industry": "AccommodationAndFoodServices",
+      "isFood": true,
+      "moveIn": "2006-05-16",
+      "moveOut": null,
+      "years": 20.5,
+      "suite": null,
+      "sameSuite": false,
+      "current": true,
+      "outcome": "current",
+      "matchBasis": "profile.industryType=17, name-regex, bio-regex"
+    },
+    {
+      "name": "Baja Fresh Mexican Grill",
+      "industry": "AccommodationAndFoodServices",
+      "isFood": true,
+      "moveIn": "2011-10-07",
+      "moveOut": "2021-12-31",
+      "years": 10.2,
+      "suite": null,
+      "sameSuite": false,
+      "current": false,
+      "outcome": "closed",
+      "matchBasis": "profile.industryType=17, name-regex, bio-regex"
+    },
+    {
+      "name": "Polka Dot Cupcakes Inc",
+      "industry": "AccommodationAndFoodServices",
+      "isFood": true,
+      "moveIn": "2013-07-01",
+      "moveOut": "2015-07-28",
+      "years": 2.1,
+      "suite": null,
+      "sameSuite": false,
+      "current": false,
+      "outcome": "moved",
+      "matchBasis": "name-regex"
+    },
+    {
+      "name": "Wetzel's Pretzels",
+      "industry": "AccommodationAndFoodServices",
+      "isFood": true,
+      "moveIn": "2014-01-15",
+      "moveOut": "2021-09-21",
+      "years": 7.7,
+      "suite": null,
+      "sameSuite": false,
+      "current": false,
+      "outcome": "moved",
+      "matchBasis": "profile.industryType=17, bio-regex"
+    },
+    {
+      "name": "Mixue Ice Cream & Tea",
+      "industry": "AccommodationAndFoodServices",
+      "isFood": true,
+      "moveIn": "2025-10-23",
+      "moveOut": null,
+      "years": 1.0,
+      "suite": "107",
+      "sameSuite": false,
+      "current": true,
+      "outcome": "current",
+      "matchBasis": "profile.industryType=17, name-regex, bio-regex"
+    }
+  ],
+  "sales": [
+    {
+      "date": "2022-10-20",
+      "priceUsd": 96000000,
+      "note": "Confirmed"
+    }
+  ],
+  "matterport": {
+    "modelId": "LhkQZ3ALmbj",
+    "defurnishedViewId": null,
+    "scanOfExactSuite": false,
+    "scanName": "Floor 8",
+    "areaSf": 14619,
+    "rooms": [
+      {
+        "label": "Unlabeled space",
+        "areaSf": 14618.6,
+        "widthFt": 169.4,
+        "depthFt": 86.8,
+        "heightFt": 12.6,
+        "polygon": [
+          [
+            -20.089,
+            12.141
+          ],
+          [
+            -20.089,
+            11.806
+          ],
+          [
+            -20.784,
+            11.806
+          ],
+          [
+            -20.771,
+            -13.45
+          ],
+          [
+            -20.092,
+            -13.449
+          ],
+          [
+            -20.092,
+            -14.101
+          ],
+          [
+            -3.225,
+            -14.093
+          ]
+        ]
+      },
+      {
+        "label": "Unlabeled space",
+        "areaSf": 18.0,
+        "widthFt": 9.0,
+        "depthFt": 2.0,
+        "heightFt": null,
+        "polygon": [
+          [
+            16.428,
+            -4.433
+          ],
+          [
+            19.286,
+            -4.432
+          ],
+          [
+            19.286,
+            -5.128
+          ],
+          [
+            16.428,
+            -5.13
+          ]
+        ]
+      }
+    ],
+    "panos": [
+      {
+        "id": "e28m7z20ntb9s4sdh8a9df74c",
+        "position": {
+          "x": 27.079,
+          "y": 8.262,
+          "z": 1.273
+        },
+        "label": "40"
+      },
+      {
+        "id": "kibbi0xtd1ufppfin2cxd462d",
+        "position": {
+          "x": -3.816,
+          "y": -9.387,
+          "z": 1.303
+        },
+        "label": "20"
+      },
+      {
+        "id": "ptd2y8u10e7hz4rcs87cybqid",
+        "position": {
+          "x": 24.339,
+          "y": -0.72,
+          "z": 1.291
+        },
+        "label": "33"
+      },
+      {
+        "id": "02fpk5a6i66631axnne922g3a",
+        "position": {
+          "x": -15.54,
+          "y": -6.997,
+          "z": 1.304
+        },
+        "label": "15"
+      },
+      {
+        "id": "6t97fpzud7prnuhh8k7xn60hb",
+        "position": {
+          "x": 14.499,
+          "y": -8.462,
+          "z": 1.29
+        },
+        "label": "26"
+      },
+      {
+        "id": "7agppu1t17qez5s4ttpfw3qsc",
+        "position": {
+          "x": 25.341,
+          "y": 7.954,
+          "z": 1.276
+        },
+        "label": "39"
+      },
+      {
+        "id": "hbfezmn1wate8fy23in2miacc",
+        "position": {
+          "x": -12.487,
+          "y": -4.45,
+          "z": 1.32
+        },
+        "label": "18"
+      },
+      {
+        "id": "zkfe5suk5f9kciur890f8nwxc",
+        "position": {
+          "x": -13.533,
+          "y": 8.153,
+          "z": 1.292
+        },
+        "label": "5"
+      },
+      {
+        "id": "7k8fpwu8pibd6fg2nqxf7gidd",
+        "position": {
+          "x": 25.767,
+          "y": -7.596,
+          "z": 1.294
+        },
+        "label": "30"
+      },
+      {
+        "id": "c43hps11c5hda7irp0w9cpb5d",
+        "position": {
+          "x": -0.853,
+          "y": 11.352,
+          "z": 1.292
+        },
+        "label": "3",
+        "rotation": {
+          "x": 0.005010905209928751,
+          "y": -0.005434941966086626,
+          "z": 0.6357913017272949,
+          "w": 0.7718255519866943
+        },
+        "skybox": [
+          "/sites/431465/pano/c43hps11c5hda7irp0w9cpb5d/f0.jpg",
+          "/sites/431465/pano/c43hps11c5hda7irp0w9cpb5d/f1.jpg",
+          "/sites/431465/pano/c43hps11c5hda7irp0w9cpb5d/f2.jpg",
+          "/sites/431465/pano/c43hps11c5hda7irp0w9cpb5d/f3.jpg",
+          "/sites/431465/pano/c43hps11c5hda7irp0w9cpb5d/f4.jpg",
+          "/sites/431465/pano/c43hps11c5hda7irp0w9cpb5d/f5.jpg"
+        ]
+      },
+      {
+        "id": "nmxgukn7631b3tswaefh597ua",
+        "position": {
+          "x": -0.658,
+          "y": 7.568,
+          "z": 1.29
+        },
+        "label": "2"
+      },
+      {
+        "id": "t4ipma4umg72tnkzi4t27wsqb",
+        "position": {
+          "x": 29.875,
+          "y": 1.237,
+          "z": 1.286
+        },
+        "label": "36"
+      },
+      {
+        "id": "zmnyezrdp10kdg1k38icbafea",
+        "position": {
+          "x": -18.987,
+          "y": 11.274,
+          "z": 1.33
+        },
+        "label": "10"
+      },
+      {
+        "id": "34k6h28dwi2uty83mbk5uthga",
+        "position": {
+          "x": 28.84,
+          "y": -3.788,
+          "z": 1.296
+        },
+        "label": "32"
+      },
+      {
+        "id": "c53uirbngwficu19zq6q3pyxa",
+        "position": {
+          "x": 29.924,
+          "y": 11.145,
+          "z": 1.28
+        },
+        "label": "41",
+        "rotation": {
+          "x": -0.0005044625722803175,
+          "y": -0.0029063501860946417,
+          "z": 0.24691171944141388,
+          "w": 0.9690334796905518
+        },
+        "skybox": [
+          "/sites/431465/pano/c53uirbngwficu19zq6q3pyxa/f0.jpg",
+          "/sites/431465/pano/c53uirbngwficu19zq6q3pyxa/f1.jpg",
+          "/sites/431465/pano/c53uirbngwficu19zq6q3pyxa/f2.jpg",
+          "/sites/431465/pano/c53uirbngwficu19zq6q3pyxa/f3.jpg",
+          "/sites/431465/pano/c53uirbngwficu19zq6q3pyxa/f4.jpg",
+          "/sites/431465/pano/c53uirbngwficu19zq6q3pyxa/f5.jpg"
+        ]
+      },
+      {
+        "id": "rnfr75u3yu491te6uai6wa6pc",
+        "position": {
+          "x": -8.005,
+          "y": 8.216,
+          "z": 1.288
+        },
+        "label": "4"
+      },
+      {
+        "id": "t58cpf30zdsctxt0awbcsy8pc",
+        "position": {
+          "x": -19.656,
+          "y": -0.619,
+          "z": 1.314
+        },
+        "label": "12",
+        "rotation": {
+          "x": 0.008946770802140236,
+          "y": -0.005621218588203192,
+          "z": 0.965461790561676,
+          "w": -0.2603304386138916
+        },
+        "skybox": [
+          "/sites/431465/pano/t58cpf30zdsctxt0awbcsy8pc/f0.jpg",
+          "/sites/431465/pano/t58cpf30zdsctxt0awbcsy8pc/f1.jpg",
+          "/sites/431465/pano/t58cpf30zdsctxt0awbcsy8pc/f2.jpg",
+          "/sites/431465/pano/t58cpf30zdsctxt0awbcsy8pc/f3.jpg",
+          "/sites/431465/pano/t58cpf30zdsctxt0awbcsy8pc/f4.jpg",
+          "/sites/431465/pano/t58cpf30zdsctxt0awbcsy8pc/f5.jpg"
+        ]
+      },
+      {
+        "id": "65933krnni94ysztn3sd45ndc",
+        "position": {
+          "x": 26.527,
+          "y": 3.736,
+          "z": 1.274
+        },
+        "label": "37"
+      },
+      {
+        "id": "hea2955psfuwzu3540snm2czc",
+        "position": {
+          "x": -0.608,
+          "y": 3.062,
+          "z": 1.313
+        },
+        "label": "1"
+      },
+      {
+        "id": "wykc5t30pngmiqng6yfifye6a",
+        "position": {
+          "x": -16.464,
+          "y": 1.895,
+          "z": 1.318
+        },
+        "label": "11"
+      },
+      {
+        "id": "0yzh12mni3eace2z3urx5nx0b",
+        "position": {
+          "x": 26.478,
+          "y": 2.519,
+          "z": 1.278
+        },
+        "label": "35"
+      },
+      {
+        "id": "5p3aez2efz24bh7kcmapstyxa",
+        "position": {
+          "x": -10.357,
+          "y": -9.665,
+          "z": 1.296
+        },
+        "label": "19"
+      },
+      {
+        "id": "86xzwabfbmft0t07dwnh36yqc",
+        "position": {
+          "x": 15.118,
+          "y": -4.038,
+          "z": 1.296
+        },
+        "label": "27"
+      },
+      {
+        "id": "ifzm7381yqtcfy3wa7mdyh1xb",
+        "position": {
+          "x": 1.872,
+          "y": -9.164,
+          "z": 1.3
+        },
+        "label": "21"
+      },
+      {
+        "id": "nqn0bnax4827gug2pkpp9ip8a",
+        "position": {
+          "x": 21.341,
+          "y": 7.776,
+          "z": 1.268
+        },
+        "label": "42"
+      },
+      {
+        "id": "pfkb545bd936hhpt4rgib3b1a",
+        "position": {
+          "x": 25.573,
+          "y": -13.236,
+          "z": 1.316
+        },
+        "label": "29",
+        "rotation": {
+          "x": -0.0050972155295312405,
+          "y": -0.00737700704485178,
+          "z": -0.05783098563551903,
+          "w": 0.9982861280441284
+        },
+        "skybox": [
+          "/sites/431465/pano/pfkb545bd936hhpt4rgib3b1a/f0.jpg",
+          "/sites/431465/pano/pfkb545bd936hhpt4rgib3b1a/f1.jpg",
+          "/sites/431465/pano/pfkb545bd936hhpt4rgib3b1a/f2.jpg",
+          "/sites/431465/pano/pfkb545bd936hhpt4rgib3b1a/f3.jpg",
+          "/sites/431465/pano/pfkb545bd936hhpt4rgib3b1a/f4.jpg",
+          "/sites/431465/pano/pfkb545bd936hhpt4rgib3b1a/f5.jpg"
+        ]
+      },
+      {
+        "id": "xff06z76rsce01133bqh1i48b",
+        "position": {
+          "x": 24.359,
+          "y": 4.495,
+          "z": 1.278
+        },
+        "label": "34"
+      },
+      {
+        "id": "xzzr3kwhx7masp3udy50cmbuc",
+        "position": {
+          "x": -16.845,
+          "y": 4.804,
+          "z": 1.309
+        },
+        "label": "8"
+      },
+      {
+        "id": "zfeq7yrxyai2aembd5ueb72yc",
+        "position": {
+          "x": -14.954,
+          "y": -2.232,
+          "z": 1.307
+        },
+        "label": "13",
+        "rotation": {
+          "x": 0.0008731840644031763,
+          "y": -0.004640091676265001,
+          "z": 0.13893581926822662,
+          "w": 0.9902901649475098
+        },
+        "skybox": [
+          "/sites/431465/pano/zfeq7yrxyai2aembd5ueb72yc/f0.jpg",
+          "/sites/431465/pano/zfeq7yrxyai2aembd5ueb72yc/f1.jpg",
+          "/sites/431465/pano/zfeq7yrxyai2aembd5ueb72yc/f2.jpg",
+          "/sites/431465/pano/zfeq7yrxyai2aembd5ueb72yc/f3.jpg",
+          "/sites/431465/pano/zfeq7yrxyai2aembd5ueb72yc/f4.jpg",
+          "/sites/431465/pano/zfeq7yrxyai2aembd5ueb72yc/f5.jpg"
+        ]
+      },
+      {
+        "id": "0zwq05f3zynt3fga60anhh9eb",
+        "position": {
+          "x": -17.832,
+          "y": -9.929,
+          "z": 1.3
+        },
+        "label": "16"
+      },
+      {
+        "id": "57q70nkw07mk6505c9q46h8ic",
+        "position": {
+          "x": 7.439,
+          "y": 7.613,
+          "z": 1.267
+        },
+        "label": "44"
+      },
+      {
+        "id": "9zbfgyytwcy4is3hgkhkym38b",
+        "position": {
+          "x": -17.86,
+          "y": -13.225,
+          "z": 1.326
+        },
+        "label": "17"
+      },
+      {
+        "id": "srkx0axxg7f01sarsgtwgkdrc",
+        "position": {
+          "x": 21.079,
+          "y": -9.117,
+          "z": 1.293
+        },
+        "label": "28"
+      },
+      {
+        "id": "ygm6izreydeu8daad4kk53ged",
+        "position": {
+          "x": 13.825,
+          "y": 7.718,
+          "z": 1.268
+        },
+        "label": "43",
+        "rotation": {
+          "x": 0.009490659460425377,
+          "y": -0.0022861238103359938,
+          "z": 0.9996192455291748,
+          "w": -0.025808926671743393
+        },
+        "skybox": [
+          "/sites/431465/pano/ygm6izreydeu8daad4kk53ged/f0.jpg",
+          "/sites/431465/pano/ygm6izreydeu8daad4kk53ged/f1.jpg",
+          "/sites/431465/pano/ygm6izreydeu8daad4kk53ged/f2.jpg",
+          "/sites/431465/pano/ygm6izreydeu8daad4kk53ged/f3.jpg",
+          "/sites/431465/pano/ygm6izreydeu8daad4kk53ged/f4.jpg",
+          "/sites/431465/pano/ygm6izreydeu8daad4kk53ged/f5.jpg"
+        ]
+      },
+      {
+        "id": "1rrfyc67yy5k0kaz01ft94nha",
+        "position": {
+          "x": 0.176,
+          "y": -3.575,
+          "z": 1.31
+        },
+        "label": "23"
+      },
+      {
+        "id": "2r2wpra4x36ie02dfh3t1659a",
+        "position": {
+          "x": -15.77,
+          "y": 4.625,
+          "z": 1.311
+        },
+        "label": "7"
+      },
+      {
+        "id": "fhkghu4xbp12e9wuezd09bq8b",
+        "position": {
+          "x": -4.592,
+          "y": -3.466,
+          "z": 1.321
+        },
+        "label": "24"
+      },
+      {
+        "id": "gs8n1r5mi1hefgn7zkd343dxa",
+        "position": {
+          "x": -19.673,
+          "y": 5.082,
+          "z": 1.325
+        },
+        "label": "9"
+      },
+      {
+        "id": "nhryu4db2kdu8cinuc3t3d2eb",
+        "position": {
+          "x": 7.633,
+          "y": -8.017,
+          "z": 1.285
+        },
+        "label": "25"
+      },
+      {
+        "id": "q9a18zz1tba14hm5i5mbag3sa",
+        "position": {
+          "x": 6.027,
+          "y": -13.487,
+          "z": 1.309
+        },
+        "label": "22",
+        "rotation": {
+          "x": 0.003761478466913104,
+          "y": 0.007653782144188881,
+          "z": 0.9129838347434998,
+          "w": 0.4079066812992096
+        },
+        "skybox": [
+          "/sites/431465/pano/q9a18zz1tba14hm5i5mbag3sa/f0.jpg",
+          "/sites/431465/pano/q9a18zz1tba14hm5i5mbag3sa/f1.jpg",
+          "/sites/431465/pano/q9a18zz1tba14hm5i5mbag3sa/f2.jpg",
+          "/sites/431465/pano/q9a18zz1tba14hm5i5mbag3sa/f3.jpg",
+          "/sites/431465/pano/q9a18zz1tba14hm5i5mbag3sa/f4.jpg",
+          "/sites/431465/pano/q9a18zz1tba14hm5i5mbag3sa/f5.jpg"
+        ]
+      },
+      {
+        "id": "t96mn85c1cun6dx3md4igyuza",
+        "position": {
+          "x": 26.075,
+          "y": -5.11,
+          "z": 1.299
+        },
+        "label": "31"
+      },
+      {
+        "id": "u1anpcfgzsxfkab9y3ri5c46a",
+        "position": {
+          "x": 29.332,
+          "y": 1.549,
+          "z": 1.28
+        },
+        "label": "38"
+      },
+      {
+        "id": "uhccgpennukdfpfr9gu29dbya",
+        "position": {
+          "x": -15.67,
+          "y": 11.632,
+          "z": 1.314
+        },
+        "label": "6",
+        "rotation": {
+          "x": -0.006687592249363661,
+          "y": -0.0020539246033877134,
+          "z": 0.9975311160087585,
+          "w": -0.06987670063972473
+        },
+        "skybox": [
+          "/sites/431465/pano/uhccgpennukdfpfr9gu29dbya/f0.jpg",
+          "/sites/431465/pano/uhccgpennukdfpfr9gu29dbya/f1.jpg",
+          "/sites/431465/pano/uhccgpennukdfpfr9gu29dbya/f2.jpg",
+          "/sites/431465/pano/uhccgpennukdfpfr9gu29dbya/f3.jpg",
+          "/sites/431465/pano/uhccgpennukdfpfr9gu29dbya/f4.jpg",
+          "/sites/431465/pano/uhccgpennukdfpfr9gu29dbya/f5.jpg"
+        ]
+      },
+      {
+        "id": "x9ciu1z8e55humer5xmwrqwdd",
+        "position": {
+          "x": -15.364,
+          "y": -5.853,
+          "z": 1.311
+        },
+        "label": "14"
+      },
+      {
+        "id": "x1xranc3cmt3d5ay79u73utea",
+        "position": {
+          "x": 0.09,
+          "y": 0.152,
+          "z": 1.309
+        },
+        "label": "0"
+      }
+    ],
+    "beforeAfter": [
+      {
+        "panoId": "t58cpf30zdsctxt0awbcsy8pc",
+        "before": "/sites/431465/before-t58cpf30zdsctxt0awbcsy8pc.jpg",
+        "after": null,
+        "caption": "Main space"
+      },
+      {
+        "panoId": "c53uirbngwficu19zq6q3pyxa",
+        "before": "/sites/431465/before-c53uirbngwficu19zq6q3pyxa.jpg",
+        "after": null,
+        "caption": "Dining area"
+      }
+    ],
+    "photos": [
+      "/sites/431465/photo-1.jpg",
+      "/sites/431465/photo-2.jpg",
+      "/sites/431465/photo-3.jpg"
+    ],
+    "floorplanImage": "/sites/431465/floorplan.jpg",
+    "description": "The Premiere at 6922 Hollywood Blvd offers a vast, open-plan commercial floor in the heart of Hollywood, CA, featuring polished concrete floors, exposed ceilings, and panoramic city and hillside views."
+  },
+  "aerial": {
+    "widthPx": 1024,
+    "heightPx": 1024,
+    "orthoPath": "/sites/431465/aerial.jpg",
+    "obliquePath": "/sites/431465/oblique.jpg",
+    "captureDate": "2025-11-29",
+    "extentM": 120.0,
+    "gsdM": 0.1172,
+    "vehicleCount": 2,
+    "hardscapeSf": 4,
+    "footprintSf": 38127,
+    "parkingSpaces": 0,
+    "patioCandidateSf": 0,
+    "detections": []
+  },
+  "findings": [
+    {
+      "id": "431465-vision-hood",
+      "kind": "hood",
+      "status": "absent",
+      "confidence": 0.8,
+      "evidence": "The open floor plate has an exposed ceiling with only round HVAC ducts, diffusers and pendant lights, and no exhaust hood or canopy anywhere in view.",
+      "source": "matterport-vision",
+      "imagePath": "/sites/431465/vision-q9a18zz1tba14hm5i5mbag3sa.jpg",
+      "position": {
+        "x": 6.027,
+        "y": -13.487,
+        "z": 1.309
+      },
+      "panoId": "q9a18zz1tba14hm5i5mbag3sa"
+    },
+    {
+      "id": "431465-vision-kitchen-line",
+      "kind": "kitchen-line",
+      "status": "absent",
+      "confidence": 0.8,
+      "evidence": "The space is an empty open office floor with bare polished concrete and white walls, with no cooking equipment, prep tables or dish area visible.",
+      "source": "matterport-vision",
+      "imagePath": "/sites/431465/vision-q9a18zz1tba14hm5i5mbag3sa.jpg",
+      "position": {
+        "x": 6.027,
+        "y": -13.487,
+        "z": 1.309
+      },
+      "panoId": "q9a18zz1tba14hm5i5mbag3sa"
+    },
+    {
+      "id": "431465-vision-walk-in",
+      "kind": "walk-in",
+      "status": "unknown",
+      "confidence": 0.4,
+      "evidence": "No insulated box or refrigerated door is visible in any view, but enclosed core rooms are not shown.",
+      "source": "matterport-vision"
+    },
+    {
+      "id": "431465-vision-restrooms",
+      "kind": "restrooms",
+      "status": "present",
+      "confidence": 0.85,
+      "evidence": "Two doors on the core wall carry circle and triangle restroom symbols, with a pictogram sign mounted beside one of them.",
+      "source": "matterport-vision",
+      "imagePath": "/sites/431465/vision-q9a18zz1tba14hm5i5mbag3sa.jpg",
+      "position": {
+        "x": 6.027,
+        "y": -13.487,
+        "z": 1.309
+      },
+      "panoId": "q9a18zz1tba14hm5i5mbag3sa"
+    },
+    {
+      "id": "431465-vision-grease-trap",
+      "kind": "grease-trap",
+      "status": "unknown",
+      "confidence": 0.4,
+      "evidence": "The visible concrete floor shows no floor sinks or interceptor lids, but not all of the floor or the back rooms are shown.",
+      "source": "matterport-vision"
+    },
+    {
+      "id": "431465-vision-electrical",
+      "kind": "electrical",
+      "status": "unknown",
+      "confidence": 0.4,
+      "evidence": "Only wall outlets, switches and ceiling conduit are visible; no electrical panel or service gear appears in any view.",
+      "source": "matterport-vision"
+    },
+    {
+      "id": "431465-vision-storefront",
+      "kind": "storefront",
+      "status": "absent",
+      "confidence": 0.8,
+      "evidence": "The perimeter ribbon windows look out over city rooftops from a high floor, with no street-level storefront glazing or entry door.",
+      "source": "matterport-vision",
+      "imagePath": "/sites/431465/vision-c43hps11c5hda7irp0w9cpb5d.jpg",
+      "position": {
+        "x": -0.853,
+        "y": 11.352,
+        "z": 1.292
+      },
+      "panoId": "c43hps11c5hda7irp0w9cpb5d"
+    },
+    {
+      "id": "431465-vision-ada",
+      "kind": "ada",
+      "status": "present",
+      "confidence": 0.5,
+      "evidence": "The restroom doors are wide and carry geometric circle and triangle accessibility symbols with a wall-mounted pictogram sign beside the door.",
+      "source": "matterport-vision",
+      "imagePath": "/sites/431465/vision-q9a18zz1tba14hm5i5mbag3sa.jpg",
+      "position": {
+        "x": 6.027,
+        "y": -13.487,
+        "z": 1.309
+      },
+      "panoId": "q9a18zz1tba14hm5i5mbag3sa"
+    }
+  ],
+  "headline": "Second-generation suite, non-vented; on market since 2024, $51/SF NNN.",
+  "sources": [
+    {
+      "label": "CoStar hackathon data kit (Nov 2026)"
+    }
+  ]
+}

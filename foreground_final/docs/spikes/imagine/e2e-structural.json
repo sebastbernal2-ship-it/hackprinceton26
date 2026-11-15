@@ -1,0 +1,58 @@
+{
+  "kind": "structural",
+  "instruction": "Open the wall between the dining room and the back room",
+  "order": "plan > checks > numbers > image > images > qa > done",
+  "plannedBy": "claude",
+  "summary": "Cut a wide opening in the wall between the main dining room and the back room so the two spaces read as one connected area.",
+  "changes": [
+    "wall: Wall between the main dining room and the back room | {} | demolition"
+  ],
+  "layoutOps": [],
+  "flags": [
+    "A structural engineer must confirm whether this wall carries load before any demolition.",
+    "The building has 2 storeys, so a load-bearing wall here would need a properly sized header or beam and posts.",
+    "Check for plumbing, electrical, ducts or fire-suppression piping inside the wall before demolition.",
+    "The landlord and the city may need to approve the work, and a permit is likely.",
+    "The new opening must not interfere with the kitchen exhaust, the fire-suppression system or the exit paths."
+  ],
+  "lines": [
+    "none"
+  ],
+  "checks": [
+    "wall: needs-professional $3,500-35,000 [IEBC 2021]",
+    "restrooms: needs-professional $5,000-25,000 (not counted) [IPC 403.1; ADA 2010 Standards; 28 CFR 36.403]",
+    "egress: likely-fine [IBC 1004.5; IBC 1006.2.1; IBC 303.1.1; IBC 903.2.1.2]"
+  ],
+  "permits": [
+    "building 4-10wk",
+    "structural 4-10wk",
+    "accessibility 2-4wk"
+  ],
+  "weeks": "7-22",
+  "costDelta": "$3,500-35,000",
+  "total": "$119,873-342,680 -> $123,373-377,680",
+  "turns": "3.76 -> 3.76",
+  "payback": "2.75 -> 2.93",
+  "images": [
+    "/imagine/1018657/vmwg2fjncer2n-1.jpg"
+  ],
+  "viewPrompt": "On the wall that divides the dining room from the back room, show a wide rectangular opening. It has clean, square drywall-wrapped edges and a flush painted header beam across the top. The opening runs from the floor to about 8 ft high. Through it, show the back room's floor continuing at the same level, its walls, and soft light. Keep the wall finish, floor, ceiling and storefront exactly as they are. Add no furniture.",
+  "imagesError": null,
+  "qa": [
+    {
+      "view": "v1",
+      "ok": false,
+      "outsideRegion": true,
+      "impossibleGeometry": false,
+      "note": ""
+    }
+  ],
+  "ms": {
+    "plan": 5706,
+    "checks": 5707,
+    "numbers": 5707,
+    "images": 13600,
+    "qa": 18333,
+    "total": 20142
+  }
+}
