@@ -67,6 +67,7 @@ const TARGET = new RegExp(`\\s+(?:to|against|along|by|near|next to|beside|at|on|
 export function parseCommand(input) {
   const s = String(input || '').toLowerCase().replace(/[.!?,]+$/g, '').replace(/^(hey |ok |okay )?(fio[, ]+)?(please |can you |could you |would you |i want you to |i('d| would) like you to )/, '').trim();
   if (!s) return null;
+  if (/^(design|furnish|set up|lay out|fit out|plan)( out)?( my| the| this)?( whole)?( place| cafe| room| space| restaurant)?( for me)?$/.test(s) && !/^(set up|plan|design)$/.test(s)) return { op: 'design' };
   if (/^(undo|go back|revert|put it back)( that| the last( change)?)?$/.test(s)) return { op: 'undo' };
   if (/\bwhat('s| is| are| do we have)\b.*\b(in|inside|here|around)\b.*\b(room|space|scene|cafe|place|here)\b|^what do (we|i) have\b|^(describe|list|inventory)\b|^how many (pieces|chairs|tables|stools|sofas|things) (are )?(in|here|do (we|i) have)\b/.test(s))
     return { op: 'describe', what: (/how many (\w+)/.exec(s) || [])[1] || null };

@@ -2,11 +2,13 @@
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import type { Match } from "../lib/matches";
+import FioAvatar from "./fio-avatar";
+import { designIntent } from "../lib/fio-design-inputs";
 import { answerFio, FIO_CHIPS, loadFioContext, type FioContext } from "../lib/fio";
 
 type Message = { role: "agent" | "user"; text: string };
 
-export default function SpaceChat({ match, open, onOpenChange }: { match: Match; open: boolean; onOpenChange: (open: boolean) => void }) {
+export default function SpaceChat({ match, open, onOpenChange, onDesign }: { match: Match; open: boolean; onOpenChange: (open: boolean) => void; onDesign?: () => void }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [value, setValue] = useState("");
   const [busy, setBusy] = useState(false);
@@ -38,6 +40,11 @@ export default function SpaceChat({ match, open, onOpenChange }: { match: Match;
     if (!trimmed) return;
     setValue("");
     setMessages((current) => [...current, { role: "user", text: trimmed }]);
+    if (onDesign && designIntent(trimmed)) {
+      setMessages((current) => [...current, { role: "agent", text: "On it. I am heading to the Planner to design your place: watch me place each piece." }]);
+      onDesign();
+      return;
+    }
     setBusy(true);
     const c = ctx ?? (await loadFioContext(match.listingId));
     setBusy(false);
@@ -59,19 +66,10 @@ export default function SpaceChat({ match, open, onOpenChange }: { match: Match;
       }`}
     >
       <div className="flex shrink-0 items-start gap-3 px-4 pb-2 pt-4">
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-panel text-foreground" aria-hidden>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
-            <path d="M12 3.5v2" strokeLinecap="round" />
-            <circle cx="12" cy="2.6" r="1" fill="currentColor" stroke="none" />
-            <rect x="4.5" y="6.5" width="15" height="12" rx="4" />
-            <circle cx="9" cy="12" r="1" fill="currentColor" stroke="none" />
-            <circle cx="15" cy="12" r="1" fill="currentColor" stroke="none" />
-            <path d="M9 15.2h6" strokeLinecap="round" />
-          </svg>
-        </span>
+        <FioAvatar size={44} />
         <div className="min-w-0 flex-1 pt-0.5">
           <p className="text-lg leading-tight">Fio</p>
-          <p className="mt-0.5 text-sm text-foreground/45">Ask about this listing</p>
+          <p className="mt-0.5 text-sm text-foreground/45">Inspector. Ask about this listing, or have me design it</p>
         </div>
         <button
           type="button"
@@ -109,14 +107,7 @@ export default function SpaceChat({ match, open, onOpenChange }: { match: Match;
             </div>
           ) : (
             <div key={`${message.role}-${index}`} className="flex items-start gap-2">
-              <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-foreground/10 text-foreground" aria-hidden>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-                  <path d="M12 3.5v2" strokeLinecap="round" />
-                  <rect x="4.5" y="6.5" width="15" height="12" rx="4" />
-                  <circle cx="9" cy="12" r="1" fill="currentColor" stroke="none" />
-                  <circle cx="15" cy="12" r="1" fill="currentColor" stroke="none" />
-                </svg>
-              </span>
+              <FioAvatar size={32} className="mt-0.5" />
               <div className="max-w-[85%] rounded-2xl bg-panel px-3.5 py-2.5 text-sm leading-snug">{message.text}</div>
             </div>
           ),
@@ -127,7 +118,7 @@ export default function SpaceChat({ match, open, onOpenChange }: { match: Match;
         <div className="pt-2">
           <p className="mb-2 text-sm text-foreground/60">Ask Fio</p>
           <div className="flex flex-wrap gap-2">
-            {FIO_CHIPS.map((suggestion) => (
+            {[...FIO_CHIPS, ...(onDesign ? ["Design my place"] : [])].map((suggestion) => (
               <button
                 key={suggestion}
                 type="button"

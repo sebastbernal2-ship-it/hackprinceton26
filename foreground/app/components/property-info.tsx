@@ -11,6 +11,9 @@ import CafePlanner from "./cafe-planner";
 import LayoutPanel from "./layout-panel";
 import CostSide from "./cost-side";
 import type { PlacedPiece } from "../lib/planner";
+import { briefBudget } from "../lib/cost-side";
+import { readBrief } from "../lib/brief";
+import { resolveBudget } from "../lib/quantify-model";
 import Quantify from "./quantify";
 import type { LayoutSummary } from "../lib/layout-summary";
 import type { Asset } from "../lib/assets";
@@ -66,6 +69,10 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
   // Budget typed by the owner (null = use the intake brief's), shared by the live cost panel and Quantify.
   const [budgetText, setBudgetText] = useState<string | null>(null);
   const [placed, setPlaced] = useState<PlacedPiece[]>([]);
+  // The chat panel asks Fio to design the place: switch to the Planner and bump this so it starts.
+  const [designRequest, setDesignRequest] = useState(0);
+  const [briefB] = useState<number | null>(() => briefBudget(readBrief()));
+  const sharedBudget = resolveBudget(budgetText, briefB);
   const router = useRouter();
   const lastLayout = useRef<LayoutSummary | null>(null);
   const scrollTo = (id: string) => window.setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" }) ?? document.querySelector(`[data-testid="${id}"]`)?.scrollIntoView({ behavior: "smooth" }), 500);
@@ -247,6 +254,7 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
               {tab === "planner" && (
                 <CafePlanner
                   match={match} kit={kit} onKit={setKit} placed={placed} onPlaced={setPlaced} area={area} onArea={setArea}
+                  budget={sharedBudget} budgetFromBrief={budgetText === null} designRequest={designRequest}
                   onContinue={() => { setCurrent(4); setQuantify({ layout: lastLayout.current }); }}
                 />
               )}
@@ -284,7 +292,7 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
           </button>
         </section>
       </div>
-      <SpaceChat match={match} open={askOpen} onOpenChange={setAskOpen} />
+      <SpaceChat match={match} open={askOpen} onOpenChange={setAskOpen} onDesign={() => { setTab("planner"); setCurrent(3); setAskOpen(false); setDesignRequest((n) => n + 1); }} />
       {planOpen && (
         <PlanVision
           tourId={match.tourId} title={match.address} detail={match.detail} onClose={() => setPlanOpen(false)}
