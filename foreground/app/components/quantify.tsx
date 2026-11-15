@@ -1,5 +1,6 @@
 "use client";
 
+import { useLockScroll } from "../lib/use-lock-scroll";
 import { useCallback, useEffect, useState } from "react";
 import { buildChecklist, type ActItem } from "../lib/act";
 import { fetchCosts } from "../lib/costs";
@@ -42,6 +43,7 @@ const nice = (kind: string) => kind.charAt(0).toUpperCase() + kind.slice(1);
  * count feeds the 36-month scenario and can be overridden; it is an estimate from the segmentation's piece labels.
  */
 export default function Quantify({ match, layout, onBackToLayout, onClose, onStep, step, kit = [], onKit = () => {}, area = "", onArea = () => {} }: QuantifyProps) {
+  useLockScroll();
   const [seatsInput, setSeatsInput] = useState<string>(() => {
     const planned = kit.reduce((n, a) => n + seatsOf(a), 0);
     return layout && layout.seats > 0 ? String(layout.seats) : planned > 0 ? String(planned) : "";

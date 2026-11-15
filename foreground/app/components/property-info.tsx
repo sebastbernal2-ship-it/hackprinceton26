@@ -1,5 +1,6 @@
 "use client";
 
+import { useLockScroll } from "../lib/use-lock-scroll";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import ListingPhoto from "./listing-photo";
@@ -33,6 +34,7 @@ type PropertyInfoProps = {
 };
 
 export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProps) {
+  useLockScroll();
   const facts = match.facts ?? {
     photos: [match.photo],
     property: [
