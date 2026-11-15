@@ -12,12 +12,11 @@ const get = (url: string): Promise<Json | null> =>
 const BADGE = { observed: "bg-match-soft text-match", derived: "border border-dashed border-foreground/40", unknown: "border border-foreground/20 text-foreground/50" };
 
 /** One compact card per data stream we hold for this site: building record, structure/hazard screen, restaurant history, scan checks. */
-export default function DataStreams({ listingId, scanOnly = false }: { listingId: number; scanOnly?: boolean }) {
+export default function DataStreams({ listingId }: { listingId: number }) {
   const [streams, setStreams] = useState<Stream[] | null>(null);
   useEffect(() => {
     let live = true;
-    const none = Promise.resolve(null);  // a scan with no CoStar record: nothing to fetch, nothing to 404
-    Promise.all(scanOnly ? [none, none, none, none] : [get(`/api/structure/${listingId}`), get(`/api/lineage/${listingId}`), get(`/api/triage/property/${listingId}`), get(`/api/aerial/${listingId}`)]).then(
+    Promise.all([get(`/api/structure/${listingId}`), get(`/api/lineage/${listingId}`), get(`/api/triage/property/${listingId}`), get(`/api/aerial/${listingId}`)]).then(
       ([st, li, tr, ae]) => {
         if (!live) return;
         const out: Stream[] = [];
@@ -52,13 +51,13 @@ export default function DataStreams({ listingId, scanOnly = false }: { listingId
             ] }
           : { title: "Scan vs CoStar checks", status: "unknown", lines: ["No triage for this listing."] });
         out.push(ae
-          ? { title: "Aerial analysis", status: "derived", lines: ["Vexcel aerial analysed for this site."] }
+          ? { title: "Aerial analysis", status: "derived", lines: [ae.demo ? "DEMO ESTIMATE: no aerial imagery for this site; values are scaled from its area." : "Vexcel aerial analysed for this site."] }
           : { title: "Aerial analysis", status: "derived", lines: ["Roof: flat membrane, 3 rooftop units", "Parking: about 14 spaces, 1 loading dock", "Demo estimate from aerial imagery; not measured."] });
         setStreams(out);
       },
     );
     return () => { live = false; };
-  }, [listingId, scanOnly]);
+  }, [listingId]);
 
   if (!streams) return null;
   return (

@@ -19,7 +19,7 @@ export default function InspectionPanel({ listingId, onData }: { listingId: numb
       (data) => {
         if (!live) return;
         setState({ id: listingId, data });
-        onData?.(data.mode === "live" || data.mode === "fixture" ? data.findings : []);
+        onData?.(data.mode === "live" || data.mode === "fixture" || data.mode === "demo" ? data.findings : []);
       },
       () => live && setState({ id: listingId, data: null }),
     );
@@ -61,7 +61,7 @@ export default function InspectionPanel({ listingId, onData }: { listingId: numb
                 </div>
                 <p className="mt-2 text-sm leading-relaxed text-foreground/70">{f.description}</p>
                 <p className="mt-2 text-xs text-foreground/50">
-                  Model&apos;s own stated confidence: {Math.round(f.modelConfidence * 100)}% (not a probability) · Evidence: {f.evidence.source.replace("_", " ")} ({f.evidence.ref})
+                  {f.status ? `${f.status === "derived" ? "Derived from an observed fact" : "Demo estimate"} · Confidence: ${f.confidenceLabel ?? "low"} (rule label, not a probability)` : `Model's own stated confidence: ${Math.round(f.modelConfidence * 100)}% (not a probability)`} · Evidence: {f.evidence.source.replace("_", " ")} ({f.evidence.ref})
                   {f.roomId ? ` · Room ${f.roomId}` : ""}
                 </p>
                 <p className="mt-2 text-sm">

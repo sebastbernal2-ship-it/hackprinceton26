@@ -16,9 +16,12 @@ export type DefectFinding = {
   canConfirmFromImagery: boolean;
   verificationStep: string;
   costLineItemIds: string[];
+  /** Present on rule-based findings: "derived" = rule over an observed fact, "estimated" = DEMO ESTIMATE. */
+  status?: "derived" | "estimated";
+  confidenceLabel?: "low" | "medium" | "high";
 };
 
-export type InspectionMode = "live" | "fixture" | "none";
+export type InspectionMode = "live" | "fixture" | "demo" | "none";
 export type InspectionResponse = { findings: DefectFinding[]; mode: InspectionMode; notice: string };
 
 export const CATEGORY_LABEL: Record<DefectCategory, string> = {
@@ -31,6 +34,7 @@ export const CATEGORY_LABEL: Record<DefectCategory, string> = {
 export const MODE_BANNER: Record<InspectionMode, string> = {
   live: "",
   fixture: "Sample findings, not from this property",
+  demo: "Demo estimates, not observed",
   none: "No inspection run",
 };
 

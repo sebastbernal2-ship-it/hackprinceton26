@@ -63,7 +63,7 @@ function Aerial({ a }: { a: AerialResult | null }) {
   const v = a.vehicles;
   return (
     <div className="mt-3 rounded-lg border border-foreground/10 p-3 text-xs text-foreground/70" data-testid="aerial-card">
-      <div className="font-medium text-foreground">Aerial layer (Vexcel)</div>
+      <div className="font-medium text-foreground">{a.demo ? "Aerial layer (demo estimate, no imagery)" : "Aerial layer (Vexcel)"}</div>
       {v.expected != null ? (
         <p className="mt-1">
           Vehicles in the crop (not parking stalls): {v.low}-{v.high}, expected {v.expected}. <span className="text-foreground/50">{v.rationale}</span>
@@ -71,7 +71,7 @@ function Aerial({ a }: { a: AerialResult | null }) {
       ) : <p className="mt-1">Vehicles: pending.</p>}
       <ul className="mt-1 list-disc pl-4 text-foreground/55">
         {(["rooftop_units", "parking_stalls", "loading_docks", "roof_area_shape"] as const).map((k) => (
-          <li key={k}>{k.replace(/_/g, " ")}: Pending. {a[k].reason}</li>
+          <li key={k}>{k.replace(/_/g, " ")}: {a[k].expected != null ? `${a[k].low}-${a[k].high}, expected ${a[k].expected}. ${a[k].rationale ?? ""}` : `Pending. ${a[k].reason ?? a[k].rationale ?? ""}`}</li>
         ))}
       </ul>
       <p className="mt-1 text-foreground/45">Imagery date {a.imagery.capture_date ?? "unknown"}. {a.provenance}</p>
@@ -105,6 +105,7 @@ export default function TriagePanel({ listingId }: { listingId: number }) {
       {cur && !t && <p className="mt-3 text-sm text-foreground/60" data-testid="triage-unavailable">No triage result for this listing. Cannot say whether the record is complete; this is not a finding that it is.</p>}
       {t && counts && (
         <>
+          {t.demoNote && <p className="mt-3 text-xs font-medium text-foreground/70" data-testid="triage-demo-note">{t.demoNote}</p>}
           <p className="mt-3 text-sm" data-testid="triage-summary">
             {t.hasScan ? "Matterport scan on file" : "No Matterport scan"} · {t.hasAerial ? "Vexcel aerial on file" : "No aerial"} ·{" "}
             {counts.confirmed} confirmed, {counts.filled} filled, {counts.conflicting} conflicting, {counts["blank-unfillable"]} not on file, {counts.unverified} awaiting site check

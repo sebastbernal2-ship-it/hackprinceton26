@@ -18,7 +18,7 @@ import Quantify from "./quantify";
 import type { LayoutSummary } from "../lib/layout-summary";
 import type { Asset } from "../lib/assets";
 import Stepper from "./stepper";
-import { heroPhoto, isScanOnly, rentLabel, type FactorCard, type Match } from "../lib/matches";
+import { heroPhoto, rentLabel, type FactorCard, type Match } from "../lib/matches";
 import FactorCards from "./factor-cards";
 import Projections, { ForecastRow } from "./projections";
 import SpaceChat from "./space-chat";
@@ -243,7 +243,7 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
           <>
             {match.costarPropertyId && <CostarBuilding propertyId={match.costarPropertyId} city={match.city} />}
             {!match.demo && <ForecastRow listingId={match.listingId} />}
-            {!match.demo && <DataStreams listingId={match.listingId} scanOnly={isScanOnly(match)} />}
+            {!match.demo && <DataStreams listingId={match.listingId} />}
             <FactorCards factors={demoFactors ?? match.factors ?? []} demo={match.demo && !demoFactors?.length} />
           </>
         )}

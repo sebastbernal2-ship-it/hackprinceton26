@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# Run every analysis for every candidate and cafe scan (idempotent; --force rebuilds cached demo results).
+#   tools/run-analyses [--force] [--quiet]   (data folders: HP_DATA, SCAN_ASSETS_DIR; same defaults as tools/demo-up)
+[ -f "$HOME/.hackprinceton.env" ] && { set -a; . "$HOME/.hackprinceton.env"; set +a; }
+set -euo pipefail
+ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+D=${HP_DATA:-$HOME/code/hackprinceton/data}
+[ -d "$D/normalized/costar" ] || { echo "no $D/normalized/costar: set HP_DATA to the data folder" >&2; exit 2; }
+export COSTAR_NORMALIZED_DIR=${COSTAR_NORMALIZED_DIR:-$D/normalized/costar} TRIAGE_DERIVED_DIR=${TRIAGE_DERIVED_DIR:-$D/derived/triage} \
+  LINEAGE_DIR=${LINEAGE_DIR:-$D/derived/lineage} STRUCTURE_DIR=${STRUCTURE_DIR:-$D/derived/structure} \
+  AERIAL_DIR=${AERIAL_DIR:-$D/derived/triage/aerial/properties} DERIVED_DIR=${DERIVED_DIR:-$D/derived} \
+  SCAN_AREAS_PATH=${SCAN_AREAS_PATH:-$D/derived/scan_areas.json} SCAN_ASSETS_DIR=${SCAN_ASSETS_DIR:-$HOME/code/_work/recon-data} \
+  DEMO_FACTOR_CARDS=${DEMO_FACTOR_CARDS:-$D/derived/demo/factor-cards.csv} REFERENCE_MEDIA_DIR=${REFERENCE_MEDIA_DIR:-$D/derived/reference-media}
+cd "$ROOT"
+exec uv run --no-project --python 3.12 --with-requirements services/api/requirements.txt --with numpy --with pandas python tools/run_analyses.py "$@"

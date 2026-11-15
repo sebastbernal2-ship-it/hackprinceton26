@@ -17,6 +17,8 @@ if str(ROOT) not in sys.path:
 from planning import financials  # noqa: E402
 from structure import expansion, scenarios, screening  # noqa: E402
 
+from . import analyses  # noqa: E402
+
 router = APIRouter()
 
 
@@ -34,12 +36,14 @@ def _load(name):
 
 def _prop(listing_id: int):
     props = _load("properties.json")
-    if props is None:
+    p = (props or {}).get(str(listing_id))
+    if p is None:  # a scan the snapshot lacks: demo-labelled props from the linked CoStar record (or the metro alone)
+        p = analyses.structure_props(listing_id)
+    if p is None and props is None:
         raise HTTPException(status_code=503, detail="structure snapshot unavailable (run structure/fetch_sources.py)")
-    p = props.get(str(listing_id))
     if p is None:
         raise HTTPException(status_code=404, detail="listing not found in structure snapshot")
-    return p, props
+    return p, props or {}
 
 
 @router.get("/api/structure/{listing_id}")
@@ -49,7 +53,8 @@ def structure(listing_id: int):
     return {"listingId": listing_id, "kit": {k: p.get(k) for k in ("yearBuilt", "renovatedYear", "material", "buildingClass", "stories", "grossSqFt", "heightFt", "hasSprinklers")},
             "hazards": {"fema": p.get("fema"), "usgs": p.get("usgs"), "elevationFt": p.get("elevationFt"), "retrieved": p.get("retrieved"),
                         "subsidence": "unknown: no reachable public Harris County subsidence layer found"},
-            "screening": s, "fillRates": screening.fill_rates(props), "label": "screening prior, not an engineering assessment"}
+            "screening": s, "fillRates": screening.fill_rates(props), "label": "screening prior, not an engineering assessment",
+            **({"demo": True, "demoNote": p.get("demoNote")} if p.get("demo") else {})}
 
 
 @router.get("/api/structure/{listing_id}/scenarios")

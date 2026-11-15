@@ -1,4 +1,3 @@
-import { isScanOnlyId } from "./cafe-demo";
 export type Flag = {
   id: string; lens: string; severity: "low" | "moderate" | "elevated" | null; text: string; status: string;
   threshold?: { id: string; value: string | number; source: string; note: string };
@@ -11,6 +10,7 @@ export type StructureResponse = {
   listingId: number; kit: Record<string, string | number | boolean | null>;
   hazards: { fema: { zone?: string } | null; usgs: { sdc?: string } | null; elevationFt: number | null; retrieved: string | null; subsidence: string };
   screening: Screening; fillRates: Record<string, number>; label: string;
+  demo?: boolean; demoNote?: string;
 };
 export type ScenarioRow = {
   horizon: number; scenario: string; metric: string; low: number; value: number; high: number; unit: string;
@@ -57,7 +57,6 @@ const bundles = new Map<number, Promise<{ s: StructureResponse | null; c: Scenar
  */
 export function loadStructure(id: number): Promise<{ s: StructureResponse | null; c: ScenarioResponse | null }> {
   let p = bundles.get(id);
-  if (!p && isScanOnlyId(id)) return Promise.resolve({ s: null, c: null });
   if (!p) {
     p = fetchStructure(id).then(
       async (s) => ({ s, c: await fetchScenarios(id).catch(() => null) }),

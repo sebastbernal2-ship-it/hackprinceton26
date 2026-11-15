@@ -67,6 +67,23 @@ def _warm_matches():
         pass
 
 
+@app.on_event("startup")
+def _warm_analyses():
+    """Run every analysis for every site in the background, so the first Deeper analysis never waits or says 'not run'. Results are
+    cached on disk, so a restart is quick; each route also builds its own result lazily if it is asked first."""
+    import threading
+
+    from . import analyses
+
+    def run():
+        try:
+            analyses.warm_all()
+        except Exception:  # noqa: BLE001
+            pass
+    if os.environ.get("RUNALL_WARM", "1") != "0":
+        threading.Thread(target=run, daemon=True, name="warm-analyses").start()
+
+
 @app.get("/api/health")
 def health():
     return {"status": "ok", "dataAvailable": load_matches() is not None,
