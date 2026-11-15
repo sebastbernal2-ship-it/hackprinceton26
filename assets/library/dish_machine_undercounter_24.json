@@ -1,0 +1,65 @@
+{
+  "assetId": "dish_machine_undercounter_24",
+  "name": "Dish machine, undercounter 24 in",
+  "category": "dish",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 0.6096,
+    "d": 0.6604,
+    "h": 0.8382
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      0.6096,
+      0.0
+    ],
+    [
+      0.6096,
+      0.6604
+    ],
+    [
+      0.0,
+      0.6604
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.9,
+    "sides": 0.1,
+    "back": 0.1
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.9 m back-of-house aisle (0.9 to 1.1 m / 36 to 42 in is commonly cited), sides 0.1 m, back 0.1 m. Manufacturer ventilation and service clearances vary by model; confirm with the spec sheet and the local health/building authority.",
+  "model": {
+    "uri": "assets/library/models/dish_machine_undercounter_24.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:boh",
+    "kitchen",
+    "ware_wash"
+  ],
+  "priceRef": "dish_machine_undercounter_24",
+  "provenance": {
+    "origin": "undercounter dish machine class (Hobart LXeC / CMA UC, 24 in rack, about 0.61 x 0.66 x 0.84 m); not read from a spec sheet",
+    "retrievedAt": null,
+    "notes": "Cycles 20x20 in racks; needs water, drain, 208/240 V and a vent where steam is released. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

@@ -1,0 +1,65 @@
+{
+  "assetId": "menu_board_a_frame_sidewalk",
+  "name": "Sidewalk A-frame menu sign",
+  "category": "other",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 0.6096,
+    "d": 0.7112,
+    "h": 1.0668
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      0.6096,
+      0.0
+    ],
+    [
+      0.6096,
+      0.7112
+    ],
+    [
+      0.0,
+      0.7112
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.91,
+    "sides": 0.0,
+    "back": 0.0
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.91 m, sides 0.0 m, back 0.0 m. Front 0.91 m = ADA 36 in minimum clear width of an accessible route (2010 ADA Standards 403.5.1).",
+  "model": {
+    "uri": "assets/library/models/menu_board_a_frame_sidewalk.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:front",
+    "front_of_house",
+    "decor"
+  ],
+  "priceRef": "menu_board_a_frame_sidewalk",
+  "provenance": {
+    "origin": "sidewalk A-frame sign class (0.61 x 0.71 x 1.07 m); not read from a spec sheet",
+    "retrievedAt": null,
+    "notes": "Outdoor sidewalk signage; do not narrow the 0.91 m (ADA 403.5.1) sidewalk clear width. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

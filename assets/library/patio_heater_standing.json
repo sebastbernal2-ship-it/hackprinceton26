@@ -1,0 +1,144 @@
+{
+  "assetId": "patio_heater_standing",
+  "name": "Patio heater, standing propane",
+  "category": "other",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 0.4826,
+    "d": 0.4826,
+    "h": 2.2352
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.4826,
+      0.2413
+    ],
+    [
+      0.4744,
+      0.3038
+    ],
+    [
+      0.4503,
+      0.3619
+    ],
+    [
+      0.4119,
+      0.4119
+    ],
+    [
+      0.3619,
+      0.4503
+    ],
+    [
+      0.3038,
+      0.4744
+    ],
+    [
+      0.2413,
+      0.4826
+    ],
+    [
+      0.1788,
+      0.4744
+    ],
+    [
+      0.1207,
+      0.4503
+    ],
+    [
+      0.0707,
+      0.4119
+    ],
+    [
+      0.0323,
+      0.3619
+    ],
+    [
+      0.0082,
+      0.3038
+    ],
+    [
+      0.0,
+      0.2413
+    ],
+    [
+      0.0082,
+      0.1788
+    ],
+    [
+      0.0323,
+      0.1207
+    ],
+    [
+      0.0707,
+      0.0707
+    ],
+    [
+      0.1206,
+      0.0323
+    ],
+    [
+      0.1788,
+      0.0082
+    ],
+    [
+      0.2413,
+      0.0
+    ],
+    [
+      0.3038,
+      0.0082
+    ],
+    [
+      0.3619,
+      0.0323
+    ],
+    [
+      0.4119,
+      0.0707
+    ],
+    [
+      0.4503,
+      0.1206
+    ],
+    [
+      0.4744,
+      0.1788
+    ],
+    [
+      0.4826,
+      0.2413
+    ]
+  ],
+  "clearance": {
+    "front": 0.9,
+    "sides": 0.9,
+    "back": 0.9
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.9 m guest chair pull-out (about 0.45 m for a chair, 0.6 m at a table), sides 0.9 m, back 0.9 m. Keep one 0.91 m (36 in, ADA 403.5.1) accessible route between groups.",
+  "model": {
+    "uri": "assets/library/models/patio_heater_standing.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:patio",
+    "patio"
+  ],
+  "priceRef": "patio_heater_standing",
+  "provenance": {
+    "origin": "free-standing propane patio heater class (about 0.48 m base, 2.24 m high)",
+    "retrievedAt": null,
+    "notes": "0.9 m all-around clearance is a stated assumption for radiant heater spacing; confirm with the manufacturer and local fire code. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

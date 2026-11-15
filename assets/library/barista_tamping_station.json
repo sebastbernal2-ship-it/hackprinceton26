@@ -1,0 +1,65 @@
+{
+  "assetId": "barista_tamping_station",
+  "name": "Barista tamping station",
+  "category": "other",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 0.5994,
+    "d": 0.4496,
+    "h": 0.1194
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      0.5994,
+      0.0
+    ],
+    [
+      0.5994,
+      0.4496
+    ],
+    [
+      0.0,
+      0.4496
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.5,
+    "sides": 0.05,
+    "back": 0.05
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.5 m operator working space at a staffed station (stated assumption, about 30 to 42 in), sides 0.05 m, back 0.05 m for cleaning access. Health-code equipment spacing is a stated assumption; confirm with the local authority.",
+  "model": {
+    "uri": "assets/library/models/barista_tamping_station.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:bar",
+    "coffee",
+    "front_of_house"
+  ],
+  "priceRef": "barista_tamping_station",
+  "provenance": {
+    "origin": "typical barista tamping mat/tray class (about 0.60 x 0.45 x 0.12 m); not read from a spec sheet",
+    "retrievedAt": null,
+    "notes": "Countertop tamp mat, tamper stand and milk-pitcher rinser tray; counter-mounted, so footprint is the tray only. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

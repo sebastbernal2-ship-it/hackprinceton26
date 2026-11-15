@@ -1,0 +1,64 @@
+{
+  "assetId": "chair_armchair_upholstered",
+  "name": "Upholstered armchair, dining",
+  "category": "seating",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 0.5588,
+    "d": 0.5969,
+    "h": 0.8382
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      0.5588,
+      0.0
+    ],
+    [
+      0.5588,
+      0.5969
+    ],
+    [
+      0.0,
+      0.5969
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.5,
+    "sides": 0.1,
+    "back": 0.1
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.5 m guest chair pull-out (about 0.45 m for a chair, 0.6 m at a table), sides 0.1 m, back 0.1 m. Keep one 0.91 m (36 in, ADA 403.5.1) accessible route between groups.",
+  "model": {
+    "uri": "assets/library/models/chair_armchair_upholstered.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:seating",
+    "dining"
+  ],
+  "priceRef": "chair_armchair_upholstered",
+  "provenance": {
+    "origin": "commercial armchair class (about 0.56 x 0.60 x 0.84 m; ADA 604.4 seat 17 to 19 in)",
+    "retrievedAt": null,
+    "notes": "More comfortable seating for a longer stay. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

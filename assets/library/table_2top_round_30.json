@@ -1,0 +1,144 @@
+{
+  "assetId": "table_2top_round_30",
+  "name": "Round table, 30 in (2-top)",
+  "category": "table",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 0.762,
+    "d": 0.762,
+    "h": 0.762
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.762,
+      0.381
+    ],
+    [
+      0.749,
+      0.4796
+    ],
+    [
+      0.711,
+      0.5715
+    ],
+    [
+      0.6504,
+      0.6504
+    ],
+    [
+      0.5715,
+      0.711
+    ],
+    [
+      0.4796,
+      0.749
+    ],
+    [
+      0.381,
+      0.762
+    ],
+    [
+      0.2824,
+      0.749
+    ],
+    [
+      0.1905,
+      0.711
+    ],
+    [
+      0.1116,
+      0.6504
+    ],
+    [
+      0.051,
+      0.5715
+    ],
+    [
+      0.013,
+      0.4796
+    ],
+    [
+      0.0,
+      0.381
+    ],
+    [
+      0.013,
+      0.2824
+    ],
+    [
+      0.051,
+      0.1905
+    ],
+    [
+      0.1116,
+      0.1116
+    ],
+    [
+      0.1905,
+      0.051
+    ],
+    [
+      0.2824,
+      0.013
+    ],
+    [
+      0.381,
+      0.0
+    ],
+    [
+      0.4796,
+      0.013
+    ],
+    [
+      0.5715,
+      0.051
+    ],
+    [
+      0.6504,
+      0.1116
+    ],
+    [
+      0.711,
+      0.1905
+    ],
+    [
+      0.749,
+      0.2824
+    ],
+    [
+      0.762,
+      0.381
+    ]
+  ],
+  "clearance": {
+    "front": 0.6,
+    "sides": 0.3,
+    "back": 0.3
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.6 m guest chair pull-out (about 0.45 m for a chair, 0.6 m at a table), sides 0.3 m, back 0.3 m. Keep one 0.91 m (36 in, ADA 403.5.1) accessible route between groups.",
+  "model": {
+    "uri": "assets/library/models/table_2top_round_30.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:seating",
+    "dining"
+  ],
+  "priceRef": "table_2top_round_30",
+  "provenance": {
+    "origin": "round cafe table class (0.76 m diameter, 0.76 m high; seats 2 to 3)",
+    "retrievedAt": null,
+    "notes": "Round 2-top for cafe seating; 0.76 m is a common minimum for two place settings. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

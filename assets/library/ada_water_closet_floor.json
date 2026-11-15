@@ -1,0 +1,65 @@
+{
+  "assetId": "ada_water_closet_floor",
+  "name": "ADA water closet, floor mount",
+  "category": "other",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 0.4064,
+    "d": 0.7112,
+    "h": 0.762
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      0.4064,
+      0.0
+    ],
+    [
+      0.4064,
+      0.7112
+    ],
+    [
+      0.0,
+      0.7112
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 1.42,
+    "sides": 0.56,
+    "back": 0.0
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination), after ADA 604.3: clearance 60 in wide (1.52 m, perpendicular to side wall) x 56 in deep (1.42 m) for a wall-hung or floor-mount water closet. Sides 0.56 m approximates the 60 in minus the fixture; side clearance 0.56 m is the 1.52 m (60 in) width minus the fixture, split.",
+  "model": {
+    "uri": "assets/library/models/ada_water_closet_floor.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:decor",
+    "ada",
+    "restroom"
+  ],
+  "priceRef": "ada_water_closet_floor",
+  "provenance": {
+    "origin": "ADA 604 water closet class (0.41 x 0.71 x 0.76 m, seat 17 to 19 in)",
+    "retrievedAt": null,
+    "notes": "Fixture plus tank; clearance front is 56 in (ADA 604.3.1). Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

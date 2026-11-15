@@ -1,0 +1,65 @@
+{
+  "assetId": "patio_umbrella_9ft_base",
+  "name": "Patio umbrella, 9 ft with base",
+  "category": "other",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 0.4572,
+    "d": 0.4572,
+    "h": 2.4384
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      0.4572,
+      0.0
+    ],
+    [
+      0.4572,
+      0.4572
+    ],
+    [
+      0.0,
+      0.4572
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.3,
+    "sides": 0.3,
+    "back": 0.3
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.3 m guest chair pull-out (about 0.45 m for a chair, 0.6 m at a table), sides 0.3 m, back 0.3 m. Keep one 0.91 m (36 in, ADA 403.5.1) accessible route between groups.",
+  "model": {
+    "uri": "assets/library/models/patio_umbrella_9ft_base.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:patio",
+    "patio",
+    "decor"
+  ],
+  "priceRef": "patio_umbrella_9ft_base",
+  "provenance": {
+    "origin": "market umbrella class (2.74 m canopy on a 0.46 x 0.46 m cast base, 2.44 m high; footprint is the base, canopy overhangs about 1.14 m each side)",
+    "retrievedAt": null,
+    "notes": "Place through a patio table hole or beside it; the canopy overhang is not part of the footprint. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

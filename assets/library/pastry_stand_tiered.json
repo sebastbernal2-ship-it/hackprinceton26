@@ -1,0 +1,145 @@
+{
+  "assetId": "pastry_stand_tiered",
+  "name": "Tiered pastry stand",
+  "category": "storage",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 0.3988,
+    "d": 0.3988,
+    "h": 0.5004
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.3988,
+      0.1994
+    ],
+    [
+      0.392,
+      0.251
+    ],
+    [
+      0.3721,
+      0.2991
+    ],
+    [
+      0.3404,
+      0.3404
+    ],
+    [
+      0.2991,
+      0.3721
+    ],
+    [
+      0.251,
+      0.392
+    ],
+    [
+      0.1994,
+      0.3988
+    ],
+    [
+      0.1478,
+      0.392
+    ],
+    [
+      0.0997,
+      0.3721
+    ],
+    [
+      0.0584,
+      0.3404
+    ],
+    [
+      0.0267,
+      0.2991
+    ],
+    [
+      0.0068,
+      0.251
+    ],
+    [
+      0.0,
+      0.1994
+    ],
+    [
+      0.0068,
+      0.1478
+    ],
+    [
+      0.0267,
+      0.0997
+    ],
+    [
+      0.0584,
+      0.0584
+    ],
+    [
+      0.0997,
+      0.0267
+    ],
+    [
+      0.1478,
+      0.0068
+    ],
+    [
+      0.1994,
+      0.0
+    ],
+    [
+      0.251,
+      0.0068
+    ],
+    [
+      0.2991,
+      0.0267
+    ],
+    [
+      0.3404,
+      0.0584
+    ],
+    [
+      0.3721,
+      0.0997
+    ],
+    [
+      0.392,
+      0.1478
+    ],
+    [
+      0.3988,
+      0.1994
+    ]
+  ],
+  "clearance": {
+    "front": 0.5,
+    "sides": 0.05,
+    "back": 0.05
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.5 m operator working space at a staffed station (stated assumption, about 30 to 42 in), sides 0.05 m, back 0.05 m for cleaning access. Health-code equipment spacing is a stated assumption; confirm with the local authority.",
+  "model": {
+    "uri": "assets/library/models/pastry_stand_tiered.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:display",
+    "bakery",
+    "front_of_house"
+  ],
+  "priceRef": "pastry_stand_tiered",
+  "provenance": {
+    "origin": "countertop tiered pastry stand class (about 0.40 m diameter x 0.50 m tall); not read from a spec sheet",
+    "retrievedAt": null,
+    "notes": "Counter display piece, round base. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

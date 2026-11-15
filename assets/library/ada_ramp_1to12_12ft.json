@@ -1,0 +1,72 @@
+{
+  "assetId": "ada_ramp_1to12_12ft",
+  "name": "ADA entry ramp with landing, 1:12",
+  "category": "other",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 5.1816,
+    "d": 1.524,
+    "h": 0.3048
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.4572
+    ],
+    [
+      3.6576,
+      0.4572
+    ],
+    [
+      3.6576,
+      0.0
+    ],
+    [
+      5.1816,
+      0.0
+    ],
+    [
+      5.1816,
+      1.524
+    ],
+    [
+      0.0,
+      1.524
+    ],
+    [
+      0.0,
+      0.4572
+    ]
+  ],
+  "clearance": {
+    "front": 0.0,
+    "sides": 0.0,
+    "back": 0.0
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.0 m, sides 0.0 m, back 0.0 m. Front 0.91 m = ADA 36 in minimum clear width of an accessible route (2010 ADA Standards 403.5.1).",
+  "model": {
+    "uri": "assets/library/models/ada_ramp_1to12_12ft.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:decor",
+    "ada"
+  ],
+  "priceRef": null,
+  "provenance": {
+    "origin": "ADA 405 ramp: 1:12 max slope (405.2), 36 in clear width (405.5), 60 x 60 in landing (405.7), 12 in rise needs a 144 in run; 3.66 m run + 1.52 m landing; not read from a spec sheet",
+    "retrievedAt": null,
+    "notes": "Site-built or rented; cost depends on site and rise. UNPRICED: Priced per site (rise, substrate, permits); a demo number would imply precision we do not have. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

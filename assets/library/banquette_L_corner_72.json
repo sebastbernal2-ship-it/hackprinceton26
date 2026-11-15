@@ -1,0 +1,72 @@
+{
+  "assetId": "banquette_L_corner_72",
+  "name": "Corner banquette, L 72 x 72 in",
+  "category": "seating",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 1.8288,
+    "d": 1.8288,
+    "h": 1.0668
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      1.8288,
+      0.0
+    ],
+    [
+      1.8288,
+      0.5588
+    ],
+    [
+      0.5588,
+      0.5588
+    ],
+    [
+      0.5588,
+      1.8288
+    ],
+    [
+      0.0,
+      1.8288
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.6,
+    "sides": 0.0,
+    "back": 0.0
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.6 m guest chair pull-out (about 0.45 m for a chair, 0.6 m at a table), sides 0.0 m, back 0.0 m. Keep one 0.91 m (36 in, ADA 403.5.1) accessible route between groups.",
+  "model": {
+    "uri": "assets/library/models/banquette_L_corner_72.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:seating",
+    "dining"
+  ],
+  "priceRef": "banquette_L_corner_72",
+  "provenance": {
+    "origin": "upholstered L banquette class (1.83 x 1.83 m, arms 0.56 m deep, 1.07 m back)",
+    "retrievedAt": null,
+    "notes": "Wraps a corner and seats 5 to 6 at a square table. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

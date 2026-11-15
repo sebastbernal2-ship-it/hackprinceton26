@@ -1,0 +1,144 @@
+{
+  "assetId": "table_hightop_round_36",
+  "name": "High-top round table, 36 in",
+  "category": "table",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 0.9144,
+    "d": 0.9144,
+    "h": 1.0668
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.9144,
+      0.4572
+    ],
+    [
+      0.8988,
+      0.5755
+    ],
+    [
+      0.8531,
+      0.6858
+    ],
+    [
+      0.7805,
+      0.7805
+    ],
+    [
+      0.6858,
+      0.8531
+    ],
+    [
+      0.5755,
+      0.8988
+    ],
+    [
+      0.4572,
+      0.9144
+    ],
+    [
+      0.3389,
+      0.8988
+    ],
+    [
+      0.2286,
+      0.8531
+    ],
+    [
+      0.1339,
+      0.7805
+    ],
+    [
+      0.0613,
+      0.6858
+    ],
+    [
+      0.0156,
+      0.5755
+    ],
+    [
+      0.0,
+      0.4572
+    ],
+    [
+      0.0156,
+      0.3389
+    ],
+    [
+      0.0613,
+      0.2286
+    ],
+    [
+      0.1339,
+      0.1339
+    ],
+    [
+      0.2286,
+      0.0613
+    ],
+    [
+      0.3389,
+      0.0156
+    ],
+    [
+      0.4572,
+      0.0
+    ],
+    [
+      0.5755,
+      0.0156
+    ],
+    [
+      0.6858,
+      0.0613
+    ],
+    [
+      0.7805,
+      0.1339
+    ],
+    [
+      0.8531,
+      0.2286
+    ],
+    [
+      0.8988,
+      0.3389
+    ],
+    [
+      0.9144,
+      0.4572
+    ]
+  ],
+  "clearance": {
+    "front": 0.6,
+    "sides": 0.3,
+    "back": 0.3
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.6 m guest chair pull-out (about 0.45 m for a chair, 0.6 m at a table), sides 0.3 m, back 0.3 m. Keep one 0.91 m (36 in, ADA 403.5.1) accessible route between groups.",
+  "model": {
+    "uri": "assets/library/models/table_hightop_round_36.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:seating",
+    "dining"
+  ],
+  "priceRef": "table_hightop_round_36",
+  "provenance": {
+    "origin": "bar-height round table class (0.91 m diameter, 1.07 m high)",
+    "retrievedAt": null,
+    "notes": "Standing or bar-stool seating; pair with 30 in seat stools. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

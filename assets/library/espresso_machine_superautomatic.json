@@ -1,0 +1,65 @@
+{
+  "assetId": "espresso_machine_superautomatic",
+  "name": "Super-automatic espresso machine",
+  "category": "other",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 0.3302,
+    "d": 0.5461,
+    "h": 0.6985
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      0.3302,
+      0.0
+    ],
+    [
+      0.3302,
+      0.5461
+    ],
+    [
+      0.0,
+      0.5461
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.9,
+    "sides": 0.1,
+    "back": 0.1
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.9 m operator working space at a staffed station (stated assumption, about 30 to 42 in), sides 0.1 m, back 0.1 m for cleaning access. Health-code equipment spacing is a stated assumption; confirm with the local authority.",
+  "model": {
+    "uri": "assets/library/models/espresso_machine_superautomatic.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:bar",
+    "coffee",
+    "front_of_house"
+  ],
+  "priceRef": "espresso_machine_superautomatic",
+  "provenance": {
+    "origin": "commercial bean-to-cup class (Schaerer Coffee Art Plus / Franke A600 FM, about 0.33 x 0.55 x 0.70 m); not read from a spec sheet",
+    "retrievedAt": null,
+    "notes": "Bean-to-cup for grab-and-go and low-skill stations; milk system needs a cold-milk source under the counter. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

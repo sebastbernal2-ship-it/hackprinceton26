@@ -1,0 +1,65 @@
+{
+  "assetId": "sink_mop_floor_24",
+  "name": "Mop sink, floor basin",
+  "category": "sink",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 0.6096,
+    "d": 0.6096,
+    "h": 1.016
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      0.6096,
+      0.0
+    ],
+    [
+      0.6096,
+      0.6096
+    ],
+    [
+      0.0,
+      0.6096
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.9,
+    "sides": 0.0,
+    "back": 0.0
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.9 m back-of-house aisle (0.9 to 1.1 m / 36 to 42 in is commonly cited), sides 0.0 m, back 0.0 m. Manufacturer ventilation and service clearances vary by model; confirm with the spec sheet and the local health/building authority.",
+  "model": {
+    "uri": "assets/library/models/sink_mop_floor_24.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:boh",
+    "kitchen",
+    "sink"
+  ],
+  "priceRef": "sink_mop_floor_24",
+  "provenance": {
+    "origin": "terrazzo/molded-stone floor mop basin class (Fiat MSB-2424 / Florestone, 24 x 24 in, faucet height about 1.0 m); not read from a spec sheet",
+    "retrievedAt": null,
+    "notes": "Required by most health codes for mop-water disposal; basin is about 0.3 m high, dimensions include faucet bracket. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

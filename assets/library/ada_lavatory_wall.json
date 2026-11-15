@@ -1,0 +1,66 @@
+{
+  "assetId": "ada_lavatory_wall",
+  "name": "ADA lavatory, wall mount",
+  "category": "sink",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 0.508,
+    "d": 0.4572,
+    "h": 0.8636
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      0.508,
+      0.0
+    ],
+    [
+      0.508,
+      0.4572
+    ],
+    [
+      0.0,
+      0.4572
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 1.22,
+    "sides": 0.13,
+    "back": 0.0
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination), after ADA 305 / 606: clear floor space 30 x 48 in (0.76 x 1.22 m) at the front with knee clearance 27 in high and 8 in deep; rim 34 in max.",
+  "model": {
+    "uri": "assets/library/models/ada_lavatory_wall.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:decor",
+    "ada",
+    "restroom",
+    "sink"
+  ],
+  "priceRef": "ada_lavatory_wall",
+  "provenance": {
+    "origin": "ADA 606 lavatory class (0.51 x 0.46 x 0.86 m, rim 34 in max)",
+    "retrievedAt": null,
+    "notes": "Restroom lavatory; also usable as a hand sink. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

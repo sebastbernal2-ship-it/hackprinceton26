@@ -1,0 +1,64 @@
+{
+  "assetId": "pickup_shelf_ledge_48",
+  "name": "Pickup shelf, 48 in",
+  "category": "counter",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 1.2192,
+    "d": 0.3048,
+    "h": 1.0668
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      1.2192,
+      0.0
+    ],
+    [
+      1.2192,
+      0.3048
+    ],
+    [
+      0.0,
+      0.3048
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.91,
+    "sides": 0.0,
+    "back": 0.0
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.91 m, sides 0.0 m, back 0.0 m. Front 0.91 m = ADA 36 in minimum clear width of an accessible route (2010 ADA Standards 403.5.1).",
+  "model": {
+    "uri": "assets/library/models/pickup_shelf_ledge_48.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:front",
+    "front_of_house"
+  ],
+  "priceRef": "pickup_shelf_ledge_48",
+  "provenance": {
+    "origin": "wall pickup ledge class (1.22 x 0.30 x 1.07 m, top at 42 in); not read from a spec sheet",
+    "retrievedAt": null,
+    "notes": "Hand-off point for mobile and kiosk orders; a lowered 34 in end section satisfies ADA 904.4. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

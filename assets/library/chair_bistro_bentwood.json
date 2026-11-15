@@ -1,0 +1,64 @@
+{
+  "assetId": "chair_bistro_bentwood",
+  "name": "Bistro chair, bentwood",
+  "category": "seating",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 0.4191,
+    "d": 0.4826,
+    "h": 0.8382
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      0.4191,
+      0.0
+    ],
+    [
+      0.4191,
+      0.4826
+    ],
+    [
+      0.0,
+      0.4826
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.45,
+    "sides": 0.1,
+    "back": 0.1
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.45 m guest chair pull-out (about 0.45 m for a chair, 0.6 m at a table), sides 0.1 m, back 0.1 m. Keep one 0.91 m (36 in, ADA 403.5.1) accessible route between groups.",
+  "model": {
+    "uri": "assets/library/models/chair_bistro_bentwood.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:seating",
+    "dining"
+  ],
+  "priceRef": "chair_bistro_bentwood",
+  "provenance": {
+    "origin": "commercial bistro chair class (about 0.42 x 0.48 x 0.84 m seat 18 in)",
+    "retrievedAt": null,
+    "notes": "Lightweight stackable chair for a cafe. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

@@ -1,0 +1,64 @@
+{
+  "assetId": "patio_set_bistro_2",
+  "name": "Patio bistro set, 2 seat",
+  "category": "table",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 1.0922,
+    "d": 0.6096,
+    "h": 0.7366
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      1.0922,
+      0.0
+    ],
+    [
+      1.0922,
+      0.6096
+    ],
+    [
+      0.0,
+      0.6096
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.6,
+    "sides": 0.3,
+    "back": 0.3
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.6 m guest chair pull-out (about 0.45 m for a chair, 0.6 m at a table), sides 0.3 m, back 0.3 m. Keep one 0.91 m (36 in, ADA 403.5.1) accessible route between groups.",
+  "model": {
+    "uri": "assets/library/models/patio_set_bistro_2.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:patio",
+    "patio"
+  ],
+  "priceRef": "patio_set_bistro_2",
+  "provenance": {
+    "origin": "outdoor folding bistro set class (about 1.09 x 0.61 x 0.74 m envelope)",
+    "retrievedAt": null,
+    "notes": "Pre-arranged 2-seat bistro set. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

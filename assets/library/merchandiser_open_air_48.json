@@ -1,0 +1,65 @@
+{
+  "assetId": "merchandiser_open_air_48",
+  "name": "Open-air grab-and-go merchandiser, 48 in",
+  "category": "fridge",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 1.2192,
+    "d": 0.7366,
+    "h": 1.524
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      1.2192,
+      0.0
+    ],
+    [
+      1.2192,
+      0.7366
+    ],
+    [
+      0.0,
+      0.7366
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 1.0,
+    "sides": 0.0,
+    "back": 0.1
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 1.0 m operator working space at a staffed station (stated assumption, about 30 to 42 in), sides 0.0 m, back 0.1 m for cleaning access. Health-code equipment spacing is a stated assumption; confirm with the local authority.",
+  "model": {
+    "uri": "assets/library/models/merchandiser_open_air_48.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:display",
+    "cold",
+    "front_of_house"
+  ],
+  "priceRef": "merchandiser_open_air_48",
+  "provenance": {
+    "origin": "open-front multi-deck merchandiser class (Structural Concepts CO4 / Beverage-Air VM class, about 1.22 x 0.74 x 1.52 m); not read from a spec sheet",
+    "retrievedAt": null,
+    "notes": "Self-serve cold wall for sandwiches, salads and parfaits. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

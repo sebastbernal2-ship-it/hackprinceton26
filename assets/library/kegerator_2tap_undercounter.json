@@ -1,0 +1,66 @@
+{
+  "assetId": "kegerator_2tap_undercounter",
+  "name": "Kegerator, 2-tap undercounter",
+  "category": "fridge",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 0.6096,
+    "d": 0.6477,
+    "h": 0.8763
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      0.6096,
+      0.0
+    ],
+    [
+      0.6096,
+      0.6477
+    ],
+    [
+      0.0,
+      0.6477
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.9,
+    "sides": 0.0,
+    "back": 0.1
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.9 m operator working space at a staffed station (stated assumption, about 30 to 42 in), sides 0.0 m, back 0.1 m for cleaning access. Health-code equipment spacing is a stated assumption; confirm with the local authority.",
+  "model": {
+    "uri": "assets/library/models/kegerator_2tap_undercounter.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:bar",
+    "coffee",
+    "cold",
+    "front_of_house"
+  ],
+  "priceRef": "kegerator_2tap_undercounter",
+  "provenance": {
+    "origin": "24 in undercounter keg cooler class (Beverage-Air UCD-24 / Perlick 24 in, about 0.61 x 0.65 x 0.88 m); not read from a spec sheet",
+    "retrievedAt": null,
+    "notes": "Holds cold brew or nitro kegs; ventilation at the front grille means no sealed side-by-side install. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

@@ -1,0 +1,129 @@
+{
+  "assetId": "lounge_armchair",
+  "name": "Lounge armchair",
+  "category": "seating",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 0.762,
+    "d": 0.8128,
+    "h": 0.762
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.662,
+      0.0
+    ],
+    [
+      0.7003,
+      0.0076
+    ],
+    [
+      0.7327,
+      0.0293
+    ],
+    [
+      0.7544,
+      0.0617
+    ],
+    [
+      0.762,
+      0.1
+    ],
+    [
+      0.762,
+      0.7128
+    ],
+    [
+      0.7544,
+      0.7511
+    ],
+    [
+      0.7327,
+      0.7835
+    ],
+    [
+      0.7003,
+      0.8052
+    ],
+    [
+      0.662,
+      0.8128
+    ],
+    [
+      0.1,
+      0.8128
+    ],
+    [
+      0.0617,
+      0.8052
+    ],
+    [
+      0.0293,
+      0.7835
+    ],
+    [
+      0.0076,
+      0.7511
+    ],
+    [
+      0.0,
+      0.7128
+    ],
+    [
+      0.0,
+      0.1
+    ],
+    [
+      0.0076,
+      0.0617
+    ],
+    [
+      0.0293,
+      0.0293
+    ],
+    [
+      0.0617,
+      0.0076
+    ],
+    [
+      0.1,
+      0.0
+    ],
+    [
+      0.662,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.6,
+    "sides": 0.1,
+    "back": 0.1
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.6 m guest chair pull-out (about 0.45 m for a chair, 0.6 m at a table), sides 0.1 m, back 0.1 m. Keep one 0.91 m (36 in, ADA 403.5.1) accessible route between groups.",
+  "model": {
+    "uri": "assets/library/models/lounge_armchair.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:seating",
+    "dining",
+    "lounge"
+  ],
+  "priceRef": "lounge_armchair",
+  "provenance": {
+    "origin": "lounge armchair class (0.76 x 0.81 x 0.76 m)",
+    "retrievedAt": null,
+    "notes": "Casual lounge seating near a low table. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

@@ -1,0 +1,72 @@
+{
+  "assetId": "counter_corner_inside_L",
+  "name": "Corner counter, inside L",
+  "category": "counter",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 1.524,
+    "d": 1.524,
+    "h": 1.0414
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      1.524,
+      0.0
+    ],
+    [
+      1.524,
+      0.6096
+    ],
+    [
+      0.6096,
+      0.6096
+    ],
+    [
+      0.6096,
+      1.524
+    ],
+    [
+      0.0,
+      1.524
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.9,
+    "sides": 0.0,
+    "back": 0.0
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.9 m operator working space at a staffed station (stated assumption, about 30 to 42 in), sides 0.0 m, back 0.0 m for cleaning access. Health-code equipment spacing is a stated assumption; confirm with the local authority.",
+  "model": {
+    "uri": "assets/library/models/counter_corner_inside_L.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:front",
+    "front_of_house"
+  ],
+  "priceRef": "counter_corner_inside_L",
+  "provenance": {
+    "origin": "custom corner-counter class (1.52 x 1.52 m L, arms 0.61 m deep, 1.04 m customer top); not read from a spec sheet",
+    "retrievedAt": null,
+    "notes": "Wraps a corner so the barista area and register share a turn. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

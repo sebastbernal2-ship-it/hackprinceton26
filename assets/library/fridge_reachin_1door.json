@@ -1,0 +1,65 @@
+{
+  "assetId": "fridge_reachin_1door",
+  "name": "Reach-in refrigerator, 1 door",
+  "category": "fridge",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 0.6858,
+    "d": 0.8001,
+    "h": 1.9812
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      0.6858,
+      0.0
+    ],
+    [
+      0.6858,
+      0.8001
+    ],
+    [
+      0.0,
+      0.8001
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.9,
+    "sides": 0.0,
+    "back": 0.1
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.9 m back-of-house aisle (0.9 to 1.1 m / 36 to 42 in is commonly cited), sides 0.0 m, back 0.1 m. Manufacturer ventilation and service clearances vary by model; confirm with the spec sheet and the local health/building authority.",
+  "model": {
+    "uri": "assets/library/models/fridge_reachin_1door.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:boh",
+    "kitchen",
+    "cold"
+  ],
+  "priceRef": "fridge_reachin_1door",
+  "provenance": {
+    "origin": "1-door reach-in class (True T-23-HC / Beverage-Air, 27 W x 31.5 D x 78 H in); not read from a spec sheet",
+    "retrievedAt": null,
+    "notes": "Back-of-house cold storage for a small cafe; existing 2-door unit is 1.4 m wide. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

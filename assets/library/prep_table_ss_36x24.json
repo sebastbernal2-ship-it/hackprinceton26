@@ -1,0 +1,64 @@
+{
+  "assetId": "prep_table_ss_36x24",
+  "name": "Stainless prep table, 36 x 24 in",
+  "category": "prep_table",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 0.9144,
+    "d": 0.6096,
+    "h": 0.9144
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      0.9144,
+      0.0
+    ],
+    [
+      0.9144,
+      0.6096
+    ],
+    [
+      0.0,
+      0.6096
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.9,
+    "sides": 0.0,
+    "back": 0.0
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.9 m back-of-house aisle (0.9 to 1.1 m / 36 to 42 in is commonly cited), sides 0.0 m, back 0.0 m. Manufacturer ventilation and service clearances vary by model; confirm with the spec sheet and the local health/building authority.",
+  "model": {
+    "uri": "assets/library/models/prep_table_ss_36x24.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:boh",
+    "kitchen"
+  ],
+  "priceRef": "prep_table_ss_36x24",
+  "provenance": {
+    "origin": "NSF stainless work table class (Advance Tabco TT-242 / Regency, 36 x 24 x 34.5 in); not read from a spec sheet",
+    "retrievedAt": null,
+    "notes": "Compact prep table for a small kitchen or a barista work shelf. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}
