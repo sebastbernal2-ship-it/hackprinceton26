@@ -8,6 +8,7 @@ import CostarBuilding from "./costar-building";
 import PlanVision from "./plan-vision";
 import CafePlanner from "./cafe-planner";
 import LayoutPanel from "./layout-panel";
+import CostSide from "./cost-side";
 import type { PlacedPiece } from "../lib/planner";
 import Quantify from "./quantify";
 import type { LayoutSummary } from "../lib/layout-summary";
@@ -236,14 +237,20 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
           </>
         )}
 
-        {tab === "planner" && (
-          <CafePlanner
-            match={match} kit={kit} onKit={setKit} placed={placed} onPlaced={setPlaced} area={area} onArea={setArea}
-            onContinue={() => { setCurrent(4); setQuantify({ layout: lastLayout.current }); }}
-          />
+        {(tab === "planner" || tab === "layout") && (
+          <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_21rem]">
+            <div className="min-w-0">
+              {tab === "planner" && (
+                <CafePlanner
+                  match={match} kit={kit} onKit={setKit} placed={placed} onPlaced={setPlaced} area={area} onArea={setArea}
+                  onContinue={() => { setCurrent(4); setQuantify({ layout: lastLayout.current }); }}
+                />
+              )}
+              {tab === "layout" && <LayoutPanel match={match} items={kit} onItems={setKit} area={area} onArea={setArea} />}
+            </div>
+            <div className="lg:sticky lg:top-4 lg:self-start lg:max-h-[calc(100dvh-2rem)] lg:overflow-y-auto"><CostSide match={match} kit={kit} area={area} /></div>
+          </div>
         )}
-
-        {tab === "layout" && <LayoutPanel match={match} items={kit} onItems={setKit} area={area} onArea={setArea} />}
 
         {tab === "analysis" && !match.demo && (
           <>
