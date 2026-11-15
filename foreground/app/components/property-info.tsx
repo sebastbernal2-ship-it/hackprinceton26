@@ -14,6 +14,8 @@ import EvidenceReadiness from "./evidence-readiness";
 import FactorCards from "./factor-cards";
 import Projections from "./projections";
 import SpaceChat from "./space-chat";
+import TriagePanel from "./triage/triage-panel";
+import FinancePanel from "./finance/finance-panel";
 
 const number = new Intl.NumberFormat("en-US");
 
@@ -152,6 +154,8 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
         <LayoutPanel match={match} lines={lines} />
 
         {!match.demo && <CostPanel listingId={match.listingId} onData={setLines} />}
+        {!match.demo && <TriagePanel listingId={match.listingId} />}
+        {!match.demo && <FinancePanel listingId={match.listingId} />}
         {!match.demo && <ActChecklist findings={findings} factors={match.factors ?? []} lines={lines} />}
 
         <p className="mt-5 text-xs text-foreground/40">
