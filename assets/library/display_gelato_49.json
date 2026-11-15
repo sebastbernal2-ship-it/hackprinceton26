@@ -41,7 +41,10 @@
     "back": 0.1
   },
   "clearanceBasis": "ASSUMPTION (not a code determination): front 1.0 m working aisle, 0 at sides/back (wall-adjacent allowed). Aisle widths commonly cited for commercial kitchens are ~0.9-1.1 m (36-42 in; 36 in / 0.915 m is the ADA minimum clear width), dining chair pull-out ~0.45 m; confirm with the local health/building authority.",
-  "model": null,
+  "model": {
+    "uri": "assets/library/models/display_gelato_49.glb",
+    "format": "glb"
+  },
   "imageRefs": [],
   "profileId": null,
   "tags": [
