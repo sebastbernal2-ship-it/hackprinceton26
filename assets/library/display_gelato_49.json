@@ -1,0 +1,58 @@
+{
+  "assetId": "display_gelato_49",
+  "name": "Gelato dipping cabinet, 9 pan (49 in)",
+  "category": "freezer_display",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 1.2446,
+    "d": 0.889,
+    "h": 1.3208
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      1.2446,
+      0.0
+    ],
+    [
+      1.2446,
+      0.889
+    ],
+    [
+      0.0,
+      0.889
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 1.0,
+    "sides": 0.1,
+    "back": 0.1
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 1.0 m working aisle, 0 at sides/back (wall-adjacent allowed). Aisle widths commonly cited for commercial kitchens are ~0.9-1.1 m (36-42 in; 36 in / 0.915 m is the ADA minimum clear width), dining chair pull-out ~0.45 m; confirm with the local health/building authority.",
+  "model": null,
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "front_of_house",
+    "gelato"
+  ],
+  "priceRef": "gelato_display_case",
+  "provenance": {
+    "origin": "https://www.webstaurantstore.com/avantco-adcgel9f-49-nine-pan-gelato-dipping-cabinet-with-flat-sneeze-guard-and-pans/360ADCGEL9F.html",
+    "retrievedAt": "2026-11-14",
+    "notes": "Width 49 in from the product URL/catalog label (Avantco ADC-GEL-9F); depth/height are a typical dipping-cabinet envelope, not read from the page."
+  },
+  "status": "confirmed"
+}
