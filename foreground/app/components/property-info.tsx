@@ -1,19 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import ListingPhoto from "./listing-photo";
 import InspectionPanel from "./inspection-panel";
 import CostarBuilding from "./costar-building";
 import PlanVision from "./plan-vision";
+import LayoutPanel from "./layout-panel";
 import Quantify from "./quantify";
 import type { LayoutSummary } from "../lib/layout-summary";
+import type { Asset } from "../lib/assets";
 import Stepper from "./stepper";
 import { heroPhoto, rentLabel, type FactorCard, type Match } from "../lib/matches";
-import EvidenceReadiness from "./evidence-readiness";
 import FactorCards from "./factor-cards";
 import Projections from "./projections";
 import SpaceChat from "./space-chat";
 import TriagePanel from "./triage/triage-panel";
+import CompatibilityPill from "./compatibility-pill";
+import DataStreams from "./data-streams";
 import StructurePanel from "./structure/structure-panel";
 
 const number = new Intl.NumberFormat("en-US");
@@ -50,6 +54,28 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
     return () => { live = false; };
   }, [match.demo, match.tourId]);
   const [quantify, setQuantify] = useState<{ layout: LayoutSummary | null } | null>(null);
+  // Café demo path: the placed reference kit and the owner's assumed area are shared by the layout panel and Quantify.
+  const [kit, setKit] = useState<Asset[]>([]);
+  const [area, setArea] = useState("");
+  const router = useRouter();
+  const lastLayout = useRef<LayoutSummary | null>(null);
+  const scrollTo = (id: string) => window.setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" }) ?? document.querySelector(`[data-testid="${id}"]`)?.scrollIntoView({ behavior: "smooth" }), 500);
+  // The seven workflow steps map to views of this property: 0 intake page, 1 shortlist, 2 overview, 3 layout, 4 quantify,
+  // 5 act checklist (inside quantify), 6 re-plan (deeper analysis).
+  const [current, setCurrent] = useState(2);
+  function goStep(step: number) {
+    if (step < 0 || step > 6) return;
+    setCurrent(step);
+    if (step === 0) { router.push("/"); return; }
+    if (step === 1) { onBack(); return; }
+    setPlanOpen(step === 3);
+    setQuantify(step === 4 || step === 5 ? { layout: lastLayout.current } : null);
+    if (step === 2) setTab("overview");
+    if (step === 6 && !match.demo) { setTab("analysis"); scrollTo("replan-panel"); }
+    if (step === 6 && match.demo) setTab("overview");
+    if (step === 5) scrollTo("act-title");
+  }
+  const [tab, setTab] = useState<"overview" | "layout" | "analysis">("overview");
   const hero = photos[index % photos.length];
   const thumbs = photos.filter((_, photoIndex) => photoIndex !== index % photos.length).slice(0, 3);
 
@@ -81,10 +107,10 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
         <ChevronLeft />
         Back to Shortlist
       </button>
-      <div className="mx-auto max-w-[68rem] px-6 pb-16 pt-8 sm:px-12">
-        <div className="mb-5"><Stepper active={2} /></div>
-        <div className="grid items-stretch gap-4 lg:grid-cols-[1.65fr_0.72fr]">
-          <div className="relative aspect-[16/10] self-start overflow-hidden rounded-[1.35rem] bg-foreground/5">
+      <div className="mx-auto max-w-[84rem] px-6 pb-16 pt-8 sm:px-12">
+        <div className="mb-5"><Stepper active={current} onStep={goStep} /></div>
+        <div className={`grid items-stretch gap-4 ${thumbs.length > 0 ? "lg:grid-cols-[1.65fr_0.72fr]" : ""}`}>
+          <div className={`relative self-start overflow-hidden rounded-[1.35rem] bg-foreground/5 ${thumbs.length > 0 ? "aspect-[16/10]" : "aspect-[16/7]"}`}>
             <ListingPhoto src={hero} alt={`${match.address} ${match.detail}`} className="absolute inset-0 h-full w-full" />
             {photos.length > 1 && (
               <>
@@ -147,14 +173,30 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
             <p className="text-[clamp(1.6rem,2.6vw,2rem)] font-medium tracking-tight tabular-nums">
               {rentLabel(match)}
             </p>
-            <EvidenceReadiness match={match} />
+            <CompatibilityPill match={match} />
           </div>
         </div>
 
-        <div className="mt-8 grid gap-14 border-t border-foreground/10 pt-6 md:grid-cols-2">
-          <FactList title="Property Details" rows={facts.property} />
-          <FactList title="Location & Area" rows={facts.location} />
+        <nav aria-label="Property sections" className="mt-8 flex gap-1 border-b border-foreground/10">
+          {([["overview", "Overview"], ["layout", "Layout & equipment"], ...(match.demo ? [] : [["analysis", "Deeper analysis"]])] as [typeof tab, string][]).map(([key, label]) => (
+            <button
+              key={key}
+              type="button"
+              onClick={() => setTab(key)}
+              aria-current={tab === key ? "page" : undefined}
+              className={`-mb-px border-b-2 px-4 py-2.5 text-sm transition-colors ${tab === key ? "border-foreground font-medium" : "border-transparent text-foreground/55 hover:text-foreground"}`}
+            >
+              {label}
+            </button>
+          ))}
+        </nav>
+
+        {tab === "overview" && (
+        <div className="mt-6 grid gap-10 md:grid-cols-2">
+          <FactList title="Property details" rows={facts.property} />
+          <FactList title="Location & area" rows={facts.location.filter((row) => !/^(latitude|longitude|postal code)$/i.test(row.label))} />
         </div>
+        )}
 
         <div className="mt-6 flex flex-wrap items-center gap-3">
           <button
@@ -172,21 +214,31 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
             className="inline-flex items-center gap-2 rounded-full border border-foreground/20 bg-background px-5 py-3 text-sm font-medium transition-opacity hover:opacity-70"
           >
             <Spark />
-            Ask AI About This Space
+            Ask Fio
           </button>
           <p className="text-xs text-foreground/45">
             {match.tourId ? `Matterport model ${match.tourId} (property-level link; may not show this exact suite).` : "No Matterport model on file."}
           </p>
         </div>
 
-        {match.costarPropertyId && <CostarBuilding propertyId={match.costarPropertyId} city={match.city} />}
+        {tab === "overview" && (
+          <>
+            {match.costarPropertyId && <CostarBuilding propertyId={match.costarPropertyId} city={match.city} />}
+            {!match.demo && <DataStreams listingId={match.listingId} />}
+            <FactorCards factors={demoFactors ?? match.factors ?? []} demo={match.demo && !demoFactors?.length} />
+          </>
+        )}
 
-        <FactorCards factors={demoFactors ?? match.factors ?? []} demo={match.demo && !demoFactors?.length} />
+        {tab === "layout" && <LayoutPanel match={match} items={kit} onItems={setKit} area={area} onArea={setArea} />}
 
-        {!match.demo && <TriagePanel listingId={match.listingId} />}
-        {!match.demo && <InspectionPanel listingId={match.listingId} />}
-        {!match.demo && <StructurePanel listingId={match.listingId} />}
-        {!match.demo && <Projections listingId={match.listingId} />}
+        {tab === "analysis" && !match.demo && (
+          <>
+            <TriagePanel listingId={match.listingId} />
+            <InspectionPanel listingId={match.listingId} />
+            <StructurePanel listingId={match.listingId} />
+            <Projections listingId={match.listingId} />
+          </>
+        )}
 
         <p className="mt-5 text-xs text-foreground/40">
           Sources: CoStar listing and market data, the Matterport model on file, and Vexcel aerial where available.
@@ -211,13 +263,13 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
       {planOpen && (
         <PlanVision
           tourId={match.tourId} title={match.address} detail={match.detail} onClose={() => setPlanOpen(false)}
-          onContinue={(layout) => { setPlanOpen(false); setQuantify({ layout }); }}
+          step={current} onStep={goStep} onContinue={(layout) => { lastLayout.current = layout; setCurrent(4); setPlanOpen(false); setQuantify({ layout }); }}
         />
       )}
       {quantify && (
         <Quantify
-          match={match} layout={quantify.layout}
-          onBackToLayout={() => { setQuantify(null); setPlanOpen(true); }}
+          match={match} layout={quantify.layout} kit={kit} onKit={setKit} area={area} onArea={setArea}
+          step={current} onStep={goStep} onBackToLayout={() => { setCurrent(3); setQuantify(null); setPlanOpen(true); }}
           onClose={() => setQuantify(null)}
         />
       )}
@@ -228,10 +280,10 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
 function FactList({ title, rows }: { title: string; rows: { label: string; value: string }[] }) {
   return (
     <section>
-      <h2 className="text-lg font-medium tracking-tight">{title}</h2>
-      <dl className="mt-6 space-y-5">
+      <h2 className="text-base font-medium tracking-tight">{title}</h2>
+      <dl className="mt-4 divide-y divide-foreground/10">
         {rows.map((row) => (
-          <div key={row.label} className="grid grid-cols-[1.1fr_1.4fr] items-baseline gap-4 text-base">
+          <div key={row.label} className="grid grid-cols-[1fr_1.3fr] items-baseline gap-4 py-2.5 text-sm">
             <dt className="text-foreground/55">{row.label}</dt>
             <dd className="font-medium">{row.value}</dd>
           </div>

@@ -1,5 +1,6 @@
 """Asset contract (pydantic) + validation rules. JSON Schema lives in contracts/asset.schema.json."""
 import json
+import re
 from functools import lru_cache
 from pathlib import Path
 from typing import Literal
@@ -61,6 +62,25 @@ class Provenance(BaseModel):
     origin: str
     retrievedAt: str | None = None
     notes: str = ""
+    confidence: float | None = Field(default=None, ge=0, le=1)
+    box_2d: list[float] | None = None
+
+
+class Style(BaseModel):
+    """Aesthetics read from photos by a vision model: always INFERRED (a guess from imagery), never a spec."""
+    materials: list[str] = []
+    colors: list[str] = []  # #rrggbb
+    finish: str | None = None
+    styleTags: list[str] = []
+    inferred: bool = True
+
+    @field_validator("colors")
+    @classmethod
+    def _hex(cls, v):
+        for c in v:
+            if not re.fullmatch(r"#[0-9a-fA-F]{6}", c):
+                raise ValueError(f"colour {c!r} is not a #rrggbb hex value")
+        return v
 
 
 Pt = tuple[float, float]
@@ -133,6 +153,7 @@ class Asset(BaseModel):
     tags: list[str] = []
     priceRef: str | None = None
     provenance: Provenance
+    style: Style | None = None
     status: Literal["draft", "confirmed"] = "draft"
 
     @field_validator("footprint")

@@ -27,8 +27,8 @@ export function useReskin(listingId: number) {
 export default function ReskinPanel({ listingId }: { listingId: number }) {
   const [concepts, setConcepts] = useState<Concept[] | null>(null);
   const [unavailable, setUnavailable] = useState(false);
-  const [from, setFrom] = useState("italian");
-  const [to, setTo] = useState("indian");
+  const [from, setFrom] = useState("coffee_bakery");
+  const [to, setTo] = useState("japanese");
   const r = useReskin(listingId);
 
   useEffect(() => {
@@ -42,7 +42,7 @@ export default function ReskinPanel({ listingId }: { listingId: number }) {
     <section className="mt-8 border-t border-foreground/10 pt-6" aria-labelledby="reskin-title">
       <h2 id="reskin-title" className="text-lg font-medium tracking-tight">Reskin the concept</h2>
       <p className="mt-1 text-sm text-foreground/50">
-        Swap the kitchen and finishes from one cuisine concept to another. Concept profiles are labelled assumptions; the space&apos;s real layout is not known to this tool.
+        Compare illustrative equipment and finishes for two concepts. Profiles are labelled assumptions; the space&apos;s real layout is not known to this tool.
       </p>
       {unavailable && <p className="mt-3 text-sm text-foreground/50" role="status">The concept service is not available (GET /api/concepts failed), so reskin is off.</p>}
       {!unavailable && !concepts && <p className="mt-3 text-sm text-foreground/50">Loading concepts.</p>}

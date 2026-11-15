@@ -9,7 +9,7 @@ Start with the repository [README](../README.md), then the product brief, MVP an
 - [Development workflow](development/workflow.md) — ownership map, branch/PR/CI/review loop, and test commands.
 - [Data preparation](data/README.md) — sponsor credential handling, data intake, provenance, and candidate-site registries.
 - [Source documentation research](data/source-research.md) — public Matterport documentation found and current Vexcel access gap.
-- [Working restaurant concept](data/restaurant-concept-profile.md) — Italian restaurant with gelato; operational assumptions and property diligence questions.
+- [Working shop concept](data/restaurant-concept-profile.md) — independent cafe; operational assumptions and property diligence questions.
 - [Scoring methodology](data/scoring-methodology.md) — experimental evidence-readiness and diligence checklist scores; current model choice and limitations.
 - [Local context methodology](data/local-context-methodology.md) — CoStar commercial peer counts and Houston-only NIBRS context; crime is not part of the score.
 - [Factor workstreams](data/factor-workstreams/README.md) — separate pre-inspection research folders for the full location intelligence backlog, with preliminary status and next tasks.

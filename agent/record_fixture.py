@@ -7,6 +7,7 @@ from .fixture_env import ScriptedEnv
 from .runner import Run
 from .scripted import ScriptedInspector, ScriptedPlanner
 
+# Legacy fixture source: keep this trace identified as the earlier Italian + gelato scenario.
 GOAL = "Italian restaurant with gelato in Houston, 40 seats, under 250k: find, verify and plan the best candidates"
 
 if __name__ == "__main__":

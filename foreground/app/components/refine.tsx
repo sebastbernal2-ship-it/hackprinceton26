@@ -116,7 +116,7 @@ export default function Refine() {
 
   return (
     <div
-      className="group relative h-[calc(100dvh)] cursor-text overflow-hidden [mask-image:linear-gradient(to_bottom,transparent,black_18%)]"
+      className="group relative h-[calc(100dvh-3.25rem)] cursor-text overflow-hidden [mask-image:linear-gradient(to_bottom,transparent,black_18%)]"
       onMouseDown={(event) => {
         event.preventDefault();
         inputRef.current?.focus();

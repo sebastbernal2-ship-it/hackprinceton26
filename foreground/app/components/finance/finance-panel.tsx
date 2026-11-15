@@ -88,7 +88,7 @@ export default function FinancePanel({ listingId, rentUnknownAssumption, seats =
   const sim = cur?.sim;
   return (
     <section className="mt-8 border-t border-foreground/10 pt-6" aria-labelledby="fin-title" data-testid="finance-panel">
-      <h2 id="fin-title" className="text-lg font-medium tracking-tight">36-month restaurant scenario</h2>
+      <h2 id="fin-title" className="text-lg font-medium tracking-tight">Illustrative 36-month shop scenario</h2>
       <p className="mt-1 text-sm font-medium text-accent">Scenario analysis, not a forecast.</p>
       {!cur && <p className="mt-3 text-sm text-foreground/50">Running simulation.</p>}
       {cur && !sim && <p className="mt-3 text-sm text-foreground/60">The finance service is not reachable. Cannot say.</p>}

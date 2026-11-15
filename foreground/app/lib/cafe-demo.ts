@@ -11,6 +11,9 @@ const CAFES: Cafe[] = [
   { tourId: "JAnuRsaVo9M", name: "Bayou Café", city: "Houston, TX", address: "2107 Tanglewilde St, Houston, TX 77063", photos: 6, costarPropertyId: 8035301 },
 ];
 
+/** Scans with a local editable walk export, used to give the scripted Sarah scene a cafe to walk and furnish. */
+export const CAFE_SCAN_IDS = CAFES.map((c) => c.tourId);
+
 export const CAFE_NOTICE =
   "Café demo: three Matterport interiors chosen by hand. They are amenity cafés, not listings, so rent, size and availability are unknown. Photos are served from local scan downloads.";
 

@@ -89,13 +89,13 @@ export default function SpaceChat({ match, open, onOpenChange }: { match: Match;
           </svg>
         </span>
         <div className="min-w-0 flex-1 pt-0.5">
-          <p className="text-lg leading-tight">Space agent</p>
+          <p className="text-lg leading-tight">Fio</p>
           <p className="mt-0.5 text-sm text-foreground/45">Ask about this listing</p>
         </div>
         <button
           type="button"
           onClick={() => onOpenChange(false)}
-          aria-label="Close space agent"
+          aria-label="Close Fio"
           className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-panel text-foreground transition-colors hover:bg-foreground/10"
         >
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden>

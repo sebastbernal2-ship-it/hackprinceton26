@@ -12,7 +12,7 @@ from planning import assessment  # noqa: E402
 
 from .models import (  # noqa: E402
     AssessInputs, AssessRequest, ConstraintVerdict, Match, ParsedProfile, ProjectionCard, ScenarioAssessment,
-    ShortlistMatch,
+    Alignment, ShortlistMatch,
 )
 
 LIMIT = 3
@@ -49,9 +49,19 @@ def from_parsed(pp: ParsedProfile) -> cf.Profile:
 def site_facts(m: Match, cost_bounds: tuple[float, float] | None) -> cf.SiteFacts:
     """Facts only where the data has them; seat capacity and use permission have no source so stay unknown."""
     f = {"city": cf.Fact(city_name(m), "observed", SRC, str(m.listingId), "", m.city)}
-    if m.squareFeet:
-        f["listed_space_area_sqft"] = cf.Fact(m.squareFeet, "observed", SRC, str(m.listingId), "", m.city,
-                                              "listed area; suite identity and freshness unverified")
+    if m.spaceSquareFeet:
+        # The space you would lease: CoStar's listed available space, else the floor area measured from this site's scan.
+        # The building's area (m.squareFeet) is deliberately NOT used: it says nothing about the suite.
+        scan = m.spaceSource == "scan"
+        f["listed_space_area_sqft"] = cf.Fact(m.spaceSquareFeet, "observed", "matterport-scan-area" if scan else SRC, str(m.listingId), "", m.city,
+                                              "floor area measured from the scan of this model; the scanned space may not be the suite for lease"
+                                              if scan else "listed available space; suite identity and freshness unverified")
+        # Seats are never listed. ESTIMATE from area using the same stated planning assumptions as the layout and cost tools:
+        # low = total area per seat 30 sq ft (dining + kitchen + back of house); high = 70% dining share at 15 sq ft per seat.
+        why = f"estimated from {m.spaceSquareFeet:g} sq ft: {SQFT_PER_SEAT_TOTAL:g} sq ft per seat overall (low) to {DINING_SHARE:.0%} dining at {SQFT_PER_SEAT_DINING:g} sq ft per seat (high); planning assumptions, not a code or measured figure"
+        for key, seats in (("seat_capacity_low", m.spaceSquareFeet / SQFT_PER_SEAT_TOTAL),
+                           ("seat_capacity_high", m.spaceSquareFeet * DINING_SHARE / SQFT_PER_SEAT_DINING)):
+            f[key] = cf.Fact(int(seats), "estimated", "estimate://seats-from-area-v1", str(m.listingId), "", m.city, why)
     if m.tourId:
         f["accessible_model_count"] = cf.Fact(1, "observed", SRC, str(m.listingId), "", m.city, "model association only")
     mk = next((c for c in m.factors if c.factorId == "property_market" and c.status == "observed" and c.value), None)
@@ -71,17 +81,34 @@ def _verdicts(res: cf.SiteResult) -> list[ConstraintVerdict]:
                               missingFields=list(r.missing_fields), evidence=r.evidence) for r in res.results]
 
 
-def shortlist(pool: list[Match], profile: cf.Profile):
-    """(shown, counts, excluded, notShown). PASS first, then UNKNOWN by evidenceReadiness desc, then listingId."""
+SQFT_PER_SEAT_TOTAL, SQFT_PER_SEAT_DINING, DINING_SHARE = 30.0, 15.0, 0.7
+CONSTRAINT_LABELS = {"city": "City", "area": "Suite area", "seats": "Seat capacity", "budget": "Build-out budget",
+                     "scan_model": "3D scan available", "active_listing": "Active listing", "restaurant_use": "Restaurant use permitted"}
+
+
+def alignment(res: cf.SiteResult) -> Alignment:
+    label = lambda r: CONSTRAINT_LABELS.get(r.constraint, r.constraint.replace("_", " ").capitalize())  # noqa: E731
+    est = lambda r: any(v.get("status") != "observed" for v in r.evidence.values())  # noqa: E731
+    return Alignment(total=len(res.results), pass_=sum(r.status == cf.PASS for r in res.results),
+                     estimatedItems=[label(r) for r in res.results if r.status == cf.PASS and est(r)],
+                     unknown=sum(r.status == cf.UNKNOWN for r in res.results), fail=sum(r.status == cf.FAIL for r in res.results),
+                     confirmed=[label(r) for r in res.results if r.status == cf.PASS],
+                     unknownItems=[label(r) for r in res.results if r.status == cf.UNKNOWN])
+
+
+def shortlist(pool: list[Match], profile: cf.Profile, limit: int | None = None):
+    """(shown, counts, excluded, notShown). PASS first, then more confirmed requirements, then evidenceReadiness desc, then listingId."""
+    limit = limit or LIMIT
     bounds = assessment.buildout_bounds() if profile.budget is not None else None
     results = {m.listingId: cf.evaluate(profile, site_facts(m, bounds)) for m in pool}
     counts = {s: sum(r.status == s for r in results.values()) for s in (cf.PASS, cf.FAIL, cf.UNKNOWN)}
     kept = [m for m in pool if results[m.listingId].status != cf.FAIL]
-    kept.sort(key=lambda m: (results[m.listingId].status != cf.PASS, -m.evidenceReadiness, m.listingId))
+    n_pass = lambda m: sum(r.status == cf.PASS for r in results[m.listingId].results)  # noqa: E731
+    kept.sort(key=lambda m: (results[m.listingId].status != cf.PASS, -n_pass(m), -m.evidenceReadiness, m.listingId))
     out = [ShortlistMatch(**m.model_dump(), constraintStatus=results[m.listingId].status,
-                          constraints=_verdicts(results[m.listingId]),
-                          missingFields=list(results[m.listingId].missing_fields)) for m in kept[:LIMIT]]
-    return out, counts, counts[cf.FAIL], max(0, len(kept) - LIMIT)
+                          constraints=_verdicts(results[m.listingId]), alignment=alignment(results[m.listingId]),
+                          missingFields=list(results[m.listingId].missing_fields)) for m in kept[:limit]]
+    return out, counts, counts[cf.FAIL], max(0, len(kept) - limit)
 
 
 ASSUMPTION_MAP = {"budget": "budget", "monthly_rent": "monthlyRent", "rent_free_months": "rentFreeMonths",

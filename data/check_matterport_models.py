@@ -15,8 +15,14 @@ import pathlib
 import time
 import urllib.error
 import urllib.request
+try:
+    from dotenv import load_dotenv
+except ImportError:
+    load_dotenv = None
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
+if load_dotenv is not None:
+    load_dotenv(ROOT / ".env")
 INPUT = ROOT / "data/raw/costar/marketplace-starter/commercial-properties.csv"
 OUTPUT = ROOT / "data/normalized/matterport/model-access-checks.jsonl"
 ENDPOINT = "https://api.matterport.com/api/models/graph"
@@ -47,7 +53,7 @@ def main():
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     completed = set()
     if OUTPUT.exists():
-        with OUTPUT.open() as existing:
+        with OUTPUT.open(encoding="utf-8") as existing:
             for line in existing:
                 try:
                     record = json.loads(line)

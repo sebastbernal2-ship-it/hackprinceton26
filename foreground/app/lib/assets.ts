@@ -12,6 +12,10 @@ export type DimsStatus = "measured" | "catalog" | "estimated";
 export type Dims = { w: number; d: number; h: number };
 export type Range2 = [number, number];
 
+export type AssetStyle = { materials: string[]; colors: string[]; finish: string | null; styleTags: string[]; inferred: boolean };
+export const HEX_COLOR = /^#[0-9a-fA-F]{6}$/;
+export const splitList = (text: string) => text.split(",").map((t) => t.trim()).filter(Boolean);
+
 export type Asset = {
   assetId: string;
   name: string;
@@ -33,6 +37,8 @@ export type Asset = {
   tags: string[];
   priceRef: string | null;
   provenance: { origin: string; retrievedAt: string; notes: string };
+  /** Aesthetics inferred from photos by a vision model. A guess from imagery, never a spec. */
+  style?: AssetStyle | null;
   status: "draft" | "confirmed";
 };
 
@@ -46,7 +52,11 @@ export const VARIANT_LABEL: Record<VariantKind, string> = {
 };
 export const DIMS_LABEL: Record<DimsStatus, string> = { measured: "measured", catalog: "catalog", estimated: "estimated" };
 
-export type IngestResponse = { proposals: Asset[]; mode: "live" | "fixture"; notice: string };
+/** live: a provider answered; fixture: canned samples, never saveable; failed: the provider call failed, no proposals. */
+export type IngestResponse = { proposals: Asset[]; mode: "live" | "fixture" | "failed"; notice: string; source?: "video"; frames?: { t: number }[] };
+export const MAX_ASSET_UPLOAD_VIDEO_BYTES = 60 * 1024 * 1024;
+export const MAX_ASSET_UPLOAD_IMAGES = 6;
+export const MAX_ASSET_UPLOAD_BYTES = 5 * 1024 * 1024;
 
 export class AssetApiError extends Error {
   constructor(message: string, readonly status: number | null) {
@@ -97,7 +107,30 @@ export function editDims(asset: Asset, axis: keyof Dims, value: number): Asset {
   return { ...asset, dims, footprint: rectangular ? rectFootprint(dims.w, dims.d) : asset.footprint };
 }
 
+const IMAGE_EXT = new Set([".jpg", ".jpeg", ".png", ".webp"]);
+const VIDEO_EXT = new Set([".mp4", ".webm", ".mov"]);
+const extOf = (name: string) => name.slice(name.lastIndexOf(".")).toLowerCase();
+export const isVideoFile = (f: { name: string }) => VIDEO_EXT.has(extOf(f.name));
+
+/** Client-side pre-check mirroring the server rules (the server stays authoritative). Returns an error message or null. */
+export function checkUploadFiles(files: { name: string; size: number }[]): { message: string; status: number } | null {
+  if (files.length === 0) return { message: "Choose at least one photo or one video.", status: 422 };
+  const video = files.some(isVideoFile);
+  if (video && files.length !== 1) return { message: "Choose either one video or up to 6 photos, not a mix.", status: 422 };
+  if (files.length > MAX_ASSET_UPLOAD_IMAGES) return { message: `Choose no more than ${MAX_ASSET_UPLOAD_IMAGES} images.`, status: 422 };
+  for (const file of files) {
+    const ext = extOf(file.name);
+    if (!IMAGE_EXT.has(ext) && !VIDEO_EXT.has(ext)) return { message: "Use JPEG, PNG, or WebP photos, or an MP4, WebM, or MOV video.", status: 415 };
+    if (VIDEO_EXT.has(ext) ? file.size > MAX_ASSET_UPLOAD_VIDEO_BYTES : file.size > MAX_ASSET_UPLOAD_BYTES) {
+      return { message: VIDEO_EXT.has(ext) ? `${file.name} exceeds the 60 MB video limit.` : `${file.name} exceeds the 5 MiB per-image limit.`, status: 413 };
+    }
+  }
+  return null;
+}
+
 export function ingestImages(files: File[], opts: { profileId?: string | null; referenceScale?: string }): Promise<IngestResponse> {
+  const bad = checkUploadFiles(files);
+  if (bad) throw new AssetApiError(bad.message, bad.status);
   const form = new FormData();
   for (const file of files) form.append("image", file);
   if (opts.referenceScale) form.append("referenceScale", opts.referenceScale);

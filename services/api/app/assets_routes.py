@@ -1,20 +1,21 @@
 """/api/assets: catalog listing, CRUD and parametric variants. (Ingest lives in its own router.)"""
-import json
 import sys
 from pathlib import Path
 
 from fastapi import APIRouter, Body, HTTPException
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, ValidationError
 
 ROOT = Path(__file__).resolve().parents[3]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
-from assets.models import Asset  # noqa: E402
-from assets.store import Store  # noqa: E402
-from assets.variants import make_variant, write_variant_model  # noqa: E402
+from assets.glb import extrude_glb  # noqa: E402
+from assets.models import Asset, Model3D  # noqa: E402
+from assets.store import get_store  # noqa: E402
+from assets.variants import make_variant  # noqa: E402
 
 router = APIRouter()
-STORE = Store()  # tests replace this with a Store on a tmp dir
+STORE = get_store()  # FileStore, or MongoStore when MONGODB_URI is set; tests replace this
 
 
 class VariantRequest(BaseModel):
@@ -26,6 +27,16 @@ class VariantRequest(BaseModel):
 def _e422(e: Exception):
     msg = e.errors(include_url=False, include_context=False) if isinstance(e, ValidationError) else str(e)
     raise HTTPException(status_code=422, detail=msg)
+
+
+def _find(asset_id: str) -> Asset:
+    try:
+        a = STORE.find_asset(asset_id)
+    except ValueError as e:
+        _e422(e)
+    if not a:
+        raise HTTPException(status_code=404, detail="asset not found")
+    return a
 
 
 @router.get("/api/assets")
@@ -41,7 +52,9 @@ def list_assets(profileId: str | None = None, category: str | None = None):
 def create_asset(body: dict = Body(...)):
     try:
         a = Asset.model_validate(body)
-        if STORE.find(a.assetId):
+        if a.provenance.origin == "fixture" or a.assetId.startswith("fixture-"):
+            raise HTTPException(status_code=422, detail="sample/fixture proposals are not identifications and cannot be saved")
+        if STORE.find_asset(a.assetId):
             raise HTTPException(status_code=409, detail="assetId already exists")
         STORE.save(a)
     except (ValidationError, ValueError) as e:
@@ -51,50 +64,45 @@ def create_asset(body: dict = Body(...)):
 
 @router.get("/api/assets/{assetId}")
 def get_asset(assetId: str):
-    try:
-        f = STORE.find(assetId)
-    except ValueError as e:
-        _e422(e)
-    if not f:
-        raise HTTPException(status_code=404, detail="asset not found")
-    return f[0].model_dump(mode="json")
+    cur = _find(assetId)
+    return cur.model_dump(mode="json")
+
+
+@router.get("/api/assets/{assetId}/model")
+def get_model(assetId: str):
+    """Stream the asset's GLB/OBJ from whichever backend holds it."""
+    blob = STORE.open_model(_find(assetId))
+    if blob is None:
+        raise HTTPException(status_code=404, detail="model not found")
+    headers = {"Content-Disposition": f'inline; filename="{blob.filename}"', "X-Content-Type-Options": "nosniff"}
+    if blob.size is not None:
+        headers["Content-Length"] = str(blob.size)
+    return StreamingResponse(blob.chunks, media_type=blob.media_type, headers=headers)
 
 
 @router.patch("/api/assets/{assetId}")
 def patch_asset(assetId: str, patch: dict = Body(...)):
-    try:
-        f = STORE.find(assetId)
-    except ValueError as e:
-        _e422(e)
-    if not f:
-        raise HTTPException(status_code=404, detail="asset not found")
-    cur, path = f
+    cur = _find(assetId)
     if {"assetId", "profileId"} & patch.keys():
         raise HTTPException(status_code=422, detail="assetId and profileId cannot be patched")
     try:
         new = Asset.model_validate({**cur.model_dump(mode="json"), **patch})
     except ValidationError as e:
         _e422(e)
-    path.write_text(json.dumps(new.model_dump(mode="json"), indent=2) + "\n")
+    STORE.replace(new)
     return new.model_dump(mode="json")
 
 
 @router.post("/api/assets/{assetId}/variants", status_code=201)
 def create_variant(assetId: str, req: VariantRequest):
-    try:
-        f = STORE.find(assetId)
-    except ValueError as e:
-        _e422(e)
-    if not f:
-        raise HTTPException(status_code=404, detail="asset not found")
-    parent = f[0]
+    cur = _find(assetId)
+    parent = cur
     # Never write generated files into the tracked library: no profile means the gitignored "scratch" profile.
     pid = req.profileId or parent.profileId or "scratch"
     try:
         v = make_variant(parent, req.kind, req.params)
         v = v.model_copy(update={"profileId": pid})
-        md = STORE.models_dir(pid)
-        v = write_variant_model(v, md, (md / f"{v.assetId}.glb").relative_to(STORE.library.parent.parent).as_posix())
+        v = v.model_copy(update={"model": Model3D(uri=STORE.put_model(v, extrude_glb(v.footprint, v.dims.h)), format="glb")})
         v = Asset.model_validate(v.model_dump())
         STORE.save(v)
     except (ValidationError, ValueError, KeyError) as e:

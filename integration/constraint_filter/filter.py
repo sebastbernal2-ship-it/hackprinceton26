@@ -106,6 +106,25 @@ def _range(name: str, fact: str, unit: str, lo, hi, site: SiteFacts) -> Constrai
     return ConstraintResult(name, PASS, f"{fact} {v:g} within [{lo}, {hi}] {unit}{basis}", (), _ev(site, fact))
 
 
+def _seats(p: Profile, site: SiteFacts) -> ConstraintResult:
+    """Seat capacity is never listed; it is estimated from floor area as a low/high interval. It is a ceiling on what the
+    space can hold, so only the operator's minimum is tested: PASS if even the low estimate reaches it, FAIL if even the
+    high estimate cannot, else UNKNOWN. The operator's maximum is a plan, not a property of the space."""
+    lo, hi = site.get("seat_capacity_low"), site.get("seat_capacity_high")
+    need = p.min_seats
+    if need is None:
+        return ConstraintResult("seats", PASS, "no minimum seat count requested", (), {})
+    if lo is None or hi is None:
+        return _unknown("seats", "no floor area to estimate seat capacity from", ("seat_capacity_low", "seat_capacity_high"), site)
+    if float(hi.value) < need:
+        return ConstraintResult("seats", FAIL, f"estimated capacity {float(lo.value):g}-{float(hi.value):g} seats is below the {need:g} wanted (estimated)",
+                                (), _ev(site, "seat_capacity_low", "seat_capacity_high"))
+    if float(lo.value) >= need:
+        return ConstraintResult("seats", PASS, f"estimated capacity {float(lo.value):g}-{float(hi.value):g} seats covers the {need:g} wanted (estimated)",
+                                (), _ev(site, "seat_capacity_low", "seat_capacity_high"))
+    return _unknown("seats", f"estimated capacity {float(lo.value):g}-{float(hi.value):g} seats straddles the {need:g} wanted", (), site)
+
+
 def _city(p: Profile, site: SiteFacts) -> ConstraintResult:
     f = site.get("city")
     if f is None:
@@ -168,7 +187,7 @@ def _checks(p: Profile, site: SiteFacts) -> list[ConstraintResult]:
     if p.min_area_sqft is not None or p.max_area_sqft is not None:
         out.append(_range("area", "listed_space_area_sqft", "sqft", p.min_area_sqft, p.max_area_sqft, site))
     if p.min_seats is not None or p.max_seats is not None:
-        out.append(_range("seats", "seat_capacity", "seats", p.min_seats, p.max_seats, site))
+        out.append(_seats(p, site))
     if p.budget is not None:
         out.append(_budget(p, site))
     if p.require_active_listing:

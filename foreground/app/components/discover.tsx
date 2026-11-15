@@ -2,12 +2,14 @@
 
 import ListingPhoto from "./listing-photo";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { buildoutCaption, buildoutLabel, heroPhoto, rentEstimateLabel, monthlyRent, rentLabel, type Match } from "../lib/matches";
 import { useMatches, type MatchesState } from "../lib/discover";
-import EvidenceReadiness from "./evidence-readiness";
+import { alignmentView, topAlignment } from "../lib/alignment";
+import CompatibilityPill from "./compatibility-pill";
 import Stepper from "./stepper";
 import PropertyInfo from "./property-info";
-import TourOverlay from "./tour-overlay";
+import TourEntry from "./tour-entry";
 import DemoSites from "./demo-sites";
 
 const number = new Intl.NumberFormat("en-US");
@@ -17,11 +19,15 @@ export default function Discover() {
   const matches = state.status === "ready" ? state.matches : [];
   const [tour, setTour] = useState<Match | null>(null);
   const [info, setInfo] = useState<Match | null>(null);
+  const leaders = topAlignment(matches);
+  const router = useRouter();
+  // Steps 3 onward belong to one property, so they open the top candidate.
+  const goStep = (step: number) => { if (step === 0) router.push("/"); else if (step >= 2 && matches[0]) setInfo(matches[0]); };
 
   return (
     <>
       <header className="animate-rise">
-        <div className="mb-4"><Stepper active={1} /></div>
+        <div className="mb-4 hidden sm:block"><Stepper active={1} onStep={goStep} /></div>
         <h1 className="text-[clamp(1.6rem,4vw,2.5rem)] font-medium leading-tight tracking-tight">Shortlist</h1>
         <p className="mt-2 text-foreground/50">{subtitle(state)}</p>
       </header>
@@ -74,8 +80,10 @@ export default function Discover() {
                     )}
                   </p>
                 </div>
-                <EvidenceReadiness match={match} />
+                <CompatibilityPill match={match} />
               </div>
+
+              <AlignmentLine match={match} leader={leaders.includes(index)} />
 
               <p className="mt-4 text-[0.95rem] leading-relaxed text-foreground/55">{match.blurb}</p>
               <p className="mt-2 text-sm text-foreground/40">
@@ -117,7 +125,7 @@ export default function Discover() {
       )}
 
       {tour && (
-        <TourOverlay
+        <TourEntry
           tourId={tour.tourId}
           title={tour.address}
           detail={tour.detail}
@@ -131,6 +139,32 @@ export default function Discover() {
 function subtitle(state: MatchesState) {
   if (state.status !== "ready" || state.matches.length === 0) return "Spaces from the candidate registry.";
   return `${state.matches.length} candidate spaces, shown in the order the service returned them.`;
+}
+
+function AlignmentLine({ match, leader }: { match: Match; leader: boolean }) {
+  const view = alignmentView(match);
+  if (!view) return null;
+  return (
+    <details data-testid="alignment" className={`mt-4 rounded-xl border px-4 py-3 text-sm ${leader ? "border-match bg-match-soft" : "border-foreground/15"}`}>
+      <summary className="cursor-pointer font-medium">
+        {view.line}
+        {leader && <span className="ml-2 rounded-full bg-match px-2 py-0.5 text-xs font-medium text-background">Most confirmed</span>}
+      </summary>
+      <p className="mt-2 text-xs text-foreground/55">Counts your stated requirements the data supports; estimates are marked. Seat capacity is estimated from floor area. It is not a prediction or a fit score.</p>
+      {view.confirmed.length > 0 && (
+        <>
+          <p className="mt-2 text-xs font-medium">Met</p>
+          <ul className="list-disc pl-5 text-foreground/70">{view.confirmed.map((c) => <li key={c}>{c}{view.estimatedItems?.includes(c) ? " (estimate)" : ""}</li>)}</ul>
+        </>
+      )}
+      {view.unknownItems.length > 0 && (
+        <>
+          <p className="mt-2 text-xs font-medium">Unknown (no evidence found)</p>
+          <ul className="list-disc pl-5 text-foreground/70">{view.unknownItems.map((c) => <li key={c}>{c}</li>)}</ul>
+        </>
+      )}
+    </details>
+  );
 }
 
 function Notice({ title, children }: { title: string; children: React.ReactNode }) {

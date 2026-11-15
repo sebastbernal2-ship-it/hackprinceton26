@@ -29,8 +29,8 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
 const post = (body: unknown) => ({ method: "POST", body: JSON.stringify(body) }) satisfies RequestInit;
 
-export function fetchMatches(brief: Exchange[]): Promise<MatchesResponse> {
-  return request("/matches", post({ brief }));
+export function fetchMatches(brief: Exchange[], limit?: number): Promise<MatchesResponse> {
+  return request("/matches", post(limit === undefined ? { brief } : { brief, limit }));
 }
 
 export function fetchNextQuestion(history: Exchange[]): Promise<NextQuestionResponse> {

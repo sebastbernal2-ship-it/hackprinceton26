@@ -4,7 +4,7 @@
 
 **Candidate sources:** CoStar listing/lease terms (basis/units need normalization); operator prior invoices/layouts with permission; local contractor/equipment quotes; local permit process durations; transparent labor/material price catalogs.
 
-**Preliminary:** generic Italian + gelato zoning/equipment block hypothesis exists for pilot. No itemized cost catalog, verified quantities, contractor prices, or opening timeline labels.
+**Preliminary:** an illustrative coffee/bakery reference profile exists for the pilot. It assumes an oven, pastry case, and coffee equipment; the menu, on-site baking, itemized site costs, verified quantities, contractor prices, and opening timeline labels are unconfirmed.
 
 **Prep:** separate rent/NNN/deposit from construction/equipment and dead-rent; create component catalog with unit/source/date/low-high/contingency; quantities from a human-reviewed layout; model permit/contractor schedule as scenarios with dependencies and ranges. Record unknown scope explicitly.
 

@@ -64,7 +64,7 @@ def build_queue(results: list[dict]) -> list[dict]:
 def load_aerial(d: Path, pid: str):
     """Aerial results are written by triage/aerial/build.py to <derived>/aerial/properties/<id>.json."""
     f = Path(d) / "aerial" / "properties" / f"{pid}.json"
-    return json.loads(f.read_text()) if f.exists() else None
+    return json.loads(f.read_text(encoding="utf-8")) if f.exists() else None
 
 
 def main():
@@ -74,7 +74,7 @@ def main():
     root = Path(a.data_root)
     props, listings, cands = load_inputs(root)
     d = root / "data/derived/triage"
-    scans = {p.stem: json.loads(p.read_text()) for p in (d / "matterport").glob("*.json")}
+    scans = {p.stem: json.loads(p.read_text(encoding="utf-8")) for p in (d / "matterport").glob("*.json")}
     results = []
     for pid in sorted(set(cands) | set(scans)):
         if pid not in props:
@@ -83,9 +83,10 @@ def main():
         results.append(triage_property(pid, props[pid], listings.get(pid), scans.get(pid), aerial))
     ids = {r["listingId"] for r in results}
     summary = summarize(results, {"candidates65": set(cands) & ids, "allScanned": {r["listingId"] for r in results if r["hasScan"]}, "everything": ids})
-    (d / "results.json").write_text(json.dumps(results))
-    (d / "summary.json").write_text(json.dumps(summary, indent=1))
-    (d / "queue.json").write_text(json.dumps(build_queue(results)))
+    d.mkdir(parents=True, exist_ok=True)
+    (d / "results.json").write_text(json.dumps(results), encoding="utf-8")
+    (d / "summary.json").write_text(json.dumps(summary, indent=1), encoding="utf-8")
+    (d / "queue.json").write_text(json.dumps(build_queue(results)), encoding="utf-8")
     print(json.dumps({k: {"properties": v["properties"], "withScan": v["withScan"]} for k, v in summary["cohorts"].items()}))
 
 

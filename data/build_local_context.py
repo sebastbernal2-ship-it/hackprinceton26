@@ -39,25 +39,25 @@ def peers_within(coord,pid,props,radius=1.0):
  return [p for p in props if p['id']!=pid and coord and miles(coord,(p['lat'],p['lon']))<=radius]
 def main():
  props=[]
- with (KIT/'data/commercial-property.jsonl').open() as f:
+ with (KIT/'data/commercial-property.jsonl').open(encoding='utf-8') as f:
   for line in f:
    p=json.loads(line);a=p.get('primaryAddress') or {}
    try:lat,lon=float(a['latitude']),float(a['longitude'])
    except (KeyError,TypeError,ValueError):continue
    props.append({'id':str(p['id']),'lat':lat,'lon':lon,'type':p.get('propertyType'),'city':str(a.get('city') or '').casefold(),'submarket':p.get('primarySubmarketId')})
  occ=collections.defaultdict(set)
- with (KIT/'data/location-occupancy.jsonl').open() as f:
+ with (KIT/'data/location-occupancy.jsonl').open(encoding='utf-8') as f:
   for line in f:
    x=json.loads(line)
    if x.get('tenantLocationId') is not None:occ[str(x.get('propertyId'))].add(str(x['tenantLocationId']))
  # Tenant-industry joins count food-service historic tenant locations, no names.
  tenant_food=set()
- with (KIT/'data/company-detail.jsonl').open() as f:
+ with (KIT/'data/company-detail.jsonl').open(encoding='utf-8') as f:
   for line in f:
    x=json.loads(line);profile=x.get('profile') or {}
    if str(profile.get('industryType'))=='17':tenant_food.add(str(x.get('id')))
  food_by_property=collections.defaultdict(set)
- with (KIT/'data/location-occupancy.jsonl').open() as f:
+ with (KIT/'data/location-occupancy.jsonl').open(encoding='utf-8') as f:
   for line in f:
    x=json.loads(line);tid=str(x.get('tenantLocationId')) if x.get('tenantLocationId') is not None else None
    if tid in tenant_food:food_by_property[str(x['propertyId'])].add(tid)

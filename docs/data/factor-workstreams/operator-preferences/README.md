@@ -2,9 +2,9 @@
 
 **Decision question:** What does this operator actually need and how should the system compare trade-offs for them?
 
-**Known:** User specified an Italian restaurant with gelato and confirmed Matterport pilot match. Working cities Houston/Los Angeles.
+**Known:** User specified an independent cafe. Working cities Houston/Los Angeles.
 
-**Unknown:** gelato made on-site vs sourced, menu (pizza/oven/pasta/fryer/grill), service style, seats, hours, takeout mix, target suite size, budget, parking/delivery needs, preferred neighborhood, non-negotiables, acceptable renovation/time/cost risk.
+**Unknown:** coffee and food menu; bought finished versus prepared or baked on site; service style, seats, hours, takeout mix, target suite size, budget, parking/delivery needs, preferred neighborhood, non-negotiables, acceptable renovation/time/cost risk.
 
 ## Operator intake (not yet answered)
 
@@ -12,8 +12,8 @@ Use this concise intake before applying fit filters or comparison weights. Recor
 
 | Topic | Ask | Classification |
 |---|---|---|
-| Gelato | Made on site, sourced, or undecided? | Operational requirement |
-| Menu/equipment | Which cooking methods and major equipment are required? | Operational requirement |
+| Menu and preparation | Which drinks and foods? Buy finished goods or prepare/bake on site? | Operational requirement |
+| Equipment | Which coffee, refrigeration, food prep, dishwashing, or cooking equipment is required? | Operational requirement |
 | Service | Counter, table service, takeout/delivery mix? | Preference / operations |
 | Capacity | Seats and target suite size, if known? | Hard constraint only if stated |
 | Hours | Planned operating days and hours? | Operational requirement |

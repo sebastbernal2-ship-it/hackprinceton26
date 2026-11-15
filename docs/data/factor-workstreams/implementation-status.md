@@ -18,7 +18,7 @@ Status as of 2026-11-14, on `main`. Coverage figures below are from each adapter
 | Infrastructure-permits | Pilot zoning/equipment planning artifacts | No authoritative parcel permit verification | Exact parcel/jurisdiction and local authority confirmation | Dated permit/zoning lookup checklist for pilot and second candidate |
 | Costs-timeline | Concept planning artifacts | No itemized costs or labels | Operator scope, bids, market inputs | Intake quantities and obtain dated quote ranges by work package |
 | Labor-supply | Adapter: BLS API v1 OEWS wages/employment (4 occupations, 2025) and CES food-services employment trend (1990-2026) per metro | Live run: 65/65 mapped, 13 observations per site, 845/845 observed; metro-level only, identical within a metro; 6 unit tests | BLS terms pages returned 403 (licence unverified); v1 daily cap unverified; single OEWS year, so no wage trend; no intervals | Role set from operator menu; site-level commute evidence
-| Operator-preferences | Italian restaurant + gelato concept known | No complete operator intake | Owner answers and consent | Capture constraints/preferences with unknown allowed; versioned response record |
+| Operator-preferences | Independent cafe concept known | No complete operator intake | Owner answers and consent | Confirm menu and preparation model; capture constraints/preferences with unknown allowed; versioned response record |
 
 ## Model and planning workstreams
 
@@ -47,6 +47,6 @@ Adapter wiring: only `crime_safety_la` has its own writer; the other seven adapt
 
 1. Operator: answer the intake fields in `operator-preferences/README.md`; unknown is an accepted answer.
 2. Sponsor/broker: confirm CoStar use/retention, present availability, exact suite/model identity, and Matterport rights.
-3. Local permitting experts: verify jurisdiction, restaurant use, permits and building systems for selected parcels.
+3. Local permitting experts: verify jurisdiction, food-service use, permits and building systems for selected parcels.
 4. Data lead: perform the record-level listing/tenant audit and retain source row IDs, dates, units/rate basis, joins and unknowns.
 5. Authorized data owner: approve Vexcel access and imagery terms; absent approval, visibility remains unknown.

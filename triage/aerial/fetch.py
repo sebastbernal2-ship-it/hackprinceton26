@@ -5,7 +5,7 @@ from pathlib import Path
 import requests
 from dotenv import load_dotenv
 
-ROOT = Path(os.environ.get("HP_ROOT", "/home/vorte/code/hackprinceton"))
+ROOT = Path(os.environ.get("HP_ROOT", str(Path(__file__).resolve().parents[2])))
 load_dotenv(ROOT / ".env")
 KEY = os.environ["VEXCEL_API_KEY"]
 URL = "https://api.vexcelgroup.com/v2/ortho/extract"
@@ -26,12 +26,12 @@ def fetch(pid, lat, lon):
     hdr = {k: v for k, v in r.headers.items() if k.lower().startswith(("x-", "content-type"))}
     meta = {"bbox_lon_lat": [w, s, e, n], "half_width_m": HALF_M, "px": PX, "m_per_px": 2 * HALF_M / PX,
             "source": "Vexcel ortho/extract", "response_headers": hdr, "fetched": time.strftime("%Y-%m-%d")}
-    (OUT / f"{pid}.meta.json").write_text(json.dumps(meta))
+    (OUT / f"{pid}.meta.json").write_text(json.dumps(meta), encoding="utf-8")
 
 
 if __name__ == "__main__":
     OUT.mkdir(parents=True, exist_ok=True)
-    rows = list(csv.DictReader(open(ROOT / "data/normalized/costar/restaurant-site-candidates.csv")))
+    rows = list(csv.DictReader(open(ROOT / "data/normalized/costar/restaurant-site-candidates.csv", newline="", encoding="utf-8")))
     ok = bad = 0
     for r in rows:
         pid = r["property_id"]

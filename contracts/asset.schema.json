@@ -127,6 +127,35 @@
     },
     "Provenance": {
       "properties": {
+        "box_2d": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Box 2D"
+        },
+        "confidence": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence"
+        },
         "notes": {
           "default": "",
           "title": "Notes",
@@ -181,6 +210,54 @@
         "label"
       ],
       "title": "Size",
+      "type": "object"
+    },
+    "Style": {
+      "description": "Aesthetics read from photos by a vision model: always INFERRED (a guess from imagery), never a spec.",
+      "properties": {
+        "colors": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Colors",
+          "type": "array"
+        },
+        "finish": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Finish"
+        },
+        "inferred": {
+          "default": true,
+          "title": "Inferred",
+          "type": "boolean"
+        },
+        "materials": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Materials",
+          "type": "array"
+        },
+        "styleTags": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Styletags",
+          "type": "array"
+        }
+      },
+      "title": "Style",
       "type": "object"
     }
   },
@@ -353,6 +430,17 @@
       ],
       "title": "Status",
       "type": "string"
+    },
+    "style": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Style"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
     },
     "tags": {
       "default": [],

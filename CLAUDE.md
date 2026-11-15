@@ -1,7 +1,7 @@
 @AGENTS.md
 
 # Project: Location Intelligence (HackPrinceton 26)
-Evidence-first site-selection tool for an independent food-business owner (working concept: Italian restaurant + gelato, Houston/LA). Sponsor data: CoStar (property/market), Matterport (interior scans), Vexcel (aerial). Read `docs/README.md` first; scope in `docs/product/mvp.md`, contracts in `docs/architecture/README.md`, factor streams in `docs/data/factor-workstreams/`.
+Evidence-first site-selection tool for an independent cafe owner in Houston/LA. Sponsor data: CoStar (property/market), Matterport (interior scans), Vexcel (aerial). Cafe menu, on-site baking, seating, and budget are unconfirmed; the coffee/bakery equipment profile is illustrative. Read `docs/README.md` first; scope in `docs/product/mvp.md`, contracts in `docs/architecture/README.md`, factor streams in `docs/data/factor-workstreams/`.
 
 ## Non-negotiables
 - Never invent evidence. Keep observed / derived / estimated / unknown distinct; missing ≠ negative. No ranking or crime scoring until validated. Costs come from deterministic code, not LLM arithmetic.

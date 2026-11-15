@@ -2,14 +2,14 @@
 Only fields whose validated relative error is <= MAX_REL_ERR are exposed as values; others are 'unknown' with the reason."""
 import json, os
 from pathlib import Path
-ROOT = Path(os.environ.get("HP_ROOT", "/home/vorte/code/hackprinceton"))
+ROOT = Path(os.environ.get("HP_ROOT", str(Path(__file__).resolve().parents[2])))
 HERE = Path(__file__).parent
 BASE = ROOT / "data/derived/triage/aerial"
 MAX_REL_ERR = 0.30
 VEH_T = 0.30
-val = json.loads((HERE / "validation.json").read_text())
-raw = json.loads((BASE / "raw_detections.json").read_text())
-lab = json.loads((HERE / "labels.json").read_text())["labels"]
+val = json.loads((HERE / "validation.json").read_text(encoding="utf-8"))
+raw = json.loads((BASE / "raw_detections.json").read_text(encoding="utf-8"))
+lab = json.loads((HERE / "labels.json").read_text(encoding="utf-8"))["labels"]
 veh = val["classes"]["vehicle"]; unit = val["classes"]["rooftop_unit"]
 mean_v = sum(l["vehicles"] for l in lab.values()) / len(lab)
 rel_v = round(veh["cv_mae"] / mean_v, 2)
@@ -20,7 +20,7 @@ def unknown(reason): return {"status": "unknown", "value": None, "reason": reaso
 
 out = BASE / "properties"; out.mkdir(parents=True, exist_ok=True)
 for pid, dets in raw.items():
-    meta = json.loads((BASE / "images" / f"{pid}.meta.json").read_text())
+    meta = json.loads((BASE / "images" / f"{pid}.meta.json").read_text(encoding="utf-8"))
     boxes = [d for d in dets if d["cls"] == "vehicle" and d["score"] >= VEH_T]
     n = len(boxes); mae = veh["cv_mae"]
     rec = {
@@ -43,5 +43,5 @@ for pid, dets in raw.items():
                        "vehicle_cv_mae": veh["cv_mae"], "rooftop_unit_cv_mae": unit["cv_mae"]},
         "provenance": "triage/aerial/detect.py (google/owlv2-base-patch16-ensemble, 800 px tiles) + build.py; screening estimate, not an engineering or survey assessment; model score is not a probability",
     }
-    (out / f"{pid}.json").write_text(json.dumps(rec))
+    (out / f"{pid}.json").write_text(json.dumps(rec), encoding="utf-8")
 print("wrote", len(raw), "vehicle rel err", rel_v, "unit rel err", rel_u)

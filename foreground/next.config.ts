@@ -31,6 +31,9 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     agentFeedback: true,
+    // Reference-media uploads (phone video) go through the /api rewrite: lift the default 10 MB body cap and 30 s proxy timeout.
+    proxyClientMaxBodySize: "2gb",
+    proxyTimeout: 10 * 60 * 1000,
   },
   cacheComponents: true,
   partialPrefetching: true,

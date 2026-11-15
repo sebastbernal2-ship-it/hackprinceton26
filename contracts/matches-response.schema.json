@@ -1,5 +1,58 @@
 {
   "$defs": {
+    "Alignment": {
+      "description": "How many of the operator's STATED requirements the evidence confirms, cannot confirm, or contradicts.\nA count of requirements, not a prediction or a fit score.",
+      "properties": {
+        "confirmed": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Confirmed",
+          "type": "array"
+        },
+        "estimatedItems": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Estimateditems",
+          "type": "array"
+        },
+        "fail": {
+          "title": "Fail",
+          "type": "integer"
+        },
+        "pass": {
+          "title": "Pass",
+          "type": "integer"
+        },
+        "total": {
+          "title": "Total",
+          "type": "integer"
+        },
+        "unknown": {
+          "title": "Unknown",
+          "type": "integer"
+        },
+        "unknownItems": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Unknownitems",
+          "type": "array"
+        }
+      },
+      "required": [
+        "total",
+        "pass",
+        "unknown",
+        "fail",
+        "confirmed",
+        "unknownItems"
+      ],
+      "title": "Alignment",
+      "type": "object"
+    },
     "ConstraintVerdict": {
       "properties": {
         "constraint": {
@@ -229,6 +282,17 @@
         "address": {
           "title": "Address",
           "type": "string"
+        },
+        "alignment": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Alignment"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         },
         "blurb": {
           "title": "Blurb",

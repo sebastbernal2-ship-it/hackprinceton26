@@ -19,7 +19,7 @@ export function parseChange(text: string, concepts: Concept[]): ParsedChange {
   const wall = /\b(open|remove|knock|take down|combine|merge|expand)\b.*\b(wall|room|suite|space)\b/.test(t);
   if (wall) return { kind: "wall", text };
   if (/\b(turn|convert|change|make|reskin|rebrand|swap)\b|into|to a|to an/.test(t)) {
-    // the LAST concept mentioned is the target ("turn this Italian restaurant into Indian")
+    // the LAST concept mentioned is the target ("turn this cafe into an izakaya")
     let best: { id: string; at: number } | null = null;
     for (const [id, ws] of Object.entries(WORDS)) {
       if (!ids.has(id)) continue;
@@ -104,10 +104,10 @@ export async function runAgent(goal: string, onEvent: (e: AgentEvent) => void, s
  */
 export const VERIFY_TOPICS: { id: string; topic: string; ask: string }[] = [
   { id: "use", topic: "Change of use / certificate of occupancy", ask: "Does the new concept change the permitted use or occupancy class? Ask the local building department." },
-  { id: "hood", topic: "Ventilation / hood", ask: "Does the new cooking equipment need a different hood or make-up air? Ask a licensed MEP engineer." },
-  { id: "grease", topic: "Grease interceptor and plumbing", ask: "Is the grease trap and drain sized for the new menu and fixtures?" },
-  { id: "gas", topic: "Gas and electrical capacity", ask: "Can the existing service carry the new equipment load?" },
-  { id: "fire", topic: "Fire suppression", ask: "Does the hood suppression system match the new appliances?" },
+  { id: "cold", topic: "Cold storage and refrigeration", ask: "Can the selected display and back-stock equipment maintain the required cold chain, and can the space reject the added heat? Confirm from equipment specs." },
+  { id: "electrical", topic: "Electrical capacity", ask: "Can the existing service carry the selected refrigeration and any production equipment? Verify nameplates and panel capacity." },
+  { id: "water", topic: "Handwashing, warewashing and plumbing", ask: "Do the selected service and production workflows have the needed sinks, water, drainage, and hot water?" },
+  { id: "conditional-hood", topic: "Conditional cooking / ventilation", ask: "If the menu adds cooking or heat-producing equipment, does it need ventilation, gas, or fire suppression review?" },
   { id: "occ", topic: "Occupant load and egress", ask: "Does the seat count change the occupant load or exits required?" },
   { id: "ada", topic: "Accessibility", ask: "Do the changed areas trigger accessibility upgrades?" },
   { id: "structure", topic: "Structural (walls, roof loads)", ask: "Is any wall to be opened load-bearing; do heavy units need floor or roof review?" },

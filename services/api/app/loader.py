@@ -26,6 +26,10 @@ def data_dir() -> Path:
     return Path(os.environ.get("COSTAR_NORMALIZED_DIR", "data/normalized/costar"))
 
 
+def photo_dir() -> Path:
+    return Path(os.environ.get("SITE_PHOTO_DIR", "data/derived/site-photos"))
+
+
 def _rows(path: Path) -> list[dict]:
     with path.open(newline="", encoding="utf-8") as fh:  # read-only
         return list(csv.DictReader(fh))
@@ -109,20 +113,22 @@ def _match(c: dict, cards: list[FactorCard], models: Optional[list[str]] = None)
         space, space_src = (scan.get("squareFeet"), "scan") if scan.get("squareFeet") else (None, None)
         if space:
             _fact(f"Scanned floor area ({scan.get('status')}, Matterport {tour})", f"{space:,} sq ft", prop)
+    photo_root = photo_dir() / str(listing)
+    photos = [f"/api/site-photos/{listing}/{name}" for name in ("photo-1.jpg", "aerial.jpg") if (photo_root / name).is_file()]
     return Match(
         listingId=listing,
         address=c.get("address", ""),
         detail="",
         city=city,
         blurb=c.get("candidate_basis", ""),
-        photo="",
+        photo=photos[0] if photos else "",
         squareFeet=sqft,
         spaceSquareFeet=space,
         spaceSource=space_src,
         rentPerSquareFootYear=None,
         tourId=tour,
         evidenceReadiness=evidence_readiness(cards),
-        facts=SpaceFacts(photos=[], property=prop, location=loc),
+        facts=SpaceFacts(photos=photos, property=prop, location=loc),
         factors=cards,
     )
 
