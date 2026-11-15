@@ -1,0 +1,8 @@
+{
+  "/api/layout-agent/route": "app/api/layout-agent/route.js",
+  "/api/layout-analyze/route": "app/api/layout-analyze/route.js",
+  "/api/scan/route": "app/api/scan/route.js",
+  "/dashboard/page": "app/dashboard/page.js",
+  "/dashboard/refine/page": "app/dashboard/refine/page.js",
+  "/page": "app/page.js"
+}

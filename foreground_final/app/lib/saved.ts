@@ -70,6 +70,25 @@ export function loadDesign(siteId: string): TourDesign | null {
   };
 }
 
+const STORED_PREFIXES = ["foreground.design.v1.", "foreground.imagine.v1.", "foreground.layout.v1."];
+const STORED_EXACT = new Set(["foreground.saved.v1", "foreground.lastBrief"]);
+
+/** Drops every bookmark, 3D tour design, Imagine version, and saved floor layout in this browser. */
+export function clearStoredTours() {
+  try {
+    const drop: string[] = [];
+    for (let index = 0; index < localStorage.length; index += 1) {
+      const key = localStorage.key(index);
+      if (!key) continue;
+      if (STORED_EXACT.has(key) || STORED_PREFIXES.some((prefix) => key.startsWith(prefix))) drop.push(key);
+    }
+    for (const key of drop) localStorage.removeItem(key);
+  } catch {
+    // storage blocked: nothing persisted to clear
+  }
+  window.dispatchEvent(new Event(CHANGE));
+}
+
 export function saveDesign(siteId: string, design: Omit<TourDesign, "updatedAt">) {
   const empty = !design.pieces.length && !design.wallEdits.added.length && !Object.keys(design.wallEdits.removed).length;
   if (empty) {

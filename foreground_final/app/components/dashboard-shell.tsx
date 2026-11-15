@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import { clearBrief, useBrief } from "../lib/brief";
 import { clearMatches } from "../lib/discover";
+import { clearStoredTours } from "../lib/saved";
 
 const TABS = [
   { href: "/dashboard", label: "Discover" },
@@ -23,6 +24,7 @@ export default function DashboardShell({ children }: { children: ReactNode }) {
   const fullBleed = pathname.startsWith("/dashboard/refine");
 
   function startOver() {
+    clearStoredTours();
     clearBrief();
     clearMatches();
   }
@@ -108,6 +110,7 @@ export default function DashboardShell({ children }: { children: ReactNode }) {
           <Link
             href="/"
             onClick={startOver}
+            aria-label="Start over and clear every saved tour"
             className="block rounded-lg px-3 py-2 text-sm text-foreground/60 transition-colors hover:bg-foreground/5 hover:text-foreground"
           >
             Start over
