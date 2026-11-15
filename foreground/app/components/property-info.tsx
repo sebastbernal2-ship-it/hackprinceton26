@@ -283,6 +283,7 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
         {tab === "structural" && !match.demo && <StructurePanel listingId={match.listingId} />}
         {tab === "business" && !match.demo && (
           <>
+            <GrowthSim listingId={match.listingId} title="Expansion and growth timeline" />
             <Projections listingId={match.listingId} />
             <LineagePanel listingId={match.listingId} />
           </>

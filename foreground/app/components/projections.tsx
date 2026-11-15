@@ -1,5 +1,7 @@
 "use client";
 
+import { readBrief } from "../lib/brief";
+import { briefBudget } from "../lib/cost-side";
 import { useEffect, useState } from "react";
 import {
   BANNER,
@@ -251,15 +253,22 @@ export function RangeBar({ lower, point, upper, unit }: { lower: number; point: 
   );
 }
 
+// Keys the assessment service understands (budget, monthly_rent, planned_open_months). The earlier keys were ignored by it,
+// which is why the panel could only say "Budget missing". The budget starts from the intake brief when it states one.
 const DEFAULTS: AssumptionInput[] = [
-  { key: "monthly_budget", value: 8000, unit: "USD/month", note: "Your rent budget" },
-  { key: "rent_growth", value: 3, unit: "percent/year", note: "Assumed, not observed" },
+  { key: "budget", value: 250000, unit: "USD", note: "Your total build-out budget" },
+  { key: "monthly_rent", value: 4000, unit: "USD/month", note: "Rent you assume paying" },
+  { key: "planned_open_months", value: 6, unit: "months", note: "Months from lease to opening" },
 ];
+const defaultValues = (): string[] => {
+  const fromBrief = briefBudget(readBrief());
+  return DEFAULTS.map((a) => String(a.key === "budget" && fromBrief ? fromBrief : a.value));
+};
 
 type Result = { p: ProjectionCard | undefined; note: string; unknown: boolean };
 
 function AssumptionPanel({ listingId }: { listingId: number }) {
-  const [values, setValues] = useState(DEFAULTS.map((a) => String(a.value)));
+  const [values, setValues] = useState(defaultValues);
   const [result, setResult] = useState<Result | null>(null);
   const [previous, setPrevious] = useState<ProjectionCard | undefined>();
   const [busy, setBusy] = useState(false);
@@ -271,7 +280,7 @@ function AssumptionPanel({ listingId }: { listingId: number }) {
     setBusy(true);
     setError(false);
     try {
-      const out = await postAssess(listingId, assumptions);
+      const out = await postAssess(listingId, assumptions, readBrief());
       setPrevious(result?.p);
       const { shown } = splitCards(out.projections ?? []);
       setResult({ p: overBudgetCard(shown), note: out.note ?? "", unknown: out.status !== "estimated" || shown.length === 0 });
@@ -328,7 +337,7 @@ function AssumptionPanel({ listingId }: { listingId: number }) {
             </>
           ) : (
             <p className="mt-2 text-sm font-medium text-foreground/60">
-              Cannot say{result.note ? `: ${result.note}` : "."}
+              {result.note ? result.note.replace(/^Scenario analysis, not a forecast\.\s*/, "") || "Needs a budget to compute the chance of going over." : "Needs a budget to compute the chance of going over."}
             </p>
           )}
         </div>

@@ -111,8 +111,8 @@ async function call<T>(path: string, init?: RequestInit): Promise<T> {
 
 export const fetchProjections = (listingId: number) => call<ProjectionsResponse>(`/property/${listingId}/projections`);
 
-export const postAssess = (listingId: number | null, assumptions: AssumptionInput[]) =>
-  call<ScenarioAssessment>("/assess", { method: "POST", body: JSON.stringify({ listingId, assumptions }) });
+export const postAssess = (listingId: number | null, assumptions: AssumptionInput[], brief: Exchange[] = []) =>
+  call<ScenarioAssessment>("/assess", { method: "POST", body: JSON.stringify({ listingId, assumptions, brief }) });
 
 export const postReplan = (listingId: number, maxAreaSqft: number, brief: Exchange[]) =>
   call<ReplanResponse>("/replan", {

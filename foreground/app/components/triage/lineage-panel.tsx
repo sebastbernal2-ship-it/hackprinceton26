@@ -59,6 +59,32 @@ export default function LineagePanel({ listingId }: { listingId: number }) {
             <span><i className="mr-1 inline-block h-2 w-3 rounded bg-foreground/35 align-middle" />ended: other exit (not failure)</span>
             <span>↳ a food tenant followed within a year</span>
           </p>
+          <details className="mt-3 rounded-lg border border-foreground/15 p-3 text-sm" open data-testid="lineage-breakdown">
+            <summary className="cursor-pointer font-medium">Previous tenants, breakdown ({L.tenants.length})</summary>
+            <div className="mt-2 overflow-x-auto">
+              <table className="w-full min-w-[34rem] text-left text-xs">
+                <thead className="text-foreground/50">
+                  <tr><th className="py-1 pr-3 font-normal">Tenant</th><th className="pr-3 font-normal">From</th><th className="pr-3 font-normal">To</th><th className="pr-3 font-normal">Tenure</th><th className="pr-3 font-normal">How it ended</th><th className="font-normal">Next tenant</th></tr>
+                </thead>
+                <tbody>
+                  {L.tenants.map((t, i) => {
+                    const row = t as unknown as Record<string, unknown>;
+                    const ending = String(row.ending ?? "");
+                    return (
+                      <tr key={i} className="border-t border-foreground/10">
+                        <td className="py-1.5 pr-3">{String(row.name ?? row.tenant ?? `Tenant ${i + 1}`)}</td>
+                        <td className="pr-3 tabular-nums">{String(row.start ?? "unknown").slice(0, 10)}</td>
+                        <td className="pr-3 tabular-nums">{ending === "open" ? "present" : String(row.end ?? "unknown").slice(0, 10)}</td>
+                        <td className="pr-3 tabular-nums">{typeof row.tenureYears === "number" ? `${row.tenureYears} yr` : "unknown"}</td>
+                        <td className="pr-3">{ending === "failure" ? "Closed or bankrupt (CoStar)" : ending === "open" ? "Still open" : ending === "other_exit" ? "Other exit (not counted as failure)" : "Unknown"}</td>
+                        <td>{row.successorWasFood ? "Another food tenant followed" : "No food tenant followed"}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </details>
           <p className="mt-2 text-sm" data-testid="lineage-summary">
             {L.counts?.foodTenants} food tenants, {L.counts?.clearFailure} clear closures, {L.counts?.otherExit} other exits, {L.counts?.open} open.
             Median completed tenure {L.medianCompletedTenureYears ?? "cannot say"}{L.medianCompletedTenureYears != null ? " yr" : ""}
