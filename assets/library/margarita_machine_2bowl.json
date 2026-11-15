@@ -52,7 +52,7 @@
     "beverage",
     "mexican"
   ],
-  "priceRef": null,
+  "priceRef": "margarita_machine_2bowl",
   "provenance": {
     "origin": "standard published/typical dimensions for this equipment class (not read from a specific spec sheet)",
     "retrievedAt": null,

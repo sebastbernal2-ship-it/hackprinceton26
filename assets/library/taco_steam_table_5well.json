@@ -53,7 +53,7 @@
     "mexican",
     "hot_hold"
   ],
-  "priceRef": null,
+  "priceRef": "taco_steam_table_5well",
   "provenance": {
     "origin": "standard published/typical dimensions for this equipment class (not read from a specific spec sheet)",
     "retrievedAt": null,

@@ -52,7 +52,7 @@
     "cooking",
     "japanese"
   ],
-  "priceRef": null,
+  "priceRef": "ramen_noodle_cooker_gas",
   "provenance": {
     "origin": "standard published/typical dimensions for this equipment class (not read from a specific spec sheet)",
     "retrievedAt": null,

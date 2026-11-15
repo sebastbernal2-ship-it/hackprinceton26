@@ -52,7 +52,7 @@
     "bakery",
     "cooking"
   ],
-  "priceRef": null,
+  "priceRef": "convection_oven_full",
   "provenance": {
     "origin": "standard published/typical dimensions for this equipment class (not read from a specific spec sheet)",
     "retrievedAt": null,
