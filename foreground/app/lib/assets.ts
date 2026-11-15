@@ -138,10 +138,21 @@ export function ingestImages(files: File[], opts: { profileId?: string | null; r
   return call<IngestResponse>("/ingest", { method: "POST", body: form });
 }
 
-/** Profile assets first, then library; stable within each group. */
+/** Profile every generated asset is saved in (the planner tray and the catalog grid both list it). */
+export const GENERATED_PROFILE = "generated";
+export type GenerateResult = { asset: Asset; imageMode: "openai" | "svg"; notice: string; priceNote: string };
+export const generateAsset = (prompt: string, useImageModel: boolean) =>
+  call<GenerateResult>("/generate", json("POST", { prompt, useImageModel }));
+/** The illustration route for an asset that has one (generated assets), else null. */
+export const assetImageUrl = (a: Asset) => (a.imageRefs.length ? `/api/assets/${encodeURIComponent(a.assetId)}/image` : null);
+
+/** 0 this profile's assets, 1 generated assets, 2 library. */
+export const groupOf = (a: Asset, profileId: string | null) => (profileId && a.profileId === profileId ? 0 : a.profileId === GENERATED_PROFILE ? 1 : 2);
+export const GROUP_LABEL = ["This profile's assets", "Generated assets", "Library"];
+
+/** Profile assets first, then generated, then library; stable within each group. */
 export function orderAssets(assets: Asset[], profileId: string | null): Asset[] {
-  const mine = (a: Asset) => (profileId && a.profileId === profileId ? 0 : 1);
-  return assets.map((a, i) => ({ a, i })).sort((x, y) => mine(x.a) - mine(y.a) || x.i - y.i).map((x) => x.a);
+  return assets.map((a, i) => ({ a, i })).sort((x, y) => groupOf(x.a, profileId) - groupOf(y.a, profileId) || x.i - y.i).map((x) => x.a);
 }
 
 export function bbox(points: [number, number][]) {

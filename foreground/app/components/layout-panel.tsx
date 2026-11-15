@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { packAssets, frontZone } from "../lib/asset-layout";
-import { listAssets, orderAssets, priceFor, type Asset, type AssetCategory } from "../lib/assets";
+import { GENERATED_PROFILE, listAssets, orderAssets, priceFor, type Asset, type AssetCategory } from "../lib/assets";
 import { buildCafeKit, cafeKitArea, CAFE_KIT_NOTE, dedupeAssets } from "../lib/cafe-demo";
 import { conceptFootprint } from "../lib/concept-layout";
 import type { CostLineItem } from "../lib/costs";
@@ -35,7 +35,9 @@ export default function LayoutPanel({ match, lines = [], items, onItems: setItem
 
   useEffect(() => {
     let live = true;
-    listAssets({ profileId, category })
+    // Generated assets live in their own profile; always list them beside the chosen profile and the library.
+    Promise.all([listAssets({ profileId, category }), profileId === GENERATED_PROFILE ? [] : listAssets({ profileId: GENERATED_PROFILE, category })])
+      .then(([own, gen]) => [...own, ...gen])
       .then((assets) => live && setCatalog({ status: "ok", assets: orderAssets([...dedupeAssets(assets).values()], profileId), error: "" }))
       .catch((e: unknown) => live && setCatalog({ status: "error", assets: [], error: e instanceof Error ? e.message : "failed" }));
     return () => { live = false; };
