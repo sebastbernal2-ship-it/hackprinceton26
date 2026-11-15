@@ -1,9 +1,10 @@
 """/api/assets: catalog listing, CRUD and parametric variants. (Ingest lives in its own router.)"""
+import os
 import sys
 from pathlib import Path
 
 from fastapi import APIRouter, Body, HTTPException
-from fastapi.responses import StreamingResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel, ValidationError
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -78,6 +79,17 @@ def get_model(assetId: str):
     if blob.size is not None:
         headers["Content-Length"] = str(blob.size)
     return StreamingResponse(blob.chunks, media_type=blob.media_type, headers=headers)
+
+
+@router.get("/api/assets/{assetId}/thumb")
+def get_thumb(assetId: str):
+    """Pre-rendered 256px preview PNG (tools/render-asset-thumbs.cjs) from ASSET_THUMB_DIR; 404 until rendered."""
+    a = _find(assetId)
+    d = Path(os.environ.get("ASSET_THUMB_DIR") or ROOT / "data" / "derived" / "asset-thumbs")
+    f = d / f"{a.assetId}.png"
+    if not f.is_file():
+        raise HTTPException(status_code=404, detail="thumbnail not rendered")
+    return FileResponse(f, media_type="image/png", headers={"Cache-Control": "public, max-age=3600", "X-Content-Type-Options": "nosniff"})
 
 
 @router.patch("/api/assets/{assetId}")

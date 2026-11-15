@@ -9,7 +9,7 @@ import { defaultControls, variantParams, type Controls } from "../lib/variant-pa
 import type { CostLineItem } from "../lib/costs";
 import AssetGenerator from "./asset-generator";
 import { AssetFacts, DimsBadge, FootprintSvg } from "./asset-bits";
-import AssetIcon from "./asset-icon";
+import AssetThumb from "./asset-thumb";
 
 type Props = {
   assets: Asset[];
@@ -58,7 +58,7 @@ export default function AssetBrowser({ assets, profileId, status, error, categor
               {header && <li className={`col-span-full text-xs font-medium text-foreground/60 ${i ? "mt-2" : ""}`}>{GROUP_LABEL[group].replace("'", "\u2019")}</li>}
               <li className={`flex min-w-0 flex-col rounded-xl border p-3 ${open ? "border-match" : "border-foreground/15"}`}>
                 <div className="flex h-28 items-center justify-center gap-2 overflow-hidden">
-                  {img ? /* eslint-disable-next-line @next/next/no-img-element */ <img src={img} alt={`Illustration of ${asset.name}`} className="h-24 w-24 rounded border border-foreground/15 object-cover" /> : <AssetIcon asset={asset} size={88} />}
+                  {img ? /* eslint-disable-next-line @next/next/no-img-element */ <img src={img} alt={`Illustration of ${asset.name}`} className="h-24 w-24 rounded border border-foreground/15 object-cover" /> : <AssetThumb asset={asset} size={88} />}
                   <FootprintSvg asset={asset} size={40} maxHeight={56} />
                 </div>
                 <p className="mt-3 line-clamp-2 min-h-[2.5rem] text-sm font-medium leading-snug" title={asset.name}>{asset.name}</p>

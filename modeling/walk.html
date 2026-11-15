@@ -1348,7 +1348,7 @@ let catTab = 'All';
 function drawCatalog() {
   $('catTabs').innerHTML = cats.map(c => `<button class="${c === catTab ? 'on' : ''}" data-tab="${c}">${c}</button>`).join('');
   $('catGrid').innerHTML = catalog.filter(c => catTab === 'All' || c.category === catTab).map(c =>
-    `<button class="card" data-id="${c.id}">${c.thumb ? `<img src="${c.thumb}" alt="" loading="lazy">` : `<div style="height:74px;border-radius:6px;background:#2a2d33;display:flex;align-items:center;justify-content:center;font-size:11px;color:#9aa;padding:4px;text-align:center">${(c.size_m||[]).map(x=>x.toFixed(2)).join(" x ")} m</div>`}<b>${c.name}</b>` +
+    `<button class="card" data-id="${c.id}">${(c.thumb || c.id.startsWith("lib_")) ? `<img src="${c.thumb || "/api/assets/" + encodeURIComponent(c.id.slice(4)) + "/thumb"}" alt="" loading="lazy"${c.thumb ? "" : ` onerror="this.replaceWith(Object.assign(document.createElement('div'),{textContent:this.dataset.ph,style:'height:74px;border-radius:6px;background:#2a2d33;display:flex;align-items:center;justify-content:center;font-size:11px;color:#9aa;padding:4px;text-align:center'}))" data-ph="${(c.size_m||[]).map(x=>x.toFixed(2)).join(" x ")} m"`}>` : `<div style="height:74px;border-radius:6px;background:#2a2d33;display:flex;align-items:center;justify-content:center;font-size:11px;color:#9aa;padding:4px;text-align:center">${(c.size_m||[]).map(x=>x.toFixed(2)).join(" x ")} m</div>`}<b>${c.name}</b>` +
     `<span>${c.size_m.length ? c.size_m.map(v => v.toFixed(1)).join(' × ') + ' m' : ''}</span></button>`).join('') ||
     '<div class="dim">No catalogue yet. Run: python modeling/fetch_catalog.py</div>';
 }
