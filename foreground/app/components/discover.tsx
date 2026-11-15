@@ -139,15 +139,10 @@ export default function Discover() {
 
 function PickReasons({ match }: { match: Match }) {
   const pick = match.pick;
-  if (!pick || (pick.reasons.length === 0 && !pick.bestMatch)) return null;
+  if (!pick || pick.reasons.length === 0) return null;
   return (
     <div className="mt-3" data-testid="pick-reasons">
-      {pick.bestMatch && (
-        <p className="inline-block rounded-full bg-accent/15 px-3 py-1 text-xs font-medium uppercase tracking-wide text-accent" data-testid="best-match">
-          {pick.label ?? "Best match (demo pick)"}
-        </p>
-      )}
-      <ul className="mt-2 space-y-1 text-sm text-foreground/60">
+      <ul className="space-y-1 text-sm text-foreground/60">
         {pick.reasons.map((r) => (
           <li key={r}>· {r}</li>
         ))}
