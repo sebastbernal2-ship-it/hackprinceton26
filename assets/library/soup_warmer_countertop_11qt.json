@@ -1,0 +1,129 @@
+{
+  "assetId": "soup_warmer_countertop_11qt",
+  "name": "Soup warmer, countertop 11 qt",
+  "category": "other",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 0.3556,
+    "d": 0.3556,
+    "h": 0.381
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.254,
+      0.0
+    ],
+    [
+      0.2854,
+      0.005
+    ],
+    [
+      0.3137,
+      0.0194
+    ],
+    [
+      0.3362,
+      0.0419
+    ],
+    [
+      0.3506,
+      0.0702
+    ],
+    [
+      0.3556,
+      0.254
+    ],
+    [
+      0.3506,
+      0.2854
+    ],
+    [
+      0.3362,
+      0.3137
+    ],
+    [
+      0.3137,
+      0.3362
+    ],
+    [
+      0.2854,
+      0.3506
+    ],
+    [
+      0.1016,
+      0.3556
+    ],
+    [
+      0.0702,
+      0.3506
+    ],
+    [
+      0.0419,
+      0.3362
+    ],
+    [
+      0.0194,
+      0.3137
+    ],
+    [
+      0.005,
+      0.2854
+    ],
+    [
+      0.0,
+      0.1016
+    ],
+    [
+      0.005,
+      0.0702
+    ],
+    [
+      0.0194,
+      0.0419
+    ],
+    [
+      0.0419,
+      0.0194
+    ],
+    [
+      0.0702,
+      0.005
+    ],
+    [
+      0.254,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.0,
+    "sides": 0.0,
+    "back": 0.0
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.00 m, sides 0.00 m, back 0.00 m. None needed: a small or floor-level piece that does not need its own working aisle (stated assumption). Confirm with the manufacturer's spec sheet and the local health, building and fire authority.",
+  "model": {
+    "uri": "assets/library/models/soup_warmer_countertop_11qt.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:boh",
+    "kitchen",
+    "hot_hold"
+  ],
+  "priceRef": "soup_warmer_countertop_11qt",
+  "provenance": {
+    "origin": "countertop soup warmer class (nominal 14 x 14 x 15 in, 0.36 x 0.36 x 0.38 m); not read from a spec sheet",
+    "retrievedAt": null,
+    "notes": "11 qt countertop soup kettle warmer. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

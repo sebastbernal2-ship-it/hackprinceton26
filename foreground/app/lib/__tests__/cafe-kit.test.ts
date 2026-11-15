@@ -30,7 +30,7 @@ describe("cafe reference kit", () => {
   });
 
   const VARIANTS = Object.keys(CAFE_KIT_VARIANTS) as KitVariant[];
-  it("has the two concept variants", () => expect(VARIANTS).toEqual(["grab_and_go", "full_service_patio"]));
+  it("has the concept variants", () => expect(VARIANTS).toEqual(["grab_and_go", "full_service_patio", "kitchen_line_light", "kitchen_line_full"]));
   it.each(VARIANTS.flatMap((v) => SCANS.map((s) => [v, s] as const)))("variant %s on scan %s is priced and packs without overlaps", (variant, scan) => {
     const { kit, missing } = buildCafeKit(scan, library, variant);
     expect(missing).toEqual([]);

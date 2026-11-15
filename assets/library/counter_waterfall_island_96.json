@@ -1,0 +1,65 @@
+{
+  "assetId": "counter_waterfall_island_96",
+  "name": "Waterfall island, 96 x 42 in",
+  "category": "counter",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 2.4384,
+    "d": 1.0668,
+    "h": 0.9144
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      2.4384,
+      0.0
+    ],
+    [
+      2.4384,
+      1.0668
+    ],
+    [
+      0.0,
+      1.0668
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.91,
+    "sides": 0.0,
+    "back": 0.0
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.91 m, sides 0.00 m, back 0.00 m. Front 0.91 m = 36 in working aisle / customer queue lane (health-code style aisle, stated assumption). Confirm with the manufacturer's spec sheet and the local health, building and fire authority.",
+  "model": {
+    "uri": "assets/library/models/counter_waterfall_island_96.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:front",
+    "front_of_house",
+    "island"
+  ],
+  "priceRef": "counter_waterfall_island_96",
+  "provenance": {
+    "origin": "waterfall island class (nominal 96 x 42 x 36 in, 2.44 x 1.07 x 0.91 m); not read from a spec sheet",
+    "retrievedAt": null,
+    "notes": "Stone-look island with waterfall ends, 96 x 42 in. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

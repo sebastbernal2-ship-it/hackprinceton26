@@ -1,0 +1,66 @@
+{
+  "assetId": "floor_drain_6",
+  "name": "Floor drain, 6 in",
+  "category": "other",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 0.1524,
+    "d": 0.1524,
+    "h": 0.0254
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      0.1524,
+      0.0
+    ],
+    [
+      0.1524,
+      0.1524
+    ],
+    [
+      0.0,
+      0.1524
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.0,
+    "sides": 0.0,
+    "back": 0.0
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.00 m, sides 0.00 m, back 0.00 m. None needed: a small or floor-level piece that does not need its own working aisle (stated assumption). Confirm with the manufacturer's spec sheet and the local health, building and fire authority.",
+  "model": {
+    "uri": "assets/library/models/floor_drain_6.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:boh",
+    "kitchen",
+    "utility",
+    "floor"
+  ],
+  "priceRef": "floor_drain_6",
+  "provenance": {
+    "origin": "floor drain class (nominal 6 x 6 x 1 in, 0.15 x 0.15 x 0.03 m); not read from a spec sheet",
+    "retrievedAt": null,
+    "notes": "6 in floor drain with grate. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

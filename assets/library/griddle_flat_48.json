@@ -1,0 +1,66 @@
+{
+  "assetId": "griddle_flat_48",
+  "name": "Gas flat-top griddle, 48 in",
+  "category": "range",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 1.2192,
+    "d": 0.762,
+    "h": 0.4064
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      1.2192,
+      0.0
+    ],
+    [
+      1.2192,
+      0.762
+    ],
+    [
+      0.0,
+      0.762
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.91,
+    "sides": 0.05,
+    "back": 0.0
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.91 m, sides 0.05 m, back 0.00 m. Front 0.91 m = 36 in cook-line aisle; sides 0.05 m = 2 in service gap (stated assumption). Confirm with the manufacturer's spec sheet and the local health, building and fire authority.",
+  "model": {
+    "uri": "assets/library/models/griddle_flat_48.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:boh",
+    "kitchen",
+    "cooking",
+    "griddle"
+  ],
+  "priceRef": "griddle_flat_48",
+  "provenance": {
+    "origin": "commercial gas griddle class (nominal 48 x 30 x 16 in, 1.22 x 0.76 x 0.41 m); not read from a spec sheet",
+    "retrievedAt": null,
+    "notes": "48 in countertop gas griddle, 1 in plate. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

@@ -1,0 +1,66 @@
+{
+  "assetId": "sink_hand_knee_valve_18",
+  "name": "Hand sink, knee-operated 18 in",
+  "category": "sink",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 0.4572,
+    "d": 0.4572,
+    "h": 0.6096
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      0.4572,
+      0.0
+    ],
+    [
+      0.4572,
+      0.4572
+    ],
+    [
+      0.0,
+      0.4572
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.3,
+    "sides": 0.0,
+    "back": 0.0
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.30 m, sides 0.00 m, back 0.00 m. Front 0.30 m = 12 in free reach in front of a wall-mounted piece (stated assumption). Confirm with the manufacturer's spec sheet and the local health, building and fire authority.",
+  "model": {
+    "uri": "assets/library/models/sink_hand_knee_valve_18.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:boh",
+    "kitchen",
+    "sink",
+    "hand_wash"
+  ],
+  "priceRef": "sink_hand_knee_valve_18",
+  "provenance": {
+    "origin": "NSF hand sink class (nominal 18 x 18 x 24 in, 0.46 x 0.46 x 0.61 m); not read from a spec sheet",
+    "retrievedAt": null,
+    "notes": "Wall-mounted hand sink with knee valve and splash guard. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

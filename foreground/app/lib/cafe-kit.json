@@ -136,6 +136,88 @@
           "chair_bistro_bentwood": 12
         }
       }
+    },
+    "kitchen_line_light": {
+      "label": "Kitchen line: cafe light kitchen",
+      "note": "DEMO variant: a cafe with a light hot line (24 in griddle, countertop fryer, double-stack convection oven), cold prep, a prep sink and a door-type dishmachine. Areas are the same ESTIMATED demo areas; the hood, makeup air and fire suppression are overhead and not placed on the floor.",
+      "base": [
+        "counter_service_96",
+        "counter_pickup_48",
+        "pos_stand_counter",
+        "espresso_machine_2group",
+        "coffee_grinder_on_demand",
+        "griddle_flat_24",
+        "fryer_countertop_1vat_15lb",
+        "convection_oven_double_stack",
+        "shelving_dry_storage_72x24",
+        "prep_table_sandwich_60",
+        "fridge_undercounter_2door_48",
+        "freezer_reachin_1door",
+        "fridge_reachin_2door",
+        "work_table_backsplash_72",
+        "sink_prep_double_48",
+        "sink_hand_knee_valve_18",
+        "dish_machine_door_type_20"
+      ],
+      "scans": {
+        "w2JcUVybv9c": {
+          "sqft": 900,
+          "table_2top_round_30": 2,
+          "table_4top_36sq": 2,
+          "chair_bistro_bentwood": 8
+        },
+        "xVKH13z5MJ8": {
+          "sqft": 1100,
+          "table_2top_round_30": 3,
+          "table_4top_36sq": 2,
+          "chair_bistro_bentwood": 10
+        },
+        "JAnuRsaVo9M": {
+          "sqft": 1300,
+          "table_2top_round_30": 3,
+          "table_4top_36sq": 3,
+          "chair_bistro_bentwood": 12
+        }
+      }
+    },
+    "kitchen_line_full": {
+      "label": "Kitchen line: full restaurant line",
+      "note": "DEMO variant: a full restaurant cooking line (48 in range, griddle, charbroiler, 2-vat fryer, salamander) with a heat-lamp pass and expo shelf, sandwich prep, a 3-door reach-in, a door-type dishmachine and a three-compartment sink. Walk-ins and the conveyor dishmachine are in the catalog but too big for these demo areas. Areas are the same ESTIMATED demo areas; the hood, makeup air and fire suppression are overhead and not placed on the floor.",
+      "base": [
+        "range_6burner_oven_48",
+        "griddle_flat_48",
+        "charbroiler_48",
+        "fryer_floor_2vat_80lb",
+        "salamander_broiler_36",
+        "counter_heated_pass_72",
+        "counter_expo_pass_72",
+        "prep_table_sandwich_72",
+        "fridge_reachin_3door",
+        "dish_machine_door_type_20",
+        "sink_hand_knee_valve_18",
+        "sink_three_comp_drainboards_120",
+        "trash_can_44gal"
+      ],
+      "scans": {
+        "w2JcUVybv9c": {
+          "sqft": 900,
+          "table_2top_round_30": 2,
+          "table_4top_36sq": 2,
+          "chair_bistro_bentwood": 8
+        },
+        "xVKH13z5MJ8": {
+          "sqft": 1100,
+          "table_2top_round_30": 3,
+          "table_4top_36sq": 2,
+          "chair_bistro_bentwood": 10
+        },
+        "JAnuRsaVo9M": {
+          "sqft": 1300,
+          "table_2top_round_30": 3,
+          "table_4top_36sq": 3,
+          "chair_bistro_bentwood": 12
+        }
+      }
     }
   }
 }

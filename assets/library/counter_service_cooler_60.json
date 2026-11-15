@@ -1,0 +1,65 @@
+{
+  "assetId": "counter_service_cooler_60",
+  "name": "Service counter with built-in cooler, 60 in",
+  "category": "counter",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 1.524,
+    "d": 0.762,
+    "h": 0.9144
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      1.524,
+      0.0
+    ],
+    [
+      1.524,
+      0.762
+    ],
+    [
+      0.0,
+      0.762
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.91,
+    "sides": 0.0,
+    "back": 0.0
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.91 m, sides 0.00 m, back 0.00 m. Front 0.91 m = 36 in working aisle / customer queue lane (health-code style aisle, stated assumption). Confirm with the manufacturer's spec sheet and the local health, building and fire authority.",
+  "model": {
+    "uri": "assets/library/models/counter_service_cooler_60.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:front",
+    "front_of_house",
+    "cold"
+  ],
+  "priceRef": "counter_service_cooler_60",
+  "provenance": {
+    "origin": "service counter with refrigerated base class (nominal 60 x 30 x 36 in, 1.52 x 0.76 x 0.91 m); not read from a spec sheet",
+    "retrievedAt": null,
+    "notes": "60 in service counter with a built-in refrigerated base. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

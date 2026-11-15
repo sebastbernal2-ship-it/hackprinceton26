@@ -1,0 +1,67 @@
+{
+  "assetId": "fire_suppression_panel",
+  "name": "Fire suppression panel and tank",
+  "category": "other",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 0.3556,
+    "d": 0.254,
+    "h": 0.762
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      0.3556,
+      0.0
+    ],
+    [
+      0.3556,
+      0.254
+    ],
+    [
+      0.0,
+      0.254
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.3,
+    "sides": 0.0,
+    "back": 0.0
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.30 m, sides 0.00 m, back 0.00 m. Front 0.30 m = 12 in free reach in front of a wall-mounted piece (stated assumption). Confirm with the manufacturer's spec sheet and the local health, building and fire authority.",
+  "model": {
+    "uri": "assets/library/models/fire_suppression_panel.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:boh",
+    "kitchen",
+    "overhead",
+    "utility",
+    "wall_mounted"
+  ],
+  "priceRef": "fire_suppression_panel",
+  "provenance": {
+    "origin": "kitchen fire suppression class (nominal 14 x 10 x 30 in, 0.36 x 0.25 x 0.76 m); not read from a spec sheet",
+    "retrievedAt": null,
+    "notes": "Wet-chemical hood fire suppression panel and tank. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

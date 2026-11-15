@@ -1,0 +1,128 @@
+{
+  "assetId": "counter_cashier_60",
+  "name": "Cashier counter, 60 in",
+  "category": "counter",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 1.524,
+    "d": 0.762,
+    "h": 0.9144
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      1.3716,
+      0.0
+    ],
+    [
+      1.4187,
+      0.0075
+    ],
+    [
+      1.4612,
+      0.0291
+    ],
+    [
+      1.4949,
+      0.0628
+    ],
+    [
+      1.5165,
+      0.1053
+    ],
+    [
+      1.524,
+      0.6096
+    ],
+    [
+      1.5165,
+      0.6567
+    ],
+    [
+      1.4949,
+      0.6992
+    ],
+    [
+      1.4612,
+      0.7329
+    ],
+    [
+      1.4187,
+      0.7545
+    ],
+    [
+      0.1524,
+      0.762
+    ],
+    [
+      0.1053,
+      0.7545
+    ],
+    [
+      0.0628,
+      0.7329
+    ],
+    [
+      0.0291,
+      0.6992
+    ],
+    [
+      0.0075,
+      0.6567
+    ],
+    [
+      0.0,
+      0.1524
+    ],
+    [
+      0.0075,
+      0.1053
+    ],
+    [
+      0.0291,
+      0.0628
+    ],
+    [
+      0.0628,
+      0.0291
+    ],
+    [
+      0.1053,
+      0.0075
+    ],
+    [
+      1.3716,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.91,
+    "sides": 0.0,
+    "back": 0.0
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.91 m, sides 0.00 m, back 0.00 m. Front 0.91 m = 36 in working aisle / customer queue lane (health-code style aisle, stated assumption). Confirm with the manufacturer's spec sheet and the local health, building and fire authority.",
+  "model": {
+    "uri": "assets/library/models/counter_cashier_60.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:front",
+    "front_of_house"
+  ],
+  "priceRef": "counter_cashier_60",
+  "provenance": {
+    "origin": "cashier counter class (nominal 60 x 30 x 36 in, 1.52 x 0.76 x 0.91 m); not read from a spec sheet",
+    "retrievedAt": null,
+    "notes": "Curved-corner cashier counter with till drawer cutout. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

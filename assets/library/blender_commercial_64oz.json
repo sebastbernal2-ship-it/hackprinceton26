@@ -1,0 +1,66 @@
+{
+  "assetId": "blender_commercial_64oz",
+  "name": "Commercial blender, 64 oz",
+  "category": "other",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 0.2286,
+    "d": 0.254,
+    "h": 0.5588
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      0.2286,
+      0.0
+    ],
+    [
+      0.2286,
+      0.254
+    ],
+    [
+      0.0,
+      0.254
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.0,
+    "sides": 0.0,
+    "back": 0.0
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.00 m, sides 0.00 m, back 0.00 m. None needed: a small or floor-level piece that does not need its own working aisle (stated assumption). Confirm with the manufacturer's spec sheet and the local health, building and fire authority.",
+  "model": {
+    "uri": "assets/library/models/blender_commercial_64oz.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:bar",
+    "front_of_house",
+    "bar",
+    "beverage"
+  ],
+  "priceRef": "blender_commercial_64oz",
+  "provenance": {
+    "origin": "commercial bar blender class (nominal 9 x 10 x 22 in, 0.23 x 0.25 x 0.56 m); not read from a spec sheet",
+    "retrievedAt": null,
+    "notes": "64 oz bar blender with sound cover. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}
