@@ -1,5 +1,6 @@
 "use client";
 
+import AssetIcon from "./asset-icon";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import AssetGenerator from "./asset-generator";
 import { checkLayout, frontZone, type Placement, type Rot } from "../lib/asset-layout";
@@ -507,14 +508,5 @@ function Stat({ label, value, id, warn }: { label: string; value: string; id: st
 function Glyph({ asset }: { asset: Asset }) {
   const img = assetImageUrl(asset);
   if (img) return /* eslint-disable-next-line @next/next/no-img-element */ <img src={img} alt="" draggable={false} className="h-11 w-11 shrink-0 rounded border border-foreground/15 object-cover" />;
-  const { w, d } = sizeFor(asset, 0);
-  const k = 40 / Math.max(w, d, 0.01);
-  return (
-    <svg width={44} height={44} viewBox="-2 -2 44 44" aria-hidden className="shrink-0">
-      <g transform={`translate(${(40 - w * k) / 2} ${(40 - d * k) / 2})`}>
-        <rect width={w * k} height={d * k} rx={2} className={categoryStyle(asset)} strokeWidth={1.2} />
-        <line x1={0} x2={w * k} y1={d * k} y2={d * k} strokeWidth={2.5} strokeLinecap="round" className="stroke-foreground/40" />
-      </g>
-    </svg>
-  );
+  return <AssetIcon asset={asset} size={44} className="shrink-0" />;
 }
