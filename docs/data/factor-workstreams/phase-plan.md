@@ -1,8 +1,8 @@
 # Factor research phase plan
 
-## Parallel subagent dispatch
+## Parallel dispatch
 
-Use the native `subagent_spawn` tool with a complete `WORK_PACKET_V1` packet in its `task` field. The dispatch gate validates, registers, and starts a valid packet; standalone preflight is advisory and does not itself create a task record. Do not dispatch without the packet, claim work started until the spawn succeeds, or use `task_control admit` to recover a missing-record spawn. The work below is designed as independent packets with bounded scopes.
+The work below is designed as independent packets with bounded scopes. Run them as parallel worktree slices (see `.claude/workflows/slice-and-verify.js` and [development workflow](../../development/workflow.md)); each packet owns disjoint paths.
 
 ## Phase 0 — decisions and shared contract (blocking, one coordinator)
 

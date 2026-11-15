@@ -1,6 +1,6 @@
 # Factor implementation status
 
-Status as of 2026-11-14, branch `phase3/merged`. Coverage figures below are from each adapter's own live run over the 65 local candidate sites (41 Houston, 24 Los Angeles), as reported by the adapter builders; the verifier re-ran every unit test suite but did NOT re-run the live fetches (they need network and the gitignored site CSV). Adapter output reaches `factor-cards.csv` only after `data/run_factor_adapters.py` (or `crime_safety_la/adapter.py`) writes `data/derived/<adapter>/observations.json`; absent that file the card stays unknown. Terms/licences are unverified unless a stream says otherwise.
+Status as of 2026-11-14, on `main`. Coverage figures below are from each adapter's own live run over the 65 local candidate sites (41 Houston, 24 Los Angeles), as reported by the adapter builders; the verifier re-ran every unit test suite but did NOT re-run the live fetches (they need network and the gitignored site CSV). Adapter output reaches `factor-cards.csv` only after `data/run_factor_adapters.py` (or `crime_safety_la/adapter.py`) writes `data/derived/<adapter>/observations.json`; absent that file the card stays unknown. Terms/licences are unverified unless a stream says otherwise.
 
 | Stream | Implemented locally | Reproducible evidence | External/confirmation blocker | Next measurable deliverable |
 |---|---|---|---|---|
@@ -20,9 +20,9 @@ Status as of 2026-11-14, branch `phase3/merged`. Coverage figures below are from
 | Labor-supply | Adapter: BLS API v1 OEWS wages/employment (4 occupations, 2025) and CES food-services employment trend (1990-2026) per metro | Live run: 65/65 mapped, 13 observations per site, 845/845 observed; metro-level only, identical within a metro; 6 unit tests | BLS terms pages returned 403 (licence unverified); v1 daily cap unverified; single OEWS year, so no wage trend; no intervals | Role set from operator menu; site-level commute evidence
 | Operator-preferences | Italian restaurant + gelato concept known | No complete operator intake | Owner answers and consent | Capture constraints/preferences with unknown allowed; versioned response record |
 
-## Model and planning workstreams (merged on this branch)
+## Model and planning workstreams
 
-Verified here by running each suite: services/api 16 passed; modeling 14; forecasting 23 (series + survival); planning 31; integration/constraint_filter 11; data/tests 77 (includes every factor adapter). Builders' own accuracy claims (backtest, survival results) are documented in `docs/models/` and were not re-derived by the verifier.
+Verified by running each suite on 2026-11-14: data/tests 79 passed (includes every factor adapter); services/api 84; inspection + capture 42; forecasting 23 (series + survival); planning 50; integration 16; modeling 16. Builders' own accuracy claims (backtest, survival results) are documented in `docs/models/` and were not re-derived by the verifier.
 
 | Workstream | What exists | Honest limits |
 |---|---|---|
@@ -33,7 +33,7 @@ Verified here by running each suite: services/api 16 passed; modeling 14; foreca
 | Survival | Exploratory CoStar tenancy survival model | Documented gate FAILED on the test split, so no cards are emitted; not a per-site prediction |
 | Frontend | Projection types and range-bar components, mock endpoints | `npm run build` and `npm run lint` pass; not exercised against live model output |
 
-Not yet integrated: only `crime_safety_la` has its own writer; the other seven adapters need `python data/run_factor_adapters.py` run with network and local data, which the verifier did not do. Mobility-tourism, spatial-interior, aerial-site, infrastructure-permits, costs-timeline and operator-preferences have no adapter in this merge and remain unknown.
+Adapter wiring: only `crime_safety_la` has its own writer; the other seven adapters need `python data/run_factor_adapters.py` run with network and local data, which the verifier did not do. Mobility-tourism, spatial-interior, aerial-site, infrastructure-permits, costs-timeline and operator-preferences have no adapter and remain unknown.
 
 ## Shared interpretation and blockers
 
