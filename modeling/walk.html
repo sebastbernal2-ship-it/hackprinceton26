@@ -5,6 +5,7 @@
 <title>Walk-through v4</title>
 <!-- Served by run_all.py at http://localhost:8000/modeling/walk.html?model=<sid>  (needs assets_<sid>/walk/ from modeling/walk_export.py) -->
 <script src="showcase/config.js"></script>
+<script src="floor_reset.js"></script>
 <style>
   :root { --text:#e6e8eb; --dim:#9aa0a8; --acc:#4fa3ff; }
   html, body { margin:0; height:100%; overflow:hidden; background:#101114; color:var(--text); font:13px/1.45 system-ui, sans-serif; }
@@ -61,7 +62,7 @@
   <div class="dim" style="margin-top:4px">Furniture: aim at a piece · <kbd>E</kbd> or click pick up / place · wheel or <kbd>R</kbd> turn ·
     <kbd>X</kbd> remove · <kbd>Ctrl</kbd>+<kbd>Z</kbd> undo · <kbd>C</kbd> catalogue of new furniture</div>
 </div>
-<div id="panel"><span id="edits"></span> <button id="aiBtn">Ask Fio (Enter)</button><button id="catBtn">Catalogue (C)</button><button id="clearBtn" title="Remove the scanned furniture and patch the floor and walls (K)">Clear the space (K)</button><button id="restoreBtn" style="display:none">Restore scan objects</button><button id="exportBtn">Export edits.json</button><button id="resetBtn">Reset all</button></div>
+<div id="panel"><span id="edits"></span> <button id="aiBtn">Ask Fio (Enter)</button><button id="catBtn">Catalogue (C)</button><button id="clearBtn" title="Remove the scanned furniture and patch the floor and walls (K)">Clear the space (K)</button><button id="restoreBtn" style="display:none">Restore scan objects</button><select id="floorSel" title="Floor: the scan as it is, or a clean flat floor"><option value="scan">Floor: scan</option><option value="match">Floor: match scan</option><option value="wood">Floor: light wood</option><option value="concrete">Floor: concrete</option><option value="tile">Floor: tile</option><option value="carpet">Floor: carpet</option><option value="plain">Floor: plain</option></select><button id="exportBtn">Export edits.json</button><button id="resetBtn">Reset all</button></div>
 <div id="ai"><div id="aiLog"></div><div id="aiChips"></div><div class="row"><input id="aiInput" placeholder="Ask Fio, or tell it: clear the room, remove the sofa, add 4 two-tops..." autocomplete="off"><button id="aiSend">Send</button><button id="aiNew">New chat</button></div></div>
 <div id="cat"><div class="head"><b>Add furniture</b><span class="dim">Free CC0 models from Poly Haven · lit by the room's own photo</span><button id="catClose">✕</button></div>
   <div id="catTabs"></div><div id="catGrid"></div></div>
@@ -690,7 +691,7 @@ function buildPatch(pc) {
     const r = inpaint(capture(cam, W, H), W, H, (i, j) => {
       const dx = pc.cx - hx + (i + 0.5) / W * 2 * hx - pc.cx, dy = pc.cy - hy + (j + 0.5) / H * 2 * hy - pc.cy;
       return Math.abs(dx * c + dy * s) <= sx / 2 && Math.abs(-dx * s + dy * c) <= sy / 2; });
-    const m = patchMesh(r.out, W, H, 2 * hx, 2 * hy); m.position.set(pc.cx, pc.cy, pc.floor_z + 0.004); meshes.push(m);
+    const m = patchMesh(r.out, W, H, 2 * hx, 2 * hy); m.position.set(pc.cx, pc.cy, pc.floor_z + 0.004 - (FR.active ? FloorReset.PATCH_DROP : 0)); meshes.push(m);
     floorRect = [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([a, b]) => [pc.cx + a * sx / 2 * c - b * sy / 2 * s, pc.cy + a * sx / 2 * s + b * sy / 2 * c]);
     info.floor = true; info.colour = r.mean; info.weak = r.weak; info.filled = r.filled * 1e-4 * (1 / (PPM / 100) ** 2) * 1; info.filledPx = r.filled;
   }
@@ -716,15 +717,23 @@ function syncPatches(pc) {
   if (!!pc._pv !== want) { pc._pv = want; staticDirty = true; }
 }
 // The floor patches are walkable: add them to the collision soup (the scan has no floor where the piece stood).
+const CP0 = CP, CI0 = CI;
 function rebuildStatic() {
   staticDirty = false;
-  const rects = pieces.filter(pc => pc._pv && pc.patch && pc.patch.floorRect).map(pc => ({ r: pc.patch.floorRect, z: pc.floor_z + 0.004 }));
+  const [CP, CI] = FR.collision(CP0, CI0);          // the reset floor replaces the scan floor and the patches
+  const rects = FR.active ? [] : pieces.filter(pc => pc._pv && pc.patch && pc.patch.floorRect).map(pc => ({ r: pc.patch.floorRect, z: pc.floor_z + 0.004 }));
   const ex = new Float32Array(rects.length * 12), ei = new Uint32Array(rects.length * 6), base = CP.length / 3;
   rects.forEach(({ r, z }, k) => { r.forEach(([x, y], a) => { ex.set([x, y, z], k * 12 + a * 3); }); ei.set([0, 1, 2, 0, 2, 3].map(v => base + k * 4 + v), k * 6); });
   const P2 = new Float32Array(CP.length + ex.length); P2.set(CP); P2.set(ex, CP.length);
   const I2 = new Uint32Array(CI.length + ei.length); I2.set(CI); I2.set(ei, CI.length);
   STATIC = makeSoup(P2, I2, 0.5);
 }
+
+// Reset floor (modeling/floor_reset.js): one flat floor plane with a simple texture instead of the scan floor
+const FR = FloorReset.create({ THREE, scene, house, P, UV, IDX, CP, CI, HOUSE_END, houseLo: meta.groups.length ? span(meta.groups)[0] : 0, posAttr, groups, meta, pieces, floorPatches: () => pieces.filter(pc => pc.patch && pc.patch.info.floor).map(pc => pc.patch.meshes[0]), aniso,
+  hintZ: () => feet.z, rebuild: () => { staticDirty = false; rebuildStatic(); } });
+function setFloor(kind) { const sel = $('floorSel'); sel.value = kind; if (kind === 'scan') FR.restore(); else if (!FR.apply(kind)) { flash('No floor found to reset here'); sel.value = 'scan'; } }
+$('floorSel').onchange = e => { setFloor(e.target.value); e.target.blur(); };
 
 const ease = t => t * t * (3 - 2 * t);
 const scanned = () => pieces.filter(pc => !pc.added);
@@ -761,6 +770,7 @@ async function clearSpace() {
       swatches: [...new Map(list.filter(pc => pc.patch && pc.patch.info.colour).map(pc => [pc.patch.info.colour.join(), pc.patch.info.colour])).values()].slice(0, 12),
       weak: list.filter(pc => pc.patch && pc.patch.info.weak).length };
     save(); showClearInfo(); status(`Cleared ${list.length} scanned objects · empty room`); $('restoreBtn').style.display = '';
+    setFloor('match');        // the cleared room gets a clean flat floor
   } };
   status('Clearing the space…');
 }
@@ -788,6 +798,7 @@ function updateClear(frameDt) {
 }
 function restoreScan() {
   if (wave) return;
+  setFloor('scan');
   const list = scanned().filter(pc => pc.deleted || isEdited(pc));
   if (!list.length) { flash('The scan objects are all where they were scanned'); return; }
   undoStack.push({ batch: list.map(pc => [pc, poseOf(pc)]), label: 'Restore scan objects' });
@@ -874,6 +885,7 @@ function undo() {
   const u = undoStack.pop(); if (!u) return;
   if (u.batch) {                                      // everything one AI request changed, undone together
     for (let i = u.batch.length - 1; i >= 0; i--) setPose(u.batch[i][0], u.batch[i][1]);
+    if (u.label === 'Clear the space') setFloor('scan');
     save(); flash(`Undid: ${u.label}`); return;
   }
   setPose(u[0], u[1]); save(); flash(`Undid: ${u[0].label}`);
@@ -1650,7 +1662,7 @@ function frame() {
 }
 status(`Ready · ${spots.length} scan spots`);
 setTimeout(maybeOffer, 2500);   // first entry: offer to clear the space
-window.walk = { feet, eye, spots, groups, renderer, pieces, interact, spawn, catalog, toggleCatalog, envMat, relight: pc => { pc.envSpot = null; lightItem(pc); }, removePiece, undo, clearSpace, restoreScan, get lastClear() { return lastClear; }, get clearing() { return !!wave || anims.length > 0; }, get STATIC_() { return STATIC; }, checkFit, fitDetails, sceneTools, get target() { return target; },
+window.walk = { feet, eye, spots, groups, renderer, pieces, interact, spawn, catalog, toggleCatalog, envMat, relight: pc => { pc.envSpot = null; lightItem(pc); }, removePiece, undo, clearSpace, restoreScan, FR, setFloor, get lastClear() { return lastClear; }, get clearing() { return !!wave || anims.length > 0; }, get STATIC_() { return STATIC; }, checkFit, fitDetails, sceneTools, get target() { return target; },
   get carried() { return carried; }, get fits() { return fits; }, get mode() { return mode; }, setView(y, p) { yaw = y; pitch = p; }, keys };   // for debugging
 frame();
 </script>
