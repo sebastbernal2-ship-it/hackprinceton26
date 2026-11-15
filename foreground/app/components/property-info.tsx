@@ -20,7 +20,7 @@ import { DisciplineLayout, useViewMode, ViewSwitch } from "./discipline-view";
 import type { LayoutSummary } from "../lib/layout-summary";
 import type { Asset } from "../lib/assets";
 import Stepper from "./stepper";
-import { heroPhoto, rentLabel, type FactorCard, type Match } from "../lib/matches";
+import { heroPhoto, isScanOnly, rentLabel, type FactorCard, type Match } from "../lib/matches";
 import FactorCards from "./factor-cards";
 import Projections, { ForecastRow } from "./projections";
 import SpaceChat from "./space-chat";
@@ -292,7 +292,7 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
             planner: <CafePlanner match={match} kit={kit} onKit={setKit} placed={placed} onPlaced={setPlaced} area={area} onArea={setArea} onContinue={() => { setCurrent(4); setQuantify({ layout: lastLayout.current }); }} />,
             layout: <LayoutPanel match={match} items={kit} onItems={setKit} area={area} onArea={setArea} />,
             projections: real && <Projections listingId={match.listingId} />,
-            "data-streams": !match.demo && <DataStreams listingId={match.listingId} scanOnly={isScanOnly(match)} />,
+            "data-streams": !match.demo && <DataStreams listingId={match.listingId} />,
             evidence: <FactorCards factors={demoFactors ?? match.factors ?? []} demo={match.demo && !demoFactors?.length} />,
           }} />
         )}

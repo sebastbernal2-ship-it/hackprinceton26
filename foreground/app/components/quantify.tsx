@@ -318,7 +318,7 @@ export default function Quantify({ match, layout, onBackToLayout, onClose, onSte
             "q-layout": <div className="mt-4">{layoutBlock}</div>,
             "q-equipment": <div className="mt-4">{equipmentBlock}</div>,
             "q-structure": <>{match.costarPropertyId && <CostarBuilding propertyId={match.costarPropertyId} city={match.city} />}{!match.demo && !isScanOnly(match) && <StructurePanel listingId={match.listingId} />}</>,
-            "q-market": !match.demo && <>{!isScanOnly(match) && <Projections listingId={match.listingId} />}<DataStreams listingId={match.listingId} scanOnly={isScanOnly(match)} /></>,
+            "q-market": !match.demo && <>{!isScanOnly(match) && <Projections listingId={match.listingId} />}<DataStreams listingId={match.listingId} /></>,
           }} />
         ) : (<>{secInputs}{secCosts}{secRunning}{secDetails}</>)}
       </div>
