@@ -44,6 +44,23 @@ export const fetchScenarios = (id: number) => call<ScenarioResponse>(`/structure
 export const postExpansion = (listingId: number, plan: Plan, baseRoomIds: string[]) =>
   call<ExpansionResponse>("/structure/expansion", { method: "POST", body: JSON.stringify({ listingId, plan, baseRoomIds }) });
 
+const bundles = new Map<number, Promise<{ s: StructureResponse | null; c: ScenarioResponse | null }>>();
+/**
+ * One structure fetch per listing, shared across remounts (React strict mode double-runs effects). Scenarios are only
+ * requested when the structure snapshot answered, so a missing snapshot (503/404) costs one request, not four.
+ */
+export function loadStructure(id: number): Promise<{ s: StructureResponse | null; c: ScenarioResponse | null }> {
+  let p = bundles.get(id);
+  if (!p) {
+    p = fetchStructure(id).then(
+      async (s) => ({ s, c: await fetchScenarios(id).catch(() => null) }),
+      () => ({ s: null, c: null }),
+    );
+    bundles.set(id, p);
+  }
+  return p;
+}
+
 export const HORIZONS = [2030, 2050, 2070] as const;
 
 /** Distinct scenario names in the table, e.g. "NOAA High". Order of first appearance. */

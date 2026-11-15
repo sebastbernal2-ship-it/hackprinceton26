@@ -1,0 +1,153 @@
+{
+ "runId": "15e964b0",
+ "mode": "SCRIPTED",
+ "goal": "Imagine this change for listing 235044 and say what to verify: Turn this Italian restaurant into Indian",
+ "label": "scenario analysis, not a forecast",
+ "recommendation": "Verify listing 235044 first (unknown); this is a screening ranking, not a fit score.",
+ "claims": [
+  {
+   "text": "Listing 235044 is unknown: Budget or rent/delay inputs missing: P(over budget) is unknown, not zero.",
+   "cites": [
+    "r7",
+    "r8",
+    "r9",
+    "r14"
+   ]
+  },
+  {
+   "text": "Listing 814216 is unknown: Budget or rent/delay inputs missing: P(over budget) is unknown, not zero.",
+   "cites": [
+    "r4",
+    "r5",
+    "r6",
+    "r10"
+   ]
+  },
+  {
+   "text": "Listing 5697296 is unknown: Budget or rent/delay inputs missing: P(over budget) is unknown, not zero.",
+   "cites": [
+    "r11",
+    "r12",
+    "r13",
+    "r15"
+   ]
+  },
+  {
+   "text": "Verification checklist and landlord questions generated for listing 235044 from its findings and unknowns.",
+   "cites": [
+    "r17"
+   ]
+  }
+ ],
+ "rejectedClaims": [],
+ "verdicts": [
+  {
+   "listingId": 814216,
+   "verdict": "unknown",
+   "headline": "Budget or rent/delay inputs missing: P(over budget) is unknown, not zero.",
+   "topRisk": "no inspection findings exist for this listing",
+   "risks": [],
+   "unknowns": [
+    "no inspection findings exist for this listing",
+    "assess input unknown: budget",
+    "assess input unknown: full_basis",
+    "some cost lines have no figure and are excluded from totals (unknown, not zero)"
+   ],
+   "cites": [
+    "r4",
+    "r5",
+    "r6",
+    "r10"
+   ],
+   "verified": true
+  },
+  {
+   "listingId": 235044,
+   "verdict": "unknown",
+   "headline": "Budget or rent/delay inputs missing: P(over budget) is unknown, not zero.",
+   "topRisk": "no inspection findings exist for this listing",
+   "risks": [],
+   "unknowns": [
+    "no inspection findings exist for this listing",
+    "assess input unknown: budget",
+    "assess input unknown: full_basis",
+    "some cost lines have no figure and are excluded from totals (unknown, not zero)"
+   ],
+   "cites": [
+    "r7",
+    "r8",
+    "r9",
+    "r14"
+   ],
+   "verified": true
+  },
+  {
+   "listingId": 5697296,
+   "verdict": "unknown",
+   "headline": "Budget or rent/delay inputs missing: P(over budget) is unknown, not zero.",
+   "topRisk": "no inspection findings exist for this listing",
+   "risks": [],
+   "unknowns": [
+    "no inspection findings exist for this listing",
+    "assess input unknown: budget",
+    "assess input unknown: full_basis",
+    "some cost lines have no figure and are excluded from totals (unknown, not zero)"
+   ],
+   "cites": [
+    "r11",
+    "r12",
+    "r13",
+    "r15"
+   ],
+   "verified": true
+  }
+ ],
+ "unknowns": [
+  {
+   "listingId": 814216,
+   "unknowns": [
+    "no inspection findings exist for this listing",
+    "assess input unknown: budget",
+    "assess input unknown: full_basis",
+    "some cost lines have no figure and are excluded from totals (unknown, not zero)"
+   ],
+   "cites": [
+    "r4",
+    "r5",
+    "r6",
+    "r10"
+   ]
+  },
+  {
+   "listingId": 235044,
+   "unknowns": [
+    "no inspection findings exist for this listing",
+    "assess input unknown: budget",
+    "assess input unknown: full_basis",
+    "some cost lines have no figure and are excluded from totals (unknown, not zero)"
+   ],
+   "cites": [
+    "r7",
+    "r8",
+    "r9",
+    "r14"
+   ]
+  },
+  {
+   "listingId": 5697296,
+   "unknowns": [
+    "no inspection findings exist for this listing",
+    "assess input unknown: budget",
+    "assess input unknown: full_basis",
+    "some cost lines have no figure and are excluded from totals (unknown, not zero)"
+   ],
+   "cites": [
+    "r11",
+    "r12",
+    "r13",
+    "r15"
+   ]
+  }
+ ],
+ "note": "Screening evidence, not an engineering assessment or a forecast. Unknown means unknown, not zero."
+}
