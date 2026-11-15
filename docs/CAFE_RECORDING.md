@@ -2,6 +2,12 @@
 
 Rehearsed end to end on branch `takeover/rehearse` with the real API, `next dev` and a real Chromium (Playwright), 2026-11-15. This runbook covers `foreground/` only. Afnan's `final_frontend` branch (`foreground_final/`) is a different app; do not mix them.
 
+## Quick start and the Sarah scene
+- `tools/demo-up` starts the API (:8000) and web app (:3000) on loopback with every local data path wired. Open http://localhost:3000.
+- **Sarah scene (scripted):** type `I'm Sarah` as the first answer; her full first answer is filled in and the second question ("Anything the space must have?") is asked. Type `Sarah` again to fill her second answer, or type your own. The shortlist then shows 5 candidates with a compatibility score. Seat capacity is estimated from floor area (stated planning ratios), and met requirements that rest on estimates are marked.
+- The first three candidates open cafe scans with editable walks: **Open 3D Tour** and **Scope out your vision** both let you place furniture. Navigation: left sidebar (Discover, Profile, Chat & Refine; minimize button) and Back/Next across the seven steps. The agent is called **Fio**.
+- Demo estimates (prices, areas, aerial and climate placeholders) are labelled estimated in the app; do not present them as observed.
+
 ## What this path is, and is not
 - The `cafes` shortcut shows three hand-picked Matterport amenity-cafe scans. They are **not listings**: rent, lease area and availability are unknown. A scan or a linked CoStar building does not prove a marketed suite.
 - Every dollar figure is a scenario range, not a quote. Observed = a vendor list price seen on a public page; estimated = the neutral band; fit-out per sq ft is an analyst assumption.
