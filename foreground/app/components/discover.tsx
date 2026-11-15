@@ -4,6 +4,8 @@ import ListingPhoto from "./listing-photo";
 import { useState } from "react";
 import { buildoutCaption, buildoutLabel, heroPhoto, rentEstimateLabel, monthlyRent, rentLabel, type Match } from "../lib/matches";
 import { useMatches, type MatchesState } from "../lib/discover";
+import { alignmentView, topAlignment } from "../lib/alignment";
+import { SARAH_NOTICE } from "../lib/sarah-scene";
 import EvidenceReadiness from "./evidence-readiness";
 import Stepper from "./stepper";
 import PropertyInfo from "./property-info";
@@ -17,15 +19,21 @@ export default function Discover() {
   const matches = state.status === "ready" ? state.matches : [];
   const [tour, setTour] = useState<Match | null>(null);
   const [info, setInfo] = useState<Match | null>(null);
+  const leaders = topAlignment(matches);
 
   return (
     <>
       <header className="animate-rise">
-        <div className="mb-4"><Stepper active={1} /></div>
+        <div className="mb-4 hidden sm:block"><Stepper active={1} /></div>
         <h1 className="text-[clamp(1.6rem,4vw,2.5rem)] font-medium leading-tight tracking-tight">Shortlist</h1>
         <p className="mt-2 text-foreground/50">{subtitle(state)}</p>
       </header>
 
+      {state.status === "ready" && state.scene === "sarah" && (
+        <p role="status" data-testid="scene-banner" className="mt-6 inline-block rounded-full border border-dashed border-foreground/30 px-4 py-1.5 text-sm text-foreground/70">
+          {SARAH_NOTICE}
+        </p>
+      )}
       {state.status === "loading" && <p className="mt-10 text-foreground/50">Loading spaces…</p>}
       {state.status === "error" && (
         <Notice title="Could not reach the data service">
@@ -76,6 +84,8 @@ export default function Discover() {
                 </div>
                 <EvidenceReadiness match={match} />
               </div>
+
+              <AlignmentLine match={match} leader={leaders.includes(index)} />
 
               <p className="mt-4 text-[0.95rem] leading-relaxed text-foreground/55">{match.blurb}</p>
               <p className="mt-2 text-sm text-foreground/40">
@@ -131,6 +141,32 @@ export default function Discover() {
 function subtitle(state: MatchesState) {
   if (state.status !== "ready" || state.matches.length === 0) return "Spaces from the candidate registry.";
   return `${state.matches.length} candidate spaces, shown in the order the service returned them.`;
+}
+
+function AlignmentLine({ match, leader }: { match: Match; leader: boolean }) {
+  const view = alignmentView(match);
+  if (!view) return null;
+  return (
+    <details data-testid="alignment" className={`mt-4 rounded-xl border px-4 py-3 text-sm ${leader ? "border-match bg-match-soft" : "border-foreground/15"}`}>
+      <summary className="cursor-pointer font-medium">
+        {view.line}
+        {leader && <span className="ml-2 rounded-full bg-match px-2 py-0.5 text-xs font-medium text-background">Most confirmed</span>}
+      </summary>
+      <p className="mt-2 text-xs text-foreground/55">Counts your stated requirements the evidence supports. It is not a prediction or a fit score.</p>
+      {view.confirmed.length > 0 && (
+        <>
+          <p className="mt-2 text-xs font-medium">Confirmed</p>
+          <ul className="list-disc pl-5 text-foreground/70">{view.confirmed.map((c) => <li key={c}>{c}</li>)}</ul>
+        </>
+      )}
+      {view.unknownItems.length > 0 && (
+        <>
+          <p className="mt-2 text-xs font-medium">Unknown (no evidence found)</p>
+          <ul className="list-disc pl-5 text-foreground/70">{view.unknownItems.map((c) => <li key={c}>{c}</li>)}</ul>
+        </>
+      )}
+    </details>
+  );
 }
 
 function Notice({ title, children }: { title: string; children: React.ReactNode }) {

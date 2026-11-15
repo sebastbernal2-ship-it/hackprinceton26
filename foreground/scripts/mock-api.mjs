@@ -35,6 +35,12 @@ const MATCHES = [
   },
 ];
 
+// Requirement alignment mock (fake numbers): confirmed / unknown / contradicted counts of the stated requirements.
+const ALIGNMENT = {
+  900001: { pass: 3, unknown: 2, fail: 0, total: 5, confirmed: ["city", "budget", "scan"], unknownItems: ["area", "seats"] },
+  900002: { pass: 1, unknown: 3, fail: 1, total: 5, confirmed: ["city"], unknownItems: ["seats", "budget", "scan"] },
+};
+
 // Projection mock. MOCK_PROJ=none -> empty/unknown. Fake numbers for UI testing only.
 const cite = { source: "Mock Rent Survey", recordId: "https://example.test/mock-survey", asOf: "2026-01-01", geography: "MOCK area", limitations: "Fake test data." };
 const base = { horizon: "12 months", scenario: "baseline", unit: "USD/sf/yr", status: "estimated", hidden: false, hiddenReason: "" };
@@ -404,8 +410,10 @@ createServer(async (req, res) => {
   if (url.pathname.startsWith("/api/assets")) { const handled = await assetRoutes(req, res, url); if (handled !== false) return; }
   if (req.method === "GET" && url.pathname === "/api/health") return send(res, 200, { ok: true, mock: true });
   if (req.method === "POST" && url.pathname === "/api/matches") {
-    await readJson(req);
-    return send(res, 200, empty ? { matches: [], dataAvailable: false } : { matches: MATCHES, dataAvailable: true });
+    const body = await readJson(req);
+    const limit = Number.isInteger(body?.limit) && body.limit >= 1 && body.limit <= 10 ? body.limit : 3;
+    const shown = MATCHES.slice(0, limit).map((m) => ({ ...m, alignment: ALIGNMENT[m.listingId] }));
+    return send(res, 200, empty ? { matches: [], dataAvailable: false } : { matches: shown, dataAvailable: true });
   }
   const property = url.pathname.match(/^\/api\/property\/(\d+)$/);
   if (req.method === "GET" && property) {

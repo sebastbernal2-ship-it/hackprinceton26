@@ -4,7 +4,8 @@ import { useRouter } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { saveBrief } from "../lib/brief";
 import { CAFE_MATCHES, CAFE_NOTICE, isCafePrompt } from "../lib/cafe-demo";
-import { seedMatches, showDemoMatches } from "../lib/discover";
+import { clearMatches, refreshMatches, seedMatches, showDemoMatches } from "../lib/discover";
+import { isSarahPrompt, SARAH_BRIEF, SARAH_LIMIT } from "../lib/sarah-scene";
 import { FIRST_QUESTION, MAX_QUESTIONS, nextQuestion, type Exchange } from "../lib/next-question";
 
 type Phase = "welcome" | "asking" | "thinking" | "leaving";
@@ -119,6 +120,17 @@ export default function Intake() {
     const answer = value.trim();
     if (phase !== "asking" || !answer) return;
 
+    if (history.length === 0 && isSarahPrompt(answer)) {
+      // Scripted demo scene: the canonical two-answer brief replaces the typed text and the follow-ups.
+      setHistory(SARAH_BRIEF);
+      clearInput();
+      saveBrief(SARAH_BRIEF);
+      clearMatches();
+      void refreshMatches(SARAH_BRIEF, { limit: SARAH_LIMIT, scene: "sarah" });
+      finished.current = true;
+      setPhase("leaving");
+      return;
+    }
     const answered = [...history, { question, answer }];
     setHistory(answered);
     clearInput();
