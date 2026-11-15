@@ -61,7 +61,10 @@ export default function CostSide({ match, kit, area, budgetText: sharedBudget, o
 
   const xray = useMemo(() => xrayLines(kit), [kit]);
   const hidden = useMemo(() => xrayTotal(xray), [xray]);
-  const seats = seatTotal(kit);
+  const placedSeats = seatTotal(kit);
+  // No pieces placed yet: estimate seats from the area (30 sq ft per seat, the same planning assumption as elsewhere) so break-even is not blank.
+  const seats = placedSeats > 0 ? placedSeats : sqft ? Math.floor(sqft / 30) : 0;
+  const seatsEstimated = placedSeats === 0 && seats > 0;
   const buildout = data?.buildout ?? null;
   const allIn: Range | null = buildout ? { low: buildout.p5 + hidden.low, high: buildout.p95 + hidden.high } : null;
   const status = allIn ? budgetStatus(allIn, budget) : null;
@@ -76,7 +79,7 @@ export default function CostSide({ match, kit, area, budgetText: sharedBudget, o
     <aside className="space-y-4 text-sm" aria-label="Live cost" data-testid="cost-side">
       <div className="flex items-baseline justify-between">
         <h2 className="text-base font-medium tracking-tight">Cost, live</h2>
-        <span className="text-xs text-foreground/45">{kit.length} pieces · {seats} seats</span>
+        <span className="text-xs text-foreground/45">{kit.length} pieces · {seats} seats{seatsEstimated ? " (est. from area)" : ""}</span>
       </div>
       <p className="text-xs leading-relaxed text-foreground/50">Estimated demo numbers: scenario analysis, not quotes. They update as you place or remove pieces.</p>
       {failed && !data && <p role="note" className="rounded-lg border border-foreground/25 bg-foreground/5 px-3 py-2">Cannot say: the cost service did not answer.</p>}
@@ -98,7 +101,7 @@ export default function CostSide({ match, kit, area, budgetText: sharedBudget, o
           {xray.map((l) => (
             <li key={l.id} className="py-1.5" title={`${l.why} Source: ${l.source}`}>
               <div className="flex justify-between gap-2"><span>{l.label}</span><span className="tabular-nums text-foreground/70">{span(l.range)}</span></div>
-              <p className="text-xs text-foreground/45">{l.id === "permits" ? "Certain" : "Unknown until inspected"} · {l.source}</p>
+              <p className="text-xs text-foreground/45">{l.id === "permits" ? "Certain, counted in full" : "Estimated range, counted at 50% until inspected"} · {l.source}</p>
             </li>
           ))}
         </ul>
@@ -111,7 +114,7 @@ export default function CostSide({ match, kit, area, budgetText: sharedBudget, o
             <Row label="Expected" value={buildout ? k(buildout.p50) : "Unknown"} strong />
             <Row label="High" value={buildout ? k(buildout.p95) : "Unknown"} />
             <p className="mt-2 text-xs text-foreground/50">
-              Pieces {data.equipment ? span(data.equipment) : "none priced"}
+              Pieces {data.equipment ? span(data.equipment) : kit.length === 0 ? "none placed yet" : "none priced"}
               {data.fitout ? ` + fit-out ${span(data.fitout)} for ${Math.round(data.fitout.squareFeet)} sq ft (estimated)` : ""}.
               {data.unpriced.length > 0 && ` ${data.unpriced.length} unpriced piece type(s) excluded, not zero.`}
             </p>
@@ -175,7 +178,7 @@ export function Outlook({ out }: { out: Outlook }) {
         <div className="min-w-0">
           <p className="text-xs text-foreground/55">Break-even (base case)</p>
           <p className="text-base font-medium tabular-nums" data-testid="payback">{months === null ? "No payback at these seats" : months > 120 ? "Over 10 years" : `${months} months`}</p>
-          <p className="text-xs text-foreground/50">to repay the build-out. {out.reason}</p>
+          <p className="text-xs text-foreground/50">to repay the build-out. {seatsEstimated ? `${seats} seats, estimated from the area until you place seating.` : out.reason}</p>
         </div>
       </div>
       <Chart out={out} />
