@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { buildChecklist, buildDiligence, type ActItem } from "../lib/act";
 import { fetchCosts } from "../lib/costs";
+import { buildCostBreakdown } from "../lib/cost-categories";
 import { briefBudget, outlook, seatTotal, xrayLines, xrayTotal } from "../lib/cost-side";
 import { fetchInspection } from "../lib/inspection";
 import { fetchLayoutCost, layoutCostItems, nameFor, pct, scenarioKey } from "../lib/layout-cost";
@@ -13,6 +14,7 @@ import type { Match } from "../lib/matches";
 import { allInRange, budgetGap, budgetStatus, defaultArea, defaultSeats, delta, describeChange, fmtDeltaMonths, lineDeltas, mid, parsePositive, parseSeats, paybackText, rentRequest, resolveBudget, totalCostKey, type Inputs } from "../lib/quantify-model";
 import { fetchTotalCost, range } from "../lib/total-cost";
 import { useDelta, useScenario } from "../lib/use-scenario";
+import CostCategories, { climateInput, useClimate } from "./cost-categories";
 import ActChecklist from "./act-checklist";
 import CostPanel from "./cost-panel";
 import { Outlook } from "./cost-side";
@@ -109,14 +111,28 @@ export default function Quantify({ match, layout, onBackToLayout, onClose, onSte
     return () => { window.removeEventListener("keydown", onKey); document.body.style.overflow = previous; };
   }, [onClose]);
 
+  // Costs breakdown: every cost line grouped into categories that add up to the headline numbers.
+  const climate = useClimate(pid);
+  const [scen, setScen] = useState("Intermediate");
+  const [horizon, setHorizon] = useState(2050);
+  const breakdown = useMemo(
+    () => buildCostBreakdown({ fromLayout, lc: lcData, nameFor: (id) => nameFor(kit, id), xray, tc: tcData, climate: climateInput(climate.model, climate.reason, scen, horizon) }),
+    [fromLayout, lcData, kit, xray, tcData, climate.model, climate.reason, scen, horizon],
+  );
+  const cm = climate.model;
+  const climateControls = cm && (
+    <div className="flex flex-wrap items-center gap-3 py-2 text-xs text-foreground/60" data-testid="climate-controls">
+      <label className="flex items-center gap-1.5">Climate scenario
+        <select aria-label="Climate scenario" value={scen} onChange={(e) => setScen(e.target.value)} className="rounded-md border border-foreground/20 bg-background px-2 py-1">{cm.scenarios.map((x) => <option key={x}>{x}</option>)}</select></label>
+      <label className="flex items-center gap-1.5">Horizon
+        <select aria-label="Climate horizon" value={horizon} onChange={(e) => setHorizon(Number(e.target.value))} className="rounded-md border border-foreground/20 bg-background px-2 py-1">{cm.horizons.map((x) => <option key={x} value={x}>{x}</option>)}</select></label>
+    </div>
+  );
+
   // Per-line before/after.
-  const lineMap = (d: typeof lcData) => Object.fromEntries((d?.lines ?? []).map((l) => [l.assetId, (l.low + l.high) / 2]));
-  const lcDeltas = lineDeltas(lc.prev ? lineMap(lc.prev) : null, lineMap(lcData));
-  const fitDelta = delta(lc.prev?.fitout ? mid(lc.prev.fitout) : null, mid(lcData?.fitout));
   const partMap = (d: typeof tcData) => Object.fromEntries((d?.parts ?? []).map((p) => [p.id, (p.low + p.high) / 2]));
   const tcDeltas = lineDeltas(tc.prev ? partMap(tc.prev) : null, partMap(tcData));
   const totalDelta = delta(mid(tc.prev?.total), mid(tcData?.total));
-  const hiddenDelta = useDelta(mid(hidden));
 
   const distinct = [...new Map(kit.map((a) => [a.assetId, a])).values()];
   const setPieces = (a: Asset, by: 1 | -1) => {
@@ -205,39 +221,12 @@ export default function Quantify({ match, layout, onBackToLayout, onClose, onSte
         </Section>
 
         <Section n={2} title="Costs breakdown" hint={allIn ? `${span(allIn)} all-in (estimated)` : "estimated ranges, not quotes"} testId="sec-costs">
-          <p className="text-sm text-foreground/55">Ranges, not quotes. Install, freight and repairs are not included. Unpriced pieces are left out of totals; they are unknown, not free.</p>
+          <p className="text-sm text-foreground/55">Ranges, not quotes. Every line sits in a category; open one to see each item. Freight is not included. Hidden systems are counted at 50% until inspected. Unpriced items are named and left out of totals: unknown, not free.</p>
           {failed && <p role="alert" className="mt-3 text-sm text-foreground/60">Cannot say: the cost service did not answer.</p>}
-          {fromLayout && lcData && (
-            <table className="mt-4 w-full text-sm" data-testid="cost-lines">
-              <tbody>
-                {lcData.lines.map((l) => (
-                  <tr key={l.assetId} className="border-t border-foreground/10 align-top">
-                    <td className="py-2 pr-3">{nameFor(kit, l.assetId)} x {l.quantity}<span className="ml-2 text-xs text-foreground/45">{l.status}</span></td>
-                    <td className="whitespace-nowrap py-2 text-right tabular-nums">{range(l)}<Delta d={lcDeltas[l.assetId]} testId={`delta-${l.assetId}`} /></td>
-                  </tr>
-                ))}
-                <tr className="border-t border-foreground/10"><td className="py-2 pr-3">Interior fit-out{lcData.fitout ? ` x ${Math.round(lcData.fitout.squareFeet).toLocaleString()} sq ft` : ""}<span className="ml-2 text-xs text-foreground/45">estimated</span></td>
-                  <td className="whitespace-nowrap py-2 text-right tabular-nums" data-testid="line-fitout">{lcData.fitout ? range(lcData.fitout) : "Unknown (enter an area)"}<Delta d={fitDelta} testId="delta-fitout" /></td></tr>
-                <tr className="border-t border-foreground/10"><td className="py-2 pr-3">Hidden systems (hood, electrical, accessibility, permits)<span className="ml-2 text-xs text-foreground/45">estimated, counted at 50%</span></td>
-                  <td className="whitespace-nowrap py-2 text-right tabular-nums">{range(hidden)}<Delta d={delta(hiddenDelta.prev, mid(hidden))} testId="delta-hidden" /></td></tr>
-                <tr className="border-t border-foreground/20 font-medium"><td className="py-2 pr-3">All-in build-out (with contingency, P5 to P95)</td>
-                  <td className="whitespace-nowrap py-2 text-right tabular-nums" data-testid="line-allin">{allIn ? range(allIn) : "Unknown"}<Delta d={delta(dAll.prev, mid(allIn))} /></td></tr>
-              </tbody>
-            </table>
-          )}
+          <div className="mt-2"><CostCategories breakdown={breakdown} pending={pending} climateControls={climateControls} /></div>
           {fromLayout && lcData && lcData.unpriced.length > 0 && <p className="mt-3 text-xs text-foreground/60" data-testid="unpriced">Unpriced, left out of every total ({unpricedNames.length}): {unpricedNames.join(", ")}.</p>}
           {fromLayout && !lcData && !failed && <p className="mt-4 text-sm text-foreground/50">Pricing your pieces…</p>}
           {budget && lcData?.pOverBudget != null && <p className="mt-3 text-sm" data-testid="cost-pover">P(build-out over {compact(budget)}): <span className="font-medium tabular-nums">{pct(lcData.pOverBudget)}</span> <span className="text-xs text-foreground/50">(simulated; excludes hidden systems)</span></p>}
-          {!fromLayout && tcData && (
-            <table className="mt-4 w-full text-sm" data-testid="cost-lines">
-              <tbody>
-                {tcData.parts.filter((p) => p.basis === "one_time").map((p) => (
-                  <tr key={p.id} className="border-t border-foreground/10"><td className="py-2 pr-3">{p.label}<span className="ml-2 text-xs text-foreground/45">{p.status}</span></td>
-                    <td className="py-2 text-right tabular-nums">{range(p)}<Delta d={tcDeltas[p.id]} /></td></tr>
-                ))}
-              </tbody>
-            </table>
-          )}
           {!fromLayout && <p className="mt-3 text-xs text-foreground/50">No equipment placed, so build-out is a per-square-foot estimate for your area.</p>}
         </Section>
 
