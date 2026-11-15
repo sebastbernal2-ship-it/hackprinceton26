@@ -34,6 +34,15 @@ export async function GET(request: Request) {
   if (!/^[A-Za-z0-9]{11}$/.test(modelId) || !Number.isInteger(n) || n < 0 || n > 50) {
     return NextResponse.json({ error: "Unknown image." }, { status: 400 });
   }
+  // Walk screenshots captured locally (tools/capture-cafe-photos.cjs); n=0 is the first, n>0 the n+1-th.
+  if (process.env.SITE_PHOTO_DIR) {
+    const captured = path.join(process.env.SITE_PHOTO_DIR, `scan-${modelId}`, `photo-${n + 1}.jpg`);
+    try {
+      return image(new Uint8Array(await readFile(captured)), "image/jpeg");
+    } catch {
+      // not captured: fall through to the Matterport downloads
+    }
+  }
   const dir = path.join(ROOT, `assets_${modelId}`, "matterport");
   try {
     let file = path.join(dir, "preview.jpg");
