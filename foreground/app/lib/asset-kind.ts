@@ -7,7 +7,7 @@ export type AssetKind =
 
 // First match wins, so the specific words come before the general ones.
 const RULES: [RegExp, AssetKind][] = [
-  [/menu|screens?\b|signage|sign\b/, "sign"], [/touchscreen|register|\bpos\b/, "register"],
+  [/menu|\bscreens?\b|signage|sign\b/, "sign"], [/touchscreen|register|\bpos\b/, "register"],
   [/grinder/, "grinder"], [/espresso|coffee machine|group/, "espresso"], [/brewer|airpot|pour.?over|cold brew|kegerator|tap/, "brewer"],
   [/display|pastry|bakery case|gelato dipping|merchandiser/, "display"], [/hood/, "hood"], [/pizza|oven|proofer|toaster|panini|microwave|holding cabinet/, "oven"],
   [/fryer/, "fryer"], [/range|griddle|charbroiler|burner|cooktop|flat.?top/, "range"], [/sink|wash/, "sink"], [/dish/, "dish"],
