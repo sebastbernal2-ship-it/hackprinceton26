@@ -197,7 +197,10 @@ async function updateLOD() {
     for (const g of ranked.slice(0, HI_BUDGET)) {
       if (g.full) continue;
       let t;
-      try { t = await stripUpload(meta.texture_dir + g.tex); } catch (e) { console.warn(g.tex, e); continue; }
+      // Full image in one upload, like the half-res pass. The strip copy (stripUpload) scrambled textures on some
+      // models (MatterPak-only scans, seen on w2JcUVybv9c); one upload costs a short stall but is always correct.
+      try { t = Q.get('strips') === '1' ? await stripUpload(meta.texture_dir + g.tex) : texture(await bitmap(meta.texture_dir + g.tex, false)); }
+      catch (e) { console.warn(g.tex, e); continue; }
       g.full = t; setMap(g, t);
       await wait(50);
     }
@@ -480,7 +483,9 @@ function placeAt(s, keepView) {
   eye.set(feet.x, feet.y, feet.z + EYE);
   if (!keepView) { yaw = s.align ? 0 : yaw; }
 }
-const start = spots[0] || { pos: new THREE.Vector3((meta.bbox[0][0] + meta.bbox[1][0]) / 2, (meta.bbox[0][1] + meta.bbox[1][1]) / 2, meta.bbox[0][2] + 3) };
+// no scan spots (no bake step): start in the middle at about knee height, so the drop lands on the floor (or a low
+// piece), not on top of a tall shelf or a hanging plant
+const start = spots[0] || { pos: new THREE.Vector3((meta.bbox[0][0] + meta.bbox[1][0]) / 2, (meta.bbox[0][1] + meta.bbox[1][1]) / 2, meta.bbox[0][2] + 0.9) };
 placeAt(start, true);
 
 const keys = new Set();
@@ -572,7 +577,7 @@ function applyPose(pc) {
 const poseOf = pc => ({ tx: pc.tx, ty: pc.ty, dz: pc.dz, dyaw: pc.dyaw, deleted: pc.deleted });
 const setPose = (pc, s) => { Object.assign(pc, s); applyPose(pc); };
 
-// edits survive a reload (per browser) and export as edits.json in the studio's format
+// edits last for this visit only (not saved); export as edits.json in the studio's format
 let pendingAdded = [];                                // saved catalogue items still loading (kept until they are back)
 function save() {
   const out = {}, added = [...pendingAdded];
@@ -581,14 +586,28 @@ function save() {
     else if (isEdited(pc)) out[pc.id] = poseOf(pc);
   }
   out._added = added;
-  try { localStorage.setItem(SAVE_KEY, JSON.stringify(out)); } catch (e) {}
   const n = Object.keys(out).length - 1;
   $('edits').textContent = `${n} piece${n === 1 ? '' : 's'} changed` + (added.length ? ` · ${added.length} added` : '');
+  postLayout();
 }
-let saved = {};
-try { saved = JSON.parse(localStorage.getItem(SAVE_KEY) || '{}');
-  pendingAdded = saved._added || [];                  // held until the catalogue models have loaded again
-  for (const pc of pieces) if (saved[pc.id]) setPose(pc, saved[pc.id]); } catch (e) {}
+// Layout summary for the page that embeds this viewer (the app's Quantify step). Same origin only: the scene never
+// goes to another site. Scanned labels are the segmentation's guesses; the page labels counts as estimates.
+function layoutSummary() {
+  return { type: 'walk-layout', model: SID,
+    scanned: pieces.filter(pc => !pc.added).map(pc => ({ kind: pc.kind || null, label: pc.label || null, deleted: !!pc.deleted, moved: !pc.deleted && isEdited(pc) })),
+    added: pieces.filter(pc => pc.added && !pc.deleted).map(pc => ({ catalogId: pc.cat, name: pc.label, category: pc.category || null })),
+    pendingAdded: pendingAdded.length };
+}
+function postLayout() {
+  if (window.parent === window) return;
+  try { window.parent.postMessage(layoutSummary(), location.origin); } catch (e) {}
+}
+addEventListener('message', e => {
+  if (e.origin === location.origin && e.source === window.parent && e.data && e.data.type === 'walk-layout-request') postLayout();
+});
+// Edits are not kept: every visit starts from the scan as captured. Use "Export edits.json" to keep a layout.
+// (Earlier versions saved edits per browser; that old saved copy is cleared here.)
+try { localStorage.removeItem(SAVE_KEY); } catch (e) {}
 function exportEdits() {
   const added = pieces.filter(pc => pc.added && !pc.deleted).map(pc => ({ catalog_id: pc.cat, name: pc.label, source: pc.source,
     license: 'CC0', x: +pc.tx.toFixed(3), y: +pc.ty.toFixed(3), z: +pc.dz.toFixed(3), yaw_deg: +(pc.dyaw * 180 / Math.PI).toFixed(1),
@@ -767,6 +786,17 @@ save();
 const gltf = new GLTFLoader();
 const pmrem = new THREE.PMREMGenerator(renderer);
 scene.add(new THREE.HemisphereLight(0xffffff, 0x404040, 0.15));       // tiny fill (only lit materials see it)
+// Fallback image-based light for catalogue items: a soft neutral room (bright ceiling, mid walls, darker floor). Items
+// near a usable scan spot get that spot's photo lighting instead (lightItem); without this, scans with no spots
+// (MatterPak-only models) or spots that cannot be aligned left the items unlit, i.e. black.
+{
+  const room = new THREE.Scene();
+  const grad = new THREE.ShaderMaterial({ side: THREE.BackSide, depthWrite: false,
+    vertexShader: 'varying vec3 vD; void main(){ vD = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.); }',
+    fragmentShader: 'varying vec3 vD; void main(){ float z = vD.z; vec3 c = z > 0. ? mix(vec3(.62), vec3(1.05), z) : mix(vec3(.62), vec3(.32), -z); gl_FragColor = vec4(c, 1.); }' });
+  room.add(new THREE.Mesh(new THREE.SphereGeometry(10, 32, 16), grad));
+  scene.environment = pmrem.fromScene(room, 0.04).texture;
+}
 let catalog = [];
 try { const r = await fetch('/assets_catalog/catalog.json'); if (r.ok) catalog = await r.json(); } catch (e) {}
 const models = new Map();
@@ -814,7 +844,7 @@ async function makeItem(entry, pose) {
     new THREE.MeshBasicMaterial({ color: 0x000000, alphaMap: shadowTex, transparent: true, opacity: 0.6, depthWrite: false,
                                   polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -4 }));
   sh.position.z = 0.006; sh.raycast = () => {}; pivot.add(sh);
-  const pc = { id: `added-${++addCount}`, added: true, cat: entry.id, label: entry.name, source: entry.source, room: null,
+  const pc = { id: `added-${++addCount}`, added: true, cat: entry.id, category: entry.category, label: entry.name, source: entry.source, room: null,
                on_floor: true, floor_z: 0, cx: 0, cy: 0, rxy: tpl.rxy, zmin: 0, zmax: s.z, size: [s.x, s.y, s.z],
                mesh, pivot, outline, fill: null, soup: tpl.soup, verts: tpl.verts, occ: null,
                tx: 0, ty: 0, dz: 0, dyaw: 0, deleted: false, envSpot: null };
@@ -1102,7 +1132,8 @@ async function askAI(prompt) {
   try {
     aiMessages.push({ role: 'user', content: [imageBlock(), { type: 'text', text: `${situation()}\n\nRequest: ${prompt}` }] });
     for (let turn = 0; turn < 20; turn++) {
-      const res = await fetch('/api/agent', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Walk-Agent': '1' },
+      // ?agent= may only name a same-origin path (another site must never receive the scene)
+      const res = await fetch(/^\/[A-Za-z0-9_\/-]*$/.test(Q.get('agent') || '') ? Q.get('agent') : '/api/agent', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Walk-Agent': '1' },
                                               body: JSON.stringify({ messages: aiMessages }) });
       const out = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
       if (!res.ok || out.error) {

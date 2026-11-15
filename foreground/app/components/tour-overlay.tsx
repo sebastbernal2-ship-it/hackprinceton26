@@ -10,10 +10,12 @@ type TourOverlayProps = {
   title: string;
   detail?: string;
   openChat?: boolean;
+  /** Layout agent and staged furniture. Off for the Inspect tour (a plain Matterport Showcase tour); for later planning steps. */
+  editing?: boolean;
   onClose: () => void;
 };
 
-export default function TourOverlay({ tourId, title, detail, openChat = false, onClose }: TourOverlayProps) {
+export default function TourOverlay({ tourId, title, detail, openChat = false, editing = false, onClose }: TourOverlayProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const labelId = useId();
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
@@ -42,7 +44,7 @@ export default function TourOverlay({ tourId, title, detail, openChat = false, o
 
   useEffect(() => {
     const host = containerRef.current;
-    const sdkKey = process.env.NEXT_PUBLIC_MATTERPORT_SDK_KEY;
+    const sdkKey = process.env.MATTERPORT_SDK_KEY;
     if (!host) return;
 
     let cancelled = false;
@@ -51,7 +53,7 @@ export default function TourOverlay({ tourId, title, detail, openChat = false, o
     async function openTour() {
       if (!sdkKey) {
         setStatus("error");
-        setError("Matterport SDK key is missing. Add NEXT_PUBLIC_MATTERPORT_SDK_KEY to foreground/.env.local.");
+        setError("Matterport SDK key is missing. Set MATTERPORT_SDK_KEY in the repo-root .env (or your shell) and restart npm run dev.");
         return;
       }
 
@@ -62,7 +64,8 @@ export default function TourOverlay({ tourId, title, detail, openChat = false, o
       host!.replaceChildren();
 
       try {
-        // play=1 skips the title card; qs=0 keeps the dollhouse fly-in instead of jumping inside.
+        // play=1 skips the title card; qs=1 opens straight inside at the start position (no dollhouse fly-in);
+        // ts=-1 never auto-starts the guided tour, which would otherwise fly the camera around on its own.
         connected = await setupSdk(sdkKey, {
           space: tourId,
           container: host!,
@@ -73,7 +76,8 @@ export default function TourOverlay({ tourId, title, detail, openChat = false, o
           },
           iframeQueryParams: {
             play: 1,
-            qs: 0,
+            qs: 1,
+            ts: -1,
             dh: 1,
             brand: 0,
             title: 0,
@@ -84,10 +88,13 @@ export default function TourOverlay({ tourId, title, detail, openChat = false, o
         await connected.App.state.waitUntil((state) => state.phase === connected!.App.Phase.PLAYING);
         if (cancelled) return;
 
-        // Land in dollhouse (aerial) so the user can rotate the exterior, then click in to go inside.
-        await connected.Mode.moveTo(connected.Mode.Mode.DOLLHOUSE, {
-          transition: connected.Camera.TransitionType.FLY,
+        // Stay in the walkable tour view (inside); dollhouse and floor plan remain one click away in Matterport's controls.
+        const mode = await new Promise<string | null>((resolve) => {
+          const sub = connected!.Mode.current.subscribe((m) => { resolve(m); queueMicrotask(() => sub.cancel()); });
         });
+        if (mode !== connected.Mode.Mode.INSIDE) {
+          await connected.Mode.moveTo(connected.Mode.Mode.INSIDE, { transition: connected.Camera.TransitionType.INSTANT });
+        }
         if (cancelled) return;
 
         setSdk(connected);
@@ -135,9 +142,9 @@ export default function TourOverlay({ tourId, title, detail, openChat = false, o
           </h2>
           <p className="truncate text-xs text-background/55">
             {status === "ready"
-              ? chatOpen
+              ? editing && chatOpen
                 ? "Layout agent is live — edits appear in the tour"
-                : "Aerial view — click into the model to go inside"
+                : "Matterport 3D tour · drag to look around, click the floor to move"
               : "Opening tour…"}
           </p>
         </div>
@@ -145,9 +152,9 @@ export default function TourOverlay({ tourId, title, detail, openChat = false, o
 
       <div className="relative min-h-0 flex-1 bg-foreground">
         <div ref={containerRef} className="absolute inset-0" />
-        <TourGhosts pieces={pieces} sdk={sdk} onPiecesChange={setPieces} />
+        {editing && <TourGhosts pieces={pieces} sdk={sdk} onPiecesChange={setPieces} />}
 
-        {status === "ready" && (
+        {editing && status === "ready" && (
           <TourChat
             tourId={tourId}
             sdk={sdk}
@@ -174,7 +181,7 @@ export default function TourOverlay({ tourId, title, detail, openChat = false, o
                 onClick={onClose}
                 className="mt-8 rounded-full bg-background px-5 py-2.5 text-sm font-medium text-foreground"
               >
-                Back to Discover
+                Back to Shortlist
               </button>
             </div>
           </div>

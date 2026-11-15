@@ -56,7 +56,8 @@ function BreakEven({ sim }: { sim: Sim }) {
   );
 }
 
-export default function FinancePanel({ listingId, rentUnknownAssumption }: { listingId: number; rentUnknownAssumption?: number }) {
+/** seats: from the owner's layout when known (Quantify passes the 3D plan's count); 60 is the old fixed assumption. */
+export default function FinancePanel({ listingId, rentUnknownAssumption, seats = 60 }: { listingId: number; rentUnknownAssumption?: number; seats?: number }) {
   const [state, setState] = useState<{ id: number; sim: Simulation | null; ledger: LedgerPage | null } | null>(null);
   const [table, setTable] = useState("deposits");
   const [typedRent, setTypedRent] = useState("");
@@ -66,13 +67,13 @@ export default function FinancePanel({ listingId, rentUnknownAssumption }: { lis
   useEffect(() => {
     let live = true;
     (async () => {
-      const sim = await simulate({ listingId, seats: 60, ...(rent ? { monthlyRentAssumption: rent } : {}) });
+      const sim = await simulate({ listingId, seats, ...(rent ? { monthlyRentAssumption: rent } : {}) });
       const runId = sim && sim.status === "simulated" ? sim.runId : undefined;
       const ledger = runId ? await fetchLedger(runId, "deposits") : null;
       if (live) setState({ id: listingId, sim, ledger });
     })();
     return () => { live = false; };
-  }, [listingId, rent]);
+  }, [listingId, rent, seats]);
 
   async function pick(t: string) {
     setTable(t);

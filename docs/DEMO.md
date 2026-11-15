@@ -35,7 +35,7 @@ Verified on branch `rt/merged` on 2026-11-14 against the real local kit (API on 
 - Python 3.11+, `uv`, Node 20+.
 - Gitignored local data under `data/normalized/costar/` (CoStar candidate and evidence CSVs); `data/raw/` for the signage adapter and inspection images. Get it from a teammate or the sponsor kit; never commit it.
 - Env var names (values live in `.env` / `foreground/.env.local`; never print or commit them):
-  - `NEXT_PUBLIC_MATTERPORT_SDK_KEY` - web app, Matterport 3D tour. Without it the tour does not load.
+  - `MATTERPORT_SDK_KEY` - web app, Matterport Showcase tour (fallback when a scan has no walk export). Without it that tour does not load.
   - `ANTHROPIC_API_KEY` - only `inspection/vision.py` (vision findings).
   - `MATTERPORT_API_KEY` / `MATTERPORT_API_TOKEN` - `modeling/` scripts and model checks only; not needed for the demo.
   - `COSTAR_PROPERTY_JSONL` - signage adapter only (path to the local CoStar property JSONL).
@@ -55,7 +55,7 @@ Section 1 needs network and the local CoStar data, so it was not re-run in the 2
 #   export COSTAR_NORMALIZED_DIR=services/api/tests/fixtures
 uv run --no-project --with-requirements services/api/requirements.txt uvicorn services.api.app.main:app --port 8000
 # Web on port 3000
-cd foreground && npm ci && cp .env.example .env.local    # set NEXT_PUBLIC_MATTERPORT_SDK_KEY
+cd foreground && npm ci    # keys come from the repo-root .env: MATTERPORT_SDK_KEY, MATTERPORT_API_KEY, MATTERPORT_API_TOKEN
 npm run dev
 # No API available? Fake-data contract mock: npm run mock-api
 ```

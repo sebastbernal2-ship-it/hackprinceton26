@@ -193,6 +193,15 @@ async function downloadMesh(asset: AssetNode): Promise<ScanMesh | null> {
   return { filename, format, bytes, contentType };
 }
 
+/** Signed URL of the model's preview image (Matterport Model API), or null. Signed links expire after about an hour. */
+export async function previewImageUrl(modelId: string): Promise<string | null> {
+  const data = await graphql<{ model?: { image?: { url?: string | null } | null } | null }>(
+    "query Preview($modelId: ID!) { model(id: $modelId) { image { url } } }",
+    modelId,
+  );
+  return data.model?.image?.url || null;
+}
+
 async function graphql<T>(query: string, modelId: string): Promise<T> {
   const key = requireKey("MATTERPORT_API_KEY");
   const token = requireKey("MATTERPORT_API_TOKEN");

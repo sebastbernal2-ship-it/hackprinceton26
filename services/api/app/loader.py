@@ -9,6 +9,7 @@ from .readiness import evidence_readiness
 STATUSES = {"observed", "derived", "estimated", "unknown"}
 CANDIDATES = "restaurant-site-candidates.csv"
 FACTORS = "factor-cards.csv"
+PROPERTY_MODELS = "commercial-properties.csv"
 
 
 def data_dir() -> Path:
@@ -48,14 +49,37 @@ def _fact(label: str, value: str, out: list[Fact]) -> None:
         out.append(Fact(label=label, value=value))
 
 
-def _match(c: dict, cards: list[FactorCard]) -> Optional[Match]:
+def _costar_models(d: Path) -> dict[str, list[str]]:
+    """PropertyId -> Matterport model ids as CoStar lists them (commercial-properties.csv). A property-level
+    association: it does not say which suite a model shows."""
+    out: dict[str, list[str]] = {}
+    p = d / PROPERTY_MODELS
+    if p.is_file():
+        for r in _rows(p):
+            pid, mid = r.get("PropertyId", ""), (r.get("MatterportModelId") or "").strip()
+            if pid and mid and mid not in out.setdefault(pid, []):
+                out[pid].append(mid)
+    return out
+
+
+def _walk_ready(model: str) -> bool:
+    """True when a local first-person walk export exists for this model (modeling/walk_export.py)."""
+    root = Path(os.environ.get("SCAN_ASSETS_DIR", "."))
+    return (root / f"assets_{model}" / "walk" / "meta.json").is_file()
+
+
+def _match(c: dict, cards: list[FactorCard], models: Optional[list[str]] = None) -> Optional[Match]:
     listing = _int(c.get("property_id", ""))
     if listing is None:
         return None
     sqft = _int(c.get("rentable_area_sqft", "")) or _int(c.get("retail_gla_sqft", "")) or _int(
         c.get("gross_building_area_sqft", "")
     )
-    tour = next((f.value for f in cards if f.factorId == "spatial_interior" and f.status == "observed"), "")
+    models = models or []
+    # An observed scan card wins; otherwise the model CoStar lists for the property, preferring one that can be walked locally.
+    tour = next((f.value for f in cards if f.factorId == "spatial_interior" and f.status == "observed"), "") or next(
+        (m for m in models if _walk_ready(m)), models[0] if models else ""
+    )
     prop: list[Fact] = []
     _fact("Property Type", c.get("property_type", ""), prop)
     if sqft:
@@ -65,6 +89,8 @@ def _match(c: dict, cards: list[FactorCard]) -> Optional[Match]:
     _fact("Postal code", c.get("postal_code", ""), loc)
     _fact("Latitude", c.get("latitude", ""), loc)
     _fact("Longitude", c.get("longitude", ""), loc)
+    if models:
+        _fact("Matterport (CoStar-listed, property level)", ", ".join(models), loc)
     city = ", ".join(x for x in (c.get("city", ""), c.get("state", "")) if x)
     return Match(
         listingId=listing,
@@ -91,5 +117,6 @@ def load_matches(directory: Optional[Path] = None) -> Optional[list[Match]]:
     by_prop: dict[str, list[FactorCard]] = {}
     for r in _rows(fac):
         by_prop.setdefault(r.get("property_id", ""), []).append(_card(r))
-    out = [m for c in _rows(cand) if (m := _match(c, by_prop.get(c.get("property_id", ""), [])))]
+    models = _costar_models(d)
+    out = [m for c in _rows(cand) if (m := _match(c, by_prop.get(c.get("property_id", ""), []), models.get(c.get("property_id", ""))))]
     return sorted(out, key=lambda m: m.listingId)

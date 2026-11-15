@@ -2,7 +2,7 @@
 
 import ListingPhoto from "./listing-photo";
 import { useState } from "react";
-import { rentLabel, type Match } from "../lib/matches";
+import { heroPhoto, rentLabel, type Match } from "../lib/matches";
 import { useMatches, type MatchesState } from "../lib/discover";
 import EvidenceReadiness from "./evidence-readiness";
 import Stepper from "./stepper";
@@ -22,7 +22,7 @@ export default function Discover() {
     <>
       <header className="animate-rise">
         <div className="mb-4"><Stepper active={1} /></div>
-        <h1 className="text-[clamp(1.6rem,4vw,2.5rem)] font-medium leading-tight tracking-tight">Discover</h1>
+        <h1 className="text-[clamp(1.6rem,4vw,2.5rem)] font-medium leading-tight tracking-tight">Shortlist</h1>
         <p className="mt-2 text-foreground/50">{subtitle(state)}</p>
       </header>
 
@@ -41,14 +41,6 @@ export default function Discover() {
       {state.status === "ready" && state.dataAvailable && matches.length === 0 && (
         <Notice title="No spaces matched">The registry is loaded, but no candidate matched this brief.</Notice>
       )}
-      {state.status === "ready" && state.demo && (
-        <Notice title="Demo data">
-          NEXT_PUBLIC_DEMO_FALLBACK=1 is set and the API has no data, so these are hand-typed sample spaces. They are
-          not evidence and are not ranked by any validated model.
-        </Notice>
-      )}
-
-      <DemoSites onOpen={setInfo} />
 
       <ul className="mt-10 grid grid-cols-1 gap-x-10 gap-y-14 md:grid-cols-2">
         {matches.map((match, index) => (
@@ -56,7 +48,7 @@ export default function Discover() {
             <article className="group">
               <div className="relative aspect-[16/10] overflow-hidden rounded-[1.75rem] bg-foreground/5 shadow-[0_1px_0_rgb(27_26_23/0.04)] transition-[box-shadow,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-1 group-hover:shadow-[0_22px_50px_rgb(27_26_23/0.12)]">
                 <ListingPhoto
-                  src={match.photo}
+                  src={heroPhoto(match)}
                   alt={`Exterior of ${match.address}`}
                   className="absolute inset-0 h-full w-full transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
                 />
@@ -75,7 +67,7 @@ export default function Discover() {
               <p className="mt-4 text-[0.95rem] leading-relaxed text-foreground/55">{match.blurb}</p>
               <p className="mt-2 text-sm text-foreground/40">
                 {match.address}
-                {match.detail ? ` · ${match.detail}` : ""} · {number.format(match.squareFeet)} sq ft
+                {match.detail ? ` · ${match.detail}` : ""} · {match.squareFeet > 0 ? `${number.format(match.squareFeet)} sq ft` : "size unknown"}
               </p>
 
               <div className="mt-6 flex flex-wrap gap-2">
@@ -99,6 +91,8 @@ export default function Discover() {
           </li>
         ))}
       </ul>
+
+      <DemoSites onOpen={setInfo} />
 
       {info && !tour && (
         <PropertyInfo

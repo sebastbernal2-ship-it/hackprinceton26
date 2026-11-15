@@ -12,7 +12,7 @@ const CHANGE = "foreground-matches";
 export type MatchesState =
   | { status: "loading" }
   /** `dataAvailable: false` means the API has no candidate registry loaded; it is not "no matches". */
-  | { status: "ready"; matches: Match[]; dataAvailable: boolean; demo: boolean }
+  | { status: "ready"; matches: Match[]; dataAvailable: boolean; demo: boolean; notice?: string }
   | { status: "error"; message: string };
 
 function read(): string | null {
@@ -64,6 +64,11 @@ export async function refreshMatches(brief: Exchange[]): Promise<void> {
 }
 
 export const seedMatches = refreshMatches;
+
+/** Show a fixed, labelled set of demo spaces instead of asking the API. */
+export function showDemoMatches(matches: Match[], notice: string): void {
+  save({ status: "ready", matches, dataAvailable: false, demo: true, notice });
+}
 
 function subscribe(onChange: () => void) {
   window.addEventListener(CHANGE, onChange);
