@@ -130,7 +130,7 @@ export default function CostSide({ match, kit, area, budgetText: sharedBudget, o
         {!out ? (
           <p className="text-foreground/55">{!sqft ? "Needs a floor area." : !pid ? "No rent basis for this scan." : rentData === null && rent ? "Cannot say: rent service did not answer." : "Pricing…"}</p>
         ) : (
-          <Outlook out={out} />
+          <Outlook out={out} estimatedSeats={seatsEstimated} />
         )}
       </Card>
     </aside>
@@ -168,7 +168,7 @@ function Bar({ budget, buildout, hidden }: { budget: number | null; buildout: nu
 const DIAL_TONE = { comfortable: "#5f6d4e", stretch: "#b08d57", unlikely: "#d9512c", unknown: "#999" } as const;
 const WORD = { comfortable: "Comfortable", stretch: "A stretch", unlikely: "Unlikely on these seats", unknown: "Unknown" } as const;
 
-export function Outlook({ out }: { out: Outlook }) {
+export function Outlook({ out, estimatedSeats = false }: { out: Outlook; estimatedSeats?: boolean }) {
   const base = out.cases.base;
   const months = base.paybackMonths;
   return (
@@ -178,7 +178,7 @@ export function Outlook({ out }: { out: Outlook }) {
         <div className="min-w-0">
           <p className="text-xs text-foreground/55">Break-even (base case)</p>
           <p className="text-base font-medium tabular-nums" data-testid="payback">{months === null ? "No payback at these seats" : months > 120 ? "Over 10 years" : `${months} months`}</p>
-          <p className="text-xs text-foreground/50">to repay the build-out. {seatsEstimated ? `${seats} seats, estimated from the area until you place seating.` : out.reason}</p>
+          <p className="text-xs text-foreground/50">to repay the build-out. {estimatedSeats ? `${out.seats} seats, estimated from the area until you place seating.` : out.reason}</p>
         </div>
       </div>
       <Chart out={out} />
