@@ -100,3 +100,22 @@ def test_events_carry_model_and_recording_date(tmp_path):
     r = runner.Run("g", ScriptedEnv(), ScriptedPlanner(), ScriptedInspector(), mode="SCRIPTED", derived_dir=tmp_path)
     evs = r.run()
     assert all("model" in e and len(e["date"]) == 10 for e in evs)
+
+
+def test_model_cannot_call_a_listing_strong_when_evidence_is_missing(tmp_path):
+    """Numbers can check out while the verdict is unsupported: no inspection run + unpriced cost lines caps 'strong'."""
+    from agent.providers import FakeProvider, Turn
+    env = ScriptedEnv({"inspection_findings": {"mode": "none", "findings": [], "notice": "No inspection has been run"},
+                       "costs": {"totals": {"low": 1}, "excludedLineIds": ["a", "b"]},
+                       "assess": {"pOverBudget": 0.1, "unknownInputs": {"monthly_rent": "missing"}}})
+    calls = [{"id": str(i), "name": n, "args": {}} for i, n in enumerate(["property_facts", "inspection_findings", "costs", "assess"])]
+    sub = FakeProvider([Turn(tool_calls=calls),
+                        lambda s, m: Turn(tool_calls=[{"id": "v", "name": "submit_verdict", "args": {
+                            "verdict": "strong", "headline": "Great site", "cites": ["r1", "r2", "r3", "r4"]}}])])
+    plan = FakeProvider([Turn(tool_calls=[{"id": "p", "name": "inspect_sites", "args": {"listingIds": [9001]}}]), Turn()])
+    r = runner.Run("g", env, plan, sub, mode="LIVE", derived_dir=tmp_path)
+    r.run()
+    v = r.verdicts[9001]
+    assert v["verdict"] == "workable" and v["verdictCapped"]
+    text = " ".join(v["unknowns"])
+    assert "no inspection" in text and "2 cost line" in text and "monthly_rent" in text
