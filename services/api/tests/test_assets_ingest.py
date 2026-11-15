@@ -115,9 +115,10 @@ def test_api_ingest_ok(api, tmp_path):
     assert r.status_code == 200
     j = r.json()
     assert j["mode"] == "live" and j["proposals"][0]["profileId"] == "chainA" and api.calls[0][0] == 1
-    # request images are temporary: nothing is left on disk and no proposal points at a dangling file
-    assert not [p for p in (tmp_path / "up").rglob("*") if p.is_file()]
-    assert all(pr["imageRefs"] == [] for pr in j["proposals"])
+    stored = list((tmp_path / "up").rglob("*"))
+    assert not any(p.is_file() for p in stored)
+    assert j["proposals"][0]["imageRefs"] == []
+    assert not any("evil" in p.name for p in stored)
 
 
 def test_api_live_proposal_can_be_confirmed_and_loaded_from_profile(api, monkeypatch, tmp_path):
@@ -140,11 +141,17 @@ def test_api_live_proposal_can_be_confirmed_and_loaded_from_profile(api, monkeyp
     assert any(asset["assetId"] == proposal["assetId"] for asset in listed.json())
 
 
-def test_api_ingest_without_key_is_fixture_and_without_image_is_rejected(monkeypatch):
+def test_api_requires_image_and_labels_no_key_fixture(monkeypatch, tmp_path):
+    monkeypatch.setattr(routes, "UPLOAD_DIR", tmp_path / "up")
     monkeypatch.setattr(routes, "get_client", lambda: None)
-    assert client.post("/api/assets/ingest", data={"profileId": "p"}).status_code == 422
-    j = client.post("/api/assets/ingest", files=[("image", ("a.jpg", JPG, "image/jpeg"))], data={"profileId": "p"}).json()
+    empty = client.post("/api/assets/ingest", data={"profileId": "p"})
+    assert empty.status_code == 422 and "at least one image" in empty.json()["detail"]
+    response = client.post("/api/assets/ingest", files=[("image", ("a.jpg", JPG, "image/jpeg"))], data={"profileId": "p"})
+    assert response.status_code == 200
+    j = response.json()
     assert j["mode"] == "fixture" and j["notice"].startswith("SAMPLE DATA")
+    assert all("sample" in p["tags"] and p["imageRefs"] == [] for p in j["proposals"])
+    assert not any(p.is_file() for p in (tmp_path / "up").rglob("*"))
 
 
 def test_api_rejects(api, monkeypatch):
@@ -155,3 +162,24 @@ def test_api_rejects(api, monkeypatch):
     monkeypatch.setattr(ident, "MAX_IMAGE_BYTES", 10)
     assert post([("image", ("a.jpg", JPG + b"x" * 20, "image/jpeg"))]).status_code == 413
     assert post([("image", ("a.jpg", JPG, "image/jpeg"))], measuredW="abc").status_code == 422
+    assert not any(p.is_file() for p in (Path(routes.UPLOAD_DIR)).rglob("*"))
+
+
+def test_api_cleans_temporary_images_when_identification_fails(api, monkeypatch, tmp_path):
+    def fail(*args, **kwargs):
+        raise RuntimeError("unexpected identify failure")
+
+    monkeypatch.setattr(routes, "UPLOAD_DIR", tmp_path / "up")
+    monkeypatch.setattr(ident, "identify", fail)
+    with pytest.raises(RuntimeError, match="unexpected identify failure"):
+        client.post("/api/assets/ingest", files=[("image", ("a.jpg", JPG, "image/jpeg"))])
+    assert not any(p.is_file() for p in (tmp_path / "up").rglob("*"))
+
+
+def test_api_rejects_bad_later_image_without_partial_temp_files(api, tmp_path):
+    response = client.post("/api/assets/ingest", files=[
+        ("image", ("first.jpg", JPG, "image/jpeg")),
+        ("image", ("second.jpg", b"GIF89a....", "image/jpeg")),
+    ])
+    assert response.status_code == 415
+    assert not any(p.is_file() for p in (tmp_path / "up").rglob("*"))
