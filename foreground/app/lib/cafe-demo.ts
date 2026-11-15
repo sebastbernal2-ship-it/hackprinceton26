@@ -14,6 +14,10 @@ const CAFES: Cafe[] = [
 /** Scans with a local editable walk export, used to give the scripted Sarah scene a cafe to walk and furnish. */
 export const CAFE_SCAN_IDS = CAFES.map((c) => c.tourId);
 
+/** Listing ids of the scans: no CoStar structure, lineage, triage or aerial rows exist for them, so those requests are skipped (they would only 404). */
+const SCAN_ONLY = new Set(CAFES.flatMap((c, i) => [-(i + 1), ...(c.costarPropertyId ? [c.costarPropertyId] : [])]));
+export const isScanOnlyId = (id: number) => SCAN_ONLY.has(id);
+
 export const CAFE_NOTICE =
   "Café demo: three Matterport interiors chosen by hand. They are amenity cafés, not listings, so rent, size and availability are unknown. Photos are served from local scan downloads.";
 

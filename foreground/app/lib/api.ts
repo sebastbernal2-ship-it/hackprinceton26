@@ -2,7 +2,9 @@ import type { Match } from "./matches";
 import type { Exchange } from "./next-question";
 import type { TourAction } from "./tour-agent";
 
-export type MatchesResponse = { matches: Match[]; dataAvailable: boolean };
+import type { ConceptGate } from "./matches";
+
+export type MatchesResponse = { matches: Match[]; dataAvailable: boolean; conceptGate?: ConceptGate | null };
 export type NextQuestionResponse = { question: string | null; stub: boolean };
 export type TourAgentResponse = { reply: string; action: TourAction; stub: boolean };
 

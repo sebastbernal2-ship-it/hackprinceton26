@@ -149,6 +149,16 @@
       "title": "Photo",
       "type": "string"
     },
+    "propertySubtype": {
+      "default": "",
+      "title": "Propertysubtype",
+      "type": "string"
+    },
+    "propertyType": {
+      "default": "",
+      "title": "Propertytype",
+      "type": "string"
+    },
     "rentPerSquareFootYear": {
       "anyOf": [
         {
@@ -196,6 +206,21 @@
       ],
       "default": null,
       "title": "Squarefeet"
+    },
+    "suiteRangeSqft": {
+      "anyOf": [
+        {
+          "items": {
+            "type": "integer"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Suiterangesqft"
     },
     "tourId": {
       "title": "Tourid",

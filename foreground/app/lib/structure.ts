@@ -1,3 +1,4 @@
+import { isScanOnlyId } from "./cafe-demo";
 export type Flag = {
   id: string; lens: string; severity: "low" | "moderate" | "elevated" | null; text: string; status: string;
   threshold?: { id: string; value: string | number; source: string; note: string };
@@ -56,6 +57,7 @@ const bundles = new Map<number, Promise<{ s: StructureResponse | null; c: Scenar
  */
 export function loadStructure(id: number): Promise<{ s: StructureResponse | null; c: ScenarioResponse | null }> {
   let p = bundles.get(id);
+  if (!p && isScanOnlyId(id)) return Promise.resolve({ s: null, c: null });
   if (!p) {
     p = fetchStructure(id).then(
       async (s) => ({ s, c: await fetchScenarios(id).catch(() => null) }),

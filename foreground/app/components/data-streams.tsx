@@ -12,11 +12,12 @@ const get = (url: string): Promise<Json | null> =>
 const BADGE = { observed: "bg-match-soft text-match", derived: "border border-dashed border-foreground/40", unknown: "border border-foreground/20 text-foreground/50" };
 
 /** One compact card per data stream we hold for this site: building record, structure/hazard screen, restaurant history, scan checks. */
-export default function DataStreams({ listingId }: { listingId: number }) {
+export default function DataStreams({ listingId, scanOnly = false }: { listingId: number; scanOnly?: boolean }) {
   const [streams, setStreams] = useState<Stream[] | null>(null);
   useEffect(() => {
     let live = true;
-    Promise.all([get(`/api/structure/${listingId}`), get(`/api/lineage/${listingId}`), get(`/api/triage/property/${listingId}`), get(`/api/aerial/${listingId}`)]).then(
+    const none = Promise.resolve(null);  // a scan with no CoStar record: nothing to fetch, nothing to 404
+    Promise.all(scanOnly ? [none, none, none, none] : [get(`/api/structure/${listingId}`), get(`/api/lineage/${listingId}`), get(`/api/triage/property/${listingId}`), get(`/api/aerial/${listingId}`)]).then(
       ([st, li, tr, ae]) => {
         if (!live) return;
         const out: Stream[] = [];
@@ -57,7 +58,7 @@ export default function DataStreams({ listingId }: { listingId: number }) {
       },
     );
     return () => { live = false; };
-  }, [listingId]);
+  }, [listingId, scanOnly]);
 
   if (!streams) return null;
   return (

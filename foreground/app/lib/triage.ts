@@ -87,11 +87,13 @@ export function demoFillTriage(t: TriageResult | null): TriageResult | null {
   });
   return { ...t, fields };
 }
-export const fetchTriage = (id: number) => get<TriageResult>(`/triage/property/${id}`).then(demoFillTriage);
+import { isScanOnlyId } from "./cafe-demo";
+const unlessScan = <T,>(id: number, f: () => Promise<T | null>): Promise<T | null> => (isScanOnlyId(id) ? Promise.resolve(null) : f());
+export const fetchTriage = (id: number) => unlessScan(id, () => get<TriageResult>(`/triage/property/${id}`)).then(demoFillTriage);
 export const fetchQueue = (limit = 12) => get<QueueResponse>(`/triage/queue?limit=${limit}`);
-export const fetchAerial = (id: number) => get<AerialResult>(`/aerial/${id}`);
-export const fetchLineage = (id: number) => get<LineageResult>(`/lineage/${id}`);
-export const fetchPresence = (id: number) => get<PresenceResult>(`/presence/${id}`);
+export const fetchAerial = (id: number) => unlessScan(id, () => get<AerialResult>(`/aerial/${id}`));
+export const fetchLineage = (id: number) => unlessScan(id, () => get<LineageResult>(`/lineage/${id}`));
+export const fetchPresence = (id: number) => unlessScan(id, () => get<PresenceResult>(`/presence/${id}`));
 
 export const FIELD_LABEL: Record<string, string> = {
   clear_height_ft: "Clear height", floors: "Floors", area_sqft: "Area", restroom_count: "Restrooms",

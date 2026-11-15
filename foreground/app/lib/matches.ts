@@ -22,6 +22,14 @@ export type FactorCard = {
   limitations: string | null;
 };
 
+/** What the API's concept gate removed for a food brief: sites that cannot host the concept, grouped by type with the reason for each. */
+export type ConceptGate = {
+  concept: string;
+  excluded: number;
+  total: number;
+  groups: { type: string; count: number; sites: { listingId: number; address: string; city: string; type: string; reason: string }[] }[];
+};
+
 export type Match = {
   /** CoStar commercial listing id. */
   listingId: number;
@@ -110,9 +118,14 @@ export function buildoutLabel(b: Buildout | null | undefined): string {
 }
 
 /** The listing photo, or the Matterport scan's preview image when the listing has none. */
+/** A café scan offered as a candidate: a scan, not a CoStar record, so the building/lineage/aerial endpoints have nothing for it. */
+export function isScanOnly(match: Pick<Match, "spaceSource">): boolean {
+  return match.spaceSource === "scan-estimate";
+}
+
 export function heroPhoto(match: Pick<Match, "photo" | "tourId">): string {
-  if (match.photo) return match.photo;
-  return match.tourId ? `/api/scan-photo?modelId=${encodeURIComponent(match.tourId)}` : "";
+  // The API only sets `photo` when an image exists, so an empty value means "draw the placeholder", never "guess a URL that may 404".
+  return match.photo || "";
 }
 
 /** Monthly rent in dollars, or null when the listing states no rent. Unknown is never shown as $0. */
