@@ -56,6 +56,14 @@ app.include_router(layout_cost_router)
 app.include_router(horizons_router)
 
 
+@app.on_event("startup")
+def _warm_matches():
+    try:
+        load_matches()  # build the candidate cache now so the first page load is not a 5 s wait
+    except Exception:  # noqa: BLE001
+        pass
+
+
 @app.get("/api/health")
 def health():
     return {"status": "ok", "dataAvailable": load_matches() is not None,

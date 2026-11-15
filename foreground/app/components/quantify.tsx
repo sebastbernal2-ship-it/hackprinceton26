@@ -1,9 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { buildChecklist, type ActItem } from "../lib/act";
+import { fetchCosts } from "../lib/costs";
+import { fetchInspection } from "../lib/inspection";
 import type { LayoutSummary } from "../lib/layout-summary";
 import type { Asset } from "../lib/assets";
 import type { Match } from "../lib/matches";
+import ActChecklist from "./act-checklist";
 import CafeQuantify from "./cafe-quantify";
 import CostPanel from "./cost-panel";
 import FinancePanel from "./finance/finance-panel";
@@ -15,6 +19,19 @@ type QuantifyProps = {
   /** Café demo path: the reference-kit pieces placed on the property page and the owner's assumed area. */
   kit?: Asset[]; onKit?: (items: Asset[]) => void; area?: string; onArea?: (v: string) => void;
 };
+
+/** Step 6 for a candidate listing: findings, evidence gaps and unpriced cost lines turned into a checklist (fixed rules, no LLM). */
+function SiteActChecklist({ match }: { match: Match }) {
+  const [items, setItems] = useState<ActItem[] | null>(null);
+  useEffect(() => {
+    let live = true;
+    Promise.all([fetchInspection(match.listingId).catch(() => null), fetchCosts(match.listingId).catch(() => null)]).then(([insp, costs]) => {
+      if (live) setItems(buildChecklist(insp?.findings ?? [], match.factors ?? [], costs?.lines ?? []));
+    });
+    return () => { live = false; };
+  }, [match]);
+  return items ? <ActChecklist items={items} /> : <p className="mt-8 text-sm text-foreground/50">Building the checklist.</p>;
+}
 
 const nice = (kind: string) => kind.charAt(0).toUpperCase() + kind.slice(1);
 
@@ -129,8 +146,9 @@ export default function Quantify({ match, layout, onBackToLayout, onClose, onSte
           </>
         ) : (
           <>
-            <TotalCostPanel listingId={match.listingId} initialSquareFeet={match.squareFeet} onRent={onRent} />
+            <TotalCostPanel listingId={match.listingId} initialSquareFeet={match.spaceSquareFeet || match.squareFeet} onRent={onRent} />
             <CostPanel listingId={match.listingId} />
+            <SiteActChecklist match={match} />
             {seats ? (
               <FinancePanel listingId={match.listingId} seats={seats} rentUnknownAssumption={monthlyRent ?? undefined} />
             ) : (

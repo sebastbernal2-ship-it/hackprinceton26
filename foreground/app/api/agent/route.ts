@@ -9,6 +9,7 @@ import { answerFio, loadFioContext } from "../../lib/fio";
 // modeling/scene_agent.py, run as a local Python process; GEMINI_API_KEY is read from the repo's .env by that process
 // and never reaches the browser. Only exact /api/agent is handled here; /api/agent/run and /replay still go to FastAPI.
 const ROOT = process.env.SCAN_ASSETS_DIR || path.resolve(process.cwd(), "..");
+const MODELING = process.env.MODELING_DIR || path.resolve(process.cwd(), "..", "modeling");
 const PYTHON = process.env.PYTHON || (process.platform === "win32" ? "python" : "python3");
 
 const API = process.env.API_URL ?? "http://127.0.0.1:8000";
@@ -63,7 +64,7 @@ if env.exists():
         if line and not line.startswith("#") and "=" in line:
             k, v = line.split("=", 1)
             os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
-sys.path.insert(0, "modeling")
+sys.path.insert(0, os.environ["WALK_MODELING_DIR"])
 import scene_agent
 try:
     status, out = scene_agent.handle(json.load(sys.stdin))
@@ -89,7 +90,7 @@ export async function POST(request: Request) {
   }
 
   const result = await new Promise<{ status: number; body: unknown }>((resolve) => {
-    const child = spawn(PYTHON, ["-c", RUNNER], { cwd: ROOT, stdio: ["pipe", "pipe", "pipe"] });
+    const child = spawn(PYTHON, ["-c", RUNNER], { cwd: ROOT, env: { ...process.env, WALK_MODELING_DIR: MODELING }, stdio: ["pipe", "pipe", "pipe"] });
     let out = "";
     child.stdout.on("data", (d) => (out += d));
     child.on("error", (e) => resolve({ status: 500, body: { error: `Could not start Python: ${e.message}` } }));
@@ -102,5 +103,6 @@ export async function POST(request: Request) {
     });
     child.stdin.end(body);
   });
-  return NextResponse.json(result.body, { status: result.status });
+  // No Gemini key is expected on a demo machine: answer 200 with an error body so the viewer falls back to its demo assistant without a failed request.
+  return NextResponse.json(result.body, { status: result.status === 503 ? 200 : result.status });
 }
