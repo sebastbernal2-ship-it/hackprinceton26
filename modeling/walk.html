@@ -52,7 +52,7 @@
     <kbd>X</kbd> remove · <kbd>Ctrl</kbd>+<kbd>Z</kbd> undo · <kbd>C</kbd> catalogue of new furniture</div>
 </div>
 <div id="panel"><span id="edits"></span> <button id="aiBtn">Ask Fio (Enter)</button><button id="catBtn">Catalogue (C)</button><button id="exportBtn">Export edits.json</button><button id="resetBtn">Reset all</button></div>
-<div id="ai"><div id="aiLog"></div><div id="aiChips"></div><div class="row"><input id="aiInput" placeholder="Ask Fio: cost, seats, hazards, next steps..." autocomplete="off"><button id="aiSend">Send</button><button id="aiNew">New chat</button></div></div>
+<div id="ai"><div id="aiLog"></div><div id="aiChips"></div><div class="row"><input id="aiInput" placeholder="Ask Fio, or tell it: clear the room, remove the sofa, add 4 two-tops..." autocomplete="off"><button id="aiSend">Send</button><button id="aiNew">New chat</button></div></div>
 <div id="cat"><div class="head"><b>Add furniture</b><span class="dim">Free CC0 models from Poly Haven · lit by the room's own photo</span><button id="catClose">✕</button></div>
   <div id="catTabs"></div><div id="catGrid"></div></div>
 <div id="cross"></div><div id="target" style="opacity:0"></div><div id="hint" style="opacity:0"></div><div id="fade"></div>
@@ -944,9 +944,9 @@ pendingAdded = pendingAdded.filter(a => catalog.some(c => c.id === a.cat));   //
 Promise.all(pendingAdded.map(a => makeItem(catalog.find(c => c.id === a.cat), a).catch(e => console.warn(a.cat, e))))
   .then(() => { pendingAdded = []; save(); });
 
-// ------------------------------------------------------------------ AI: ask Gemini to rearrange the scene
+// ------------------------------------------------------------------ AI: ask Fio (a model) to rearrange the scene
 // The agent loop runs here because the scene does: each turn POSTs the conversation to /api/agent (run_all.py's server,
-// which holds the API key and calls Gemini, see modeling/scene_agent.py), runs the tool calls the model returns against the
+// which holds the API key and calls the model, see modeling/scene_agent.py), runs the tool calls the model returns against the
 // scene, and sends the results back until the model is done. A whole request is one Ctrl+Z.
 const D2R = Math.PI / 180, wrap = d => ((d % 360) + 540) % 360 - 180;
 const findPiece = id => pieces.find(p => String(p.id) === String(id).replace(/^#/, ''));
@@ -1116,33 +1116,161 @@ const sceneTools = {
   get_view: () => [imageBlock(), { type: 'text', text: situation() }],
 };
 
-// Demo assistant: used when the Gemini agent is not configured. Handles "add [n] <sofa|armchair|chair|stool|table|shelf|cabinet>" by
-// placing real catalogue pieces in front of you. It is a keyword matcher, not an AI; the log says so.
-const DEMO_WORDS = [['armchair', ['Armchairs']], ['sofa', ['Sofas']], ['couch', ['Sofas']], ['stool', ['Chairs'], 'stool'], ['chair', ['Chairs', 'Armchairs']],
-  ['table', ['Tables']], ['shelf', ['Storage']], ['shelves', ['Storage']], ['cabinet', ['Storage']]];
-const NUMS = { a: 1, an: 1, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6 };
-async function demoAssist(prompt) {
-  aiLog('sys', 'Demo assistant (no Gemini key on this machine): I can add catalogue pieces in front of you, e.g. "add two chairs" or "add a sofa".');
-  const t = prompt.toLowerCase(), hit = DEMO_WORDS.find(w => t.includes(w[0]));
-  if (!hit || !/\b(add|place|put|bring|need|want|more)\b/.test(t)) { aiLog('ai', 'Demo mode cannot do that one. Try "add two chairs", "add a sofa" or "add a table".'); return; }
-  const m = t.match(/\b(\d+|one|two|three|four|five|six|an|a)\b/); const n = Math.min(6, m ? (+m[1] || NUMS[m[1]] || 1) : 1);
-  const pool = catalog.filter(c => hit[1].includes(c.category) && (!hit[2] || c.id.toLowerCase().includes(hit[2])));
-  if (!pool.length) { aiLog('err', 'The furniture catalogue is empty. Run: python modeling/fetch_catalog.py'); return; }
-  let placed = 0;
-  for (let i = 0; i < n; i++) {
-    const e = pool[i % pool.length], side = (i - (n - 1) / 2) * (Math.max(e.size_m[0] || 0.7, 0.7) + 0.3), d = 2.0 + Math.max(e.size_m[2] || 1, 1) / 2;
-    const x = feet.x + Math.cos(yaw) * d - Math.sin(yaw) * side, y = feet.y + Math.sin(yaw) * d + Math.cos(yaw) * side;
-    try { const r = await sceneTools.add_from_catalog({ catalog_id: e.id, x, y, yaw_deg: (yaw + Math.PI) / D2R }); placed++; if (r && r.fits === false) aiLog('sys', `${e.name} overlaps something; press Ctrl+Z to undo.`); }
-    catch (err) { aiLog('err', `${e.name}: ${err.message}`); }
+// ------------------------------------------------------------------ Fio's hands: local commands, no model needed
+// fio_commands.js reads "clear the room", "remove the sofa", "move the chair to the back wall", "add 6 two-tops along the windows",
+// "rotate the table", "put a bar by the door", "what is in this room?", "undo" into a command; this runs it on the scene and
+// answers in plain words. Anything it does not read goes on to the model (if a key works) and then to the property answerer.
+const fio = await import('./fio_commands.js').catch(() => null);
+const nameOf = pc => pc.label.replace(/\s*\d+$/, '').toLowerCase();
+const plural = (n, w) => `${n} ${n === 1 ? w : /f$/.test(w) ? w.slice(0, -1) + 'ves' : /(s|x|ch|sh)$/.test(w) ? w + 'es' : w + 's'}`;
+const onLevel = pc => !pc.deleted && Math.abs(pc.floor_z + pc.dz - feet.z) < 1.8;
+const distTo = pc => { const p = posOf(pc); return Math.hypot(p.x - feet.x, p.y - feet.y); };
+const describeItems = () => pieces.filter(onLevel).map(pc => ({ id: pc.id, label: pc.label, kind: pc.kind, cat: pc.cat, name: pc.label }));
+const WALL_DIR = { ahead: 'forward', behind: 'back', left: 'left', right: 'right', north: 'north', south: 'south', east: 'east', west: 'west', windows: 'forward', door: 'forward' };
+const wallPhrase = (c) => ({ ahead: 'back wall (the one you are facing)', behind: 'wall behind you', left: 'left wall', right: 'right wall' }[c.wall] ||
+  (c.wall === 'windows' || c.wall === 'door' ? `wall you are facing (the scan does not label the ${c.wall === 'door' ? 'door' : 'windows'}, so face ${c.wall === 'door' ? 'it' : 'them'} when you say it)` : `${c.wall} wall`));
+function wallVec(w) {
+  const v = view(), d = { ahead: v.f, forward: v.f, behind: [-v.f[0], -v.f[1]], back: [-v.f[0], -v.f[1]], left: [-v.r[0], -v.r[1]], right: v.r, north: [0, 1], south: [0, -1], east: [1, 0], west: [-1, 0],
+    windows: v.f, door: v.f }[w];
+  return d ? { x: d[0], y: d[1] } : null;
+}
+function discard(pc) {                                // an item that did not fit: take it out as if it was never added
+  pc.pivot.parent && pc.pivot.parent.remove(pc.pivot);
+  const i = pieces.indexOf(pc); if (i >= 0) pieces.splice(i, 1);
+  for (let k = undoStack.length - 1; k >= 0; k--) if (undoStack[k][0] === pc) undoStack.splice(k, 1);
+  touched.delete(pc);
+}
+async function shrinkOut(list) {                      // the "clear the scene" transition: each piece shrinks away in turn, floor and wall fill in behind it
+  const T0 = performance.now(), per = 380, gap = Math.min(110, 1500 / Math.max(1, list.length));
+  await new Promise(res => {
+    const step = () => {
+      const t = performance.now() - T0; let live = 0;
+      list.forEach((pc, i) => { const k = Math.min(1, Math.max(0, (t - i * gap) / per)); if (k < 1) live++;
+        const s = Math.max(0.001, 1 - k * k); pc.pivot.scale.set(s, s, s); if (pc.fill) pc.fill.visible = true; });
+      if (live) setTimeout(step, 16); else res();
+    };
+    step();
+  });
+  for (const pc of list) { pc.deleted = true; pc.pivot.scale.set(1, 1, 1); changed(pc); }
+}
+async function addGroups(plan, count, wallName) {      // add `count` copies of plan.group, along a wall or in a row in front of the user
+  const entries = plan.group.map(g => ({ ...g, entry: catalog.find(c => c.id === g.id) }));
+  const v = view(), f = { x: v.f[0], y: v.f[1] };
+  let n, base, faceMain;                              // n = unit vector from the room toward the wall
+  if (wallName) { n = wallVec(WALL_DIR[wallName] || wallName); const D = rayStatic(new THREE.Vector3(feet.x, feet.y, feet.z + 1.0), new THREE.Vector3(n.x, n.y, 0), 30); let dd = 0; while (dd < Math.min(D, 40) && isFinite(groundAt(feet.x + n.x * (dd + 0.25), feet.y + n.y * (dd + 0.25), feet.z + 0.6, feet.z - 1.5))) dd += 0.25;   // the wall, or where the scanned floor ends
+    base = { d: Math.min(D, dd) }; faceMain = Math.atan2(-n.y, -n.x) / D2R; }
+  else { n = f; base = { d: 2.6 }; faceMain = Math.atan2(-f.y, -f.x) / D2R; }
+  const t = { x: -n.y, y: n.x };
+  const hit = { x: feet.x + n.x * base.d, y: feet.y + n.y * base.d };
+  const made = [], rowW = [];
+  let placed = 0; addGroups.why = '';
+  const bar = plan.label === 'bar';
+  for (const gap of wallName ? [0.12, 0.3, 0.55, 1, 1.6, 2.4, 3.5] : [0.12]) for (let slot = 0, k = 0; !placed && slot < 6 || placed && placed < count && slot < count * 3 + 6; slot++) {
+    const group = [];
+    try {
+      const main = entries[0], mp = await makeItem(main.entry, { tx: feet.x, ty: feet.y, dz: feet.z, dyaw: 0 }); group.push(mp); made.push(mp);
+      setFacing(mp, faceMain);
+      const eN = extent(mp, n.x, n.y), eT = extent(mp, t.x, t.y);
+      const ranks = Math.ceil((entries.length - 1) / 2), gw = 2 * eT + (bar ? 0.3 : 0.35 + Math.max(0, ranks - 1) * 0.5), reach = !bar && entries.length > 1 ? 0.5 : 0, off = ((k % 2) ? 1 : -1) * Math.ceil(k / 2) * gw;
+      const cx = wallName ? hit.x - n.x * (eN + gap + reach) + t.x * off : hit.x + t.x * off, cy = wallName ? hit.y - n.y * (eN + gap + reach) + t.y * off : hit.y + t.y * off;
+      let ok = settle(mp, cx, cy);
+      const seats = entries.slice(1);
+      for (let i = 0; ok && i < seats.length; i++) {
+        const sp = await makeItem(seats[i].entry, { tx: feet.x, ty: feet.y, dz: feet.z, dyaw: 0 }); group.push(sp); made.push(sp);
+        const sN = extent(sp, n.x, n.y), sT = extent(sp, t.x, t.y);
+        let px, py;
+        if (bar) { const across = (i - (seats.length - 1) / 2) * Math.max(0.55, 2 * sT + 0.2), front = eN + sN + 0.2; px = cx - n.x * front + t.x * across; py = cy - n.y * front + t.y * across; }
+        else { const side = i % 2 ? 1 : -1, rank = Math.floor(i / 2) - (ranks - 1) / 2, o = eN + sN + 0.16, sh = rank * 0.5; px = cx + n.x * side * o + t.x * sh; py = cy + n.y * side * o + t.y * sh; }
+        setFacing(sp, Math.atan2(cy - py, cx - px) / D2R);
+        ok = settle(sp, px, py);
+      }
+      k++;
+      if (ok && group.every(pc => checkFit(pc))) { group.forEach(pc => { undoStack.push([pc, { ...poseOf(pc), deleted: true }]); changed(pc); }); placed++; }
+      else { addGroups.why = !ok ? 'there is no floor there' : (() => { const d = fitDetails(group.find(pc => !checkFit(pc)) || group[0]); return d.overlaps_wall ? 'it runs into the wall' : d.blocked_by.length ? `it hits ${d.blocked_by[0]}` : 'it is too tight'; })(); group.forEach(discard); }
+    } catch (e) { group.forEach(discard); k++; }
   }
-  aiLog('ai', placed ? `Added ${placed} ${hit[0]}${placed === 1 ? '' : 's'} in front of you (demo assistant). Walk over and press E or click to move them; Ctrl+Z undoes.` : 'Nothing was placed.');
+  return placed;
+}
+sceneTools.clear_room = async () => { const list = pieces.filter(onLevel).sort((a, b) => distTo(a) - distTo(b));
+  for (const pc of list) { pushUndo(pc); pc.outline.visible = false; } await shrinkOut(list); return `cleared ${list.length} pieces`; };
+// slide a piece straight to the wall in direction d: aim at the wall found by a ray, then back off until it fits (stops short of other furniture)
+function toWall(pc, d) {
+  const p0 = posOf(pc), z = pc.floor_z + pc.dz + 0.5;
+  const D = rayStatic(new THREE.Vector3(p0.x, p0.y, z), new THREE.Vector3(d.x, d.y, 0), 30), aim = D - extent(pc, d.x, d.y) - 0.03;
+  pushUndo(pc);
+  for (let s = Math.max(0, aim); s >= 0; s -= 0.1) {
+    if (settle(pc, p0.x + d.x * s, p0.y + d.y * s) && checkFit(pc)) { changed(pc); const blocker = aim - s > 0.15 ? 'something in the way' : null;
+      return { moved_m: +s.toFixed(2), stoppedBy: blocker, fits: report(pc).fits }; }
+  }
+  settle(pc, p0.x, p0.y); undoStack.pop();
+  return { blocked: 'there is no clear floor in that direction (the scan has gaps, or furniture is in the way)' };
+}
+async function fioRun(c) {
+  const items = describeItems();
+  switch (c.op) {
+    case 'undo': if (!undoStack.length) return 'There is nothing to undo.'; undo(); return 'Undid the last change.';
+    case 'describe': {
+      const live = pieces.filter(onLevel), by = new Map();
+      for (const pc of live) by.set(nameOf(pc), (by.get(nameOf(pc)) || 0) + 1);
+      if (!live.length) return 'The room is empty: nothing left to move. You can add furniture from the catalogue or tell me what to put where.';
+      const seats = live.filter(pc => /chair|stool|armchair|sofa|ottoman|bench/.test(`${pc.kind || ''} ${pc.label} ${pc.cat || ''}`.toLowerCase())).length;
+      const added = live.filter(pc => pc.added).length;
+      return `${plural(live.length, 'piece')} here: ${[...by].sort((a, b) => b[1] - a[1]).map(([k, n]) => plural(n, k)).join(', ')}. About ${seats} places to sit (estimated from the labels, which are the scan's guesses)${added ? `; ${added} of the pieces were added from the catalogue` : ''}.`;
+    }
+    case 'clear': {
+      const list = pieces.filter(onLevel).sort((a, b) => distTo(a) - distTo(b));
+      if (!list.length) return 'The room is already empty.';
+      await sceneTools.clear_room();
+      return `Cleared the room: ${plural(list.length, 'piece')} removed, with the floor and walls filled in behind them. It is an empty map now; say what to put where, or press Ctrl+Z to bring it all back.`;
+    }
+    case 'remove': {
+      const m = fio.matchPieces(c.what, items);
+      if (!m.ids.length) return `I do not see ${c.what} in the room. Ask "what is in this room?" to see what is here.`;
+      const sel = m.ids.map(findPiece).sort((a, b) => distTo(a) - distTo(b));
+      const take = c.all || (!c.count && /s$/.test(c.what.trim()) && sel.length > 1) ? sel : sel.slice(0, c.count || 1);
+      for (const pc of take) { pushUndo(pc); pc.outline.visible = false; }
+      await shrinkOut(take);
+      return `Removed ${take.length === 1 ? `the ${nameOf(take[0])} (#${take[0].id})` : plural(take.length, nameOf(take[0]))}${m.approx ? ` (closest match to "${c.what}")` : ''}. Ctrl+Z puts ${take.length === 1 ? 'it' : 'them'} back.`;
+    }
+    case 'move': case 'nudge': case 'rotate': {
+      const m = fio.matchPieces(c.what, items);
+      if (!m.ids.length) return `I do not see ${c.what} in the room, so I could not ${c.op === 'rotate' ? 'turn' : 'move'} it.`;
+      const pc = m.ids.map(findPiece).sort((a, b) => distTo(a) - distTo(b))[0], nm = `the ${nameOf(pc)} (#${pc.id})${m.approx ? `, the closest match to "${c.what}"` : ''}`;
+      if (c.op === 'rotate') { sceneTools.rotate_object({ id: pc.id, mode: 'by', degrees: c.degrees }); return `Turned ${nm} ${c.degrees} degrees counter-clockwise.`; }
+      if (c.op === 'nudge') { const r = sceneTools.move_relative({ id: pc.id, forward_m: c.dir === 'forward' ? c.metres : c.dir === 'backward' ? -c.metres : 0, right_m: c.dir === 'right' ? c.metres : c.dir === 'left' ? -c.metres : 0, turn_deg: 0 });
+        return r.error ? `I could not move ${nm}: there is no scanned floor there.` : `Moved ${nm} ${c.metres.toFixed(1)} m ${c.dir === 'backward' ? 'toward you' : c.dir === 'forward' ? 'away from you' : `to your ${c.dir}`}${r.fits === false ? ', but it now overlaps something. Ctrl+Z undoes it' : ''}.`; }
+      const dir = WALL_DIR[c.wall]; if (!dir) return `I did not understand which wall "${c.wallWord}" is.`;
+      const r = toWall(pc, wallVec(dir));
+      if (r.blocked) return `I could not move ${nm} to the ${wallPhrase(c)}: ${r.blocked}.`;
+      return r.moved_m < 0.05 ? `${nm[0].toUpperCase() + nm.slice(1)} is already against the ${wallPhrase(c)}.` : `Moved ${nm} ${r.moved_m} m to the ${wallPhrase(c)}${r.stoppedBy ? `, stopping at ${r.stoppedBy}` : ''}${r.fits === false ? '; it overlaps something there, Ctrl+Z undoes it' : ''}.`;
+    }
+    case 'add': {
+      if (!catalog.length) return 'The furniture catalogue is empty on this machine, so I cannot add anything (run modeling/fetch_catalog.py).';
+      const plan = fio.resolveAdd(c.what, catalog);
+      if (!plan) return `The 3D catalogue has no "${c.what}" (it has sofas, armchairs, chairs, stools, tables, cabinets and shelves). Kitchen equipment is in the Planner's Layout & equipment tab.`;
+      const n = Math.min(12, c.count || 1), done = await addGroups(plan, n, c.wall);
+      if (!done) return `I could not find a clear spot for ${plural(n, plan.label)}${c.wall ? ` along the ${wallPhrase(c)}` : ''}: ${addGroups.why || 'it is too tight'}. Try clearing the room first.`;
+      return `Added ${plural(done, plan.label)}${done < n ? ` (only ${done} of ${n} fit)` : ''}${c.wall ? ` along the ${wallPhrase(c)}` : ' in front of you'}. They are checked against walls and furniture; Ctrl+Z undoes it.`;
+    }
+  }
+  return null;
+}
+async function runLocal(c, prompt, status, mark) {
+  status.textContent = 'Fio: working…';
+  let reply;
+  try { reply = await fioRun(c); } catch (e) { reply = `I could not do that: ${e.message || e}`; }
+  status.remove();
+  const batch = undoStack.splice(mark);
+  if (batch.length) { undoStack.push({ batch, label: `Fio: ${prompt.slice(0, 40)}` }); }
+  aiLog('ai', reply);
+  if (batch.length) aiLog('sys', `${touched.size} piece${touched.size === 1 ? '' : 's'} changed · Ctrl+Z undoes all of it`);
 }
 let aiMessages = [], aiBusy = false;
 const aiLog = (cls, text) => { const d = document.createElement('div'); d.className = cls; d.textContent = text;
   $('aiLog').appendChild(d); $('aiLog').scrollTop = 1e9; return d; };
 const toolLine = (n, a) => ({ move_object: `moving #${a.id}`, move_relative: `moving #${a.id}`, place_next_to: `placing #${a.id} next to #${a.anchor_id}`,
   push_against_wall: `pushing #${a.id} ${a.direction}`, rotate_object: `turning #${a.id}`, remove_object: `removing #${a.id}`,
-  restore_object: `restoring #${a.id}`, add_from_catalog: `adding ${a.catalog_id}`, list_catalog: 'checking the catalogue',
+  restore_object: `restoring #${a.id}`, clear_room: 'clearing the room', add_from_catalog: `adding ${a.catalog_id}`, list_catalog: 'checking the catalogue',
   describe_scene: 'looking around', get_view: 'checking the view' }[n] || n);
 // The open property, as the app stored it for this tab (same origin as the parent page). The server answers property
 // questions from it when no model key is configured.
@@ -1157,6 +1285,8 @@ async function askAI(prompt) {
   aiLog('you', prompt);
   const status = aiLog('sys', 'Fio is thinking…');
   const mark = undoStack.length, base = aiMessages.length; touched.clear();
+  const local = fio && fio.parseCommand(prompt);
+  if (local) { await runLocal(local, prompt, status, mark); aiBusy = false; $('aiInput').disabled = false; $('aiSend').disabled = false; $('aiInput').focus(); return; }
   try {
     aiMessages.push({ role: 'user', content: [imageBlock(), { type: 'text', text: `${situation()}\n\nRequest: ${prompt}` }] });
     for (let turn = 0; turn < 20; turn++) {
@@ -1164,18 +1294,9 @@ async function askAI(prompt) {
       const res = await fetch(/^\/[A-Za-z0-9_\/-]*$/.test(Q.get('agent') || '') ? Q.get('agent') : '/api/agent', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Walk-Agent': '1' },
                                               body: JSON.stringify({ messages: aiMessages, fio: fioMatch() }) });
       const out = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
-      if ((!res.ok || out.error) && turn === 0 ) {
-        // No Gemini key / no agent service: answer simple "add ..." requests with the built-in demo assistant so the bar still works.
-        aiMessages.length = base; status.remove();
-        await demoAssist(prompt);
-        const batch0 = undoStack.splice(mark);
-        if (batch0.length) undoStack.push({ batch: batch0, label: `Demo: ${prompt.slice(0, 40)}` });
-        aiBusy = false; $('aiInput').disabled = false; $('aiSend').disabled = false; $('aiInput').focus();
-        return;
-      }
       if (!res.ok || out.error) {
         aiMessages.length = base;                      // drop this whole request so the chat stays valid (no dangling tool_use)
-        throw new Error(res.status === 501 || res.status === 405 ? 'This server has no /api/agent - restart it with: python run_all.py --only serve' : out.error);
+        throw new Error(res.status === 501 || res.status === 405 ? 'This server has no /api/agent, so I can only run plain commands (clear the room, remove, move, add, rotate).' : out.error);
       }
       aiMessages.push({ role: 'assistant', content: out.content });
       for (const b of out.content) if (b.type === 'text' && b.text.trim()) aiLog('ai', b.text.trim());
@@ -1211,7 +1332,7 @@ $('aiInput').addEventListener('keydown', e => {
   if (e.key === 'Escape') { toggleAI(false); }
   e.stopPropagation();
 });
-for (const t of ["Does this fit Sarah's brief?", 'What will it cost to open?', 'How many seats could it hold?', 'Any structure or flood hazards?', 'What happened to past restaurants here?', 'What does the forecast say?', 'What should I do next?']) {
+for (const t of ['Clear the room', 'What is in this room?', 'Add 4 two-tops along the windows', 'Put a bar by the door', "Does this fit Sarah's brief?", 'What will it cost to open?', 'How many seats could it hold?', 'Any structure or flood hazards?', 'What happened to past restaurants here?', 'What does the forecast say?', 'What should I do next?']) {
   const b = document.createElement('button'); b.textContent = t; b.onclick = () => askAI(t); $('aiChips').appendChild(b); }
 $('aiNew').onclick = () => { aiMessages = []; $('aiLog').innerHTML = ''; aiLog('sys', 'New conversation.'); };
 $('aiBtn').onclick = () => toggleAI();

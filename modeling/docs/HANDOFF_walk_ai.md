@@ -1,7 +1,7 @@
 # Handoff: walk-through + AI scene editing (2026-11-14)
 
 Project: HackPrinceton 2026 (CoStar/Matterport track). The demo model is `Jxmnkp6KpJN`, 141-143 N La Brea Ave, a two-floor restaurant.
-Ported from origin/Model-testing (Davd). The scene-agent path was tested only against a fake Gemini server, never the real API.
+Ported from origin/Model-testing (Davd). The scene-agent path was tested only against a fake server, never the real API. UPDATE: scene_agent.py now speaks OpenAI function calling (OPENAI_API_KEY, OPENAI_MODEL); plain commands run locally in fio_commands.js + walk.html with no model.
 Run the server with `python run_all.py --only serve`, then open `http://localhost:8000/modeling/walk.html?model=Jxmnkp6KpJN`.
 
 ## Done and tested

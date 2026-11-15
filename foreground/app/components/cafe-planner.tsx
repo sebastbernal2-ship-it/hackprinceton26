@@ -471,7 +471,7 @@ export default function CafePlanner({ match, kit, onKit, placed, onPlaced, area,
               )}
             </div>
 
-            {floor && <PlannerFill floor={floor} placed={placed} assets={catalog.assets} onPlaced={commit} />}
+            {floor && <PlannerFill floor={floor} placed={placed} assets={catalog.assets} onPlaced={commit} onUndo={undo} />}
 
             {issues.length > 0 && (
               <ul role="alert" className="mt-2 list-disc space-y-0.5 pl-5 text-xs text-foreground/75" data-testid="planner-issues">
