@@ -180,3 +180,15 @@ def test_variant_endpoint_writes_glb_and_profile_asset(client, tmp_path):
     assert bad.status_code == 422
     assert client.post("/api/assets/nope/variants", json={"kind": "island"}).status_code == 404
     assert client.post("/api/assets/island_96x36/variants", json={"kind": "wall_run"}).status_code == 422
+
+
+def test_variant_without_profile_never_writes_into_the_tracked_library(client, tmp_path):
+    lib = tmp_path / "assets" / "library"
+    before = sorted(p.relative_to(lib).as_posix() for p in lib.rglob("*") if p.is_file())
+    r = client.post("/api/assets/counter_corner_96/variants", json={"kind": "corner_l", "params": {"armA": 2.4, "armB": 2.0}})
+    assert r.status_code == 201, r.text
+    v = r.json()
+    after = sorted(p.relative_to(lib).as_posix() for p in lib.rglob("*") if p.is_file())
+    assert before == after
+    assert v["profileId"] == "scratch" and (tmp_path / v["model"]["uri"]).is_file()
+    assert "assets/library" not in v["model"]["uri"]
