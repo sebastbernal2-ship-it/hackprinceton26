@@ -16,8 +16,10 @@ export function parseSeats(text: string): number | null {
 }
 
 /** Seat count to prefill: the 3D layout's count, else the planner's, else empty. */
-export const defaultSeats = (layoutSeats: number | null | undefined, plannerSeats: number): string =>
-  layoutSeats && layoutSeats > 0 ? String(layoutSeats) : plannerSeats > 0 ? String(plannerSeats) : "";
+/** Seats to prefill: the 3D layout count, else the Planner's, else an estimate from the space area (total floor area per seat of 30 sq ft, the
+ *  same planning assumption the shortlist uses), else empty. The estimate is flagged by the caller as an estimate. */
+export const defaultSeats = (layoutSeats: number | null | undefined, plannerSeats: number, areaSqft?: number | null): string =>
+  layoutSeats && layoutSeats > 0 ? String(layoutSeats) : plannerSeats > 0 ? String(plannerSeats) : areaSqft && areaSqft > 0 ? String(Math.max(1, Math.floor(areaSqft / 30))) : "";
 
 /** Area to prefill: the shared planner area when set, else the listing's own area (an editable assumption), else empty. */
 export const defaultArea = (shared: string, listingSqft: number | undefined): string =>

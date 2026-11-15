@@ -51,7 +51,7 @@ export default function Quantify({ match, layout, onBackToLayout, onClose, onSte
   const [months, setMonths] = useState(12);
   const [fromBrief] = useState<number | null>(() => briefBudget(readBrief()));
 
-  const seatsText = seatsEdited ?? defaultSeats(layout?.seats, seatTotal(kit));
+  const seatsText = seatsEdited ?? defaultSeats(layout?.seats, seatTotal(kit), match.spaceSquareFeet || null);
   const seats = parseSeats(seatsText);
   const areaText = areaEdited ?? defaultArea(area, match.spaceSquareFeet || match.squareFeet);
   const sqft = parsePositive(areaText);
@@ -175,7 +175,7 @@ export default function Quantify({ match, layout, onBackToLayout, onClose, onSte
           <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <label className="text-sm"><span className="block text-foreground/55">Seats</span>
               <input type="number" min={1} max={500} inputMode="numeric" aria-label="Seats" value={seatsText} onChange={(e) => setSeatsEdited(e.target.value)} className={`${field} w-full`} />
-              <span className="mt-1 block text-xs text-foreground/45">{seatsEdited !== null ? "Your number." : layout && layout.seats > 0 ? `Counted from your 3D layout (${layout.seats}).` : seatTotal(kit) > 0 ? "From the Planner (estimated)." : "Enter the seats you plan."}</span></label>
+              <span className="mt-1 block text-xs text-foreground/45">{seatsEdited !== null ? "Your number." : layout && layout.seats > 0 ? `Counted from your 3D layout (${layout.seats}).` : seatTotal(kit) > 0 ? "From the Planner (estimated)." : match.spaceSquareFeet ? "Estimated from the space area (30 sq ft per seat); change it to your plan." : "Enter the seats you plan."}</span></label>
             <label className="text-sm"><span className="block text-foreground/55">Area (sq ft)</span>
               <input type="number" min={1} inputMode="numeric" aria-label="Area in square feet" value={areaText} placeholder="e.g. 1200" onChange={(e) => { setAreaEdited(e.target.value); onArea(e.target.value); }} className={`${field} w-full`} />
               <span className="mt-1 block text-xs text-foreground/45">Your assumption for the space you would lease{tcData?.buildingSquareFeet ? `; the building is ${Math.round(tcData.buildingSquareFeet).toLocaleString()} sq ft` : ""}. Drives fit-out and rent.</span></label>
