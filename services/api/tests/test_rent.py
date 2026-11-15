@@ -49,3 +49,14 @@ def test_missing_artifacts_unknown(tmp_path, monkeypatch):
 def test_summary(art):
     s = client.get("/api/rent/summary").json()
     assert s["flagCounts"] == {"above": 1} and s["nEmitted"] == 1 and s["segments"]["houston/all"]["gatePassed"] is True
+
+
+def test_summary_survives_nan_metrics_from_a_thin_segment(tmp_path, monkeypatch):
+    monkeypatch.setenv("RENT_ARTIFACT_DIR", str(tmp_path))
+    rep = json.loads(json.dumps(REPORT))
+    rep["segments"]["houston/all"]["temporal"]["model"] = {"n": 1, "r2_log": float("nan")}
+    (tmp_path / "report.json").write_text(json.dumps(rep))  # json.dumps writes the bare token NaN
+    (tmp_path / "predictions.json").write_text("{}")
+    r = client.get("/api/rent/summary")
+    assert r.status_code == 200
+    assert r.json()["segments"]["houston/all"]["temporalHoldout"]["r2_log"] is None

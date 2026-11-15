@@ -104,3 +104,32 @@ def test_route(tmp_path, monkeypatch):
     r = client.get("/api/horizons/7")
     assert r.status_code == 200 and r.json()["listingId"] == 7 and len(r.json()["rows"]) == 11
     assert client.get("/api/horizons/8").status_code == 404
+
+
+def hazard_card(seg, city="Houston", horizon="1 year(s) from tenancy start"):
+    c = fitted(city, metric=f"Share of food-and-accommodation tenancies in {seg} space in {city} ending in recorded closure/bankruptcy within 1 year(s) of start (cumulative incidence)", horizon=horizon)
+    c["kind"] = "fitted"
+    return c
+
+
+def test_hazard_priors_only_for_their_own_property_type():
+    cards = [hazard_card("office"), hazard_card("multifamily")]
+    # a retail listing must not receive office or multifamily tenancy priors
+    retail = build.build_table(HOU, ptype="GeneralRetail", arts={"hazard": art(cards)})
+    for col in ("12m", "3_5y"):
+        x = cellof(retail, "tenancy_survival", col)
+        assert x["state"] != "fitted", col
+    assert "office" in cellof(retail, "tenancy_survival", "12m")["reason"] or cellof(retail, "tenancy_survival", "12m")["state"] == "cannot_say"
+    office = build.build_table(HOU, ptype="Office", arts={"hazard": art(cards)})
+    assert cellof(office, "tenancy_survival", "12m")["state"] == "fitted"
+
+
+def test_rent_artifacts_are_read_from_report_and_predictions(tmp_path):
+    import json
+    (tmp_path / "report.json").write_text(json.dumps({"n_rated": 5, "segments": {
+        "houston/all": {"n_segment": 5, "gate": {"passed": False, "reasons": ["temporal coverage"]}}}}))
+    (tmp_path / "predictions.json").write_text("{}")
+    a = build.load_artifact(tmp_path)
+    assert a["present"] and a["gate_failed"] and "gate" in a["gate_failed"]
+    x = cellof(build.build_table(HOU, arts={"rent": a}), "rent_expectation", "now")
+    assert x["state"] == "cannot_say" and "gate" in x["reason"]

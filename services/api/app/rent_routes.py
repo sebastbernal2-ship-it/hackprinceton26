@@ -4,6 +4,7 @@ Reads forecasting/artifacts/rent/{predictions,report}.json (gitignored; produced
 Segments that failed their validation gate have no predictions: the endpoint returns an `unknown` card, never a number.
 """
 import json
+import math
 import os
 from pathlib import Path
 
@@ -20,9 +21,20 @@ def _dir() -> Path:
     return Path(os.environ.get("RENT_ARTIFACT_DIR") or ROOT / "forecasting" / "artifacts" / "rent")
 
 
+def _finite(obj):
+    """NaN/inf (undefined metrics of a thin segment) become None: Starlette rejects non-finite floats."""
+    if isinstance(obj, float):
+        return obj if math.isfinite(obj) else None
+    if isinstance(obj, dict):
+        return {k: _finite(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_finite(v) for v in obj]
+    return obj
+
+
 def _load(name: str):
     try:
-        return json.loads((_dir() / name).read_text())
+        return _finite(json.loads((_dir() / name).read_text()))
     except (OSError, ValueError):
         return None
 

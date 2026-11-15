@@ -79,3 +79,18 @@ def test_contributions_sum_to_prediction_gap_and_missing_is_not_zero():
     tot = np.array([sum(x.values()) for x in c])
     assert np.allclose(tot, pred - pred.mean(), atol=1e-8)
     assert "year_built_missing" in d.cols  # unknown year gets its own flag rather than a silent 0
+
+
+def test_contribution_reference_is_the_training_average_not_the_prediction_batch():
+    df = synth(n=120)
+    d, m = M.fit_ridge(df)
+    row = df.iloc[[3]]
+    alone = M.group_contrib(d, m, row)[0]
+    batch = M.group_contrib(d, m, df.iloc[:30])[3]
+    assert alone == pytest.approx(batch)
+    assert any(abs(v) > 1e-9 for v in alone.values())  # a single unrated listing is not explained as all zeros
+
+
+def test_undefined_metrics_are_serialized_as_null():
+    out = M.finite({"a": float("nan"), "b": [1.0, float("inf")], "c": {"d": 2.5}})
+    assert out == {"a": None, "b": [1.0, None], "c": {"d": 2.5}}
