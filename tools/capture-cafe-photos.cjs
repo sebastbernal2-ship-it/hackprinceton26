@@ -13,6 +13,8 @@ const IDS = (process.env.CAFE_SCANS || "w2JcUVybv9c,xVKH13z5MJ8,JAnuRsaVo9M").sp
     await p.waitForTimeout(25000);
     // dismiss the offer card if present so it is not in the picture
     await p.getByRole("button", { name: /Keep the scan/ }).click({ timeout: 2000 }).catch(() => {});
+    await p.locator("#shellBtn").click({ timeout: 5000 }).catch(() => p.keyboard.press("g")); // Fill gaps: inferred room shell, so no black voids in the pictures
+    await p.waitForTimeout(Number(process.env.SHELL_WAIT || 50000));
     await p.evaluate(() => { // hide every overlay (help, buttons, cards, labels); keep the 3D canvas
       const cv = document.querySelector("canvas");
       document.querySelectorAll("body *").forEach((el) => { if (el !== cv && !el.contains(cv) && !cv.contains(el) && getComputedStyle(el).position !== "static") el.style.visibility = "hidden"; });
