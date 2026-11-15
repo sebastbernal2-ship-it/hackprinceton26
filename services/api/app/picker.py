@@ -46,7 +46,14 @@ def cafe_candidates() -> list[Match]:
                              + ([Fact(label="Floor area", value=f"{sqft:,} sq ft (ESTIMATED demo area, not measured)")] if sqft else []),
                              location=[Fact(label="Matterport", value=f"Model {t}")]),
             factors=[]))
-    return out
+    from . import demo_fixture, demo_routes
+    return [demo_fixture.apply_match(m, demo_routes.csv_cards(m.tourId)) if demo_fixture.has(m.listingId) else m for m in out]
+
+
+def is_cafe_scan(m: Match) -> bool:
+    """A café scan offered as a candidate: no real factor cards (a demo fixture's cards do not make it a CoStar listing)."""
+    from . import demo_fixture
+    return m.listingId in CAFE_IDS and (not m.factors or demo_fixture.has(m.listingId))
 
 
 def detect_concept(text: str) -> str | None:
@@ -73,7 +80,7 @@ def _n(x) -> str:
 def pick(m: Match, results: dict, profile, concept: str | None, prior_food: bool) -> tuple[int, list[str], bool]:
     """(points, reasons, cafe_ready). Points only order sites; they are not shown."""
     pts, why = 0, []
-    cafe_scan = m.listingId in CAFE_IDS and m.spaceSource in (ESTIMATE, None) and not m.factors
+    cafe_scan = is_cafe_scan(m) and m.spaceSource in (ESTIMATE, None)
     food = concept is not None
     if cafe_scan:
         pts += 40 if concept == "cafe" else 25 if food else 0

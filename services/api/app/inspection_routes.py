@@ -13,7 +13,7 @@ from inspection.cost_link import link_costs  # noqa: E402
 from inspection.schema import validate_finding  # noqa: E402
 from inspection.vision import load_fixture  # noqa: E402
 
-from . import analyses  # noqa: E402
+from . import analyses, demo_fixture  # noqa: E402
 
 router = APIRouter()
 
@@ -24,6 +24,11 @@ def _dir() -> Path:
 
 @router.get("/api/property/{listing_id}/inspection")
 def inspection(listing_id: int):
+    fx = demo_fixture.get(listing_id)
+    if fx:
+        d = demo_fixture.inspection(fx)
+        d["findings"] = link_costs([f for f in d["findings"] if not validate_finding(f)])
+        return d
     p = _dir() / f"{listing_id}.json"
     if not p.is_file():
         analyses.inspection_for(listing_id)  # runs lazily and caches here; stays absent for a listing the picker cannot show

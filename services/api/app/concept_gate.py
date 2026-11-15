@@ -8,6 +8,7 @@ import json
 import re
 from pathlib import Path
 
+from . import demo_fixture
 from .models import Match
 
 SUBTYPES: dict[str, str] = json.loads((Path(__file__).parent / "property_subtypes.json").read_text(encoding="utf-8"))
@@ -127,7 +128,7 @@ def apply(pool: list[Match], profile, concept: str | None, spells, cafe_ids, tex
     lo, hi = window(profile, concept, text)
     kept, excluded, notes = [], [], {}
     for m in pool:
-        if m.listingId in cafe_ids and not m.factors:
+        if m.listingId in cafe_ids and (not m.factors or m.listingId in demo_fixture.ids()):
             kept.append(m)
             continue
         ok, label, why = type_verdict(m, spells(m))

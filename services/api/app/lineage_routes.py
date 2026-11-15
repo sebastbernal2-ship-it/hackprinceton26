@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[3]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from . import analyses  # noqa: E402
+from . import analyses, demo_fixture  # noqa: E402
 
 router = APIRouter()
 LINEAGE_NOTICE = ("Observed CoStar tenancy spells (kit-listed buildings only). Closure = CoStar's ClosedLocationOrBankrupt label; "
@@ -46,6 +46,9 @@ def lineage(listing_id: int, names: bool = False):
     data = _need("lineage")
     L = data.get(str(listing_id))
     summary = _need("summary")
+    fx = demo_fixture.get(listing_id)
+    if fx:
+        return {**demo_fixture.lineage(fx, names), "marketPrior": summary["marketPrior"], "notice": LINEAGE_NOTICE}
     if L is None:
         # Known candidate without kit food history: say so (absence in the kit is not proof of no restaurant history).
         if str(listing_id) not in (_load("presence") or {}):
@@ -72,6 +75,9 @@ def lineage(listing_id: int, names: bool = False):
 @router.get("/api/presence/{listing_id}")
 def presence(listing_id: int):
     pres = _load("presence")
+    fx = demo_fixture.get(listing_id)
+    if fx:
+        return demo_fixture.presence(fx)
     P = (pres or {}).get(str(listing_id)) or analyses.presence_for(listing_id)
     if P is None and pres is None:
         _need("presence")  # artifact not built: 503 as before

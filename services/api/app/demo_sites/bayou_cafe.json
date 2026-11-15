@@ -1,0 +1,1634 @@
+{
+ "meta": {
+  "listingId": 8035301,
+  "tourId": "JAnuRsaVo9M",
+  "name": "Bayou Café",
+  "address": "2107 Tanglewilde St, Houston, TX 77063",
+  "city": "Houston, TX",
+  "label": "DEMO DATA: hand-authored, internally consistent values for one demo site. Fields marked observed come from the local CoStar kit record for property 8035301 (the host building, an apartment community); every other value is invented and marked estimated or derived. Not a measurement, quote or forecast.",
+  "asOf": "2026-11-15",
+  "coordinates": {
+   "lat": 29.744975,
+   "lon": -95.534291,
+   "status": "observed",
+   "source": "CoStar kit primary address, property 8035301"
+  }
+ },
+ "match": {
+  "squareFeet": 1300,
+  "spaceSquareFeet": 1300,
+  "rentPerSquareFootYear": 30.0,
+  "blurb": "DEMO DATA: a 1,300 sq ft amenity-level café suite on the ground floor of a 1972 two-storey apartment community, scanned in Matterport with an editable walk. Prior food use, hood and grease line expected but unverified. Rent, TI and comps below are hand-authored demo values.",
+  "facts": {
+   "property": [
+    {
+     "label": "Use",
+     "value": "Café (from the scan); prior café use (DEMO DATA)"
+    },
+    {
+     "label": "Space Available",
+     "value": "1,300 sq ft ground-floor suite (DEMO DATA, estimated)"
+    },
+    {
+     "label": "Floor area",
+     "value": "1,300 sq ft (ESTIMATED demo area, not measured)"
+    },
+    {
+     "label": "Asking rent",
+     "value": "$30.00/sf/yr NNN (DEMO DATA)"
+    },
+    {
+     "label": "NNN charges",
+     "value": "$9.50/sf/yr (DEMO DATA)"
+    },
+    {
+     "label": "TI allowance",
+     "value": "$40/sf, about $52,000 (DEMO DATA)"
+    },
+    {
+     "label": "Building",
+     "value": "1972, 2 storeys, wood frame, class B (CoStar kit, observed)"
+    },
+    {
+     "label": "Sprinklers",
+     "value": "Yes (DEMO DATA, estimated)"
+    }
+   ]
+  }
+ },
+ "buildingKit": {
+  "note": "Observed fields are the host building's CoStar kit record (property 8035301, Woodlake on the Bayou Apartments, 737,837 sq ft); the cafe is one ground-floor suite of it.",
+  "yearBuilt": {
+   "value": 1972,
+   "status": "observed",
+   "source": "CoStar kit constructionEvents"
+  },
+  "renovatedYear": {
+   "value": 2016,
+   "status": "estimated",
+   "source": "DEMO DATA: amenity-area refresh"
+  },
+  "material": {
+   "value": "WoodFrame",
+   "status": "observed",
+   "source": "CoStar kit buildingConstructionMaterial"
+  },
+  "buildingClass": {
+   "value": "B",
+   "status": "observed",
+   "source": "CoStar kit buildingClass"
+  },
+  "stories": {
+   "value": 2,
+   "status": "observed",
+   "source": "CoStar kit numStoriesAboveGrade"
+  },
+  "heightFt": {
+   "value": 28,
+   "status": "estimated",
+   "source": "DEMO DATA: 2 storeys x 14 ft"
+  },
+  "hasSprinklers": {
+   "value": true,
+   "status": "estimated",
+   "source": "DEMO DATA: wet system assumed after 2016 refresh; CoStar kit sprinkler type is blank"
+  },
+  "grossSqFt": {
+   "value": 737837,
+   "status": "observed",
+   "source": "CoStar kit grossBuildingAreaSquareFeet"
+  },
+  "leasableSqFt": {
+   "value": 1300,
+   "status": "estimated",
+   "source": "DEMO DATA: scan-estimate suite area"
+  },
+  "parking": {
+   "surfaceSpaces": {
+    "value": 280,
+    "status": "observed",
+    "source": "CoStar kit parking type 1"
+   },
+   "otherSpaces": {
+    "value": 160,
+    "status": "observed",
+    "source": "CoStar kit parking type 3"
+   },
+   "cafeDedicatedStalls": {
+    "value": 14,
+    "status": "estimated",
+    "source": "DEMO DATA: stalls signed near the clubhouse entrance"
+   }
+  },
+  "units": {
+   "value": 511,
+   "status": "observed",
+   "source": "CoStar kit apartment total units"
+  }
+ },
+ "structure": {
+  "lat": 29.744975,
+  "lon": -95.534291,
+  "city": "Houston",
+  "state": "TX",
+  "yearBuilt": 1972,
+  "renovatedYear": 2016,
+  "material": "WoodFrame",
+  "buildingClass": "B",
+  "stories": 2,
+  "grossSqFt": 737837.0,
+  "heightFt": 28.0,
+  "hasSprinklers": true,
+  "fema": {
+   "zone": "X",
+   "bfeFt": -9999.0,
+   "panel": "48201C0610M (DEMO DATA)",
+   "note": "DEMO DATA: shaded X (0.2% annual chance), beside a bayou floodplain; not a fetched NFHL result"
+  },
+  "usgs": {
+   "sds": 0.081,
+   "sd1": 0.058,
+   "sdc": "A",
+   "pgam": 0.045,
+   "ss": 0.092,
+   "s1": 0.047,
+   "ref": "ASCE7-22 (DEMO DATA)",
+   "siteClass": "D (default)"
+  },
+  "elevationFt": 58.0,
+  "windMphDesign": {
+   "value": 115,
+   "status": "estimated",
+   "source": "DEMO DATA: ASCE 7 Risk Cat II, inland Harris County prior"
+  },
+  "geotech": {
+   "soils": "expansive clay (Beaumont formation prior)",
+   "subsidenceInPerYear": 0.4,
+   "status": "estimated",
+   "source": "DEMO DATA: regional prior; no parcel borings"
+  },
+  "retrieved": "2026-11-15",
+  "demo": true,
+  "demoNote": "DEMO DATA: year built, material, class, stories and gross area are the observed CoStar kit record; height, sprinklers, FEMA zone, elevation, seismic values, wind and geotechnical priors are hand-authored estimates."
+ },
+ "climate": {
+  "note": "DEMO DATA: scenario analysis, not a forecast. Sea level uses the NOAA 2022 gauge series where fetched; the rest are hand-authored deltas.",
+  "costDeltas": {
+   "coolingUsdPerYear": {
+    "Low": {
+     "2030": 450,
+     "2050": 900,
+     "2070": 1400
+    },
+    "Intermediate": {
+     "2030": 500,
+     "2050": 1150,
+     "2070": 2100
+    },
+    "High": {
+     "2030": 520,
+     "2050": 1400,
+     "2070": 3000
+    }
+   },
+   "floodInsuranceUsdPerYear": {
+    "Low": {
+     "2030": 300,
+     "2050": 520,
+     "2070": 800
+    },
+    "Intermediate": {
+     "2030": 340,
+     "2050": 700,
+     "2070": 1300
+    },
+    "High": {
+     "2030": 360,
+     "2050": 950,
+     "2070": 2100
+    }
+   }
+  },
+  "heatDaysToday": 57,
+  "hotDays95F": {
+   "Low": {
+    "2030": 66,
+    "2050": 74,
+    "2070": 82
+   },
+   "Intermediate": {
+    "2030": 68,
+    "2050": 80,
+    "2070": 94
+   },
+   "High": {
+    "2030": 69,
+    "2050": 88,
+    "2070": 116
+   }
+  },
+  "floodDepth100yrFt": {
+   "today": 0.0,
+   "Low": {
+    "2030": 0.2,
+    "2050": 0.4,
+    "2070": 0.7
+   },
+   "Intermediate": {
+    "2030": 0.2,
+    "2050": 0.6,
+    "2070": 1.1
+   },
+   "High": {
+    "2030": 0.3,
+    "2050": 0.9,
+    "2070": 1.8
+   }
+  }
+ },
+ "lineage": {
+  "foodHistoryInKit": true,
+  "demo": true,
+  "note": "DEMO DATA: hand-authored tenancy history for this suite (the CoStar kit lists no food tenancy for the building). Tenant names are invented placeholders.",
+  "tenants": [
+   {
+    "tenant": "Tenant 1",
+    "name": "Demo Bakehouse",
+    "start": "2004-03-01",
+    "end": "2008-06-30",
+    "tenureYears": 4.33,
+    "ending": "other_exit",
+    "expirationReason": 10,
+    "successorWasFood": true
+   },
+   {
+    "tenant": "Tenant 2",
+    "name": "Demo Bayou Bagels",
+    "start": "2008-09-01",
+    "end": "2011-05-31",
+    "tenureYears": 2.75,
+    "ending": "failure",
+    "expirationReason": 4,
+    "successorWasFood": true
+   },
+   {
+    "tenant": "Tenant 3",
+    "name": "Demo Espresso Bar",
+    "start": "2011-08-15",
+    "end": "2015-02-28",
+    "tenureYears": 3.54,
+    "ending": "other_exit",
+    "expirationReason": 10,
+    "successorWasFood": true
+   },
+   {
+    "tenant": "Tenant 4",
+    "name": "Demo Smoothie Counter",
+    "start": "2015-05-01",
+    "end": "2016-04-30",
+    "tenureYears": 1.0,
+    "ending": "other_exit",
+    "expirationReason": 10,
+    "successorWasFood": true
+   },
+   {
+    "tenant": "Tenant 5",
+    "name": "Demo Tea Room",
+    "start": "2016-09-01",
+    "end": "2019-10-31",
+    "tenureYears": 3.17,
+    "ending": "other_exit",
+    "expirationReason": 10,
+    "successorWasFood": true
+   },
+   {
+    "tenant": "Tenant 6",
+    "name": "Demo Taco Window",
+    "start": "2019-12-01",
+    "end": "2022-03-31",
+    "tenureYears": 2.33,
+    "ending": "failure",
+    "expirationReason": 4,
+    "successorWasFood": true
+   },
+   {
+    "tenant": "Tenant 7",
+    "name": "Demo Community Cafe",
+    "start": "2022-06-01",
+    "end": "2025-09-30",
+    "tenureYears": 3.33,
+    "ending": "other_exit",
+    "expirationReason": 10,
+    "successorWasFood": false
+   }
+  ],
+  "counts": {
+   "foodTenants": 7,
+   "open": 0,
+   "ended": 7,
+   "clearFailure": 2,
+   "otherExit": 5,
+   "unknownTenure": 0
+  },
+  "churnFlag": false,
+  "vacantSince": "2025-10-01",
+  "medianCompletedTenureYears": 3.17,
+  "medianTenureBasis": "DEMO DATA: tenants whose tenancy has ended (n=7); no open tenancy, the suite has been vacant since 2025-10-01",
+  "secondGeneration": {
+   "endedWithFoodSuccessor": 6,
+   "ended": 7,
+   "failuresWithFoodSuccessor": 2,
+   "failures": 2
+  },
+  "isSecondGenerationSpace": true,
+  "churnRule": ">= 3 food tenants and median completed tenure < 2.0 years; a screening rule, not validated. Median here is 3.17 years, so the flag is false.",
+  "churnNote": "DEMO DATA: 7 tenancies in 21 years is high turnover for a 1,300 sq ft suite, but the rule's median-tenure test is not met.",
+  "market": "Houston",
+  "isCandidate": false
+ },
+ "presence": {
+  "demo": true,
+  "radii": {
+   "0.25mi": {
+    "radiusMiles": 0.25,
+    "kitBuildingsInRadius": 3,
+    "day": {
+     "workers": 140,
+     "status": "estimated (DEMO DATA lower bound)",
+     "tenantLocations": 10,
+     "locationsWithEmployeeCount": 4,
+     "employeeFillRate": 0.4,
+     "byIndustry": {
+      "Personal services": 60,
+      "Health care": 45,
+      "Retail/Wholesale": 35
+     }
+    },
+    "night": {
+     "status": "derived from kit units with assumed factors",
+     "apartmentBuildings": 3,
+     "apartmentBuildingsWithUnitCount": 3,
+     "apartmentUnits": 1492,
+     "residents": {
+      "low": 2238,
+      "expected": 2984,
+      "high": 3730
+     },
+     "hotels": 0,
+     "hotelRooms": null,
+     "hotelGuests": null,
+     "nightPopulation": {
+      "low": 2238,
+      "expected": 2984,
+      "high": 3730
+     }
+    },
+    "dayShare": 0.045,
+    "shape": "night-heavy"
+   },
+   "0.5mi": {
+    "radiusMiles": 0.5,
+    "kitBuildingsInRadius": 8,
+    "day": {
+     "workers": 1150,
+     "status": "estimated (DEMO DATA lower bound)",
+     "tenantLocations": 24,
+     "locationsWithEmployeeCount": 11,
+     "employeeFillRate": 0.46,
+     "byIndustry": {
+      "Professional/Scientific/Technical": 420,
+      "Health care": 280,
+      "Retail/Wholesale": 190,
+      "Education": 140,
+      "Accommodation/Food": 120
+     }
+    },
+    "night": {
+     "status": "derived from kit units with assumed factors",
+     "apartmentBuildings": 8,
+     "apartmentBuildingsWithUnitCount": 8,
+     "apartmentUnits": 3806,
+     "residents": {
+      "low": 5709,
+      "expected": 7612,
+      "high": 9515
+     },
+     "hotels": 0,
+     "hotelRooms": null,
+     "hotelGuests": null,
+     "nightPopulation": {
+      "low": 5709,
+      "expected": 7612,
+      "high": 9515
+     }
+    },
+    "dayShare": 0.131,
+    "shape": "night-heavy"
+   }
+  },
+  "footTraffic": {
+   "status": "estimated",
+   "source": "DEMO DATA: hand-authored index, not a measurement",
+   "weekdayMorningPerHour": 55,
+   "weekdayMiddayPerHour": 40,
+   "weekdayEveningPerHour": 70,
+   "weekendPerHour": 60,
+   "nightPerHour": 12
+  },
+  "assumptions": [
+   "DEMO DATA: residents per apartment unit 1.5 / 2.0 / 2.5 (low/expected/high); workers are a hand-authored lower bound.",
+   "Presence index of kit-listed buildings; not foot traffic and not a 24-hour clock."
+  ],
+  "notAFootTrafficMeasure": "Presence index of kit-listed buildings; the footTraffic block is a labelled demo estimate."
+ },
+ "triage": {
+  "demoNote": "DEMO DATA: CoStar values are the real kit values where the kit has them; scan values come from the local walk export where it measures them; the rest are hand-authored estimates. Not an engineering assessment.",
+  "fields": [
+   {
+    "field": "clear_height_ft",
+    "status": "filled",
+    "scanValue": 10.2,
+    "aerialValue": null,
+    "value": 10.2,
+    "valueStatus": "derived",
+    "unit": "ft",
+    "scope": "room",
+    "confidence": "medium",
+    "note": "Derived from the scan walk export bounding box (highest point). CoStar has no clear height for this building. DEMO DATA: the CoStar column is a hand-authored stand-in; the real kit holds no value for this field.",
+    "costarValue": 11.0
+   },
+   {
+    "field": "floors",
+    "status": "confirmed",
+    "scanValue": 2,
+    "aerialValue": null,
+    "value": 2,
+    "valueStatus": "observed",
+    "unit": "",
+    "scope": "building",
+    "confidence": "medium",
+    "note": "CoStar kit says 2 storeys above grade and the scan covers 2 floors.",
+    "costarValue": 2.0
+   },
+   {
+    "field": "area_sqft",
+    "status": "filled",
+    "scanValue": 1300,
+    "aerialValue": null,
+    "value": 1300,
+    "valueStatus": "estimated",
+    "unit": "sqft",
+    "scope": "suite",
+    "confidence": "low",
+    "note": "DEMO DATA: suite area 1,300 sq ft (scan estimate). CoStar's 737,837 sq ft is the whole building, a scope difference, not a conflict.",
+    "costarValue": 737837.0
+   },
+   {
+    "field": "restroom_count",
+    "status": "filled",
+    "scanValue": 2,
+    "aerialValue": null,
+    "value": 2,
+    "valueStatus": "derived",
+    "unit": "",
+    "scope": "suite",
+    "confidence": "medium",
+    "note": "Derived from scan room labels: two restrooms (one marked accessible). CoStar holds no restroom count. DEMO DATA: the CoStar column is a hand-authored stand-in; the real kit holds no value for this field.",
+    "costarValue": 2
+   },
+   {
+    "field": "kitchen_present",
+    "status": "filled",
+    "scanValue": "yes",
+    "aerialValue": null,
+    "value": "yes",
+    "valueStatus": "derived",
+    "unit": "",
+    "scope": "suite",
+    "confidence": "medium",
+    "note": "Derived from the scan: counter, back-of-house room and service pass are visible. A Type I hood is not confirmed. DEMO DATA: the CoStar column is a hand-authored stand-in; the real kit holds no value for this field.",
+    "costarValue": "yes"
+   },
+   {
+    "field": "parking_spaces",
+    "status": "filled",
+    "scanValue": null,
+    "aerialValue": 38,
+    "value": 440,
+    "valueStatus": "observed",
+    "unit": "",
+    "scope": "building",
+    "confidence": "medium",
+    "note": "CoStar lists 440 spaces for the building (280 surface, 160 other). DEMO DATA aerial count: about 38 stalls in the lot nearest the cafe.",
+    "costarValue": 440.0
+   },
+   {
+    "field": "rooftop_units",
+    "status": "filled",
+    "scanValue": null,
+    "aerialValue": 6,
+    "value": 6,
+    "valueStatus": "derived",
+    "unit": "",
+    "scope": "suite",
+    "confidence": "low",
+    "note": "DEMO DATA: about 6 rooftop units over the cafe wing from the aerial crop (range 4 to 8). DEMO DATA: the CoStar column is a hand-authored stand-in; the real kit holds no value for this field.",
+    "costarValue": 6
+   },
+   {
+    "field": "loading_docks",
+    "status": "filled",
+    "scanValue": 0,
+    "aerialValue": null,
+    "value": 0,
+    "valueStatus": "derived",
+    "unit": "",
+    "scope": "suite",
+    "confidence": "low",
+    "note": "DEMO DATA: no dock; deliveries use a rear service door off the resident lot. DEMO DATA: the CoStar column is a hand-authored stand-in; the real kit holds no value for this field.",
+    "costarValue": 0
+   }
+  ]
+ },
+ "aerial": {
+  "imagery": {
+   "source": "DEMO DATA: hand-authored aerial summary (no Vexcel capture was fetched for this site)",
+   "fetched": "2026-11-15",
+   "capture_date": "2025-03-12",
+   "capture_date_note": "DEMO DATA: nominal capture date, not read from an image",
+   "centred_on": "CoStar lat/long (property 8035301)",
+   "crop_half_width_m": 50.0
+  },
+  "roof": {
+   "type": "Flat membrane with gravel parapet (estimated)",
+   "areaSqFt": 9800,
+   "wingAreaOverCafeSqFt": 2100,
+   "condition": "fair (estimated)",
+   "status": "estimated"
+  },
+  "vehicles": {
+   "status": "estimated",
+   "label": "vehicles visible in the crop; NOT parking stalls",
+   "low": 26,
+   "expected": 34,
+   "high": 42,
+   "rationale": "DEMO DATA: hand-authored range, about 38 stalls in the nearest lot at roughly 90% occupancy."
+  },
+  "rooftop_units": {
+   "status": "estimated",
+   "low": 4,
+   "expected": 6,
+   "high": 8,
+   "rationale": "DEMO DATA: units visible over the cafe wing; not a validated detector count."
+  },
+  "parking_stalls": {
+   "status": "estimated",
+   "low": 32,
+   "expected": 38,
+   "high": 44,
+   "rationale": "DEMO DATA: painted stalls in the lot beside the clubhouse."
+  },
+  "loading_docks": {
+   "status": "estimated",
+   "low": 0,
+   "expected": 0,
+   "high": 0,
+   "rationale": "DEMO DATA: loading docks are facade features, not seen from above; service door assumed."
+  },
+  "roof_area_shape": {
+   "status": "estimated",
+   "label": "roof footprint (estimate)",
+   "low": 8800,
+   "expected": 9800,
+   "high": 10800,
+   "rationale": "DEMO DATA: sq ft of an L-shaped 2-storey wing, consistent with the 7.2 x 9.2 m scan footprint within the cafe bay."
+  },
+  "provenance": "DEMO DATA: hand-authored aerial values for one demo site; not derived from imagery."
+ },
+ "inspection": {
+  "notice": "DEMO DATA: hand-authored findings for one demo site. No vision model ran and nothing here is an observation of the property. An on-site inspector must verify every item; fix costs are planning ranges, not quotes.",
+  "findings": [
+   {
+    "id": "bc-hood",
+    "roomId": null,
+    "category": "kitchen_infrastructure",
+    "title": "Hood and grease line: Type I hood present, listing not confirmed",
+    "description": "DEMO DATA: a canopy over the cook line is visible in the scan, but make-up air, fire suppression tags and the last cleaning record are not confirmed. Prior tenants were food users, so a grease line is likely.",
+    "severity": "medium",
+    "modelConfidence": 0.55,
+    "evidence": {
+     "source": "panorama",
+     "ref": "scan pano 3, cook line",
+     "region": {
+      "x": 0.55,
+      "y": 0.2,
+      "w": 0.2,
+      "h": 0.25
+     }
+    },
+    "canConfirmFromImagery": false,
+    "verificationStep": "Fire-marshal and hood-cleaning inspector: confirm UL 300 suppression tag, hood class and cleaning record.",
+    "costLineItemIds": [],
+    "framing": "hypothesis",
+    "grounding": "inferred",
+    "visibleEvidence": "Stainless canopy over the cook line.",
+    "status": "estimated",
+    "confidenceLabel": "medium",
+    "verifyWith": "Fire marshal and hood-cleaning contractor",
+    "fixCostUsd": {
+     "low": 3500,
+     "high": 14000
+    }
+   },
+   {
+    "id": "bc-grease",
+    "roomId": null,
+    "category": "plumbing",
+    "title": "Grease interceptor: size and location not confirmed",
+    "description": "DEMO DATA: a food user needs an interceptor; a 1,300 sq ft cafe typically needs a 750 to 1,000 gallon exterior unit shared with the building. Whether the shared unit has capacity is not confirmed.",
+    "severity": "medium",
+    "modelConfidence": 0.5,
+    "evidence": {
+     "source": "floorplan_geometry",
+     "ref": "floor drains near back-of-house",
+     "region": null
+    },
+    "canConfirmFromImagery": false,
+    "verificationStep": "Plumber and city: locate the interceptor, confirm gallons and last pump-out.",
+    "costLineItemIds": [],
+    "framing": "hypothesis",
+    "grounding": "inferred",
+    "visibleEvidence": "",
+    "status": "estimated",
+    "confidenceLabel": "medium",
+    "verifyWith": "Licensed plumber and City of Houston plan review",
+    "fixCostUsd": {
+     "low": 6000,
+     "high": 22000
+    }
+   },
+   {
+    "id": "bc-ceiling",
+    "roomId": null,
+    "category": "ceiling_water_damage",
+    "title": "Ceiling stain above the pickup counter",
+    "description": "DEMO DATA: a brown stain tile near the counter suggests a past roof or HVAC condensate leak. Active or old is not confirmed.",
+    "severity": "medium",
+    "modelConfidence": 0.6,
+    "evidence": {
+     "source": "panorama",
+     "ref": "scan pano 1, counter ceiling",
+     "region": {
+      "x": 0.3,
+      "y": 0.05,
+      "w": 0.18,
+      "h": 0.12
+     }
+    },
+    "canConfirmFromImagery": true,
+    "verificationStep": "Inspector: moisture meter above the tile and check the roof drain and condensate line.",
+    "costLineItemIds": [],
+    "framing": "hypothesis",
+    "grounding": "observed",
+    "visibleEvidence": "Discoloured ceiling tile.",
+    "status": "derived",
+    "confidenceLabel": "medium",
+    "verifyWith": "General contractor or roofer",
+    "fixCostUsd": {
+     "low": 800,
+     "high": 6500
+    }
+   },
+   {
+    "id": "bc-structure",
+    "roomId": null,
+    "category": "structural",
+    "title": "Two-storey wood frame: floor above the cafe",
+    "description": "DEMO DATA: the cafe sits under a residential floor (1972 wood frame). Added equipment loads and any wall or opening changes need an engineer's sign-off. No cracking is visible in the scan.",
+    "severity": "low",
+    "modelConfidence": 0.45,
+    "evidence": {
+     "source": "listing_text",
+     "ref": "CoStar kit: wood frame, 2 storeys, built 1972",
+     "region": null
+    },
+    "canConfirmFromImagery": false,
+    "verificationStep": "Structural engineer: review framing over the cafe before relocating walls or adding a heavy walk-in.",
+    "costLineItemIds": [],
+    "framing": "hypothesis",
+    "grounding": "inferred",
+    "visibleEvidence": "",
+    "status": "derived",
+    "confidenceLabel": "low",
+    "verifyWith": "Structural engineer",
+    "fixCostUsd": {
+     "low": 1500,
+     "high": 5000
+    }
+   },
+   {
+    "id": "bc-floor",
+    "roomId": null,
+    "category": "flooring",
+    "title": "Floor: worn sealed concrete with two tile patches",
+    "description": "DEMO DATA: front-of-house floor is sealed concrete with worn patches; kitchen floor is quarry tile with lifted grout near the dish pit. A non-slip, coved floor is normally required behind the counter.",
+    "severity": "medium",
+    "modelConfidence": 0.55,
+    "evidence": {
+     "source": "panorama",
+     "ref": "scan pano 4, kitchen floor",
+     "region": {
+      "x": 0.4,
+      "y": 0.62,
+      "w": 0.3,
+      "h": 0.25
+     }
+    },
+    "canConfirmFromImagery": true,
+    "verificationStep": "Health inspector or contractor: check coving, slip rating and lifted grout.",
+    "costLineItemIds": [],
+    "framing": "hypothesis",
+    "grounding": "observed",
+    "visibleEvidence": "Lifted grout lines and patched tile.",
+    "status": "derived",
+    "confidenceLabel": "medium",
+    "verifyWith": "Health inspector and flooring contractor",
+    "fixCostUsd": {
+     "low": 4200,
+     "high": 11000
+    }
+   },
+   {
+    "id": "bc-restroom",
+    "roomId": null,
+    "category": "plumbing",
+    "title": "Restrooms: two, accessibility of the second unconfirmed",
+    "description": "DEMO DATA: two restrooms are labelled in the scan. Clear floor space, grab bars and door swing are not measurable from the scan.",
+    "severity": "medium",
+    "modelConfidence": 0.5,
+    "evidence": {
+     "source": "floorplan_geometry",
+     "ref": "scan room labels",
+     "region": null
+    },
+    "canConfirmFromImagery": false,
+    "verificationStep": "Accessibility consultant: measure turning space, grab bars and lavatory clearance.",
+    "costLineItemIds": [],
+    "framing": "hypothesis",
+    "grounding": "inferred",
+    "visibleEvidence": "",
+    "status": "derived",
+    "confidenceLabel": "medium",
+    "verifyWith": "Certified accessibility specialist",
+    "fixCostUsd": {
+     "low": 2500,
+     "high": 9500
+    }
+   },
+   {
+    "id": "bc-ada",
+    "roomId": null,
+    "category": "egress_accessibility",
+    "title": "Entrance: one-inch threshold lip",
+    "description": "DEMO DATA: the front door shows a raised threshold and a manual door without an automatic operator. ADA requires a maximum half-inch threshold or a ramped transition.",
+    "severity": "medium",
+    "modelConfidence": 0.5,
+    "evidence": {
+     "source": "panorama",
+     "ref": "scan pano 0, entrance",
+     "region": {
+      "x": 0.45,
+      "y": 0.7,
+      "w": 0.15,
+      "h": 0.2
+     }
+    },
+    "canConfirmFromImagery": true,
+    "verificationStep": "Accessibility specialist: measure threshold height and door force.",
+    "costLineItemIds": [],
+    "framing": "hypothesis",
+    "grounding": "observed",
+    "visibleEvidence": "Raised threshold at the glass door.",
+    "status": "derived",
+    "confidenceLabel": "medium",
+    "verifyWith": "Certified accessibility specialist",
+    "fixCostUsd": {
+     "low": 900,
+     "high": 4500
+    }
+   },
+   {
+    "id": "bc-electrical",
+    "roomId": null,
+    "category": "electrical",
+    "title": "Electrical: 200 A panel, load for espresso and oven unverified",
+    "description": "DEMO DATA: a 200 A panel with open breaker slots is visible. A two-group espresso machine, convection oven and dish machine could exceed the suite's share.",
+    "severity": "medium",
+    "modelConfidence": 0.5,
+    "evidence": {
+     "source": "panorama",
+     "ref": "scan pano 5, back hall panel",
+     "region": {
+      "x": 0.62,
+      "y": 0.3,
+      "w": 0.1,
+      "h": 0.2
+     }
+    },
+    "canConfirmFromImagery": false,
+    "verificationStep": "Electrician: load calculation, panel directory and 208/240 V circuits for the equipment list.",
+    "costLineItemIds": [],
+    "framing": "hypothesis",
+    "grounding": "observed",
+    "visibleEvidence": "Panel with several open slots.",
+    "status": "estimated",
+    "confidenceLabel": "medium",
+    "verifyWith": "Licensed electrician",
+    "fixCostUsd": {
+     "low": 3800,
+     "high": 12500
+    }
+   },
+   {
+    "id": "bc-water",
+    "roomId": null,
+    "category": "plumbing",
+    "title": "Water heater: tank, about 10 years old",
+    "description": "DEMO DATA: a 50 gallon tank heater is visible with corrosion at the fittings. A three-compartment sink and dish machine need more recovery than this.",
+    "severity": "low",
+    "modelConfidence": 0.45,
+    "evidence": {
+     "source": "panorama",
+     "ref": "scan pano 5, mechanical closet",
+     "region": null
+    },
+    "canConfirmFromImagery": false,
+    "verificationStep": "Plumber: read the data plate for age and size, and size recovery for the dish machine.",
+    "costLineItemIds": [],
+    "framing": "hypothesis",
+    "grounding": "inferred",
+    "visibleEvidence": "",
+    "status": "estimated",
+    "confidenceLabel": "low",
+    "verifyWith": "Licensed plumber",
+    "fixCostUsd": {
+     "low": 1800,
+     "high": 4800
+    }
+   },
+   {
+    "id": "bc-hvac",
+    "roomId": null,
+    "category": "hvac",
+    "title": "HVAC: two rooftop package units, age and capacity not confirmed",
+    "description": "DEMO DATA: about 6 rooftop units sit over the cafe wing; two are likely to serve this suite. A food use needs more outside air and cooling than the previous office-style load. Houston's cooling season is long.",
+    "severity": "medium",
+    "modelConfidence": 0.5,
+    "evidence": {
+     "source": "listing_text",
+     "ref": "aerial summary, rooftop units over the wing",
+     "region": null
+    },
+    "canConfirmFromImagery": false,
+    "verificationStep": "HVAC contractor: read unit data plates and run a load calculation with kitchen exhaust make-up air.",
+    "costLineItemIds": [],
+    "framing": "hypothesis",
+    "grounding": "inferred",
+    "visibleEvidence": "",
+    "status": "estimated",
+    "confidenceLabel": "low",
+    "verifyWith": "Licensed mechanical contractor",
+    "fixCostUsd": {
+     "low": 7500,
+     "high": 26000
+    }
+   },
+   {
+    "id": "bc-egress",
+    "roomId": null,
+    "category": "egress_accessibility",
+    "title": "Egress and fire: rear exit door opens onto a lot, no exit sign",
+    "description": "DEMO DATA: the rear service door has no lit exit sign in the scan and the extinguisher tag is not readable. Sprinkler coverage is assumed, not confirmed.",
+    "severity": "high",
+    "modelConfidence": 0.5,
+    "evidence": {
+     "source": "panorama",
+     "ref": "scan pano 5, rear door",
+     "region": {
+      "x": 0.7,
+      "y": 0.35,
+      "w": 0.1,
+      "h": 0.3
+     }
+    },
+    "canConfirmFromImagery": false,
+    "verificationStep": "Fire marshal: confirm exit signage, extinguisher tags, sprinkler coverage and occupant load.",
+    "costLineItemIds": [],
+    "framing": "hypothesis",
+    "grounding": "observed",
+    "visibleEvidence": "Rear door without an illuminated sign.",
+    "status": "derived",
+    "confidenceLabel": "medium",
+    "verifyWith": "Fire marshal",
+    "fixCostUsd": {
+     "low": 600,
+     "high": 5500
+    }
+   },
+   {
+    "id": "bc-roof",
+    "roomId": null,
+    "category": "other",
+    "title": "Exterior and roof: flat membrane, ponding near the parapet",
+    "description": "DEMO DATA: aerial summary shows a flat membrane roof with two light ponding areas over the cafe wing. Roof age is not confirmed.",
+    "severity": "medium",
+    "modelConfidence": 0.4,
+    "evidence": {
+     "source": "listing_text",
+     "ref": "aerial summary, roof wing",
+     "region": null
+    },
+    "canConfirmFromImagery": false,
+    "verificationStep": "Roofer: core the membrane, read age and warranty, and check drains before installing exhaust curbs.",
+    "costLineItemIds": [],
+    "framing": "hypothesis",
+    "grounding": "inferred",
+    "visibleEvidence": "",
+    "status": "estimated",
+    "confidenceLabel": "low",
+    "verifyWith": "Commercial roofer",
+    "fixCostUsd": {
+     "low": 2800,
+     "high": 18000
+    }
+   },
+   {
+    "id": "bc-walls",
+    "roomId": null,
+    "category": "walls_finishes",
+    "title": "Walls: washable panel needed behind the counter",
+    "description": "DEMO DATA: painted drywall behind the counter and dish pit shows scuffing and a bubbled seam. Health code wants smooth, washable surfaces.",
+    "severity": "low",
+    "modelConfidence": 0.55,
+    "evidence": {
+     "source": "panorama",
+     "ref": "scan pano 2, back counter",
+     "region": {
+      "x": 0.2,
+      "y": 0.4,
+      "w": 0.25,
+      "h": 0.3
+     }
+    },
+    "canConfirmFromImagery": true,
+    "verificationStep": "Health inspector: confirm wall finish rating and the seam condition.",
+    "costLineItemIds": [],
+    "framing": "hypothesis",
+    "grounding": "observed",
+    "visibleEvidence": "Scuffed paint and a bubbled seam.",
+    "status": "derived",
+    "confidenceLabel": "medium",
+    "verifyWith": "Health inspector",
+    "fixCostUsd": {
+     "low": 1200,
+     "high": 4200
+    }
+   }
+  ]
+ },
+ "projections": {
+  "note": "DEMO DATA: hand-authored scenario ranges, not forecasts and not observed.",
+  "scenario": "base case (demo estimate)",
+  "method": "DEMO ESTIMATE, not a forecast and not observed: hand-authored base case for one demo site. Replace with validated models before relying on it.",
+  "cards": [
+   {
+    "metric": "rent per sq ft growth",
+    "unit": "%/yr",
+    "rows": {
+     "12 months": [
+      1.8,
+      3.2,
+      4.6
+     ],
+     "3-5 years": [
+      1.5,
+      3.0,
+      4.8
+     ],
+     "2030": [
+      1.2,
+      3.1,
+      5.2
+     ]
+    }
+   },
+   {
+    "metric": "vacancy rate",
+    "unit": "%",
+    "rows": {
+     "12 months": [
+      5.1,
+      6.4,
+      8.2
+     ],
+     "3-5 years": [
+      4.8,
+      6.9,
+      9.4
+     ],
+     "2030": [
+      4.5,
+      7.2,
+      10.5
+     ]
+    }
+   },
+   {
+    "metric": "foot traffic change",
+    "unit": "% vs today",
+    "rows": {
+     "12 months": [
+      -1.0,
+      2.5,
+      6.0
+     ],
+     "3-5 years": [
+      0.5,
+      6.0,
+      12.0
+     ],
+     "2030": [
+      1.0,
+      8.5,
+      16.0
+     ]
+    }
+   },
+   {
+    "metric": "build-out cost trend",
+    "unit": "%/yr",
+    "rows": {
+     "12 months": [
+      2.8,
+      4.1,
+      5.6
+     ],
+     "3-5 years": [
+      2.2,
+      3.6,
+      5.4
+     ],
+     "2030": [
+      1.8,
+      3.2,
+      5.2
+     ]
+    }
+   }
+  ]
+ },
+ "rentLease": {
+  "status": "estimated",
+  "source": "DEMO DATA: hand-authored asking terms and comps, not a broker quote",
+  "askingRentPerSfYear": 30.0,
+  "askingRentRange": {
+   "low": 26.0,
+   "high": 34.0
+  },
+  "structure": "NNN",
+  "nnnChargesPerSfYear": 9.5,
+  "allInPerSfYear": 39.5,
+  "tiAllowancePerSf": 40.0,
+  "tiAllowanceUsd": 52000,
+  "termYears": 5,
+  "freeRentMonths": 2,
+  "comps": [
+   {
+    "name": "Demo Plaza Cafe Suite",
+    "address": "Briar Forest Dr, Houston, TX",
+    "distanceMi": 0.4,
+    "sqft": 1250,
+    "rentPerSfYear": 28.5,
+    "structure": "NNN",
+    "leaseDate": "2026-03-01",
+    "status": "estimated"
+   },
+   {
+    "name": "Demo Village Shop Space",
+    "address": "Wilcrest Dr, Houston, TX",
+    "distanceMi": 0.7,
+    "sqft": 1800,
+    "rentPerSfYear": 26.0,
+    "structure": "NNN",
+    "leaseDate": "2025-11-01",
+    "status": "estimated"
+   },
+   {
+    "name": "Demo Park Row Restaurant Bay",
+    "address": "Westheimer Rd, Houston, TX",
+    "distanceMi": 1.1,
+    "sqft": 2400,
+    "rentPerSfYear": 32.0,
+    "structure": "NNN",
+    "leaseDate": "2026-06-15",
+    "status": "estimated"
+   },
+   {
+    "name": "Demo Corner Coffee Suite",
+    "address": "Dairy Ashford Rd, Houston, TX",
+    "distanceMi": 1.3,
+    "sqft": 1100,
+    "rentPerSfYear": 34.0,
+    "structure": "NNN",
+    "leaseDate": "2026-08-01",
+    "status": "estimated"
+   },
+   {
+    "name": "Demo Station Retail Unit",
+    "address": "Eldridge Pkwy, Houston, TX",
+    "distanceMi": 1.8,
+    "sqft": 1500,
+    "rentPerSfYear": 27.5,
+    "structure": "NNN",
+    "leaseDate": "2025-09-01",
+    "status": "estimated"
+   },
+   {
+    "name": "Demo Lakes Kitchen Space",
+    "address": "Memorial Dr, Houston, TX",
+    "distanceMi": 2.2,
+    "sqft": 1350,
+    "rentPerSfYear": 36.0,
+    "structure": "NNN",
+    "leaseDate": "2026-01-15",
+    "status": "estimated"
+   }
+  ]
+ },
+ "market": {
+  "status": "estimated",
+  "source": "DEMO DATA: hand-authored market snapshot (population, daytime workers, competition, traffic, crime, transit)",
+  "demographics": {
+   "population1mi": 21800,
+   "medianHouseholdIncomeUsd": 62400,
+   "daytimeWorkers1mi": 9600,
+   "medianAge": 36.8,
+   "renterShare": 0.74
+  },
+  "competition": {
+   "count1mi": 9,
+   "names": [
+    "Demo Roast Coffee",
+    "Demo Brew Corner",
+    "Demo Cafe Express",
+    "Demo Bagel Shop",
+    "Demo Tea House",
+    "Demo Morning Bakery",
+    "Demo Daily Grind",
+    "Demo Juice Bar",
+    "Demo Sandwich Co"
+   ]
+  },
+  "traffic": {
+   "nearestRoadAadt": 33500,
+   "status": "observed",
+   "source": "TxDOT AADT 2025, station 102U1530 (local factor cards)",
+   "internalRoadAadt": 6200,
+   "internalStatus": "estimated"
+  },
+  "crime": {
+   "incidentsPerYearHalfMile": 410,
+   "status": "estimated",
+   "note": "DEMO DATA: reported incidents, a raw aggregate, not a rate"
+  },
+  "transit": {
+   "busStopsQuarterMile": 3,
+   "nearestLine": "Demo Route 53 Briar Forest",
+   "walkMinutes": 6,
+   "status": "estimated"
+  }
+ },
+ "legal": {
+  "status": "estimated",
+  "zoning": {
+   "district": "No zoning (Houston has no citywide zoning); deed restrictions and Chapter 42 apply",
+   "status": "estimated",
+   "source": "DEMO DATA: Houston land-use prior"
+  },
+  "permittedUse": {
+   "value": "likely allowed",
+   "status": "estimated",
+   "note": "DEMO DATA: prior cafe use on this suite; confirm deed restrictions and the lease use clause"
+  },
+  "priorUse": {
+   "value": "cafe",
+   "status": "estimated",
+   "note": "DEMO DATA: tenant history shows food use 2004 to 2025"
+  },
+  "certificateOfOccupancy": {
+   "value": "assembly (A-2) on file, 2022",
+   "status": "estimated",
+   "note": "DEMO DATA: request the actual certificate and last health permit"
+  },
+  "items": [
+   {
+    "id": "use",
+    "title": "Permitted use",
+    "status": "estimated",
+    "text": "DEMO DATA: food service is likely allowed; confirm deed restrictions and the lease use clause.",
+    "ask": "Landlord and City of Houston"
+   },
+   {
+    "id": "co",
+    "title": "Certificate of occupancy",
+    "status": "estimated",
+    "text": "DEMO DATA: an A-2 certificate dated 2022 is assumed; request the original.",
+    "ask": "City of Houston permitting"
+   },
+   {
+    "id": "health",
+    "title": "Health permit",
+    "status": "estimated",
+    "text": "DEMO DATA: last food permit lapsed 2025-09; a new one needs plan review.",
+    "ask": "Houston Health Department"
+   }
+  ]
+ },
+ "seats": {
+  "estimate": 34,
+  "low": 28,
+  "high": 40,
+  "status": "estimated",
+  "basis": "DEMO DATA: 1,300 sq ft at about 70% dining area and 15 sq ft per seat, trimmed for a counter and pickup shelf; planning assumption"
+ },
+ "horizons": {
+  "note": "DEMO DATA: hand-authored horizon cells for the rows that otherwise say pending or cannot say; every cell is estimated, not fitted or published.",
+  "rows": {
+   "rent_level": {
+    "now": [
+     30.0,
+     "USD/sf/yr",
+     26.0,
+     34.0
+    ],
+    "12m": [
+     30.9,
+     "USD/sf/yr",
+     27.0,
+     35.0
+    ],
+    "3_5y": [
+     34.0,
+     "USD/sf/yr",
+     28.0,
+     40.0
+    ],
+    "2030": [
+     35.5,
+     "USD/sf/yr",
+     29.0,
+     42.0
+    ]
+   },
+   "leasing_volume": {
+    "now": [
+     16,
+     "leases/quarter nearby",
+     10,
+     22
+    ],
+    "12m": [
+     17,
+     "leases/quarter nearby",
+     10,
+     24
+    ],
+    "3_5y": [
+     19,
+     "leases/quarter nearby",
+     11,
+     28
+    ],
+    "2030": [
+     20,
+     "leases/quarter nearby",
+     11,
+     30
+    ]
+   },
+   "rent_expectation": {
+    "now": [
+     29.5,
+     "USD/sf/yr",
+     25.5,
+     33.5
+    ],
+    "12m": [
+     30.4,
+     "USD/sf/yr",
+     26.0,
+     34.8
+    ],
+    "3_5y": [
+     33.0,
+     "USD/sf/yr",
+     27.0,
+     39.0
+    ],
+    "2030": [
+     34.5,
+     "USD/sf/yr",
+     28.0,
+     41.0
+    ]
+   },
+   "traffic_trend": {
+    "now": [
+     33500,
+     "vehicles/day",
+     31000,
+     36000
+    ],
+    "12m": [
+     34200,
+     "vehicles/day",
+     31500,
+     37000
+    ],
+    "3_5y": [
+     36000,
+     "vehicles/day",
+     32000,
+     40000
+    ],
+    "2030": [
+     37000,
+     "vehicles/day",
+     32500,
+     41500
+    ]
+   },
+   "tenancy_survival": {
+    "now": [
+     0.95,
+     "share surviving 1 yr",
+     0.9,
+     0.98
+    ],
+    "12m": [
+     0.875,
+     "share surviving 1 yr",
+     0.85,
+     0.9
+    ],
+    "3_5y": [
+     0.68,
+     "share surviving 3 yrs",
+     0.64,
+     0.72
+    ],
+    "2030": [
+     0.55,
+     "share surviving 5 yrs",
+     0.51,
+     0.59
+    ]
+   }
+  }
+ },
+ "factors": [
+  {
+   "factorId": "property_market",
+   "status": "derived",
+   "value": "DEMO DATA: asking $30.00/sf/yr NNN, vacant since 2025-10, 1,300 sq ft suite",
+   "unit": "listing summary",
+   "source": "hand-authored demo listing",
+   "recordId": "8035301",
+   "asOf": "2026-11-15",
+   "geography": "suite",
+   "limitations": "Demo values; confirm with the broker."
+  },
+  {
+   "factorId": "spatial_interior",
+   "status": "observed",
+   "value": "JAnuRsaVo9M",
+   "unit": "model IDs",
+   "source": "Matterport local lookup",
+   "recordId": "JAnuRsaVo9M",
+   "asOf": "2026-11-15",
+   "geography": "suite",
+   "limitations": "Scan of the cafe suite."
+  },
+  {
+   "factorId": "building_kit",
+   "status": "observed",
+   "value": "yearBuilt=1972, material=WoodFrame, buildingClass=B, stories=2",
+   "unit": "kit fields",
+   "source": "CoStar kit",
+   "recordId": "8035301",
+   "asOf": "2026-11-15",
+   "geography": "building",
+   "limitations": "Kit record of the host apartment building; not field-verified."
+  },
+  {
+   "factorId": "natural_hazards",
+   "status": "derived",
+   "value": "DEMO DATA: FEMA zone X (shaded), seismic design category A, elevation 58 ft",
+   "unit": "screen",
+   "source": "hand-authored screen",
+   "recordId": "8035301",
+   "asOf": "2026-11-15",
+   "geography": "site point",
+   "limitations": "Screening prior, not an engineering assessment."
+  },
+  {
+   "factorId": "restaurant_lineage",
+   "status": "derived",
+   "value": "DEMO DATA: 7 tenancy spells, 6 food, median tenure 3.2 years",
+   "unit": "spells",
+   "source": "hand-authored tenancy history",
+   "recordId": "8035301",
+   "asOf": "2026-11-15",
+   "geography": "suite",
+   "limitations": "Exploratory demo history, not a per-site prediction."
+  },
+  {
+   "factorId": "record_triage",
+   "status": "derived",
+   "value": "DEMO DATA: 8/8 fields backed by scan, CoStar or aerial values",
+   "unit": "fields",
+   "source": "triage reconcile (demo)",
+   "recordId": "8035301",
+   "asOf": "2026-11-15",
+   "geography": "building",
+   "limitations": "Rule-based screening, not a fit score."
+  },
+  {
+   "factorId": "aerial_site",
+   "status": "derived",
+   "value": "DEMO DATA: flat roof about 9,800 sq ft, 6 rooftop units, 38 stalls nearby",
+   "unit": "aerial summary",
+   "source": "hand-authored aerial summary",
+   "recordId": "8035301",
+   "asOf": "2026-11-15",
+   "geography": "100 m crop",
+   "limitations": "Not derived from imagery."
+  },
+  {
+   "factorId": "crime_safety",
+   "status": "derived",
+   "value": "DEMO DATA: about 410 reported incidents a year within 0.5 mile",
+   "unit": "reported incidents (raw aggregate; not a rate)",
+   "source": "hand-authored demo",
+   "recordId": "8035301",
+   "asOf": "2026-11-15",
+   "geography": "0.5-mile point buffer",
+   "limitations": "Demo aggregate, not a rate."
+  },
+  {
+   "factorId": "labor_supply",
+   "status": "derived",
+   "value": "DEMO DATA: food-service workers about 6,800 in the metro commute shed, median wage $15.20/hr",
+   "unit": "workers; USD/hr",
+   "source": "hand-authored demo",
+   "recordId": "8035301",
+   "asOf": "2026-11-15",
+   "geography": "metro",
+   "limitations": "Metro measure, not site-level availability."
+  },
+  {
+   "factorId": "rent",
+   "status": "derived",
+   "value": "DEMO DATA: $30.00/sf/yr NNN, range $26 to $34; six nearby comps $26 to $36",
+   "unit": "USD/sf/yr",
+   "source": "hand-authored demo comps",
+   "recordId": "8035301",
+   "asOf": "2026-11-15",
+   "geography": "1 to 2 mile comps",
+   "limitations": "Asking, not contract, rents."
+  },
+  {
+   "factorId": "infrastructure_permits",
+   "status": "derived",
+   "value": "DEMO DATA: no citywide zoning; prior cafe use; permitted use likely",
+   "unit": "legal screen",
+   "source": "hand-authored legal screen",
+   "recordId": "8035301",
+   "asOf": "2026-11-15",
+   "geography": "parcel",
+   "limitations": "Exact parcel and jurisdiction required."
+  },
+  {
+   "factorId": "mobility_tourism",
+   "status": "derived",
+   "value": "DEMO DATA: 3 bus stops within 0.25 mile, walk 6 minutes",
+   "unit": "transit access",
+   "source": "hand-authored demo",
+   "recordId": "8035301",
+   "asOf": "2026-11-15",
+   "geography": "0.25-mile",
+   "limitations": "Transit access is not foot traffic."
+  },
+  {
+   "factorId": "costs_timeline",
+   "status": "derived",
+   "value": "DEMO DATA: build-out about $135K to $675K over 4 to 6 months",
+   "unit": "USD; months",
+   "source": "planning cost model (demo)",
+   "recordId": "8035301",
+   "asOf": "2026-11-15",
+   "geography": "suite",
+   "limitations": "Scenario analysis, not a quote."
+  },
+  {
+   "factorId": "signage_visibility",
+   "status": "derived",
+   "value": "DEMO DATA: monument sign shared with the apartment entrance; street frontage about 30 ft",
+   "unit": "frontage",
+   "source": "hand-authored demo",
+   "recordId": "8035301",
+   "asOf": "2026-11-15",
+   "geography": "suite",
+   "limitations": "Frontage is not visibility or sign rights."
+  },
+  {
+   "factorId": "income_demographics",
+   "status": "derived",
+   "value": "DEMO DATA: population 21,800 within 1 mile, median household income $62,400, median age 36.8, 74% renters",
+   "unit": "persons; USD",
+   "source": "hand-authored demo, shaped on ACS 5-year tract values",
+   "recordId": "8035301",
+   "asOf": "2026-11-15",
+   "geography": "1-mile radius",
+   "limitations": "Demo values; the ACS tract estimate carries a margin of error."
+  },
+  {
+   "factorId": "climate_weather",
+   "status": "derived",
+   "value": "DEMO DATA: 57 hot days a year today, 68 by 2030 (intermediate), annual rainfall about 1,350 mm",
+   "unit": "days; mm",
+   "source": "hand-authored demo, shaped on ERA5 reanalysis and NOAA scenarios",
+   "recordId": "8035301",
+   "asOf": "2026-11-15",
+   "geography": "regional gauge",
+   "limitations": "Scenario analysis, not a forecast."
+  },
+  {
+   "factorId": "operator_preferences",
+   "status": "derived",
+   "value": "DEMO DATA: independent cafe, about 34 seats, espresso and baking",
+   "unit": "concept",
+   "source": "hand-authored demo brief",
+   "recordId": "8035301",
+   "asOf": "2026-11-15",
+   "geography": "operator brief",
+   "limitations": "Context only."
+  },
+  {
+   "factorId": "traffic_access",
+   "status": "derived",
+   "value": "DEMO DATA: about 33,500 vehicles/day on the nearest arterial (matches the TxDOT count), about 6,200 on the internal road",
+   "unit": "vehicles/day (AADT)",
+   "source": "hand-authored demo, shaped on TxDOT AADT 2025",
+   "recordId": "8035301",
+   "asOf": "2026-11-15",
+   "geography": "nearest count station",
+   "limitations": "Traffic count is not foot traffic."
+  },
+  {
+   "factorId": "schools_education",
+   "status": "derived",
+   "value": "DEMO DATA: 2 public schools and 1 community college campus within 1.5 miles",
+   "unit": "schools",
+   "source": "hand-authored demo, shaped on NCES directory",
+   "recordId": "8035301",
+   "asOf": "2026-11-15",
+   "geography": "1.5-mile radius",
+   "limitations": "Directory count, not enrolment or foot traffic."
+  }
+ ],
+ "costarExtended": {
+  "note": "DEMO DATA: leasing summary for the cafe suite, layered over the observed CoStar kit record (which stays in 'tenancies' and 'apartment').",
+  "suiteListing": {
+   "status": "estimated",
+   "spaceSqft": 1300,
+   "askingRentPerSfYear": 30.0,
+   "structure": "NNN",
+   "availableSince": "2025-10-01"
+  }
+ },
+ "repairQuantities": {
+  "note": "DEMO DATA: scope per finding category used to price repair lines (not confirmed by an inspector)",
+  "quantities": {
+   "ceiling_water_damage": 1,
+   "walls_finishes": 160,
+   "plumbing": 3,
+   "electrical": 1,
+   "hvac": 2,
+   "flooring": 420,
+   "structural": 1,
+   "kitchen_infrastructure": 2,
+   "egress_accessibility": 3
+  }
+ }
+}

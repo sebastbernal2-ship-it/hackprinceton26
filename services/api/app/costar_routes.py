@@ -9,6 +9,8 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 from data.costar import client  # noqa: E402
 
+from . import demo_fixture  # noqa: E402
+
 router = APIRouter()
 
 
@@ -36,4 +38,6 @@ def costar_extended(listing_id: int):
     ex = _kit().extended(listing_id)
     if ex is None:
         raise HTTPException(status_code=404, detail="property not in CoStar kit")
+    if (fx := demo_fixture.get(listing_id)):
+        ex = {**ex, "demo": fx["costarExtended"], "demoNote": "DEMO DATA: 'demo' holds hand-authored suite terms; every other key is the observed kit record."}
     return ex

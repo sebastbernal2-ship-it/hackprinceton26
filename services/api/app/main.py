@@ -17,7 +17,7 @@ from .lineage_routes import router as lineage_router
 from .concepts_routes import router as concepts_router
 from .finance_routes import router as finance_router
 from .horizons_routes import router as horizons_router
-from . import picker
+from . import demo_fixture, picker
 from .loader import load_matches
 from .structure_routes import router as structure_router
 from .rent_routes import router as rent_router
@@ -26,7 +26,7 @@ from .demo_routes import router as demo_router
 from .reference_media_routes import router as reference_media_router
 from .layout_cost_routes import router as layout_cost_router
 from .models import (
-    AssessRequest, ProjectionsResponse, ReplanRequest, ReplanResponse, ScenarioAssessment,
+    AssessRequest, ProjectionCard, ProjectionsResponse, SCENARIO_LABEL, ReplanRequest, ReplanResponse, ScenarioAssessment,
     Match, MatchesRequest, MatchesResponse, NextQuestionRequest, NextQuestionResponse,
     TourAgentRequest, TourAgentResponse,
 )
@@ -150,6 +150,10 @@ def property_projections(listing_id: int):
     m = next((m for m in load_matches() or [] if m.listingId == listing_id), None)
     if m is None:
         raise HTTPException(status_code=404, detail="listing not found or data unavailable")
+    if (fx := demo_fixture.get(listing_id)):
+        return ProjectionsResponse(listingId=listing_id, modelsAvailable=projections.models_available(),
+                                   projections=[ProjectionCard(**c) for c in demo_fixture.projection_cards(fx)],
+                                   note=f"{SCENARIO_LABEL}. {fx['projections']['note']}")
     return projections.projections_for(listing_id, m.spaceSquareFeet or m.squareFeet)
 
 
