@@ -15,8 +15,13 @@ export type ScenarioRow = {
   horizon: number; scenario: string; metric: string; low: number; value: number; high: number; unit: string;
   station: string; citation: string | null; retrieved: string | null; note: string;
 };
+export type ClimateMetric = {
+  id: "slr" | "days" | "depth" | "wind" | "cool" | "ins"; label: string; unit: string; kind: "sourced" | "demo"; today: number | null;
+  series: Record<string, Record<string, number>>; note: string;
+};
+export type ClimateModel = { scenarios: string[]; horizons: number[]; metrics: ClimateMetric[]; assumptions: Record<string, number>; notice: string };
 export type ScenarioResponse = {
-  listingId: number; region: string | null;
+  listingId: number; region: string | null; climate?: ClimateModel;
   table: { rows: ScenarioRow[]; noSourced: { metric: string; result: string; qualitative?: string; citation?: string }[]; notice: string };
   exposure: { horizons: { horizon: number; seaLevel: { upperBoundFt: number | null; siteElevationFt: number | null; headroomFt: number | null; reading: string }; femaZoneToday: string | null; femaZoneNote: string; hvacCapacity: string; wind: string }[]; notice: string };
   label: string;

@@ -125,3 +125,27 @@ def test_expansion_without_snapshot_still_runs_with_unknown_signals(tmp_path, mo
     assert client.post("/api/structure/expansion", json=body).status_code == 200
     (tmp_path / "properties.json").write_text(json.dumps({"8": HOU}))
     assert client.post("/api/structure/expansion", json=body).status_code == 200
+
+
+def _slr_fetch():
+    rows = [{"projectionYear": h, "scenario": s, "projectionRsl": cm, "projectionCiLow": cm - 5, "projectionCiHigh": cm + 5}
+            for s, base in (("Low", 20.0), ("Intermediate", 40.0), ("High", 60.0)) for h, cm in ((2030, base), (2050, base * 2), (2070, base * 3))]
+    return {"retrieved": "r", "noaaSlr": {"galveston": {"url": "u", "rows": rows}}, "calAdapt": {}}
+
+
+def test_climate_metrics_move_with_scenario_and_horizon_and_are_deterministic():
+    m = scenarios.metrics(8, HOU, _slr_fetch(), "HOU")
+    assert m["scenarios"] == ["Low", "Intermediate", "High"] and m["horizons"] == [2030, 2050, 2070]
+    by = {x["id"]: x for x in m["metrics"]}
+    assert by["slr"]["kind"] == "sourced" and by["days"]["kind"] == "demo"
+    for k in ("slr", "days", "depth", "cool", "ins"):
+        s = by[k]["series"]
+        assert s["Low"]["2030"] < s["High"]["2070"]  # monotone across scenario and horizon
+        assert s["Low"]["2030"] <= s["Low"]["2070"] and s["Low"]["2070"] <= s["High"]["2070"]
+    assert by["slr"]["series"]["High"]["2050"] == 120.0
+    assert scenarios.metrics(8, HOU, _slr_fetch(), "HOU") == m
+
+
+def test_climate_metrics_empty_without_sourced_path():
+    assert scenarios.metrics(1, HOU, None, None)["metrics"] == []
+    assert scenarios.metrics(1, HOU, FETCH, "HOU")["metrics"] == []  # FETCH lacks Low/Intermediate: not invented
