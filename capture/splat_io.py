@@ -138,17 +138,6 @@ class Splats:
         return Splats(means, sc, q, op, (rgb - 0.5) / SH_C0, None)
 
 
-def concat_splats(parts: Sequence[Splats]) -> Splats:
-    deg = min(p.sh_degree for p in parts)
-    parts = [p.with_sh_degree(deg) for p in parts]
-    return Splats(
-        np.concatenate([p.means for p in parts]),
-        np.concatenate([p.scales for p in parts]),
-        np.concatenate([p.quats for p in parts]),
-        np.concatenate([p.opacities for p in parts]),
-        np.concatenate([p.sh_dc for p in parts]),
-        None if deg == 0 else np.concatenate([p.sh_rest for p in parts]),
-    )
 
 
 def _sigmoid(x: np.ndarray) -> np.ndarray:
@@ -468,11 +457,6 @@ def write_splats(path: Path | str, s: Splats, sh_degree: int | None = None) -> N
         write_spz(path, s, sh_degree)
 
 
-def ply_to_spz(src: Path | str, dst: Path | str, sh_degree: int | None = None) -> int:
-    """Converts a PLY to SPZ with the pure-numpy writer (no `spz` package needed). Returns the splat count."""
-    s = read_ply(src)
-    write_spz(dst, s, sh_degree)
-    return len(s)
 
 
 # --------------------------------------------------------------------------------------------------------------
@@ -491,9 +475,6 @@ def quat_xyzw_to_matrix(q: Sequence[float]) -> np.ndarray:
     )
 
 
-def quat_wxyz_to_matrix(q: Sequence[float]) -> np.ndarray:
-    w, x, y, z = q
-    return quat_xyzw_to_matrix([x, y, z, w])
 
 
 def matrix_to_quat_xyzw(m: np.ndarray) -> list[float]:
@@ -521,11 +502,6 @@ def matrix_to_quat_xyzw(m: np.ndarray) -> list[float]:
 def matrix_to_quat_wxyz(m: np.ndarray) -> list[float]:
     x, y, z, w = matrix_to_quat_xyzw(m)
     return [w, x, y, z]
-
-
-def rot_x(a: float) -> np.ndarray:
-    c, s = math.cos(a), math.sin(a)
-    return np.array([[1, 0, 0], [0, c, -s], [0, s, c]], np.float64)
 
 
 def rot_y(a: float) -> np.ndarray:
@@ -1061,16 +1037,6 @@ def save_jpeg(path: Path | str, rgb: np.ndarray, quality: int = 88) -> None:
     os.replace(tmp, path)
 
 
-def contact_sheet(images: Sequence[np.ndarray], cols: int = 4, pad: int = 4) -> np.ndarray:
-    h = max(i.shape[0] for i in images)
-    w = max(i.shape[1] for i in images)
-    rows = (len(images) + cols - 1) // cols
-    sheet = np.full((rows * (h + pad) + pad, cols * (w + pad) + pad, 3), 24, np.uint8)
-    for k, img in enumerate(images):
-        r, c = divmod(k, cols)
-        y, x = pad + r * (h + pad), pad + c * (w + pad)
-        sheet[y : y + img.shape[0], x : x + img.shape[1]] = img
-    return sheet
 
 
 def viewer_camera_in_file(transform: dict, c2w_viewer: np.ndarray) -> np.ndarray:
@@ -1081,29 +1047,6 @@ def viewer_camera_in_file(transform: dict, c2w_viewer: np.ndarray) -> np.ndarray
     return m
 
 
-def look_around(
-    s: Splats,
-    transform: dict,
-    eye: Sequence[float] = (0.0, 1.6, 0.0),
-    views: int = 12,
-    width: int = 256,
-    height: int = 192,
-    hfov_deg: float = 90.0,
-    pitch_deg: float = 0.0,
-    prefer_gpu: bool = True,
-) -> dict:
-    """Renders `views` directions while turning on the spot at `eye` (viewer frame) and measures the fraction of
-    empty pixels (alpha < 0.5). Lower `meanHoles` = a more complete world around the spawn."""
-    f = 0.5 * width / math.tan(math.radians(hfov_deg) / 2)
-    holes, imgs = [], []
-    tensors: dict = {}
-    for k in range(views):
-        c2w_v = pose_matrix(rot_y(2 * math.pi * k / views) @ rot_x(math.radians(pitch_deg)), eye)
-        c2w = viewer_camera_in_file(transform, c2w_v)
-        r = render(s, c2w, f, f, width / 2, height / 2, width, height, prefer_gpu=prefer_gpu, tensors=tensors)
-        holes.append(float(np.mean(r.alpha < 0.5)))
-        imgs.append(r.rgb)
-    return {"holes": holes, "meanHoles": float(np.mean(holes)), "images": imgs}
 
 
 # --------------------------------------------------------------------------------------------------------------
@@ -1136,12 +1079,6 @@ def write_json_atomic(path: Path | str, obj: Any) -> None:
     _atomic_write_bytes(path, [data])
 
 
-def read_json(path: Path | str, default: Any = None) -> Any:
-    try:
-        with open(path, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError, OSError):
-        return default
 
 
 class Progress:
