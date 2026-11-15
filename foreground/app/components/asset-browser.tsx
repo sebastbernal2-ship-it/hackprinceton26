@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import {
-  AssetApiError, axisRange, CATEGORIES, fmtM, makeVariant, patchAsset, priceFor, VARIANT_KINDS, VARIANT_LABEL,
+  AssetApiError, axisRange, CATEGORIES, fmtDims, fmtM, makeVariant, patchAsset, priceFor, VARIANT_KINDS, VARIANT_LABEL,
   type Asset, type AssetCategory, type VariantKind,
 } from "../lib/assets";
 import { defaultControls, variantParams, type Controls } from "../lib/variant-params";
 import type { CostLineItem } from "../lib/costs";
-import { AssetFacts, DraftBadge, FootprintSvg } from "./asset-bits";
+import { AssetFacts, DimsBadge, FootprintSvg } from "./asset-bits";
 
 type Props = {
   assets: Asset[];
@@ -17,7 +17,8 @@ type Props = {
   category: AssetCategory | "";
   onCategory: (c: AssetCategory | "") => void;
   lines: CostLineItem[];
-  onAdd: (asset: Asset) => void;
+  /** Omit to browse without a layout to add to (the Profile page): the add buttons are then hidden. */
+  onAdd?: (asset: Asset) => void;
   onSaved: (asset: Asset) => void;
 };
 
@@ -25,56 +26,61 @@ export default function AssetBrowser({ assets, profileId, status, error, categor
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const selected = assets.find((a) => a.assetId === selectedId) ?? null;
   return (
-    <div className="mt-4 grid gap-4 md:grid-cols-[3fr_2fr]">
-      <div>
-        <label className="text-sm">
-          Category{" "}
-          <select value={category} onChange={(e) => onCategory(e.target.value as AssetCategory | "")} className="rounded border border-foreground/20 bg-background px-2 py-1 text-sm">
-            <option value="">All</option>
-            {CATEGORIES.map((c) => <option key={c} value={c}>{c.replace("_", " ")}</option>)}
-          </select>
-        </label>
-        {status === "loading" && <p role="status" className="mt-3 text-sm text-foreground/60">Loading the asset catalog.</p>}
-        {status === "error" && <p role="alert" className="mt-3 text-sm">Could not load assets: {error}</p>}
-        {status === "ok" && assets.length === 0 && <p className="mt-3 text-sm text-foreground/60">No assets in this category.</p>}
-        <ul className="mt-3 space-y-2" aria-label="Asset catalog">
-          {assets.map((asset, i) => {
-            const mine = !!profileId && asset.profileId === profileId;
-            const firstLibrary = !mine && (i === 0 || (!!profileId && assets[i - 1].profileId === profileId));
-            const price = priceFor(asset, lines);
-            return (
-              <li key={asset.assetId}>
-                {(i === 0 && mine) && <p className="mb-1 text-xs font-medium text-foreground/60">This profile&apos;s assets</p>}
-                {firstLibrary && <p className="mb-1 mt-3 text-xs font-medium text-foreground/60">Library</p>}
-                <div className={`flex gap-3 rounded-lg border p-2 ${selectedId === asset.assetId ? "border-match" : "border-foreground/15"}`}>
-                  <FootprintSvg asset={asset} size={72} />
-                  <div className="min-w-0 flex-1 text-sm">
-                    <p className="flex flex-wrap items-center gap-1.5 font-medium">
-                      {asset.name}
-                      {asset.status === "draft" && <DraftBadge />}
-                      <span className="text-xs font-normal text-foreground/50">{asset.category.replace("_", " ")} · {asset.source}{asset.variantKind && asset.variantKind !== "base" ? ` · ${VARIANT_LABEL[asset.variantKind]}` : ""}</span>
-                    </p>
-                    <AssetFacts asset={asset} />
-                    <p className="mt-1 text-xs">Price: <span className={price.kind === "none" ? "text-foreground/60" : "font-medium"}>{price.text}</span></p>
-                    <div className="mt-2 flex gap-2">
-                      <button type="button" onClick={() => onAdd(asset)} className="rounded-full bg-foreground px-3 py-1 text-xs text-background">Add to layout</button>
-                      <button type="button" onClick={() => setSelectedId(asset.assetId === selectedId ? null : asset.assetId)} className="rounded-full border border-foreground/25 px-3 py-1 text-xs" aria-pressed={selectedId === asset.assetId}>
-                        Variants
-                      </button>
-                    </div>
-                  </div>
+    <div className="mt-4">
+      <label className="text-sm">
+        Category{" "}
+        <select value={category} onChange={(e) => onCategory(e.target.value as AssetCategory | "")} className="rounded border border-foreground/20 bg-background px-2 py-1 text-sm">
+          <option value="">All</option>
+          {CATEGORIES.map((c) => <option key={c} value={c}>{c.replace("_", " ")}</option>)}
+        </select>
+      </label>
+      <span className="ml-3 text-xs text-foreground/50">{assets.length} item{assets.length === 1 ? "" : "s"}</span>
+      {status === "loading" && <p role="status" className="mt-3 text-sm text-foreground/60">Loading the asset catalog.</p>}
+      {status === "error" && <p role="alert" className="mt-3 text-sm">Could not load assets: {error}</p>}
+      {status === "ok" && assets.length === 0 && <p className="mt-3 text-sm text-foreground/60">No assets in this category.</p>}
+      {selected && (
+        <div className="mt-3">
+          <VariantGenerator key={selected.assetId} asset={selected} profileId={profileId} onAdd={onAdd} onSaved={onSaved} />
+        </div>
+      )}
+      <ul className="mt-3 grid max-h-[40rem] grid-cols-2 gap-3 overflow-y-auto pr-1 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5" aria-label="Asset catalog">
+        {assets.map((asset, i) => {
+          const mine = !!profileId && asset.profileId === profileId;
+          const firstLibrary = !mine && (i === 0 || (!!profileId && assets[i - 1].profileId === profileId));
+          const price = priceFor(asset, lines);
+          const open = selectedId === asset.assetId;
+          return (
+            <Fragment key={asset.assetId}>
+              {(i === 0 && mine) && <li className="col-span-full text-xs font-medium text-foreground/60">This profile&apos;s assets</li>}
+              {firstLibrary && <li className="col-span-full mt-2 text-xs font-medium text-foreground/60">Library</li>}
+              <li className={`flex min-w-0 flex-col rounded-xl border p-3 ${open ? "border-match" : "border-foreground/15"}`}>
+                <div className="flex h-28 items-center justify-center overflow-hidden"><FootprintSvg asset={asset} size={96} maxHeight={104} /></div>
+                <p className="mt-3 line-clamp-2 min-h-[2.5rem] text-sm font-medium leading-snug" title={asset.name}>{asset.name}</p>
+                <p className="mt-0.5 text-xs text-foreground/50">
+                  {asset.category.replace("_", " ")}{asset.status === "draft" ? " · draft" : ""}{asset.variantKind && asset.variantKind !== "base" ? ` · ${VARIANT_LABEL[asset.variantKind]}` : ""}
+                </p>
+                <p className="mt-1 text-xs text-foreground/75">{fmtDims(asset.dims)} <DimsBadge status={asset.dimsStatus} /></p>
+                <p className="mt-1 text-xs">Price: <span className={price.kind === "none" ? "text-foreground/50" : "font-medium"}>{price.text}</span></p>
+                <details className="mt-1 text-xs text-foreground/60">
+                  <summary className="cursor-pointer">Details</summary>
+                  <AssetFacts asset={asset} />
+                </details>
+                <div className="mt-auto flex flex-wrap gap-2 pt-3">
+                  {onAdd && <button type="button" onClick={() => onAdd(asset)} className="rounded-full bg-foreground px-3 py-1 text-xs text-background">Add</button>}
+                  <button type="button" onClick={() => setSelectedId(open ? null : asset.assetId)} className="rounded-full border border-foreground/25 px-3 py-1 text-xs" aria-pressed={open}>
+                    Variants
+                  </button>
                 </div>
               </li>
-            );
-          })}
-        </ul>
-      </div>
-      <VariantGenerator key={selected?.assetId ?? "none"} asset={selected} profileId={profileId} onAdd={onAdd} onSaved={onSaved} />
+            </Fragment>
+          );
+        })}
+      </ul>
     </div>
   );
 }
 
-function VariantGenerator({ asset, profileId, onAdd, onSaved }: { asset: Asset | null; profileId: string | null; onAdd: (a: Asset) => void; onSaved: (a: Asset) => void }) {
+function VariantGenerator({ asset, profileId, onAdd, onSaved }: { asset: Asset | null; profileId: string | null; onAdd?: (a: Asset) => void; onSaved: (a: Asset) => void }) {
   const [kind, setKind] = useState<Exclude<VariantKind, "base">>("corner_l");
   const [size, setSize] = useState<Controls>(() => (asset ? defaultControls(asset) : { w: 0, d: 0, h: 0, armA: 0, armB: 0, depthA: 0, depthB: 0, length: 0 }));
   const [skuIndex, setSkuIndex] = useState(0);
@@ -160,7 +166,7 @@ function VariantGenerator({ asset, profileId, onAdd, onSaved }: { asset: Asset |
             <div><p className="font-medium">{result.name}</p><AssetFacts asset={result} /></div></div>
           <p className="mt-2 text-xs text-foreground/60">{result.provenance.notes}</p>
           <div className="mt-2 flex gap-2">
-            <button type="button" onClick={() => onAdd(result)} className="rounded-full bg-foreground px-3 py-1 text-xs text-background">Add to layout</button>
+            {onAdd && <button type="button" onClick={() => onAdd(result)} className="rounded-full bg-foreground px-3 py-1 text-xs text-background">Add to layout</button>}
             <button type="button" onClick={save} disabled={busy} className="rounded-full border border-foreground/25 px-3 py-1 text-xs disabled:opacity-50">Save to catalog</button>
           </div>
         </div>

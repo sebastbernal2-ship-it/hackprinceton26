@@ -18,7 +18,7 @@
 
 ## Use in the scorecard
 
-The current evidence/diligence scorecard carries peer counts and Houston incident counts as contextual columns, **not score components**. Do not include criminal incident counts in a restaurant suitability or safety score. Use only for transparent user-requested context with source/date/radius/caveats and equal treatment across geographies; no cross-city crime comparison is supported.
+The current evidence/diligence scorecard carries peer counts and Houston incident counts as contextual columns, **not score components**. Do not include criminal incident counts in a cafe suitability or safety score. Use only for transparent user-requested context with source/date/radius/caveats and equal treatment across geographies; no cross-city crime comparison is supported.
 
 ## Rebuild
 

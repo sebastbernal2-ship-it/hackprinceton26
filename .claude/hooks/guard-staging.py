@@ -12,6 +12,9 @@ FORBIDDEN = re.compile(
     r"|^data/registry/(sites|sources)\.csv$"
     r"|^costar-hackathon-kit"
     r"|^reports/"
+    r"|^(assets|pano)_[A-Za-z0-9]{11}/"
+    r"|^floorplans/"
+    r"|^models_index\.csv$"
     r"|\.jsonl$"
 )
 

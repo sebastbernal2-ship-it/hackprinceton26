@@ -1,6 +1,6 @@
 # Schools and education context
 
-**Decision question:** Is school access relevant to this food-business operator's customer, employee, or household needs? It may be irrelevant for a restaurant; do not assume school quality drives restaurant demand.
+**Decision question:** Is school access relevant to this food-business operator's customer, employee, or household needs? It may be irrelevant for a cafe; do not assume school quality drives demand.
 
 ## Implemented adapter (verified 2026-11-14)
 

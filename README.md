@@ -1,6 +1,6 @@
 # HackPrinceton 26: Location Intelligence
 
-Evidence-first site selection for an independent restaurant owner (working concept: Italian restaurant with gelato, Houston and Los Angeles). The owner describes the concept; the product shows a small shortlist of commercial spaces with what is known about each, what is not, what a build-out might cost, and what to verify with the landlord before signing.
+Evidence-first site selection for an independent cafe owner in Houston or Los Angeles. The owner describes the concept; the product shows a small shortlist of commercial spaces with what is known about each, what is not, what a build-out might cost, and what to verify with the landlord before signing. Cafe menu, on-site baking, seating, and budget remain unconfirmed; the coffee/bakery equipment profile is illustrative.
 
 It is not a listing ranker, a revenue forecaster, or a safety scorer. Every number is labelled by evidence status and missing data is shown as unknown, never as zero or as a negative finding.
 

@@ -1,5 +1,5 @@
 {
-  "profile_name": "Italian restaurant + gelato exploratory",
+  "profile_name": "Independent cafe exploratory",
   "version": 1,
   "weights_percent": {
     "listed_space_area_match": 35,
@@ -9,8 +9,8 @@
   },
   "hard_filters": {
     "cities": ["Houston", "Los Angeles"],
-    "min_listed_space_sqft": 1000,
-    "max_listed_space_sqft": 6000,
+    "min_listed_space_sqft": null,
+    "max_listed_space_sqft": null,
     "requires_accessible_matterport_model": true
   },
   "policy": {
@@ -24,7 +24,7 @@
   "provisional_assumptions": {
     "target_area_sqft": null,
     "listing_status_freshness_days": null,
-    "restaurant_use_verified": false,
+    "food_service_use_verified": false,
     "selected_tour_confirmed_by_user": true,
     "suite_scan_identity_verified": false
   }

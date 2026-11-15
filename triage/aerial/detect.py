@@ -6,7 +6,7 @@ import numpy as np, torch
 from PIL import Image
 from transformers import Owlv2Processor, Owlv2ForObjectDetection
 
-ROOT = Path(os.environ.get("HP_ROOT", "/home/vorte/code/hackprinceton"))
+ROOT = Path(os.environ.get("HP_ROOT", str(Path(__file__).resolve().parents[2])))
 IMG = ROOT / "data/derived/triage/aerial/images"
 OUT = ROOT / "data/derived/triage/aerial/raw_detections.json"
 MODEL = "google/owlv2-base-patch16-ensemble"
@@ -34,7 +34,8 @@ def main():
     proc = Owlv2Processor.from_pretrained(MODEL, cache_dir=os.environ.get("HF_HOME"))
     model = Owlv2ForObjectDetection.from_pretrained(MODEL, torch_dtype=torch.float16).cuda().eval()
     names = list(QUERIES); texts = [list(QUERIES.values())]
-    res = json.loads(OUT.read_text()) if OUT.exists() else {}
+    OUT.parent.mkdir(parents=True, exist_ok=True)
+    res = json.loads(OUT.read_text(encoding="utf-8")) if OUT.exists() else {}
     for p in sorted(IMG.glob("*.jpg")):
         pid = p.stem
         if pid in res: continue
@@ -53,7 +54,7 @@ def main():
                     dets.append({"cls": names[li], "score": round(s, 4),
                                  "box": [round(b[0] + x), round(b[1] + y), round(b[2] + x), round(b[3] + y)]})
         res[pid] = nms(dets)
-        OUT.write_text(json.dumps(res))
+        OUT.write_text(json.dumps(res), encoding="utf-8")
         print(pid, len(res[pid]), flush=True)
 
 

@@ -35,8 +35,8 @@ export async function fetchLedger(runId: string, table: string, limit = 12): Pro
   }
 }
 
-export const usd = (n: number | null | undefined) => (n == null ? "Cannot say" : `${n < 0 ? "-" : ""}$${Math.abs(Math.round(n)).toLocaleString("en-US")}`);
-export const pct = (x: number | null | undefined) => (x == null ? "Cannot say" : `${Math.round(x * 100)}%`);
+export const usd = (n: number | null | undefined) => (n == null ? "Pending" : `${n < 0 ? "-" : ""}$${Math.abs(Math.round(n)).toLocaleString("en-US")}`);
+export const pct = (x: number | null | undefined) => (x == null ? "Pending" : `${Math.round(x * 100)}%`);
 
 /** Chart series for the 36 months. The API returns the per-month median (P50) of each line; the P10/P90 bands are drawn only when the API supplies them. Never invented. */
 export function cashSeries(sim: Extract<Simulation, { status: "simulated" }>) {

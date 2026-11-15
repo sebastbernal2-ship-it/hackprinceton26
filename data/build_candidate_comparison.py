@@ -14,7 +14,7 @@ CONTEXT=ROOT/'data/normalized/costar/local-context.csv'
 OUT=ROOT/'data/normalized/costar/candidate-comparison.csv'
 def clamp(x):return max(0,min(100,x))
 def main():
- cfg=json.loads(PROFILE.read_text());weights=cfg['weights_percent'];assert sum(weights.values())==100,'weights must sum to 100'
+ cfg=json.loads(PROFILE.read_text(encoding='utf-8'));weights=cfg['weights_percent'];assert sum(weights.values())==100,'weights must sum to 100'
  queue={r['property_id']:r for r in csv.DictReader(QUEUE.open(newline='',encoding='utf-8'))}
  evidence={r['property_id']:r for r in csv.DictReader(EVIDENCE.open(newline='',encoding='utf-8'))}
  op={r['property_id']:r for r in csv.DictReader(OPERATOR.open(newline='',encoding='utf-8'))}
@@ -39,7 +39,7 @@ def main():
   active=[(name,val) for name,val in components.items() if val is not None]
   score=sum(val*weights[name]/100 for name,val in active)
   coverage=sum(weights[name] for name,val in active)
-  known={'target_area_from_operator':cfg['provisional_assumptions']['target_area_sqft'] is not None,'current_listing_confirmed_with_broker':False,'restaurant_use_zoning_verified':False,'suite_to_scan_verified':False,'dimensions_ground_truthed':False,'hood_exhaust_fire_suppression_verified':False,'grease_utilities_verified':False,'gelato_production_method':'unknown','seating_service_style':'unknown','vexcel_available':False,'crime_context_comparable_across_cities':False}
+  known={'target_area_from_operator':cfg['provisional_assumptions']['target_area_sqft'] is not None,'current_listing_confirmed_with_broker':False,'food_service_use_zoning_verified':False,'suite_to_scan_verified':False,'dimensions_ground_truthed':False,'refrigeration_and_cold_storage_verified':False,'utilities_and_plumbing_verified':False,'menu_and_production_method':'unknown','seating_service_style':'unknown','vexcel_available':False,'crime_context_comparable_across_cities':False}
   rows.append({'comparison_profile':cfg['profile_name'],'profile_version':cfg['version'],'profile_weights':json.dumps(weights,separators=(',',':')),'property_id':pid,'city':q['city'],'listed_space_area_sqft':area if area is not None else '', 'area_match_score_0_100':area_score if area_score is not None else '', 'listing_opportunity_status_observed':';'.join(sorted(statuses)),'listing_opportunity_score_0_100':listing_score if listing_score is not None else '', 'historical_food_service_precedent_count':food_count,'food_precedent_score_0_100':food_score if food_score is not None else '', 'matterport_model_count_accessible':model_count,'defurnished_room_location_count':locations,'spatial_evidence_score_0_100':spatial_score if spatial_score is not None else '', 'weighted_comparison_index_0_100':round(score,1) if active else '', 'score_coverage_percent':coverage,'unknowns':json.dumps(known,separators=(',',':')),'crime_context_reported_incidents_0_5mi':ctx.get('reported_incidents_0_5mi') or '', 'crime_context_date_range':(ctx.get('crime_source_date_start','')+' to '+ctx.get('crime_source_date_end','')) if ctx.get('reported_incidents_0_5mi') else '', 'nearby_retail_properties_1mi':ctx.get('nearby_general_retail_count'), 'explanation':'Exploratory evidence inventory only. No validated comparison components are currently scored; snapshot status and contextual counts are not opportunity, fit, safety, probability, or recommendation.','as_of_date':datetime.date.today().isoformat()})
  rows.sort(key=lambda r:(-float(r['weighted_comparison_index_0_100'] or -1),-int(r['score_coverage_percent']),r['city']))
  OUT.parent.mkdir(parents=True,exist_ok=True)

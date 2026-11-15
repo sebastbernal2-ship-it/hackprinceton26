@@ -7,11 +7,13 @@ import {
   formatValue,
   overBudgetCard,
   postAssess,
+  postReplan,
   splitCards,
   type AssumptionInput,
   type ProjectionCard,
   type ProjectionsResponse,
 } from "../lib/projections";
+import { useBrief } from "../lib/brief";
 
 const KIND_LABEL = { published: "Published", fitted: "Fitted", scenario: "Scenario" } as const;
 const title = (id: string) => id.replace(/[_-]+/g, " ").replace(/^./, (c) => c.toUpperCase());
@@ -60,8 +62,80 @@ export default function Projections({ listingId }: { listingId: number }) {
         </p>
       )}
       <AssumptionPanel listingId={listingId} />
+      <ReplanPanel listingId={listingId} />
     </section>
   );
+}
+
+function ReplanPanel({ listingId }: { listingId: number }) {
+  const brief = useBrief();
+  const [area, setArea] = useState("2500");
+  const [result, setResult] = useState<Awaited<ReturnType<typeof postReplan>> | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+
+  async function run() {
+    const max = Number(area);
+    if (!Number.isFinite(max) || max <= 0 || brief.length === 0) return;
+    setBusy(true);
+    setError("");
+    try {
+      setResult(await postReplan(listingId, max, brief));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "The replan service did not answer.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="mt-5 rounded-[1.1rem] border border-dashed border-foreground/25 p-4" data-testid="replan-panel">
+      <h3 className="text-sm font-medium">Revise the space requirement</h3>
+      <p className="mt-1 text-xs text-foreground/50">Set a maximum area and rerun the hard-constraint screen using your saved intake answers. This is a user assumption, not an area recommendation.</p>
+      {brief.length > 0 ? (
+        <ul className="mt-2 space-y-1 text-xs text-foreground/55" aria-label="Intake answers used for replan">
+          {brief.map((exchange, i) => <li key={`${i}-${exchange.question}`}>{exchange.question} <span className="text-foreground/75">{exchange.answer}</span></li>)}
+        </ul>
+      ) : (
+        <p className="mt-2 text-xs text-accent">No saved intake brief in this tab. Complete the intake before replanning.</p>
+      )}
+      <form className="mt-3 flex flex-wrap items-end gap-3" onSubmit={(event) => { event.preventDefault(); void run(); }}>
+        <label className="text-xs text-foreground/60">Maximum area (sq ft)
+          <input type="number" min="1" value={area} onChange={(event) => setArea(event.target.value)} className="mt-1 block w-40 rounded-lg border border-foreground/20 bg-background px-3 py-2 text-sm text-foreground" />
+        </label>
+        <button type="submit" disabled={busy || brief.length === 0 || !(Number(area) > 0)} className="rounded-full bg-foreground px-4 py-2 text-sm text-background disabled:opacity-50">{busy ? "Replanning" : "Replan"}</button>
+      </form>
+      {error && <p role="alert" className="mt-3 text-sm text-foreground/60">Cannot say: {error}</p>}
+      {result && <div className="mt-3 text-sm" aria-live="polite">
+        {typeof result.change.maxAreaSqft === "number" && <p>Screened with a maximum area of {formatValue(result.change.maxAreaSqft, "sq ft")}.</p>}
+        <p>{result.changed.length} site status changes. Screen counts: {formatCounts(result.countsBefore)} → {formatCounts(result.countsAfter)}.</p>
+        {result.changed.length > 0 && (
+          <ul className="mt-2 space-y-2">
+            {result.changed.map((site) => (
+              <li key={site.site_id} className="rounded-lg bg-foreground/5 p-3">
+                <p className="font-medium">Site {site.site_id}: {site.from} → {site.to}</p>
+                {site.because.length > 0 ? (
+                  <ul className="mt-1 space-y-1 text-xs text-foreground/60">
+                    {site.because.map((reason, i) => (
+                      <li key={`${reason.constraint}-${i}`}>
+                        {title(reason.constraint)}: {reason.from} → {reason.to}. {reason.reason}
+                        {reason.missing_fields.length > 0 && <> Missing fields: {reason.missing_fields.join(", ")}.</>}
+                      </li>
+                    ))}
+                  </ul>
+                ) : <p className="mt-1 text-xs text-foreground/60">The service returned no constraint-level reason.</p>}
+              </li>
+            ))}
+          </ul>
+        )}
+        <p className="mt-1 text-xs text-foreground/55">{result.note} No fit score is produced.</p>
+      </div>}
+    </div>
+  );
+}
+
+function formatCounts(counts: Record<string, number>) {
+  return Object.entries(counts).map(([key, value]) => `${key}: ${value}`).join(", ") || "no counts returned";
 }
 
 function Badge({ card }: { card: ProjectionCard }) {

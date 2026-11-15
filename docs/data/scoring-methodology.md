@@ -2,7 +2,7 @@
 
 ## Purpose
 
-`data/build_diligence_scores.py` creates a reproducible, interpretable scorecard for the current Italian restaurant + gelato research queue. It ranks evidence availability for human review and summarizes unresolved diligence. It does **not** estimate restaurant success, probability of lease suitability, revenue, safety, code compliance, or a recommendation.
+`data/build_diligence_scores.py` creates a reproducible, interpretable scorecard for the current cafe research queue. It ranks evidence availability for human review and summarizes unresolved diligence. Historical food-service evidence is broad context, not cafe precedent or fit. It does **not** estimate business success, probability of lease suitability, revenue, safety, code compliance, or a recommendation.
 
 ## Comparison, scoring, and model choice
 
@@ -24,7 +24,7 @@ Historical experimental evidence-readiness formula (not a current candidate rank
 - Historical linked tenant locations classified as food services: 5 each, up to 20. This is coarse historic context only.
 - Matterport defurnished spatial-location metadata exists: 15. This does not establish measured geometry or suite match.
 
-Diligence burden (0–100) counts unresolved high-impact questions: suite-to-scan identity, permitted food-service use, hood/exhaust/fire suppression, grease management, utility/plumbing capacity, gelato cold chain, accessibility/egress, and Vexcel/aerial evidence; each contributes 10. Missing verified sprinkler data and absence of an accessible scan/active listing can also add burden. This is a checklist index, not a risk probability. The current queue may place nearly all candidates in the same high-burden band because these external diligence items are not verified yet; that is a signal to gather evidence, not differentiate sites.
+Diligence burden (0–100) counts unresolved questions: suite-to-scan identity, permitted food-service use, menu-dependent cooking systems, refrigeration, utility/plumbing capacity, accessibility/egress, and Vexcel/aerial evidence; each contributes 10. Missing verified sprinkler data and absence of an accessible scan/active listing can also add burden. This is a checklist index, not a risk probability. Hood, fire-suppression, gas, and grease checks depend on the eventual menu and equipment; they are not presumed requirements.
 
 ## Data handling and interpretation
 
@@ -37,4 +37,4 @@ Diligence burden (0–100) counts unresolved high-impact questions: suite-to-sca
 
 ## Next validation before product use
 
-Collect operator requirements (service style, seats, menu, gelato sourcing/production, budget, area), verify at least one suite and scan with broker/sponsor, ground-truth dimensions, and obtain expert-reviewed infrastructure/use findings. Record provenance, reviewer, date, method, and confidence for every label. Build a calibrated model only if a sufficient representative labeled dataset exists; validate out-of-sample and report uncertainty and subgroup coverage.
+Collect operator requirements (menu, bought versus prepared/baked on site, seats, budget, and area), verify at least one suite and scan with broker/sponsor, ground-truth dimensions, and obtain expert-reviewed infrastructure/use findings. Record provenance, reviewer, date, method, and confidence for every label. Build a calibrated model only if a sufficient representative labeled dataset exists; validate out-of-sample and report uncertainty and subgroup coverage.

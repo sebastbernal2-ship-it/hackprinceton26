@@ -21,7 +21,7 @@ export type TotalCost = {
   notice: string;
 };
 
-export type TotalCostQuery = { sqft?: number | null; rent?: number | null; rentSource?: string | null; months?: number };
+export type TotalCostQuery = { sqft?: number | null; rent?: number | null; rentSource?: string | null; months?: number; buildoutFromLayout?: boolean };
 
 export async function fetchTotalCost(listingId: number, q: TotalCostQuery): Promise<TotalCost> {
   const p = new URLSearchParams();
@@ -29,6 +29,7 @@ export async function fetchTotalCost(listingId: number, q: TotalCostQuery): Prom
   if (q.rent) p.set("rent", String(q.rent));
   else if (q.rentSource) p.set("rentSource", q.rentSource);
   p.set("months", String(q.months ?? 12));
+  if (q.buildoutFromLayout) p.set("buildout", "layout");
   const res = await fetch(`/api/property/${listingId}/total-cost?${p}`);
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return (await res.json()) as TotalCost;
@@ -37,3 +38,7 @@ export async function fetchTotalCost(listingId: number, q: TotalCostQuery): Prom
 const usd = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 export const range = (r: { low: number; high: number } | null | undefined) =>
   !r ? "Unknown" : Math.round(r.low) === Math.round(r.high) ? usd.format(r.low) : `${usd.format(r.low)} – ${usd.format(r.high)}`;
+
+/** Area (sq ft, as text) for the rent estimate: what the person typed in the panel, else the shared area from the layout. */
+export const effectiveSqft = (edited: string | null, shared: number | undefined): string =>
+  edited ?? (shared && shared > 0 ? String(Math.round(shared)) : "");

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build detailed local review rows for Italian+gelato review candidates.
+"""Build detailed local review rows for the cafe review queue.
 
 Only emits direct source IDs, listing-space facts, Matterport linkage/state,
 and explicit verification caveats. Does not emit tenant or contact names.
@@ -26,7 +26,7 @@ def main():
             models.setdefault(r["PropertyId"], set()).add(mid)
     access = {}
     if ACCESS.exists():
-        for line in ACCESS.open():
+        for line in ACCESS.open(encoding="utf-8"):
             try: r = json.loads(line)
             except json.JSONDecodeError: continue
             if r.get("model_id") in {m for ms in models.values() for m in ms} and r.get("result"):
@@ -34,13 +34,13 @@ def main():
     publication_path = ROOT / "data/normalized/matterport/shortlist-address-checks.json"
     publication = {}
     if publication_path.exists():
-        publication = {r["model_id"]: r for r in json.loads(publication_path.read_text()).get("results", [])}
+        publication = {r["model_id"]: r for r in json.loads(publication_path.read_text(encoding="utf-8")).get("results", [])}
     spatial_path = ROOT / "data/normalized/matterport/operator-spatial-metadata.json"
     spatial = {}
     if spatial_path.exists():
-        spatial = {r["model_id"]: r for r in json.loads(spatial_path.read_text()).get("results", [])}
+        spatial = {r["model_id"]: r for r in json.loads(spatial_path.read_text(encoding="utf-8")).get("results", [])}
     listings = {pid: [] for pid in ids}
-    for line in (KIT / "data/commercial-listing-summary.jsonl").open():
+    for line in (KIT / "data/commercial-listing-summary.jsonl").open(encoding="utf-8"):
         l = json.loads(line)
         pid = str(l.get("propertyId", ""))
         if pid in ids:
@@ -48,6 +48,7 @@ def main():
                 if s.get("propertyId") and str(s["propertyId"]) != pid: continue
                 listings[pid].append((l, s))
     columns = ["property_id", "city", "address", "food_service_tenant_location_count", "matterport_model_ids", "matterport_checked_states", "publication_address_match_statuses", "publication_address_token_overlap_count", "defurnished_location_count", "floor_id_count", "listing_ids", "listing_status_codes", "directly_linked_space_count", "suite_codes", "listed_size_min_sqft", "listed_size_max_sqft", "availability_dates_as_listed", "verification_note"]
+    OUT.parent.mkdir(parents=True, exist_ok=True)
     with OUT.open("w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=columns); w.writeheader()
         for q in queue:

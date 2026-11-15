@@ -12,7 +12,8 @@ import { NextResponse } from "next/server";
 //   /walk3d/available?model=<id>        {"walk": true} when assets_<id>/walk/meta.json exists
 // The scan exports are sponsor-derived, local and uncommitted. Nothing here writes or reaches the network.
 const ROOT = process.env.SCAN_ASSETS_DIR || path.resolve(process.cwd(), "..");
-const MODELING = path.join(ROOT, "modeling");
+// The viewer and vendored three.js come from this repo; the scan exports (SCAN_ASSETS_DIR) may live anywhere else.
+const MODELING = process.env.MODELING_DIR || path.resolve(process.cwd(), "..", "modeling");
 
 const TYPES: Record<string, string> = {
   ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".json": "application/json",

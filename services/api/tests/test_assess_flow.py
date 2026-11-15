@@ -9,8 +9,23 @@ client = TestClient(app)
 
 
 @pytest.fixture(autouse=True)
-def data(monkeypatch):
-    monkeypatch.setenv("COSTAR_NORMALIZED_DIR", str(FIX))
+def data(monkeypatch, tmp_path):
+    # The area constraint tests the SUITE space (listed available space or scanned area), never the building. This copy of the
+    # fixture states the areas these tests assume as listed available space.
+    import csv
+    import shutil
+    d = tmp_path / "costar"
+    shutil.copytree(FIX, d)
+    p = d / "restaurant-site-candidates.csv"
+    rows = list(csv.DictReader(p.open(newline="", encoding="utf-8")))
+    names = list(rows[0]) + ["active_listed_min_available_sqft"]
+    for r in rows:
+        r["active_listed_min_available_sqft"] = r.get("rentable_area_sqft") or r.get("retail_gla_sqft") or ""
+    with p.open("w", newline="", encoding="utf-8") as f:
+        w = csv.DictWriter(f, fieldnames=names)
+        w.writeheader()
+        w.writerows(rows)
+    monkeypatch.setenv("COSTAR_NORMALIZED_DIR", str(d))
 
 
 def brief(*a):
@@ -26,11 +41,11 @@ def test_matches_uses_profile_and_excludes_fail():
 
 
 def test_matches_pass_before_unknown_and_missing_fields():
-    r = client.post("/api/matches", json=brief("at least 2,000 sq ft with 50 seats")).json()
-    # 900001 area 2500 PASS but seats unknown -> UNKNOWN; 900002 area 1800 FAIL
+    r = client.post("/api/matches", json=brief("at least 2,000 sq ft with 100 seats")).json()
+    # 900001 area 2500 PASS but estimated capacity (83-116 seats) straddles 100 -> UNKNOWN; 900002 area 1800 FAIL
     assert [m["listingId"] for m in r["matches"]] == [900001] and r["excludedCount"] == 1
     m = r["matches"][0]
-    assert m["constraintStatus"] == "UNKNOWN" and m["missingFields"] == ["seat_capacity"]
+    assert m["constraintStatus"] == "UNKNOWN" and m["alignment"]["unknownItems"] == ["Seat capacity"]
     assert "fit" not in " ".join(k for k in m if "score" in k)
 
 
@@ -107,7 +122,7 @@ def test_replan_changes_status_and_p_over():
 
 
 def test_replan_unknown_p_and_bad_keys():
-    r = client.post("/api/replan", json={**brief("Springfield"), "profileChange": {"minSeats": 10}}).json()
+    r = client.post("/api/replan", json={**brief("Springfield"), "profileChange": {"minSeats": 100}}).json()
     assert r["pOverBudget"]["buildoutOnly"] == {"before": None, "after": None, "delta": None}
     assert [c["to"] for c in r["changed"]] == ["UNKNOWN"]
     assert client.post("/api/replan", json={"profileChange": {"bogus": 1}}).status_code == 422

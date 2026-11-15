@@ -3,6 +3,7 @@ import { readBrief } from "./brief";
 import { fetchMatches } from "./api";
 import { DEMO_FALLBACK } from "./demo-flag";
 import { rankMatches } from "./demo-matches";
+import { CAFE_SCAN_IDS } from "./cafe-demo";
 import type { Exchange } from "./next-question";
 import type { Match } from "./matches";
 
@@ -12,7 +13,7 @@ const CHANGE = "foreground-matches";
 export type MatchesState =
   | { status: "loading" }
   /** `dataAvailable: false` means the API has no candidate registry loaded; it is not "no matches". */
-  | { status: "ready"; matches: Match[]; dataAvailable: boolean; demo: boolean; notice?: string }
+  | { status: "ready"; matches: Match[]; dataAvailable: boolean; demo: boolean; notice?: string; scene?: "sarah" }
   | { status: "error"; message: string };
 
 function read(): string | null {
@@ -24,6 +25,8 @@ function read(): string | null {
 }
 
 let memory: MatchesState | null = null;
+/** Requests under way; a page that mounts meanwhile waits for them instead of starting its own. */
+let inflight = 0;
 
 function save(state: MatchesState) {
   memory = state;
@@ -46,15 +49,20 @@ export function clearMatches() {
 }
 
 /** Ask the API for matches for this brief and persist the outcome for this tab. */
-export async function refreshMatches(brief: Exchange[]): Promise<void> {
+export async function refreshMatches(brief: Exchange[], opts: { limit?: number; scene?: "sarah" } = {}): Promise<void> {
+  inflight += 1;
   try {
-    const { matches, dataAvailable } = await fetchMatches(brief);
+    const { matches, dataAvailable } = await fetchMatches(brief, opts.limit);
+    inflight -= 1;
     if (!dataAvailable && DEMO_FALLBACK) {
       save({ status: "ready", matches: rankMatches(brief), dataAvailable: false, demo: true });
       return;
     }
-    save({ status: "ready", matches, dataAvailable, demo: false });
+    // Scripted Sarah scene only: the first candidates open a cafe scan whose walk is editable (furniture can be placed).
+    const shown = opts.scene === "sarah" ? matches.map((m, i) => (i < CAFE_SCAN_IDS.length ? { ...m, tourId: CAFE_SCAN_IDS[i] } : m)) : matches;
+    save({ status: "ready", matches: shown, dataAvailable, demo: false, ...(opts.scene ? { scene: opts.scene } : {}) });
   } catch (error) {
+    inflight -= 1;
     if (DEMO_FALLBACK) {
       save({ status: "ready", matches: rankMatches(brief), dataAvailable: false, demo: true });
       return;
@@ -100,7 +108,7 @@ export function useMatches(): MatchesState {
       if (stored) setState(stored);
       else {
         setState({ status: "loading" });
-        void refreshMatches(readBrief());
+        if (inflight === 0) void refreshMatches(readBrief());
       }
     };
     apply();

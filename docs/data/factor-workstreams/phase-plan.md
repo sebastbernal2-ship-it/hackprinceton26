@@ -8,7 +8,7 @@ The work below is designed as independent packets with bounded scopes. Run them 
 
 **Goal:** prevent 15 incomparable datasets and scores.
 
-1. Confirm operator intake fields: service style, menu/equipment, gelato production, seats, hours, target size, budget, travel shed, and tradeoffs.
+1. Confirm operator intake fields: menu and service style, bought versus prepared/baked on site, equipment, seats, hours, target size, budget, travel shed, and tradeoffs.
 2. Agree candidate universe, spatial join key, canonical site ID, source record IDs, coordinates/CRS, time semantics, and `observed / derived / estimated / unknown` status contract.
 3. Decide which factors are descriptive context, hard constraints, user-weighted preferences, operational risks, or future prediction targets. No crime/demographic/hazard signals silently become suitability scores.
 4. Set data-use/retention/access policy, raw data storage location, rate limits, reproducible source snapshot protocol.
@@ -25,7 +25,7 @@ Each packet should return: official source docs/terms; exact request/download; f
 Owner: product/data lead. Folders: `operator-preferences/`, `property-market/`.
 - Conduct concise Socratic intake and version the user's true constraints/preferences.
 - Audit CoStar listing status dates, rates/basis, property-vs-suite grain, currentness and historic food tenant evidence.
-- Define concept-specific competition/trade-area measure; separate restaurant count from quality/demand.
+- Define concept-specific competition/trade-area measure; separate food-business counts from quality/demand.
 - Output: verified profile fields, listing freshness indicator, competitor/precedent coverage report, data quality tests.
 
 ### Packet B: location access + neighborhood demand

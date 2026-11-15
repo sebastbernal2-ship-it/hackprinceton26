@@ -81,15 +81,15 @@ export const FIELD_LABEL: Record<string, string> = {
 };
 export const STATUS_LABEL: Record<TriageStatus, string> = {
   filled: "Filled from evidence", confirmed: "Confirmed", conflicting: "Conflicting",
-  "blank-unfillable": "Cannot say", unverified: "Unverified",
+  "blank-unfillable": "Not on file", unverified: "Awaiting site check",
 };
 export const SCOPE_LABEL: Record<string, string> = {
   suite: "suite only", building: "whole building", room: "one room", indeterminate: "scope unclear", unknown: "scope unknown",
 };
 
-/** A missing value is "Cannot say", never 0 or blank. */
+/** A missing value is "Pending", never 0 or blank. */
 export function showValue(v: Scalar | undefined, unit?: string): string {
-  if (v === null || v === undefined || v === "") return "Cannot say";
+  if (v === null || v === undefined || v === "") return "Pending";
   if (typeof v === "boolean") return v ? "yes" : "no";
   if (typeof v === "number") return `${v.toLocaleString("en-US")}${unit ? ` ${unit}` : ""}`;
   return v;

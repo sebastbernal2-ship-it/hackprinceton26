@@ -40,6 +40,7 @@ does not assume their schema, it passes their JSON through as data.
 - Model confidence in any model-written text is the model's own, not a probability.
 
 ## Local model run (provider=local), verified 2026-11-15
+The recorded traces and performance figures below use the earlier Italian restaurant with gelato goal. They have not been regenerated for the cafe scenario and should not be narrated as a cafe run.
 Server: llama.cpp `llama-server --jinja` (pi-harness `bin/local-model`), Qwen3.8-27B OBLITERATED i1-Q3_K_M, 32k ctx, one slot.
 Set `LOCAL_LLM_BASE_URL=http://127.0.0.1:8089/v1`, `LOCAL_LLM_MODEL=qwen3.8-27b-obliterated`, then `POST /api/agent/run {"provider":"local"}`.
 - Thinking is OFF by default (`chat_template_kwargs.enable_thinking=false`; `LOCAL_LLM_THINK=1` re-enables). With thinking on, the first

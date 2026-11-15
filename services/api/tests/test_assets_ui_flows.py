@@ -32,6 +32,13 @@ def _png() -> bytes:
             + chunk(b"IDAT", zlib.compress(b"\x00\xff\x00\x00")) + chunk(b"IEND", b""))
 
 
+class _LiveStub:
+    """Stands in for a vision provider (samples from fixture mode can never be saved, so flows use a 'live' answer)."""
+    def identify(self, images, system, user_text):
+        return ('[{"name": "Steel counter", "category": "counter", "dims_m": {"w": 1.8, "d": 0.7, "h": 0.9}, '
+                '"confidence": 0.6}, {"name": "Prep table", "category": "prep_table", "dims_m": {"w": 1.2, "d": 0.6, "h": 0.9}}]')
+
+
 @pytest.fixture
 def client(tmp_path, monkeypatch):
     lib = tmp_path / "assets" / "library"
@@ -40,14 +47,14 @@ def client(tmp_path, monkeypatch):
         (lib / f.name).write_text(f.read_text())
     monkeypatch.setattr(assets_routes, "STORE", Store(tmp_path / "assets"))
     monkeypatch.setattr(assets_ingest_routes, "UPLOAD_DIR", tmp_path / "up")
-    monkeypatch.setattr(assets_ingest_routes, "get_client", lambda: None)  # fixture mode, no network
+    monkeypatch.setattr(assets_ingest_routes, "get_client", lambda: _LiveStub())  # canned provider answer, no network
     return TestClient(app)
 
 
 def _ingest(client):
     r = client.post("/api/assets/ingest", files=[("image", ("a.png", _png(), "image/png"))], data={"profileId": "pA"})
     assert r.status_code == 200, r.text
-    assert r.json()["mode"] == "fixture"
+    assert r.json()["mode"] == "live"
     return r.json()["proposals"]
 
 

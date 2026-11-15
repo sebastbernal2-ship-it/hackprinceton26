@@ -73,3 +73,10 @@ def test_brief_size_falls_back_to_seats_as_a_labelled_assumption():
     assert brief_size(p(min_area_sqft=2000, max_area_sqft=3000)) == (2500, "brief")
     assert brief_size(p(min_seats=40)) == (40 * SQFT_PER_SEAT, "seats")
     assert brief_size(p()) == (None, None)
+
+
+def test_layout_buildout_mode_drops_the_default_restaurant_equipment_set():
+    d = client.get("/api/property/900001/total-cost?sqft=1200&rent=30&buildout=layout").json()
+    assert "buildout" not in {p["id"] for p in d["parts"]}
+    assert "layout" in next(e for e in d["excluded"] if e["id"] == "buildout")["reason"]
+    assert d["totalStatus"].startswith("partial")

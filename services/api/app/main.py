@@ -1,4 +1,8 @@
+import os
+from pathlib import Path
+
 from fastapi import FastAPI, HTTPException
+from fastapi.staticfiles import StaticFiles
 
 from . import inspection_routes, pipeline, projections, stubs
 from .agent_routes import router as agent_router
@@ -17,6 +21,8 @@ from .structure_routes import router as structure_router
 from .rent_routes import router as rent_router
 from .total_cost_routes import router as total_cost_router, brief_size, site_buildout, site_rent
 from .demo_routes import router as demo_router
+from .reference_media_routes import router as reference_media_router
+from .layout_cost_routes import router as layout_cost_router
 from .models import (
     AssessRequest, ProjectionsResponse, ReplanRequest, ReplanResponse, ScenarioAssessment,
     Match, MatchesRequest, MatchesResponse, NextQuestionRequest, NextQuestionResponse,
@@ -24,6 +30,12 @@ from .models import (
 )
 
 app = FastAPI(title="Site evidence API")
+site_photo_dir = Path(os.environ.get("SITE_PHOTO_DIR", "data/derived/site-photos"))
+try:
+    site_photo_dir.mkdir(parents=True, exist_ok=True)
+except OSError:
+    pass  # read-only checkout or container: photos are optional, the mount below tolerates a missing directory
+app.mount("/api/site-photos", StaticFiles(directory=site_photo_dir, check_dir=False), name="site-photos")
 app.include_router(inspection_routes.router)
 app.include_router(costs_router)
 app.include_router(finance_router)
@@ -39,6 +51,8 @@ app.include_router(structure_router)
 app.include_router(rent_router)
 app.include_router(total_cost_router)
 app.include_router(demo_router)
+app.include_router(reference_media_router)
+app.include_router(layout_cost_router)
 app.include_router(horizons_router)
 
 
@@ -76,7 +90,7 @@ def matches(req: MatchesRequest):
         return MatchesResponse(dataAvailable=False, matches=[])
     # The brief becomes a profile by keyword/number extraction; sites are tested, never scored.
     profile, why = pipeline.profile_from_brief(req.brief, pool)
-    shown, counts, excluded, not_shown = pipeline.shortlist(pool, profile)
+    shown, counts, excluded, not_shown = pipeline.shortlist(pool, profile, req.limit)
     # Build-out is sized by the listed space; when a site lists none, by the size stated in the brief (labelled as such).
     brief_sqft, brief_basis = brief_size(profile)
     for m in shown:

@@ -1,18 +1,15 @@
 "use client";
 
-import { buildChecklist } from "../lib/act";
-import type { CostLineItem } from "../lib/costs";
-import type { DefectFinding } from "../lib/inspection";
-import type { FactorCard } from "../lib/matches";
+import type { ActItem } from "../lib/act";
 
-export default function ActChecklist({ findings, factors, lines }: { findings: DefectFinding[]; factors: FactorCard[]; lines: CostLineItem[] }) {
-  const items = buildChecklist(findings, factors, lines);
+export default function ActChecklist({ items, title = "Act: diligence and negotiation checklist" }: { items: ActItem[]; title?: string }) {
   const groups = [...new Set(items.map((i) => i.group))];
   return (
-    <section className="mt-8 border-t border-foreground/10 pt-6" aria-labelledby="act-title">
-      <h2 id="act-title" className="text-lg font-medium tracking-tight">Act: questions and verification checklist</h2>
+    <section className="mt-8 rounded-[1.75rem] border border-foreground/15 p-6 sm:p-8" aria-labelledby="act-title" data-testid="act-checklist">
+      <p className="text-xs text-foreground/50">Step 6 · Act checklist</p>
+      <h2 id="act-title" className="text-lg font-medium tracking-tight">{title}</h2>
       <p className="mt-1 text-sm text-foreground/50">
-        Built by fixed rules from the findings, unknown factors and unpriced costs above. No AI wrote these lines.
+        What to ask for and verify before relying on any number here. Check items off as you confirm them; this list comes from fixed rules and asserts nothing about the space.
       </p>
       {items.length === 0 && <p className="mt-3 text-sm text-foreground/60">Nothing to verify was generated. That does not mean the space is clean.</p>}
       {groups.map((group) => (

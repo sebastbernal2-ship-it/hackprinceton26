@@ -46,7 +46,7 @@ def active_lease_spaces(listings, statuses, pid):
 
 
 def main():
-    enums = json.loads((KIT / "schemas/enums.json").read_text())
+    enums = json.loads((KIT / "schemas/enums.json").read_text(encoding="utf-8"))
     statuses = enums["ListingStatus"]
     listing_types = enums["ListingType"]
     industries = enums["IndustryType"]
@@ -74,6 +74,7 @@ def main():
         "availability_interpretation",
     ]
     as_of = dt.datetime.now(dt.timezone.utc).date().isoformat()
+    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     with OUTPUT.open("w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=fields)
         writer.writeheader()
