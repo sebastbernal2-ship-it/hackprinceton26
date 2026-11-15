@@ -269,6 +269,12 @@ class Run:
             except Exception as e:  # noqa: BLE001
                 r = {"error": f"{type(e).__name__}: {e}"}
             rid, clean = self._store(name, r)
+            if name == "inspect_sites":
+                # verdict prose is model-written: the citable record keeps only structure + the cited evidence itself
+                vs = clean.get("verdicts", [])
+                with self.lock:
+                    self.results[rid] = {"verdicts": [{k: v.get(k) for k in ("listingId", "verdict", "verified", "cites")} for v in vs],
+                                         "evidence": {c: self.results[c] for v in vs for c in v.get("cites", []) if c in self.results}}
             self.emit("tool_result", agent="planner", tool=name, resultId=rid, ok="error" not in clean,
                       summary=guard.dumps(clean)[:240])
             if name in self.ACTIONS:
