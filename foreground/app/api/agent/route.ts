@@ -5,21 +5,23 @@ import { NextResponse } from "next/server";
 import type { Match } from "../../lib/matches";
 import { answerFio, loadFioContext } from "../../lib/fio";
 
-// walk.html's "Ask Fio" bar posts here (same contract as run_all.py's serve step). The Gemini call stays in
-// modeling/scene_agent.py, run as a local Python process; GEMINI_API_KEY is read from the repo's .env by that process
-// and never reaches the browser. Only exact /api/agent is handled here; /api/agent/run and /replay still go to FastAPI.
+// walk.html's "Ask Fio" bar posts here (same contract as run_all.py's serve step). The model call (OpenAI function
+// calling) stays in modeling/scene_agent.py, run as a local Python process; OPENAI_API_KEY is read from the environment or the
+// repo's .env by that process and never reaches the browser. The viewer runs plain commands itself (modeling/fio_commands.js),
+// so this route only sees freer phrasing and questions; with no key, or when the key is rejected / out of credits (401, 429), it
+// answers locally and silently. Only exact /api/agent is handled here; /api/agent/run and /replay still go to FastAPI.
 const ROOT = process.env.SCAN_ASSETS_DIR || path.resolve(process.cwd(), "..");
 const MODELING = process.env.MODELING_DIR || path.resolve(process.cwd(), "..", "modeling");
 const PYTHON = process.env.PYTHON || (process.platform === "win32" ? "python" : "python3");
 
 const API = process.env.API_URL ?? "http://127.0.0.1:8000";
 
-/** True when a model key is configured (environment or the repo .env), so the Gemini scene agent can run. */
+/** True when a model key is configured (environment or the repo .env), so the scene agent can run. */
 function hasModelKey(): boolean {
-  if (process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY) return true;
+  if (process.env.OPENAI_API_KEY) return true;
   try {
     const f = path.join(ROOT, ".env");
-    return existsSync(f) && /^\s*(GEMINI_API_KEY|GOOGLE_API_KEY)\s*=\s*\S/m.test(readFileSync(f, "utf8"));
+    return existsSync(f) && /^\s*(OPENAI_API_KEY)\s*=\s*\S/m.test(readFileSync(f, "utf8"));
   } catch {
     return false;
   }
@@ -49,7 +51,7 @@ async function localAnswer(body: { messages?: unknown; fio?: { match?: Match } }
   const match = body.fio?.match;
   let text: string;
   if (!match) text = "I do not know which property this scan belongs to. Open it from the matches page (View Info), then reopen the walk, and I can answer from its data.";
-  else if (EDIT_REQUEST.test(question)) text = "Moving furniture by typing needs a model key, which is not configured here. You can still drag pieces by hand or add them from the Catalogue (C). I can answer questions about this property: cost, seats, hazards, history, forecasts, next steps and fit.";
+  else if (EDIT_REQUEST.test(question)) text = "I did not read that as a scene command. Try: clear the room, remove the sofa, move the chair to the back wall, add 4 two-tops along the windows, rotate the table, put a bar by the door, or what is in this room? I can also answer questions about this property: cost, seats, hazards, history, forecasts, next steps and fit.";
   else text = answerFio(match, await loadFioContext(match.listingId, API), question || "help");
   return { content: [{ type: "text", text }], stop_reason: "end_turn", model: "fio-local" };
 }
@@ -103,6 +105,13 @@ export async function POST(request: Request) {
     });
     child.stdin.end(body);
   });
-  // No Gemini key is expected on a demo machine: answer 200 with an error body so the viewer falls back to its demo assistant without a failed request.
-  return NextResponse.json(result.body, { status: result.status === 503 ? 200 : result.status });
+  // No key, a rejected key, no credits or a network failure: answer from the property's own data instead (always HTTP 200, no error shown).
+  if (result.status !== 200 && ![400, 413].includes(result.status)) {
+    try {
+      return NextResponse.json(await localAnswer(JSON.parse(body)));
+    } catch {
+      return NextResponse.json({ error: "Bad request" }, { status: 400 });
+    }
+  }
+  return NextResponse.json(result.body, { status: result.status });
 }

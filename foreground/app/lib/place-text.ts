@@ -4,7 +4,7 @@ import type { Rect } from "./asset-layout";
 import { DOOR_WIDTH, doorX, findSpot, newId, sizeFor, toPlacements, type PlacedPiece } from "./planner";
 
 export type Wall = "front" | "back" | "left" | "right";
-type Want = { ids: string[]; count: number; wall?: Wall; label: string };
+type Want = { ids: string[]; count: number; wall?: Wall; door?: boolean; label: string };
 const NUM: Record<string, number> = { a: 1, an: 1, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, ten: 10, twelve: 12 };
 const num = (s?: string) => (s ? (NUM[s] ?? (Number(s) || 1)) : 1);
 
@@ -19,28 +19,30 @@ const KINDS: [RegExp, string[], string][] = [
   [/chairs?/, ["chair_dining"], "chair"],
   [/\bbar\b/, ["bar_counter_run_120", "bar_stool", "bar_stool", "bar_stool", "bar_stool"], "bar"],
 ];
-const WALL = /\b(window|windows|front|back|rear|left|right)\b/;
-const wallOf = (w?: string): Wall | undefined => (!w ? undefined : w === "window" || w === "windows" || w === "front" ? "front" : w === "rear" ? "back" : (w as Wall));
+const WALL = /\b(window|windows|front|back|rear|left|right|door|entrance|entry)\b/;
+const wallOf = (w?: string): Wall | undefined => (!w ? undefined : /^(window|windows|front|door|entrance|entry)$/.test(w) ? "front" : w === "rear" ? "back" : (w as Wall));
 
 export type Parsed = { add: Want[]; remove: { ids: string[]; count: number }[] } | null;
 
 export function parseInstruction(text: string): Parsed {
   const s = text.toLowerCase().replace(/[.!?]+$/g, "").trim();
   if (!s) return null;
-  const wall = wallOf(WALL.exec(s)?.[1]);
+  const wallWord = WALL.exec(s)?.[1];
+  const wall = wallOf(wallWord);
+  const door = !!wallWord && /^(door|entrance|entry)$/.test(wallWord);
   const m = /^(?:(add|remove|delete|drop|take out|put|place)\s+)?(\d+|a|an|one|two|three|four|five|six|seven|eight|ten|twelve)?\s*(.+)$/.exec(s);
   if (!m) return null;
   const kind = KINDS.find(([re]) => re.test(m[3]));
   if (!kind) return null;
   const count = num(m[2]);
   if (m[1] && /remove|delete|drop|take/.test(m[1])) return { add: [], remove: [{ ids: [kind[1][0]], count }] };
-  return { add: [{ ids: kind[1], count: kind[2] === "bar" ? 1 : count, wall, label: kind[2] }], remove: [] };
+  return { add: [{ ids: kind[1], count: kind[2] === "bar" ? 1 : count, wall, door, label: kind[2] }], remove: [] };
 }
 
-const hit = (a: { x0: number; y0: number; x1: number; y1: number }, b: typeof a, pad = 0.05) => a.x0 < b.x1 + pad && a.x1 + pad > b.x0 && a.y0 < b.y1 + pad && a.y1 + pad > b.y0;
+export const hit = (a: { x0: number; y0: number; x1: number; y1: number }, b: typeof a, pad = 0.05) => a.x0 < b.x1 + pad && a.x1 + pad > b.x0 && a.y0 < b.y1 + pad && a.y1 + pad > b.y0;
 
 /** First free position along a wall (door/windows assumed on the front, bottom edge); falls back to any free spot. */
-function spotAlong(floor: Rect, placed: PlacedPiece[], a: Asset, wall: Wall) {
+export function spotAlong(floor: Rect, placed: PlacedPiece[], a: Asset, wall: Wall, prefer?: number) {
   const boxes = toPlacements(placed).map((p) => p.box);
   if (wall === "front") boxes.push({ x0: doorX(floor) - DOOR_WIDTH / 2 - 0.2, x1: doorX(floor) + DOOR_WIDTH / 2 + 0.2, y0: floor.depth - 1.4, y1: floor.depth });
   const { w, d } = sizeFor(a, 0);
@@ -51,6 +53,7 @@ function spotAlong(floor: Rect, placed: PlacedPiece[], a: Asset, wall: Wall) {
   if (wall === "back") stepX(0.1);
   if (wall === "left") stepY(0.1);
   if (wall === "right") stepY(floor.width - w - 0.1);
+  if (prefer !== undefined) cands.sort((p, q) => Math.abs(p.x + w / 2 - prefer) - Math.abs(q.x + w / 2 - prefer));
   return cands.find((c) => !boxes.some((b) => hit({ x0: c.x, y0: c.y, x1: c.x + w, y1: c.y + d }, b))) ?? null;
 }
 
@@ -79,7 +82,7 @@ export function applyInstruction(text: string, floor: Rect, placed: PlacedPiece[
         const first = group[0];
         let spot: { x: number; y: number; rot: 0 | 90 | 180 | 270 } | null = null;
         if (k === 0) {
-          const along = w.wall ? spotAlong(floor, cur, a, w.wall) : null;
+          const along = w.wall ? spotAlong(floor, cur, a, w.wall, w.door ? doorX(floor) : undefined) : null;
           spot = along ? { ...along, rot: 0 } : findSpot(floor, cur, a);
         } else {
           // extras sit beside the first piece: stools in a row on the room side of a bar, chairs above and below a table

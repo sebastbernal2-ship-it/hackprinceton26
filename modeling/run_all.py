@@ -318,7 +318,7 @@ def step_serve():
         def log_message(self, *a):
             pass
         def do_POST(self):
-            """POST /api/agent: one Gemini call for walk.html's AI scene editing (modeling/scene_agent.py holds the key)."""
+            """POST /api/agent: one OpenAI call for walk.html's AI scene editing (modeling/scene_agent.py holds the key)."""
             origin = self.headers.get("Origin") or ""
             # only our own pages: a custom header forces a CORS preflight, which this server never approves,
             # so another website open in the browser cannot spend the API key
@@ -341,9 +341,9 @@ def step_serve():
     print(f"   studio : {base}/{rel}/studio.html   (the page title shows its version)")
     print(f"   editor : {base}/{rel}/editor3d.html  (choose the folder {MD})")
     print(f"   walk   : {base}/{rel}/walk.html?model={SID}  (first-person walk-through)")
-    has_key = bool(os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY"))
+    has_key = bool(os.environ.get("OPENAI_API_KEY"))
     print(f"   AI     : walk.html's prompt bar -> /api/agent "
-          f"({'ready' if has_key else 'needs GEMINI_API_KEY in .env'})")
+          f"({'ready' if has_key else 'needs OPENAI_API_KEY in .env'})")
     if os.environ.get("HP_NO_BROWSER"):
         S["open_studio"] = S["open_editor"] = False
     if S["open_studio"]:

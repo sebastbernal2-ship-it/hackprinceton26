@@ -1,26 +1,28 @@
 #!/usr/bin/env python3
 r"""
-scene_agent.py - the Gemini side of walk.html's "ask the AI to rearrange the room".
+scene_agent.py - the model side of walk.html's "ask Fio to rearrange the room" (OpenAI function calling).
 
-walk.html runs the agent loop in the browser, because the scene (furniture, collisions, floors) lives there: it sends
-the conversation to POST /api/agent, executes the tool calls the model makes against the 3D scene, and sends the results
-back. This module makes the actual Gemini API call (REST, no SDK). The API key, model, system prompt and tool definitions stay
-on this side, so the browser can only ask scene questions, never use the key for anything else.
+Fio's local command reader (fio_commands.js) handles plain commands in the browser with no model at all. This module is the
+optional enhancement for freer phrasing: walk.html runs the agent loop in the browser, because the scene (furniture,
+collisions, floors) lives there. It sends the conversation to POST /api/agent, executes the tool calls the model makes against
+the 3D scene (the same sceneTools the local commands use), and sends the results back. This module makes the Chat Completions
+call (REST, no SDK). The key, model, system prompt and tool definitions stay on this side, so the browser can only ask scene
+questions, never use the key for anything else.
 
-Served by run_all.py's serve step (http://localhost:8000/api/agent). Credentials: GEMINI_API_KEY (or GOOGLE_API_KEY) in
-.env (run_all.py loads it); GEMINI_MODEL overrides the model.
+Served by the Next app's app/api/agent/route.ts (and run_all.py's serve step). Credentials: OPENAI_API_KEY in the environment
+(or .env); OPENAI_MODEL overrides the model. A missing key, 401, 429 / no credits, or a network error comes back as an error
+status, and the caller falls back to the local answerer without showing a failure.
 
-The browser keeps the conversation as simple content blocks (text, image, tool_use, tool_result); this module translates
-them to Gemini `contents` and back. Each model turn also carries a {"type": "gemini_parts"} block with Gemini's raw parts,
-which the browser echoes back unchanged so thought signatures are replayed exactly.
+The browser keeps the conversation as simple content blocks (text, image, tool_use, tool_result); this module translates them to
+OpenAI messages and back.
 """
 import json, os, urllib.error, urllib.request
 
-MODEL = os.environ.get("GEMINI_MODEL") or "gemini-3.8-flash"
-BASE_URL = os.environ.get("GEMINI_BASE_URL") or "https://generativelanguage.googleapis.com/v1beta"
+MODEL = os.environ.get("OPENAI_MODEL") or "gpt-4o-mini"
+URL = os.environ.get("OPENAI_BASE_URL") or "https://api.openai.com/v1/chat/completions"
 MAX_TURN_MESSAGES = 120                    # a conversation longer than this must be restarted from the page
 
-SYSTEM = """You rearrange a real, 3D-scanned building while the user walks through it in first person (walk.html).
+SYSTEM = """You are Fio. You rearrange a real, 3D-scanned building while the user walks through it in first person (walk.html).
 You change the scene only through the tools; every change happens live in front of the user and can be undone with Ctrl+Z.
 
 The scene
@@ -44,6 +46,8 @@ How to work
 - For layout requests ("make this a cafe", "seat 8 people", "clear a path to the window") plan the whole layout first, then
   place pieces; add catalogue items with add_from_catalog when the room needs furniture it does not have (list_catalog shows
   what exists). Remove only what the request implies.
+- "Clear the room" means clear_room (the pieces shrink away; undo restores them). The catalogue has sofas, armchairs, chairs, stools,
+  tables, cabinets and shelves, no kitchen equipment: say so instead of inventing an id.
 - When you are done, call get_view if you want to check the result, then answer in one or two plain sentences saying what you
   changed. Mention anything you could not do."""
 
@@ -86,6 +90,7 @@ TOOLS = [
            "degrees": {**_nnum, "description": "for set / by"},
            "target_id": {"type": ["string", "null"], "description": "for face_object"}}),
     _tool("remove_object", "Remove a piece from the scene (the floor and wall behind it are filled in).", {"id": _id}),
+    _tool("clear_room", "Remove every piece standing on the user's floor level with a shrink-away transition, leaving an empty room.", {}),
     _tool("restore_object", "Put a piece back exactly where it was scanned (undoes moves and removal of that piece).",
           {"id": _id}),
     _tool("list_catalog", "List catalogue furniture that can be added (id, name, category, size in metres).",
@@ -96,119 +101,100 @@ TOOLS = [
 ]
 
 
-def _schema(s):
-    """JSON schema -> Gemini's OpenAPI-subset schema (nullable instead of type lists, no additionalProperties)."""
-    if not isinstance(s, dict):
-        return s
-    out = {}
-    for k, v in s.items():
-        if k in ("additionalProperties", "strict"):
-            continue
-        if k == "type" and isinstance(v, list):
-            out["type"] = next(t for t in v if t != "null")
-            if "null" in v:
-                out["nullable"] = True
-        elif k == "properties":
-            out[k] = {n: _schema(p) for n, p in v.items()}
-        elif k == "items":
-            out[k] = _schema(v)
-        else:
-            out[k] = v
-    return out
+OPENAI_TOOLS = [{"type": "function", "function": {"name": t["name"], "description": t["description"], "strict": True,
+                                                   "parameters": t["input_schema"]}} for t in TOOLS]
 
 
-GEMINI_TOOLS = [{"functionDeclarations": [
-    {"name": t["name"], "description": t["description"],
-     **({"parameters": _schema(t["input_schema"])} if t["input_schema"]["properties"] else {})} for t in TOOLS]}]
+def _data_url(src):
+    return f"data:{src['media_type']};base64,{src['data']}"
 
 
-def _to_gemini(messages):
-    """Browser content blocks -> Gemini contents."""
-    names, contents = {}, []
+def _to_openai(messages):
+    """Browser content blocks -> OpenAI chat messages. Tool results may carry screenshots; OpenAI tool messages are text only,
+    so images ride in a user message right after the tool messages."""
+    out = [{"role": "system", "content": SYSTEM}]
     for m in messages:
         blocks = m["content"] if isinstance(m["content"], list) else [{"type": "text", "text": str(m["content"])}]
         if m["role"] == "assistant":
-            raw = next((b["parts"] for b in blocks if b.get("type") == "gemini_parts"), None)
-            for b in blocks:
-                if b.get("type") == "tool_use":
-                    names[b["id"]] = b["name"]
-            parts = raw or ([{"text": b["text"]} for b in blocks if b.get("type") == "text"] +
-                            [{"functionCall": {"name": b["name"], "args": b.get("input") or {}}}
-                             for b in blocks if b.get("type") == "tool_use"])
-            contents.append({"role": "model", "parts": parts or [{"text": ""}]})
+            text = "\n".join(b["text"] for b in blocks if b.get("type") == "text")
+            calls = [{"id": b["id"], "type": "function", "function": {"name": b["name"], "arguments": json.dumps(b.get("input") or {})}}
+                     for b in blocks if b.get("type") == "tool_use"]
+            msg = {"role": "assistant", "content": text or None}
+            if calls:
+                msg["tool_calls"] = calls
+            out.append(msg)
             continue
         parts, images = [], []
         for b in blocks:
             t = b.get("type")
             if t == "text":
-                parts.append({"text": b["text"]})
+                parts.append({"type": "text", "text": b["text"]})
             elif t == "image":
-                parts.append({"inlineData": {"mimeType": b["source"]["media_type"], "data": b["source"]["data"]}})
+                parts.append({"type": "image_url", "image_url": {"url": _data_url(b["source"])}})
             elif t == "tool_result":
                 c = b.get("content")
                 items = c if isinstance(c, list) else [{"type": "text", "text": "" if c is None else str(c)}]
                 text = "\n".join(i["text"] for i in items if i.get("type") == "text")
-                images += [{"inlineData": {"mimeType": i["source"]["media_type"], "data": i["source"]["data"]}}
-                           for i in items if i.get("type") == "image"]       # screenshots ride after the responses
-                parts.append({"functionResponse": {"name": names.get(b["tool_use_id"], "unknown"),
-                                                   "response": {"error": text} if b.get("is_error") else {"result": text}}})
-        contents.append({"role": "user", "parts": parts + images})
-    return contents
+                images += [{"type": "image_url", "image_url": {"url": _data_url(i["source"])}} for i in items if i.get("type") == "image"]
+                out.append({"role": "tool", "tool_call_id": b["tool_use_id"], "content": ("Error: " + text) if b.get("is_error") else (text or "ok")})
+        if images:
+            out.append({"role": "user", "content": [{"type": "text", "text": "Screenshot from get_view:"}] + images})
+        if parts:
+            out.append({"role": "user", "content": parts})
+    return out
 
 
-def _from_gemini(d, turn):
-    """Gemini response -> browser content blocks + stop_reason."""
-    cands = d.get("candidates") or []
-    if not cands:
-        return [], "refusal"                                       # prompt blocked
-    cand = cands[0]
-    parts = (cand.get("content") or {}).get("parts") or []
-    content, calls = [{"type": "gemini_parts", "parts": parts}], 0
-    for k, p in enumerate(parts):
-        if p.get("thought"):
-            continue
-        if "functionCall" in p:
-            calls += 1
-            content.append({"type": "tool_use", "id": f"call_{turn}_{k}", "name": p["functionCall"]["name"],
-                            "input": p["functionCall"].get("args") or {}})
-        elif p.get("text"):
-            content.append({"type": "text", "text": p["text"]})
-    fr = cand.get("finishReason")
-    stop = ("tool_use" if calls else "max_tokens" if fr == "MAX_TOKENS"
-            else "refusal" if fr in ("SAFETY", "PROHIBITED_CONTENT", "BLOCKLIST", "SPII") else "end_turn")
+def _from_openai(d):
+    """Chat Completions response -> browser content blocks + stop_reason."""
+    choices = d.get("choices") or []
+    if not choices:
+        return [], "refusal"
+    ch = choices[0]
+    msg = ch.get("message") or {}
+    content = []
+    if msg.get("content"):
+        content.append({"type": "text", "text": msg["content"]})
+    for c in msg.get("tool_calls") or []:
+        try:
+            args = json.loads(c["function"].get("arguments") or "{}")
+        except ValueError:
+            args = {}
+        content.append({"type": "tool_use", "id": c["id"], "name": c["function"]["name"], "input": args})
+    fr = ch.get("finish_reason")
+    stop = ("tool_use" if any(b["type"] == "tool_use" for b in content) else "max_tokens" if fr == "length"
+            else "refusal" if fr == "content_filter" or msg.get("refusal") else "end_turn")
     return content, stop
 
 
 def handle(body):
-    """One Gemini call for walk.html's agent loop. body = {"messages": [...]}; returns (status, JSON-able dict)."""
+    """One OpenAI call for walk.html's agent loop. body = {"messages": [...]}; returns (status, JSON-able dict)."""
     messages = body.get("messages")
     if not isinstance(messages, list) or not messages or len(messages) > MAX_TURN_MESSAGES:
         return 400, {"error": "messages must be a non-empty list (start a new chat if it got too long)"}
-    key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+    key = os.environ.get("OPENAI_API_KEY", "").strip()
     if not key:
-        return 503, {"error": "No Gemini key: put GEMINI_API_KEY=... in .env and restart the server"}
-    req = {"systemInstruction": {"parts": [{"text": SYSTEM}]}, "contents": _to_gemini(messages), "tools": GEMINI_TOOLS,
-           "toolConfig": {"functionCallingConfig": {"mode": "AUTO"}}, "generationConfig": {"maxOutputTokens": 16000}}
-    r = urllib.request.Request(f"{BASE_URL}/models/{MODEL}:generateContent", data=json.dumps(req).encode(),
-                               headers={"Content-Type": "application/json", "x-goog-api-key": key}, method="POST")
+        return 503, {"error": "No OpenAI key: set OPENAI_API_KEY and restart the server"}
+    req = {"model": MODEL, "messages": _to_openai(messages), "tools": OPENAI_TOOLS, "tool_choice": "auto", "max_tokens": 2000}
+    r = urllib.request.Request(URL, data=json.dumps(req).encode(), headers={"Content-Type": "application/json", "Authorization": f"Bearer {key}"},
+                               method="POST")
     try:
-        with urllib.request.urlopen(r, timeout=180) as f:
+        with urllib.request.urlopen(r, timeout=120) as f:
             d = json.loads(f.read())
     except urllib.error.HTTPError as e:
         try:
-            msg = json.loads(e.read()).get("error", {}).get("message", "")
+            err = json.loads(e.read()).get("error", {})
+            msg = err.get("message", "")
         except Exception:                                          # noqa: BLE001
             msg = ""
         if e.code in (401, 403):
-            return 401, {"error": f"The Gemini API key was rejected - check GEMINI_API_KEY in .env ({msg})"}
-        if e.code == 429:
-            return 429, {"error": f"Rate limited by the Gemini API - wait a moment and try again ({msg})"}
-        return 502, {"error": f"Gemini API error {e.code}: {msg}"}
+            return 401, {"error": "The OpenAI API key was rejected - check OPENAI_API_KEY"}
+        if e.code == 429:                                          # rate limit or insufficient_quota: the caller falls back to local logic
+            return 429, {"error": "The OpenAI account is rate limited or out of credits"}
+        return 502, {"error": f"OpenAI API error {e.code}: {msg[:200]}"}
     except (urllib.error.URLError, TimeoutError) as e:
-        return 502, {"error": f"Could not reach the Gemini API ({e})"}
-    content, stop = _from_gemini(d, len(messages))
-    return 200, {"content": content, "stop_reason": stop, "model": d.get("modelVersion", MODEL),
-                 "usage": d.get("usageMetadata")}
+        return 502, {"error": f"Could not reach the OpenAI API ({e})"}
+    content, stop = _from_openai(d)
+    return 200, {"content": content, "stop_reason": stop, "model": d.get("model", MODEL), "usage": d.get("usage")}
 
 
 if __name__ == "__main__":

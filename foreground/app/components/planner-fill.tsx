@@ -4,16 +4,16 @@ import { useEffect, useMemo, useState } from "react";
 import type { Rect } from "../lib/asset-layout";
 import type { Asset } from "../lib/assets";
 import { clock, simulateRush } from "../lib/fill-sim";
-import { applyInstruction } from "../lib/place-text";
+import { runFioCommand } from "../lib/fio-planner";
 import { seatsOf, type PlacedPiece } from "../lib/planner";
 
 const usd = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 const PLAY_SECONDS = 10;
 
-type Props = { floor: Rect; placed: PlacedPiece[]; assets: Asset[]; onPlaced: (next: PlacedPiece[]) => void };
+type Props = { floor: Rect; placed: PlacedPiece[]; assets: Asset[]; onPlaced: (next: PlacedPiece[]) => void; onUndo?: () => void };
 
 /** Type-to-place instructions plus the "Will it fill?" lunch-rush simulation. All figures are ESTIMATED demo scenarios. */
-export default function PlannerFill({ floor, placed, assets, onPlaced }: Props) {
+export default function PlannerFill({ floor, placed, assets, onPlaced, onUndo }: Props) {
   const seats = useMemo(() => placed.reduce((n, p) => n + seatsOf(p.asset), 0), [placed]);
   const [peak, setPeak] = useState(40);
   const [text, setText] = useState("");
@@ -46,19 +46,20 @@ export default function PlannerFill({ floor, placed, assets, onPlaced }: Props) 
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
-    const r = applyInstruction(text, floor, placed, assets);
-    if (r.placed !== placed) onPlaced(r.placed);
-    setMsg(r.note);
-    if (r.placed !== placed) setText("");
+    const r = runFioCommand(text, floor, placed, assets);
+    if (r.undo) onUndo?.();
+    else if (r.changed) onPlaced(r.placed);
+    setMsg(r.undo && !onUndo ? "Nothing to undo." : r.note);
+    if (r.changed || r.undo) setText("");
   }
 
   return (
     <div className="mt-4 rounded-xl border border-foreground/15 bg-panel p-3" data-testid="planner-fill">
       <h3 className="text-sm font-medium">Will it fill? Lunch rush, 11:00 am to 2:30 pm</h3>
       <form onSubmit={submit} className="mt-2 flex flex-wrap gap-2">
-        <input value={text} onChange={(e) => setText(e.target.value)} placeholder='Type: "6 two-tops", "add a bar along the windows"' aria-label="Place furniture by instruction"
+        <input value={text} onChange={(e) => setText(e.target.value)} placeholder='Ask Fio: "clear the room", "6 two-tops", "move the espresso machine to the back wall"' aria-label="Ask Fio to change the layout"
           className="min-w-0 flex-1 rounded-full border border-foreground/25 bg-background px-3 py-1.5 text-sm" data-testid="fill-instruction" />
-        <button type="submit" className="rounded-full border border-foreground/25 px-3 py-1.5 text-sm" data-testid="fill-place">Place</button>
+        <button type="submit" className="rounded-full border border-foreground/25 px-3 py-1.5 text-sm" data-testid="fill-place">Do it</button>
       </form>
       {msg && <p role="status" className="mt-1 text-xs text-accent" data-testid="fill-msg">{msg}</p>}
 
