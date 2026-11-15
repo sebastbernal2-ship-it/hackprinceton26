@@ -9,10 +9,6 @@ const SIZE: Record<TourKind, { width: number; depth: number }> = {
   wall: { width: 1.4, depth: 0.12 },
 };
 
-export function furnitureSize(kind: TourKind) {
-  return SIZE[kind];
-}
-
 /** A solid piece of furniture standing on y = 0, centered on its footprint. */
 export function makeFurniture(kind: TourKind, width = SIZE[kind].width, depth = SIZE[kind].depth, label = "") {
   const group = new THREE.Group();

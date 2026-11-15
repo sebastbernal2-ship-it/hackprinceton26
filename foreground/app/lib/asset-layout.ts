@@ -136,7 +136,3 @@ function sideGap(a: Placement, b: Placement): number | null {
   if (ox > EPS && oy <= EPS) return -oy;
   return null;
 }
-
-export function floorAreaUsed(placed: Placement[]): number {
-  return placed.reduce((s, p) => s + area(p.poly, p.poly), 0);
-}

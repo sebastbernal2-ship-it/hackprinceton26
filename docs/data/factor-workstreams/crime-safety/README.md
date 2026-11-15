@@ -2,7 +2,7 @@
 
 **Decision question:** What responsibly sourced, geographically comparable incident context may a user want to inspect?
 
-**Sources:** Houston Police Department NIBRS public view at <https://www.houstontx.gov/police/cs/xls/>; LA County/LAPD public crime data and California DOJ if their definitions, coverage, and permitted use are suitable. Afnan's `origin/frontend_dev:data_scripts/house_report.py` provides a residential Houston NIBRS prototype.
+**Sources:** Houston Police Department NIBRS public view at <https://www.houstontx.gov/police/cs/xls/>; LA County/LAPD public crime data and California DOJ if their definitions, coverage, and permitted use are suitable. A residential Houston NIBRS prototype existed upstream on `origin/frontend_dev` but was removed from this repo.
 
 **Preliminary:** Local Houston file `data/raw/houston-police/NIBRSPublicView2026.csv`; Jan 1–Jun 30 2026 snapshot; aggregated 0.5-mile incident counts for 31 Houston retail candidates. LA has no equivalent output. Not included in score. Raw incident detail stays local/ignored.
 

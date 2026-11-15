@@ -1,3 +1,6 @@
 three.module.min.js: three.js r170 (npm three@0.170.0, build/three.module.min.js), MIT license, see three.LICENSE.
 Same release as the copy embedded in editor3d.html. Fetched via npm pack; unmodified.
 sha256: 08fd7545d13d2c7fb65ab691530a802dafefd638596501854f267d0fb13c39e7
+
+GLTFLoader.js, BufferGeometryUtils.js: three.js r170 examples/jsm (MIT), vendored with imports pointed at the local three.module.min.js
+(ported from origin/Model-testing by Davd; used by walk.html's furniture catalogue).
