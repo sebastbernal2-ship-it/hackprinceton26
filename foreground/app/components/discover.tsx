@@ -8,6 +8,7 @@ import EvidenceReadiness from "./evidence-readiness";
 import Stepper from "./stepper";
 import PropertyInfo from "./property-info";
 import TourOverlay from "./tour-overlay";
+import DemoSites from "./demo-sites";
 
 const number = new Intl.NumberFormat("en-US");
 
@@ -46,6 +47,8 @@ export default function Discover() {
           not evidence and are not ranked by any validated model.
         </Notice>
       )}
+
+      <DemoSites onOpen={setInfo} />
 
       <ul className="mt-10 grid grid-cols-1 gap-x-10 gap-y-14 md:grid-cols-2">
         {matches.map((match, index) => (
