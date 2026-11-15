@@ -1,0 +1,917 @@
+[
+ {
+  "type": "tool_call",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711691.276,
+  "agent": "planner",
+  "tool": "write_plan",
+  "args": {
+   "items": [
+    "Run shortlist with the goal",
+    "Inspect shortlisted sites",
+    "Make checklist for best candidate",
+    "Save brief"
+   ]
+  },
+  "sanitized": true
+ },
+ {
+  "type": "plan",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711691.276,
+  "items": [
+   "Run shortlist with the goal",
+   "Inspect shortlisted sites",
+   "Make checklist for best candidate",
+   "Save brief"
+  ]
+ },
+ {
+  "type": "tool_result",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711691.276,
+  "agent": "planner",
+  "tool": "write_plan",
+  "resultId": "r1",
+  "ok": true,
+  "summary": "{\"ok\": true}"
+ },
+ {
+  "type": "tool_call",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711691.276,
+  "agent": "planner",
+  "tool": "shortlist",
+  "args": {
+   "goal": "Italian restaurant with gelato in Houston, 40 seats, under 250k"
+  }
+ },
+ {
+  "type": "tool_result",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711691.279,
+  "agent": "planner",
+  "tool": "shortlist",
+  "resultId": "r2",
+  "ok": true,
+  "summary": "{\"counts\": {\"FAIL\": 24, \"PASS\": 0, \"UNKNOWN\": 41}, \"excluded\": 24, \"matches\": [{\"address\": \"[address A masked]\", \"city\": \"Houston, TX\", \"constraintStatus\": \"UNKNOWN\", \"evidenceReadiness\": 20, \"listingId\": 900001, \"missingFields\": [\"seat_capacit"
+ },
+ {
+  "type": "tool_call",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711693.153,
+  "agent": "planner",
+  "tool": "inspect_sites",
+  "args": {
+   "listingIds": [
+    900001,
+    900002,
+    900003
+   ]
+  }
+ },
+ {
+  "type": "subagent_start",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711693.154,
+  "agent": "inspector-900001",
+  "listingId": 900001
+ },
+ {
+  "type": "subagent_start",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711693.154,
+  "agent": "inspector-900002",
+  "listingId": 900002
+ },
+ {
+  "type": "subagent_start",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711693.156,
+  "agent": "inspector-900003",
+  "listingId": 900003
+ },
+ {
+  "type": "tool_call",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711698.364,
+  "agent": "inspector-900001",
+  "tool": "property_facts",
+  "args": {
+   "listingId": 900001
+  }
+ },
+ {
+  "type": "tool_result",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711698.364,
+  "agent": "inspector-900001",
+  "tool": "property_facts",
+  "resultId": "r3",
+  "ok": true,
+  "summary": "{\"address\": \"[address A masked]\", \"city\": \"Houston, TX\", \"evidenceReadiness\": 20, \"factorCards\": [{\"asOf\": \"2026-11-14\", \"factorId\": \"property_market\", \"limitations\": \"Snapshot status only; no current availability claim. Context only; not a sui"
+ },
+ {
+  "type": "tool_call",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711698.364,
+  "agent": "inspector-900001",
+  "tool": "inspection_findings",
+  "args": {
+   "listingId": 900001
+  }
+ },
+ {
+  "type": "tool_result",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711698.364,
+  "agent": "inspector-900001",
+  "tool": "inspection_findings",
+  "resultId": "r4",
+  "ok": true,
+  "summary": "{\"findings\": [], \"listingId\": 900001, \"mode\": \"none\", \"notice\": \"No inspection has been run for this listing. Run python -m inspection.run.\"}"
+ },
+ {
+  "type": "tool_call",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711698.364,
+  "agent": "inspector-900001",
+  "tool": "costs",
+  "args": {
+   "listingId": 900001
+  }
+ },
+ {
+  "type": "tool_result",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711698.365,
+  "agent": "inspector-900001",
+  "tool": "costs",
+  "resultId": "r5",
+  "ok": true,
+  "summary": "{\"excludedLineIds\": [\"repair:ceiling_water_damage\", \"repair:walls_finishes\", \"repair:plumbing\", \"repair:electrical\", \"repair:hvac\", \"repair:flooring\", \"repair:structural\", \"repair:kitchen_infrastructure\", \"repair:egress_accessibility\", \"rep"
+ },
+ {
+  "type": "tool_call",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711698.365,
+  "agent": "inspector-900001",
+  "tool": "assess",
+  "args": {
+   "listingId": 900001,
+   "goal": "Italian restaurant with gelato in Houston, 40 seats, under 250k"
+  }
+ },
+ {
+  "type": "tool_result",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711698.573,
+  "agent": "inspector-900001",
+  "tool": "assess",
+  "resultId": "r6",
+  "ok": true,
+  "summary": "{\"analysisBasis\": \"buildout_only\", \"budget\": 250000.0, \"buildout\": {\"p5\": 59954.75, \"p50\": 68746.06, \"p95\": 77990.2}, \"label\": \"scenario analysis, not a forecast\", \"listingId\": 900001, \"note\": \"Scenario analysis, not a forecast. \", \"pOverBu"
+ },
+ {
+  "type": "tool_call",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711702.076,
+  "agent": "inspector-900002",
+  "tool": "property_facts",
+  "args": {
+   "listingId": 900002
+  }
+ },
+ {
+  "type": "tool_result",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711702.077,
+  "agent": "inspector-900002",
+  "tool": "property_facts",
+  "resultId": "r7",
+  "ok": true,
+  "summary": "{\"address\": \"[address B masked]\", \"city\": \"Houston, TX\", \"evidenceReadiness\": 20, \"factorCards\": [{\"asOf\": \"2026-11-14\", \"factorId\": \"property_market\", \"limitations\": \"Snapshot status only; no current availability claim. Context only; not "
+ },
+ {
+  "type": "tool_call",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711702.078,
+  "agent": "inspector-900002",
+  "tool": "inspection_findings",
+  "args": {
+   "listingId": 900002
+  }
+ },
+ {
+  "type": "tool_result",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711702.078,
+  "agent": "inspector-900002",
+  "tool": "inspection_findings",
+  "resultId": "r8",
+  "ok": true,
+  "summary": "{\"findings\": [], \"listingId\": 900002, \"mode\": \"none\", \"notice\": \"No inspection has been run for this listing. Run python -m inspection.run.\"}"
+ },
+ {
+  "type": "tool_call",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711702.078,
+  "agent": "inspector-900002",
+  "tool": "costs",
+  "args": {
+   "listingId": 900002
+  }
+ },
+ {
+  "type": "tool_result",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711702.079,
+  "agent": "inspector-900002",
+  "tool": "costs",
+  "resultId": "r9",
+  "ok": true,
+  "summary": "{\"excludedLineIds\": [\"repair:ceiling_water_damage\", \"repair:walls_finishes\", \"repair:plumbing\", \"repair:electrical\", \"repair:hvac\", \"repair:flooring\", \"repair:structural\", \"repair:kitchen_infrastructure\", \"repair:egress_accessibility\", \"rep"
+ },
+ {
+  "type": "tool_call",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711702.079,
+  "agent": "inspector-900002",
+  "tool": "assess",
+  "args": {
+   "listingId": 900002,
+   "goal": "Italian restaurant with gelato in Houston, 40 seats, under 250k"
+  }
+ },
+ {
+  "type": "tool_result",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711702.284,
+  "agent": "inspector-900002",
+  "tool": "assess",
+  "resultId": "r10",
+  "ok": true,
+  "summary": "{\"analysisBasis\": \"buildout_only\", \"budget\": 250000.0, \"buildout\": {\"p5\": 59954.75, \"p50\": 68746.06, \"p95\": 77990.2}, \"label\": \"scenario analysis, not a forecast\", \"listingId\": 900002, \"note\": \"Scenario analysis, not a forecast. \", \"pOverBu"
+ },
+ {
+  "type": "tool_call",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711705.939,
+  "agent": "inspector-900003",
+  "tool": "property_facts",
+  "args": {
+   "listingId": 900003
+  }
+ },
+ {
+  "type": "tool_result",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711705.939,
+  "agent": "inspector-900003",
+  "tool": "property_facts",
+  "resultId": "r11",
+  "ok": true,
+  "summary": "{\"address\": \"[address C masked]\", \"city\": \"Houston, TX\", \"evidenceReadiness\": 20, \"factorCards\": [{\"asOf\": \"2026-11-14\", \"factorId\": \"property_market\", \"limitations\": \"Snapshot status only; no current availability claim. Context only; not "
+ },
+ {
+  "type": "tool_call",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711705.939,
+  "agent": "inspector-900003",
+  "tool": "inspection_findings",
+  "args": {
+   "listingId": 900003
+  }
+ },
+ {
+  "type": "tool_result",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711705.94,
+  "agent": "inspector-900003",
+  "tool": "inspection_findings",
+  "resultId": "r12",
+  "ok": true,
+  "summary": "{\"findings\": [], \"listingId\": 900003, \"mode\": \"none\", \"notice\": \"No inspection has been run for this listing. Run python -m inspection.run.\"}"
+ },
+ {
+  "type": "tool_call",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711705.94,
+  "agent": "inspector-900003",
+  "tool": "costs",
+  "args": {
+   "listingId": 900003
+  }
+ },
+ {
+  "type": "tool_call",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711705.94,
+  "agent": "inspector-900003",
+  "tool": "assess",
+  "args": {
+   "listingId": 900003,
+   "goal": "Italian restaurant with gelato in Houston, 40 seats, under 250k"
+  }
+ },
+ {
+  "type": "tool_result",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711705.941,
+  "agent": "inspector-900003",
+  "tool": "costs",
+  "resultId": "r13",
+  "ok": true,
+  "summary": "{\"excludedLineIds\": [\"repair:ceiling_water_damage\", \"repair:walls_finishes\", \"repair:plumbing\", \"repair:electrical\", \"repair:hvac\", \"repair:flooring\", \"repair:structural\", \"repair:kitchen_infrastructure\", \"repair:egress_accessibility\", \"rep"
+ },
+ {
+  "type": "tool_result",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711706.147,
+  "agent": "inspector-900003",
+  "tool": "assess",
+  "resultId": "r14",
+  "ok": true,
+  "summary": "{\"analysisBasis\": \"buildout_only\", \"budget\": 250000.0, \"buildout\": {\"p5\": 59954.75, \"p50\": 68746.06, \"p95\": 77990.2}, \"label\": \"scenario analysis, not a forecast\", \"listingId\": 900003, \"note\": \"Scenario analysis, not a forecast. \", \"pOverB"
+ },
+ {
+  "type": "finding",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711712.418,
+  "kind": "unknown",
+  "listingId": 900001,
+  "text": "no inspection has been run (r4)",
+  "cites": [
+   "r3",
+   "r6"
+  ]
+ },
+ {
+  "type": "finding",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711712.418,
+  "kind": "unknown",
+  "listingId": 900001,
+  "text": "11 cost line(s) unpriced, excluded from totals (r5)",
+  "cites": [
+   "r3",
+   "r6"
+  ]
+ },
+ {
+  "type": "finding",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711712.418,
+  "kind": "unknown",
+  "listingId": 900001,
+  "text": "assess inputs unknown: full_basis (r6)",
+  "cites": [
+   "r3",
+   "r6"
+  ]
+ },
+ {
+  "type": "subagent_finish",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711712.418,
+  "agent": "inspector-900001",
+  "listingId": 900001,
+  "verdict": {
+   "listingId": 900001,
+   "verdict": "workable",
+   "headline": "Houston 23,789 sq ft GeneralRetail; buildout 68,746.06 (expected) under 250k budget",
+   "topRisk": "Costs partial: 11 unknown lines excluded from totals",
+   "risks": [],
+   "unknowns": [
+    "no inspection has been run (r4)",
+    "11 cost line(s) unpriced, excluded from totals (r5)",
+    "assess inputs unknown: full_basis (r6)"
+   ],
+   "cites": [
+    "r3",
+    "r6"
+   ],
+   "verdictCapped": "strong needs an inspection and no unpriced/unknown inputs; capped",
+   "verified": true
+  }
+ },
+ {
+  "type": "finding",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711717.362,
+  "kind": "unknown",
+  "listingId": 900002,
+  "text": "no inspection has been run (r8)",
+  "cites": [
+   "r7",
+   "r9",
+   "r10"
+  ]
+ },
+ {
+  "type": "finding",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711717.362,
+  "kind": "unknown",
+  "listingId": 900002,
+  "text": "11 cost line(s) unpriced, excluded from totals (r9)",
+  "cites": [
+   "r7",
+   "r9",
+   "r10"
+  ]
+ },
+ {
+  "type": "finding",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711717.362,
+  "kind": "unknown",
+  "listingId": 900002,
+  "text": "assess inputs unknown: full_basis (r10)",
+  "cites": [
+   "r7",
+   "r9",
+   "r10"
+  ]
+ },
+ {
+  "type": "subagent_finish",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711717.362,
+  "agent": "inspector-900002",
+  "listingId": 900002,
+  "verdict": {
+   "listingId": 900002,
+   "verdict": "unknown",
+   "headline": "[claim removed: number 100000 not found in cited results ['r7', 'r9', 'r10']]",
+   "topRisk": "",
+   "risks": [],
+   "unknowns": [
+    "no inspection has been run (r8)",
+    "11 cost line(s) unpriced, excluded from totals (r9)",
+    "assess inputs unknown: full_basis (r10)"
+   ],
+   "cites": [
+    "r7",
+    "r9",
+    "r10"
+   ],
+   "verified": false
+  }
+ },
+ {
+  "type": "finding",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711722.377,
+  "kind": "unknown",
+  "listingId": 900003,
+  "text": "no inspection has been run (r12)",
+  "cites": [
+   "r11",
+   "r12",
+   "r13",
+   "r14"
+  ]
+ },
+ {
+  "type": "finding",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711722.377,
+  "kind": "unknown",
+  "listingId": 900003,
+  "text": "11 cost line(s) unpriced, excluded from totals (r13)",
+  "cites": [
+   "r11",
+   "r12",
+   "r13",
+   "r14"
+  ]
+ },
+ {
+  "type": "finding",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711722.377,
+  "kind": "unknown",
+  "listingId": 900003,
+  "text": "assess inputs unknown: full_basis (r14)",
+  "cites": [
+   "r11",
+   "r12",
+   "r13",
+   "r14"
+  ]
+ },
+ {
+  "type": "subagent_finish",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711722.377,
+  "agent": "inspector-900003",
+  "listingId": 900003,
+  "verdict": {
+   "listingId": 900003,
+   "verdict": "workable",
+   "headline": "Italian restaurant with gelato, 40 seats, 30,399 sqft, ~$68.7k buildout, 0% over budget",
+   "topRisk": "",
+   "risks": [],
+   "unknowns": [
+    "no inspection has been run (r12)",
+    "11 cost line(s) unpriced, excluded from totals (r13)",
+    "assess inputs unknown: full_basis (r14)"
+   ],
+   "cites": [
+    "r11",
+    "r12",
+    "r13",
+    "r14"
+   ],
+   "verdictCapped": "strong needs an inspection and no unpriced/unknown inputs; capped",
+   "verified": true
+  }
+ },
+ {
+  "type": "tool_result",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711722.378,
+  "agent": "planner",
+  "tool": "inspect_sites",
+  "resultId": "r15",
+  "ok": true,
+  "summary": "{\"verdicts\": [{\"cites\": [\"r3\", \"r6\"], \"headline\": \"Houston 23,789 sq ft GeneralRetail; buildout 68,746.06 (expected) under 250k budget\", \"listingId\": 900001, \"risks\": [], \"topRisk\": \"Costs partial: 11 unknown lines excluded from totals\", \"u"
+ },
+ {
+  "type": "tool_call",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711724.292,
+  "agent": "planner",
+  "tool": "make_checklist",
+  "args": {
+   "listingId": 900003
+  }
+ },
+ {
+  "type": "tool_result",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711724.292,
+  "agent": "planner",
+  "tool": "make_checklist",
+  "resultId": "r16",
+  "ok": true,
+  "summary": "{\"landlordQuestions\": [{\"cite\": \"r2\", \"q\": \"Please confirm in writing: seat capacity.\"}, {\"cite\": \"r14\", \"q\": \"Provide 'full_basis' (needed to compute the full scenario).\"}], \"listingId\": 900003, \"verify\": [{\"cite\": \"r11\", \"item\": \"Verify "
+ },
+ {
+  "type": "action",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711724.292,
+  "action": "make_checklist",
+  "args": {
+   "listingId": 900003
+  },
+  "resultId": "r16",
+  "ok": true,
+  "summary": "{\"landlordQuestions\": [{\"cite\": \"r2\", \"q\": \"Please confirm in writing: seat capacity.\"}, {\"cite\": \"r14\", \"q\": \"Provide 'full_basis' (needed to compute the full scenario).\"}], \"listingId\": 900003, \"verify\": [{\"cite\": \"r11\", \"item\": \"Verify factor 'operator_preferences' (unknown in our data).\"}, {\"cite\": \"r11\", \"item\": \"Verify factor 'schools_education' (unknown in our data).\"}, {\"cite\": \"r11\", \"it"
+ },
+ {
+  "type": "action",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711728.401,
+  "action": "save_brief",
+  "ok": true,
+  "savedTo": "data/derived/agent/briefs/786f1ae6.json",
+  "claims": 1,
+  "rejected": 0
+ },
+ {
+  "type": "final",
+  "mode": "LIVE",
+  "provider": "local",
+  "model": "qwen3.8-27b-obliterated",
+  "date": "2026-11-15",
+  "runId": "786f1ae6",
+  "t": 1794711728.401,
+  "brief": {
+   "runId": "786f1ae6",
+   "mode": "LIVE",
+   "goal": "Italian restaurant with gelato in Houston, 40 seats, under 250k",
+   "label": "scenario analysis, not a forecast",
+   "recommendation": "Recommend 900003 (Italian restaurant with gelato, 40 seats)",
+   "claims": [
+    {
+     "text": "Italian restaurant with gelato, 40 seats, 30,399 sqft, ~$68.7k buildout, 0% over budget",
+     "cites": [
+      "r11",
+      "r12",
+      "r13",
+      "r14"
+     ]
+    }
+   ],
+   "rejectedClaims": [],
+   "verdicts": [
+    {
+     "listingId": 900001,
+     "verdict": "workable",
+     "headline": "Houston 23,789 sq ft GeneralRetail; buildout 68,746.06 (expected) under 250k budget",
+     "topRisk": "Costs partial: 11 unknown lines excluded from totals",
+     "risks": [],
+     "unknowns": [
+      "no inspection has been run (r4)",
+      "11 cost line(s) unpriced, excluded from totals (r5)",
+      "assess inputs unknown: full_basis (r6)"
+     ],
+     "cites": [
+      "r3",
+      "r6"
+     ],
+     "verdictCapped": "strong needs an inspection and no unpriced/unknown inputs; capped",
+     "verified": true
+    },
+    {
+     "listingId": 900002,
+     "verdict": "unknown",
+     "headline": "[claim removed: number 100000 not found in cited results ['r7', 'r9', 'r10']]",
+     "topRisk": "",
+     "risks": [],
+     "unknowns": [
+      "no inspection has been run (r8)",
+      "11 cost line(s) unpriced, excluded from totals (r9)",
+      "assess inputs unknown: full_basis (r10)"
+     ],
+     "cites": [
+      "r7",
+      "r9",
+      "r10"
+     ],
+     "verified": false
+    },
+    {
+     "listingId": 900003,
+     "verdict": "workable",
+     "headline": "Italian restaurant with gelato, 40 seats, 30,399 sqft, ~$68.7k buildout, 0% over budget",
+     "topRisk": "",
+     "risks": [],
+     "unknowns": [
+      "no inspection has been run (r12)",
+      "11 cost line(s) unpriced, excluded from totals (r13)",
+      "assess inputs unknown: full_basis (r14)"
+     ],
+     "cites": [
+      "r11",
+      "r12",
+      "r13",
+      "r14"
+     ],
+     "verdictCapped": "strong needs an inspection and no unpriced/unknown inputs; capped",
+     "verified": true
+    }
+   ],
+   "unknowns": [
+    {
+     "listingId": 900001,
+     "unknowns": [
+      "no inspection has been run (r4)",
+      "11 cost line(s) unpriced, excluded from totals (r5)",
+      "assess inputs unknown: full_basis (r6)"
+     ],
+     "cites": [
+      "r3",
+      "r6"
+     ]
+    },
+    {
+     "listingId": 900002,
+     "unknowns": [
+      "no inspection has been run (r8)",
+      "11 cost line(s) unpriced, excluded from totals (r9)",
+      "assess inputs unknown: full_basis (r10)"
+     ],
+     "cites": [
+      "r7",
+      "r9",
+      "r10"
+     ]
+    },
+    {
+     "listingId": 900003,
+     "unknowns": [
+      "no inspection has been run (r12)",
+      "11 cost line(s) unpriced, excluded from totals (r13)",
+      "assess inputs unknown: full_basis (r14)"
+     ],
+     "cites": [
+      "r11",
+      "r12",
+      "r13",
+      "r14"
+     ]
+    }
+   ],
+   "note": "Screening evidence, not an engineering assessment or a forecast. Unknown means unknown, not zero. Numbers in claims were checked against cited tool results; the surrounding prose is model-written and is not.",
+   "savedTo": "data/derived/agent/briefs/786f1ae6.json"
+  },
+  "usage": {
+   "input": 20488,
+   "output": 1075,
+   "calls": 10
+  }
+ }
+]
