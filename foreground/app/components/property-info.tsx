@@ -14,6 +14,9 @@ import EvidenceReadiness from "./evidence-readiness";
 import FactorCards from "./factor-cards";
 import Projections from "./projections";
 import SpaceChat from "./space-chat";
+import ImaginePanel from "./imagine/imagine-panel";
+import ReskinPanel from "./reskin/reskin-panel";
+import StructurePanel from "./structure/structure-panel";
 
 const number = new Intl.NumberFormat("en-US");
 
@@ -150,6 +153,9 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
 
         {!match.demo && <InspectionPanel listingId={match.listingId} onData={setFindings} />}
         <LayoutPanel match={match} lines={lines} />
+        {!match.demo && <ReskinPanel listingId={match.listingId} />}
+        {!match.demo && <ImaginePanel listingId={match.listingId} />}
+        {!match.demo && <StructurePanel listingId={match.listingId} />}
 
         {!match.demo && <CostPanel listingId={match.listingId} onData={setLines} />}
         {!match.demo && <ActChecklist findings={findings} factors={match.factors ?? []} lines={lines} />}
