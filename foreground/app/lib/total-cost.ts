@@ -38,3 +38,7 @@ export async function fetchTotalCost(listingId: number, q: TotalCostQuery): Prom
 const usd = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 export const range = (r: { low: number; high: number } | null | undefined) =>
   !r ? "Unknown" : Math.round(r.low) === Math.round(r.high) ? usd.format(r.low) : `${usd.format(r.low)} – ${usd.format(r.high)}`;
+
+/** Area (sq ft, as text) for the rent estimate: what the person typed in the panel, else the shared area from the layout. */
+export const effectiveSqft = (edited: string | null, shared: number | undefined): string =>
+  edited ?? (shared && shared > 0 ? String(Math.round(shared)) : "");

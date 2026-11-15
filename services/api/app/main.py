@@ -31,7 +31,10 @@ from .models import (
 
 app = FastAPI(title="Site evidence API")
 site_photo_dir = Path(os.environ.get("SITE_PHOTO_DIR", "data/derived/site-photos"))
-site_photo_dir.mkdir(parents=True, exist_ok=True)
+try:
+    site_photo_dir.mkdir(parents=True, exist_ok=True)
+except OSError:
+    pass  # read-only checkout or container: photos are optional, the mount below tolerates a missing directory
 app.mount("/api/site-photos", StaticFiles(directory=site_photo_dir, check_dir=False), name="site-photos")
 app.include_router(inspection_routes.router)
 app.include_router(costs_router)

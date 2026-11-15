@@ -85,3 +85,27 @@ def test_cli_needs_env_and_never_echoes_uri(d, monkeypatch, capsys):
     rc = cp.main([str(d)])
     cap = capsys.readouterr()
     assert rc == 1 and "SECRETPW" not in cap.out + cap.err
+
+
+def test_same_basename_in_different_folders_keeps_each_link(tmp_path):
+    src = tmp_path / "in"
+    for folder, depth in (("cafeA", 0.6), ("cafeB", 1.2)):
+        (src / folder).mkdir(parents=True)
+        (src / folder / "counter.glb").write_bytes(extrude_glb([[0, 0], [2, 0], [2, depth], [0, depth], [0, 0]], 0.9))
+        (src / folder / "counter.png").write_bytes(b"\x89PNG" + folder.encode())
+    # an asset JSON beside each mesh refers to it by bare name
+    for folder in ("cafeA", "cafeB"):
+        doc = base(assetId=f"counter_{folder.lower()}", profileId=None, source="uploaded")
+        doc["model"] = {"uri": "counter.glb", "format": "glb"}
+        doc["imageRefs"] = ["counter.png"]
+        (src / folder / "counter.json").write_text(json.dumps(doc))
+    (src / "extra").mkdir()
+    (src / "extra" / "table.glb").write_bytes(extrude_glb([[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]], 0.7))  # unreferenced mesh
+    db = mongomock.MongoClient()["t"]
+    s = cp.run(src, None, False, 50, db)
+    a, b = db["assets"].find_one({"assetId": "counter_cafea"}), db["assets"].find_one({"assetId": "counter_cafeb"})
+    assert a and b, s["log"]
+    assert a["model"]["uri"] != b["model"]["uri"], "both assets were linked to the same mesh"
+    assert a["imageRefs"] != b["imageRefs"], "both assets were linked to the same image"
+    assert db["assets"].find_one({"assetId": "table"}), "the unreferenced mesh in another folder lost its draft"
+    assert db["assets"].count_documents({}) == 3

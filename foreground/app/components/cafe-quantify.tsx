@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { Asset } from "../lib/assets";
 import { buildDiligence } from "../lib/act";
 import { useBrief } from "../lib/brief";
-import { fetchLayoutCost, layoutCostItems, nameFor, pct, type LayoutCost } from "../lib/layout-cost";
+import { fetchLayoutCost, fitSummary, freshResponse, layoutCostItems, nameFor, pct, scenarioKey, type LayoutCost } from "../lib/layout-cost";
 import { range } from "../lib/total-cost";
 import ActChecklist from "./act-checklist";
 
@@ -26,24 +26,29 @@ const input = "mt-1 w-40 rounded-lg border border-foreground/20 bg-background px
 export default function CafeQuantify({ kit, onKit, area, onArea, linkedBuilding }: Props) {
   const brief = useBrief();
   const [budget, setBudget] = useState("");
-  const [data, setData] = useState<LayoutCost | null>(null);
+  const [stored, setStored] = useState<{ key: string; data: LayoutCost } | null>(null);
   const [failed, setFailed] = useState(false);
   const [baseline, setBaseline] = useState<{ p: number | null; budget: string; area: string; pieces: number; median: number | null } | null>(null);
 
   const sqft = Number(area) > 0 ? Number(area) : null;
   const budgetN = Number(budget) > 0 ? Number(budget) : null;
   const items = useMemo(() => layoutCostItems(kit), [kit]);
+  const key = scenarioKey(items, sqft, budgetN);
+  // Show a response only for the scenario that produced it: while inputs change and the request is in flight, nothing old is shown.
+  const data = freshResponse(stored, key);
+  const recalculating = items.length > 0 && data === null && !failed;
+  const fit = useMemo(() => fitSummary(kit, sqft), [kit, sqft]);
 
   useEffect(() => {
     let live = true;
     const t = setTimeout(() => {
       fetchLayoutCost(items, sqft, budgetN).then(
-        (d) => { if (live) { setData(d); setFailed(false); } },
-        () => { if (live) { setData(null); setFailed(true); } },
+        (d) => { if (live) { setStored({ key, data: d }); setFailed(false); } },
+        () => { if (live) { setStored(null); setFailed(true); } },
       );
     }, 250);
     return () => { live = false; clearTimeout(t); };
-  }, [items, sqft, budgetN]);
+  }, [items, sqft, budgetN, key]);
 
   const unpricedNames = (data?.unpriced ?? []).map((u) => nameFor(kit, u.assetId));
   const diligence = buildDiligence({ unpricedPieces: unpricedNames, assumedArea: sqft !== null, linkedBuilding });
@@ -59,8 +64,17 @@ export default function CafeQuantify({ kit, onKit, area, onArea, linkedBuilding 
       <section className="mt-8 rounded-[1.75rem] border border-foreground/15 p-6 sm:p-8" aria-labelledby="lc-title" data-testid="layout-cost">
         <h2 id="lc-title" className="text-lg font-medium tracking-tight">Layout cost</h2>
         <p className="mt-1 text-sm text-foreground/55">
-          Priced from the pieces placed in your layout. Ranges, not quotes. Install, freight, permits and repairs are not included.
+          Priced from the pieces you selected for this layout. Ranges, not quotes. Install, freight, permits and repairs are not included.
         </p>
+        {kit.length > 0 && fit.noFloor && (
+          <p className="mt-3 text-xs text-foreground/60" data-testid="fit-warning">No floor area entered, so fit is not tested: all {fit.total} selected pieces are priced as selected.</p>
+        )}
+        {fit.unplaced.length > 0 && (
+          <p className="mt-3 text-xs text-foreground/60" data-testid="fit-warning">
+            {fit.unplaced.length} of {fit.total} selected pieces do not fit the assumed floor ({fit.unplaced.map((u) => u.name).join(", ")}). They are still priced here as selected; remove them or enlarge the area to match your layout.
+          </p>
+        )}
+        {recalculating && <p role="status" className="mt-3 text-xs text-foreground/50">Updating the estimate for your changes...</p>}
         {failed && <p role="alert" className="mt-4 text-sm text-foreground/60">Cannot say: the cost service did not answer. Nothing below is zero; it is unknown.</p>}
         {kit.length === 0 && (
           <p className="mt-4 text-sm text-foreground/60">No equipment placed yet. Close this panel and use <b>Load cafe reference kit</b> in the layout section, then come back.</p>
@@ -142,7 +156,7 @@ export default function CafeQuantify({ kit, onKit, area, onArea, linkedBuilding 
                 <p>P(build-out over {range({ low: budgetN, high: budgetN })}): <span className="font-medium tabular-nums" data-testid="p-over">{pct(data.pOverBudget)}</span>
                   {baseline && <span className="text-foreground/55"> (baseline {pct(baseline.p)} at budget {baseline.budget || "none"}, {baseline.area || "no"} sq ft, {baseline.pieces} pieces)</span>}</p>
                 <p className="mt-1 text-xs text-foreground/50">Median build-out {range({ low: data.buildout.p50, high: data.buildout.p50 })}. Only priced pieces and the assumed fit-out are counted.</p>
-                <button type="button" onClick={() => setBaseline({ p: data.pOverBudget, budget, area, pieces: kit.length, median: data.buildout?.p50 ?? null })}
+                <button type="button" disabled={recalculating} onClick={() => setBaseline({ p: data.pOverBudget, budget, area, pieces: kit.length, median: data.buildout?.p50 ?? null })}
                   className="mt-3 rounded-full border border-foreground/25 px-4 py-1.5 text-sm">Save as baseline</button>
               </>
             )}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { fetchTotalCost, range, type TotalCost } from "../lib/total-cost";
+import { effectiveSqft, fetchTotalCost, range, type TotalCost } from "../lib/total-cost";
 
 const TONE: Record<string, string> = {
   observed: "bg-match-soft text-match",
@@ -18,7 +18,9 @@ const TONE: Record<string, string> = {
 export default function TotalCostPanel({ listingId, initialSquareFeet, onRent, buildoutFromLayout }: { listingId: number; initialSquareFeet?: number; onRent?: (monthly: number | null) => void; buildoutFromLayout?: boolean }) {
   // For a candidate listing, use its stated area as an editable starting assumption. Demo scans
   // linked only to a building record omit this value because building area is not the cafe's lease area.
-  const [sqft, setSqft] = useState(initialSquareFeet && initialSquareFeet > 0 ? String(Math.round(initialSquareFeet)) : "");
+  // The shared area (layout/Quantify) drives this panel until the person types a different one here.
+  const [sqftEdit, setSqftEdit] = useState<string | null>(null);
+  const sqft = effectiveSqft(sqftEdit, initialSquareFeet);
   const [source, setSource] = useState<string | null>(null);
   const [ownRate, setOwnRate] = useState("");
   const [months, setMonths] = useState(12);
@@ -50,7 +52,7 @@ export default function TotalCostPanel({ listingId, initialSquareFeet, onRent, b
       <div className="mt-5 flex flex-wrap gap-4">
         <label className="text-sm">
           <span className="block text-foreground/55">Area to include in this scenario</span>
-          <input type="number" min={1} inputMode="numeric" value={sqft} onChange={(e) => setSqft(e.target.value)}
+          <input type="number" min={1} inputMode="numeric" value={sqft} onChange={(e) => setSqftEdit(e.target.value)}
             placeholder={data?.buildingSquareFeet ? `building is ${Math.round(data.buildingSquareFeet).toLocaleString()} sq ft` : "e.g. 2500"}
             className="mt-1 w-56 rounded-lg border border-foreground/20 bg-background px-3 py-2 tabular-nums" />
           <span className="mt-1 block max-w-sm text-xs text-foreground/45">

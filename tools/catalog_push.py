@@ -21,6 +21,7 @@ import argparse
 import hashlib
 import json
 import os
+import posixpath
 import re
 import struct
 import sys
@@ -211,11 +212,33 @@ def run(root: Path, profile, dry: bool, max_mb: float, db) -> dict:
     json_assets, others = [], []
     for p in ok:
         (json_assets if p.suffix.lower() == ".json" else others).append(p)
+    # Files are indexed by RELATIVE path: the same basename in two folders must stay two different files.
+    by_rel: dict = {}
+    by_base: dict = {}
+
+    def add(rel, entry):
+        by_rel[rel] = entry
+        by_base.setdefault(Path(rel).name, []).append(rel)
+
+    def resolve(ref, json_rel):
+        """Relative path of the file a reference points to: beside the JSON first, then from the root, then a UNIQUE basename."""
+        if not isinstance(ref, str) or not ref or "://" in ref:
+            return None
+        for cand in (posixpath.normpath(posixpath.join(posixpath.dirname(json_rel), ref)), posixpath.normpath(ref)):
+            if cand in by_rel:
+                return cand
+        same = by_base.get(Path(ref).name, [])
+        if len(same) == 1:
+            return same[0]
+        if len(same) > 1:
+            log.append(f"AMBIGUOUS {json_rel}: '{ref}' matches {len(same)} files; left unlinked (use a path relative to the JSON)")
+        return None
+
     # pass 1: meshes, images, ply
     for p in others:
         ext, data, rel = p.suffix.lower(), p.read_bytes(), p.relative_to(root).as_posix()
         bucket = "models" if ext in MESH else "images" if ext in IMAGE else "files"
-        by_name[p.name] = (bucket, up(bucket, p, data), ext, data, rel)
+        add(rel, (bucket, up(bucket, p, data), ext, data, rel))
     # pass 2: json
     referenced = set()
     for p in json_assets:
@@ -228,17 +251,21 @@ def run(root: Path, profile, dry: bool, max_mb: float, db) -> dict:
             s["refused"] += 1
             continue
         if not (isinstance(doc, dict) and "assetId" in doc):
-            by_name[p.name] = ("files", up("files", p, data), ".json", data, rel)
+            add(rel, ("files", up("files", p, data), ".json", data, rel))
             continue
         if profile:
             doc["profileId"] = profile
         m = doc.get("model")
-        if isinstance(m, dict) and Path(str(m.get("uri", ""))).name in by_name:
-            hit = by_name[Path(m["uri"]).name]
-            if hit[0] == "models":
-                m["uri"] = hit[1]
-                referenced.add(Path(hit[4]).name)
-        doc["imageRefs"] = [by_name[Path(r).name][1] if Path(r).name in by_name else r for r in doc.get("imageRefs", [])]
+        if isinstance(m, dict):
+            hit_rel = resolve(m.get("uri"), rel)
+            if hit_rel and by_rel[hit_rel][0] == "models":
+                m["uri"] = by_rel[hit_rel][1]
+                referenced.add(hit_rel)
+        refs = []
+        for r in doc.get("imageRefs", []):
+            hit_rel = resolve(r, rel)
+            refs.append(by_rel[hit_rel][1] if hit_rel else r)
+        doc["imageRefs"] = refs
         errs = validate_asset(doc)
         if errs:
             s["assets_invalid"] += 1
@@ -247,10 +274,10 @@ def run(root: Path, profile, dry: bool, max_mb: float, db) -> dict:
         used_ids.add(doc["assetId"])
         pending_assets.append((rel, doc))
     # pass 3: draft assets for bare meshes
-    for name, (bucket, uri, ext, data, rel) in sorted(by_name.items()):
-        if bucket != "models" or name in referenced:
+    for rel, (bucket, uri, ext, data, _r) in sorted(by_rel.items()):
+        if bucket != "models" or rel in referenced:
             continue
-        stem = Path(name).stem
+        stem = Path(rel).stem
         doc, why = draft_asset(stem, ext, data, uri, profile, rel)
         if doc is None:
             s["assets_invalid"] += 1
@@ -264,8 +291,8 @@ def run(root: Path, profile, dry: bool, max_mb: float, db) -> dict:
             log.append(f"NO DRAFT {rel}: {'; '.join(errs)[:200]}")
             continue
         used_ids.add(doc["assetId"])
-        pics = [v[1] for k, v in by_name.items() if v[0] == "images" and Path(k).stem == stem]
-        doc["imageRefs"] = pics
+        folder = Path(rel).parent
+        doc["imageRefs"] = [v[1] for k, v in by_rel.items() if v[0] == "images" and Path(k).stem == stem and Path(k).parent == folder]
         pending_assets.append((rel, doc))
     for rel, doc in pending_assets:
         created = sink.asset(doc)

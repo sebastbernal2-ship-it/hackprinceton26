@@ -51,3 +51,18 @@ def test_oversize_file_is_refused_and_not_kept(root, monkeypatch):
     r = client.post("/api/reference-media", data={"profileId": "p"}, files=[("files", ("a.jpg", JPG + b"1" * 200, "image/jpeg"))])
     assert r.status_code == 413
     assert not [p for p in root.rglob("*") if p.is_file()]
+
+
+def test_api_import_does_not_need_a_writable_photo_directory(tmp_path):
+    """A read-only checkout (or container) must still start: missing optional photos cannot require write access."""
+    import os
+    import subprocess
+    ro = tmp_path / "ro"
+    ro.mkdir()
+    ro.chmod(0o555)
+    if os.access(ro, os.W_OK):
+        pytest.skip("filesystem permissions are not enforced here (running as root)")
+    env = {**os.environ, "SITE_PHOTO_DIR": str(ro / "photos")}
+    code = "import sys; sys.path.insert(0, 'services/api'); sys.path.insert(0, '.'); import app.main"
+    r = subprocess.run([sys.executable, "-c", code], cwd=Path(__file__).resolve().parents[3], env=env, capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr[-400:]
