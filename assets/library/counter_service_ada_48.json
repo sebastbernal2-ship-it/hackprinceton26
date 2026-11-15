@@ -1,0 +1,65 @@
+{
+  "assetId": "counter_service_ada_48",
+  "name": "ADA service counter, 48 in",
+  "category": "counter",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 1.2192,
+    "d": 0.6096,
+    "h": 0.8636
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      1.2192,
+      0.0
+    ],
+    [
+      1.2192,
+      0.6096
+    ],
+    [
+      0.0,
+      0.6096
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.91,
+    "sides": 0.0,
+    "back": 0.0
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.91 m, sides 0.0 m, back 0.0 m. Front 0.91 m = ADA 36 in minimum clear width of an accessible route (2010 ADA Standards 403.5.1).",
+  "model": {
+    "uri": "assets/library/models/counter_service_ada_48.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:front",
+    "front_of_house",
+    "ada"
+  ],
+  "priceRef": "counter_service_ada_48",
+  "provenance": {
+    "origin": "ADA 904.4 service counter class (top 36 in max; 48 in long section at 34 in high, 1.22 x 0.61 x 0.86 m)",
+    "retrievedAt": null,
+    "notes": "Lowered section so every customer can reach the register or hand-off; ADA 904.4.1 requires a 36 in (0.91 m) long section at most 36 in high. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

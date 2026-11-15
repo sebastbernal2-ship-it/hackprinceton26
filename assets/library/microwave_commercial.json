@@ -1,0 +1,65 @@
+{
+  "assetId": "microwave_commercial",
+  "name": "Commercial microwave oven",
+  "category": "oven",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 0.508,
+    "d": 0.4572,
+    "h": 0.3099
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      0.508,
+      0.0
+    ],
+    [
+      0.508,
+      0.4572
+    ],
+    [
+      0.0,
+      0.4572
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.8,
+    "sides": 0.1,
+    "back": 0.1
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.8 m operator working space at a staffed station (stated assumption, about 30 to 42 in), sides 0.1 m, back 0.1 m for cleaning access. Health-code equipment spacing is a stated assumption; confirm with the local authority.",
+  "model": {
+    "uri": "assets/library/models/microwave_commercial.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:display",
+    "cooking",
+    "kitchen"
+  ],
+  "priceRef": "microwave_commercial",
+  "provenance": {
+    "origin": "commercial 1000-1200 W microwave class (Panasonic NE-1054F / Amana RFS12, about 0.51 x 0.46 x 0.31 m); not read from a spec sheet",
+    "retrievedAt": null,
+    "notes": "Reheats breakfast sandwiches; counter-top. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

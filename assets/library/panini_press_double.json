@@ -1,0 +1,65 @@
+{
+  "assetId": "panini_press_double",
+  "name": "Panini press, double grill",
+  "category": "oven",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 0.6096,
+    "d": 0.4572,
+    "h": 0.2413
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      0.6096,
+      0.0
+    ],
+    [
+      0.6096,
+      0.4572
+    ],
+    [
+      0.0,
+      0.4572
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.8,
+    "sides": 0.1,
+    "back": 0.1
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.8 m operator working space at a staffed station (stated assumption, about 30 to 42 in), sides 0.1 m, back 0.1 m for cleaning access. Health-code equipment spacing is a stated assumption; confirm with the local authority.",
+  "model": {
+    "uri": "assets/library/models/panini_press_double.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:display",
+    "cooking",
+    "kitchen"
+  ],
+  "priceRef": "panini_press_double",
+  "provenance": {
+    "origin": "countertop double panini press class (Star Pro-Max 14 in / Waring WPG300, about 0.61 x 0.46 x 0.24 m); not read from a spec sheet",
+    "retrievedAt": null,
+    "notes": "Counter-height press for sandwiches; sits on a counter or prep table. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

@@ -1,0 +1,64 @@
+{
+  "assetId": "table_window_bar_96",
+  "name": "Window bar ledge, 96 x 16 in",
+  "category": "table",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 2.4384,
+    "d": 0.4064,
+    "h": 1.0668
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      2.4384,
+      0.0
+    ],
+    [
+      2.4384,
+      0.4064
+    ],
+    [
+      0.0,
+      0.4064
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.6,
+    "sides": 0.0,
+    "back": 0.0
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.6 m guest chair pull-out (about 0.45 m for a chair, 0.6 m at a table), sides 0.0 m, back 0.0 m. Keep one 0.91 m (36 in, ADA 403.5.1) accessible route between groups.",
+  "model": {
+    "uri": "assets/library/models/table_window_bar_96.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:seating",
+    "dining"
+  ],
+  "priceRef": "table_window_bar_96",
+  "provenance": {
+    "origin": "window bar ledge class (2.44 x 0.41 x 1.07 m); not read from a spec sheet",
+    "retrievedAt": null,
+    "notes": "Laptop ledge along a window; 4 stools. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

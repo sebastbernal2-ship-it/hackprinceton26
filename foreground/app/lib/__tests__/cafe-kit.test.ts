@@ -1,9 +1,10 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { packAssets } from "../asset-layout";
+import { checkLayout, packAssets } from "../asset-layout";
+import { autoLayout, toPlacements } from "../planner";
 import type { Asset } from "../assets";
-import { buildCafeKit, cafeKitArea, dedupeAssets } from "../cafe-demo";
+import { buildCafeKit, CAFE_KIT_VARIANTS, cafeKitArea, dedupeAssets, type KitVariant } from "../cafe-demo";
 import { conceptFootprint } from "../concept-layout";
 import { layoutCostItems } from "../layout-cost";
 
@@ -28,6 +29,21 @@ describe("cafe reference kit", () => {
     expect(packed.issues.filter((i) => i.kind === "overlap" || i.kind === "outside_floor")).toEqual([]);
   });
 
+  const VARIANTS = Object.keys(CAFE_KIT_VARIANTS) as KitVariant[];
+  it("has the two concept variants", () => expect(VARIANTS).toEqual(["grab_and_go", "full_service_patio"]));
+  it.each(VARIANTS.flatMap((v) => SCANS.map((s) => [v, s] as const)))("variant %s on scan %s is priced and packs without overlaps", (variant, scan) => {
+    const { kit, missing } = buildCafeKit(scan, library, variant);
+    expect(missing).toEqual([]);
+    for (const a of kit) expect(a.priceRef, a.assetId).toBeTruthy();
+    expect(["900", "1100", "1300"]).toContain(cafeKitArea(scan, variant));
+    const floor = conceptFootprint(Number(cafeKitArea(scan, variant)))!;
+    const packed = packAssets(floor, kit, true);
+    expect(packed.unplaced).toEqual([]);
+    expect(packed.issues.filter((i) => i.kind === "overlap" || i.kind === "outside_floor")).toEqual([]);
+    // What the planner's "Load kit" button does: its auto layout must come out with no problems at all.
+    expect(checkLayout(floor, toPlacements(autoLayout(floor, kit))).map((i) => i.message)).toEqual([]);
+  });
+
   it("groups placed pieces into quantities for cost lines", () => {
     const { kit } = buildCafeKit(SCANS[0], library);
     const items = layoutCostItems(kit);
@@ -36,7 +52,7 @@ describe("cafe reference kit", () => {
   });
 
   it("scans differ and an unknown scan has no area", () => {
-    expect(new Set(SCANS.map(cafeKitArea)).size).toBe(3);
+    expect(new Set(SCANS.map((s) => cafeKitArea(s))).size).toBe(3);
     expect(cafeKitArea("nope")).toBe("");
   });
 

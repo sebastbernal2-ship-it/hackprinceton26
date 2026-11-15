@@ -1,0 +1,65 @@
+{
+  "assetId": "brewer_batch_thermal_3gal",
+  "name": "Batch brewer, 3 gal thermal",
+  "category": "other",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 0.2794,
+    "d": 0.508,
+    "h": 0.762
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      0.2794,
+      0.0
+    ],
+    [
+      0.2794,
+      0.508
+    ],
+    [
+      0.0,
+      0.508
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.7,
+    "sides": 0.1,
+    "back": 0.1
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.7 m operator working space at a staffed station (stated assumption, about 30 to 42 in), sides 0.1 m, back 0.1 m for cleaning access. Health-code equipment spacing is a stated assumption; confirm with the local authority.",
+  "model": {
+    "uri": "assets/library/models/brewer_batch_thermal_3gal.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:bar",
+    "coffee",
+    "front_of_house"
+  ],
+  "priceRef": "brewer_batch_thermal_3gal",
+  "provenance": {
+    "origin": "automatic 3 gal batch brewer class (Fetco CBS-2131 XTS / Bunn Axiom DV, about 0.28 x 0.51 x 0.76 m); not read from a spec sheet",
+    "retrievedAt": null,
+    "notes": "Plumbed batch brewer; larger than the existing 12-cup drip station. Needs water line and 120/240 V. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

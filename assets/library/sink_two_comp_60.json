@@ -1,0 +1,65 @@
+{
+  "assetId": "sink_two_comp_60",
+  "name": "Two-compartment sink, 60 in",
+  "category": "sink",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 1.524,
+    "d": 0.6096,
+    "h": 1.1176
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      1.524,
+      0.0
+    ],
+    [
+      1.524,
+      0.6096
+    ],
+    [
+      0.0,
+      0.6096
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.9,
+    "sides": 0.0,
+    "back": 0.0
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.9 m back-of-house aisle (0.9 to 1.1 m / 36 to 42 in is commonly cited), sides 0.0 m, back 0.0 m. Manufacturer ventilation and service clearances vary by model; confirm with the spec sheet and the local health/building authority.",
+  "model": {
+    "uri": "assets/library/models/sink_two_comp_60.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:boh",
+    "kitchen",
+    "sink"
+  ],
+  "priceRef": "sink_two_comp_60",
+  "provenance": {
+    "origin": "2-compartment NSF sink class (Regency / Advance Tabco, 18 x 18 in bowls, 60 in overall, about 1.52 x 0.61 x 1.12 m); not read from a spec sheet",
+    "retrievedAt": null,
+    "notes": "Used with a glasswasher in many cafes; check local code for 3-compartment requirement. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

@@ -1,0 +1,65 @@
+{
+  "assetId": "rug_area_5x8",
+  "name": "Area rug, 5 x 8 ft",
+  "category": "other",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 1.524,
+    "d": 2.4384,
+    "h": 0.0102
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      1.524,
+      0.0
+    ],
+    [
+      1.524,
+      2.4384
+    ],
+    [
+      0.0,
+      2.4384
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.0,
+    "sides": 0.0,
+    "back": 0.0
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.0 m, sides 0.0 m, back 0.0 m. Front 0.91 m = ADA 36 in minimum clear width of an accessible route (2010 ADA Standards 403.5.1).",
+  "model": {
+    "uri": "assets/library/models/rug_area_5x8.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:decor",
+    "decor",
+    "floor"
+  ],
+  "priceRef": "rug_area_5x8",
+  "provenance": {
+    "origin": "commercial rug class (1.52 x 2.44 m, 10 mm pile)",
+    "retrievedAt": null,
+    "notes": "Lounge area. A trip hazard edge must be 13 mm or less and beveled (ADA 303.3). Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

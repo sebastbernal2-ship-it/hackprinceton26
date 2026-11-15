@@ -57,17 +57,26 @@ import type { Asset } from "./assets";
 
 export const CAFE_KIT_NOTE = "Reference kit: illustrative placements on an ESTIMATED demo floor area, not measured fit. Prices are catalog list prices or estimated demo prices.";
 
+type KitScans = Record<string, Record<string, number>>;
+type Variant = { label: string; note: string; base: string[]; scans: KitScans };
+/** Concept variants of the kit besides the standard one (key "standard"). */
+export const CAFE_KIT_VARIANTS = kitSpec.variants as Record<string, Variant>;
+export type KitVariant = "standard" | keyof typeof kitSpec.variants;
+const specFor = (variant: KitVariant): { base: string[]; scans: KitScans } =>
+  CAFE_KIT_VARIANTS[variant] ?? { base: kitSpec.base, scans: kitSpec.scans as KitScans };
+
 /** Estimated demo floor area (sq ft) for a scan, as a string for the area field; "" for a scan without a kit. */
-export function cafeKitArea(tourId: string | undefined): string {
-  const s = tourId ? (kitSpec.scans as Record<string, { sqft: number }>)[tourId] : undefined;
+export function cafeKitArea(tourId: string | undefined, variant: KitVariant = "standard"): string {
+  const s = tourId ? specFor(variant).scans[tourId] : undefined;
   return s ? String(s.sqft) : "";
 }
 
 /** Ordered catalog ids for a scan's kit (repeats = quantity). Unknown scans get the equipment without dining. */
-export function cafeKitIds(tourId: string | undefined): string[] {
-  const s = tourId ? (kitSpec.scans as Record<string, Record<string, number>>)[tourId] : undefined;
+export function cafeKitIds(tourId: string | undefined, variant: KitVariant = "standard"): string[] {
+  const spec = specFor(variant);
+  const s = tourId ? spec.scans[tourId] : undefined;
   const dining = s ? Object.entries(s).filter(([k]) => k !== "sqft").flatMap(([id, n]) => Array<string>(n).fill(id)) : [];
-  return [...kitSpec.base, ...dining];
+  return [...spec.base, ...dining];
 }
 
 /** One asset per id: the catalog list can hold a profile draft and the library copy of the same id, so prefer a confirmed copy, else the first. */
@@ -80,9 +89,9 @@ export function dedupeAssets(assets: Asset[]): Map<string, Asset> {
   return byId;
 }
 
-export function buildCafeKit(tourId: string | undefined, assets: Asset[]): { kit: Asset[]; missing: string[] } {
+export function buildCafeKit(tourId: string | undefined, assets: Asset[], variant: KitVariant = "standard"): { kit: Asset[]; missing: string[] } {
   const byId = dedupeAssets(assets);
-  const ids = cafeKitIds(tourId);
+  const ids = cafeKitIds(tourId, variant);
   const missing = [...new Set(ids.filter((id) => !byId.has(id)))];
   return { kit: ids.flatMap((id) => (byId.has(id) ? [byId.get(id)!] : [])), missing };
 }

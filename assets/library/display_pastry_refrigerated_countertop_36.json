@@ -1,0 +1,66 @@
+{
+  "assetId": "display_pastry_refrigerated_countertop_36",
+  "name": "Refrigerated pastry case, countertop 36 in",
+  "category": "freezer_display",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 0.9144,
+    "d": 0.6096,
+    "h": 0.6858
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      0.9144,
+      0.0
+    ],
+    [
+      0.9144,
+      0.6096
+    ],
+    [
+      0.0,
+      0.6096
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.9,
+    "sides": 0.05,
+    "back": 0.05
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.9 m operator working space at a staffed station (stated assumption, about 30 to 42 in), sides 0.05 m, back 0.05 m for cleaning access. Health-code equipment spacing is a stated assumption; confirm with the local authority.",
+  "model": {
+    "uri": "assets/library/models/display_pastry_refrigerated_countertop_36.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:display",
+    "bakery",
+    "cold",
+    "front_of_house"
+  ],
+  "priceRef": "display_pastry_refrigerated_countertop_36",
+  "provenance": {
+    "origin": "countertop refrigerated bakery case class (Federal SN-3CD / Structural Concepts CRB3, about 0.91 x 0.61 x 0.69 m); not read from a spec sheet",
+    "retrievedAt": null,
+    "notes": "Countertop case for cheesecake slices and yogurt cups; sits on the counter, footprint is its own base. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

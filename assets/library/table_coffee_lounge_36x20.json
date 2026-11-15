@@ -1,0 +1,129 @@
+{
+  "assetId": "table_coffee_lounge_36x20",
+  "name": "Lounge coffee table, 36 x 20 in",
+  "category": "table",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 0.9144,
+    "d": 0.508,
+    "h": 0.4318
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.8297,
+      0.0
+    ],
+    [
+      0.8621,
+      0.0064
+    ],
+    [
+      0.8896,
+      0.0248
+    ],
+    [
+      0.908,
+      0.0523
+    ],
+    [
+      0.9144,
+      0.0847
+    ],
+    [
+      0.9144,
+      0.4233
+    ],
+    [
+      0.908,
+      0.4557
+    ],
+    [
+      0.8896,
+      0.4832
+    ],
+    [
+      0.8621,
+      0.5016
+    ],
+    [
+      0.8297,
+      0.508
+    ],
+    [
+      0.0847,
+      0.508
+    ],
+    [
+      0.0523,
+      0.5016
+    ],
+    [
+      0.0248,
+      0.4832
+    ],
+    [
+      0.0064,
+      0.4557
+    ],
+    [
+      0.0,
+      0.4233
+    ],
+    [
+      0.0,
+      0.0847
+    ],
+    [
+      0.0064,
+      0.0523
+    ],
+    [
+      0.0248,
+      0.0248
+    ],
+    [
+      0.0523,
+      0.0064
+    ],
+    [
+      0.0847,
+      0.0
+    ],
+    [
+      0.8297,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.45,
+    "sides": 0.2,
+    "back": 0.2
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.45 m guest chair pull-out (about 0.45 m for a chair, 0.6 m at a table), sides 0.2 m, back 0.2 m. Keep one 0.91 m (36 in, ADA 403.5.1) accessible route between groups.",
+  "model": {
+    "uri": "assets/library/models/table_coffee_lounge_36x20.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:seating",
+    "dining",
+    "lounge"
+  ],
+  "priceRef": "table_coffee_lounge_36x20",
+  "provenance": {
+    "origin": "lounge coffee table class (0.91 x 0.51 x 0.43 m); standard 17 in height",
+    "retrievedAt": null,
+    "notes": "Low table for lounge seating. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

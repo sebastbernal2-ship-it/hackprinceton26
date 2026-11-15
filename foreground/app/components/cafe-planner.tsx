@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import AssetGenerator from "./asset-generator";
 import { checkLayout, frontZone, type Placement, type Rot } from "../lib/asset-layout";
 import { assetImageUrl, GENERATED_PROFILE, listAssets, type Asset } from "../lib/assets";
-import { buildCafeKit, cafeKitArea, CAFE_KIT_NOTE, dedupeAssets } from "../lib/cafe-demo";
+import { buildCafeKit, cafeKitArea, CAFE_KIT_NOTE, CAFE_KIT_VARIANTS, dedupeAssets, type KitVariant } from "../lib/cafe-demo";
 import { conceptFootprint, SQFT_TO_M2 } from "../lib/concept-layout";
 import { fetchLayoutCost, freshResponse, layoutCostItems, scenarioKey, type LayoutCost } from "../lib/layout-cost";
 import type { Match } from "../lib/matches";
@@ -26,6 +26,14 @@ const FILTERS = [
   { key: "cafe", label: "Cafe kit", test: (a: Asset) => CAFE_IDS.has(a.assetId) },
   { key: "dining", label: "Dining", test: (a: Asset) => a.category === "table" || a.category === "seating" },
   { key: "kitchen", label: "Kitchen", test: (a: Asset) => a.category !== "table" && a.category !== "seating" },
+  { key: "bar", label: "Bar", test: (a: Asset) => a.tags.includes("zone:bar") },
+  { key: "display", label: "Display", test: (a: Asset) => a.tags.includes("zone:display") },
+  { key: "boh", label: "Back of house", test: (a: Asset) => a.tags.includes("zone:boh") },
+  { key: "front", label: "Front", test: (a: Asset) => a.tags.includes("zone:front") },
+  { key: "seating", label: "Seating", test: (a: Asset) => a.tags.includes("zone:seating") },
+  { key: "patio", label: "Patio", test: (a: Asset) => a.tags.includes("zone:patio") },
+  { key: "decor", label: "Decor and ADA", test: (a: Asset) => a.tags.includes("zone:decor") },
+  { key: "crossover", label: "Fruity Yogurt", test: (a: Asset) => a.tags.includes("zone:crossover") },
   { key: "generated", label: "Generated", test: (a: Asset) => a.source === "generated" },
   { key: "all", label: "All", test: () => true },
 ] as const;
@@ -259,11 +267,11 @@ export default function CafePlanner({ match, kit, onKit, placed, onPlaced, area,
     }
   }
 
-  async function loadKit() {
+  async function loadKit(variant: KitVariant = "standard") {
     setNote("");
     try {
-      const { kit: ref, missing } = buildCafeKit(match.tourId, await listAssets());
-      const a = Number(area) || Number(cafeKitArea(match.tourId)) || 1000;
+      const { kit: ref, missing } = buildCafeKit(match.tourId, await listAssets(), variant);
+      const a = Number(area) || Number(cafeKitArea(match.tourId, variant)) || 1000;
       if (!Number(area)) onArea(String(a));
       const fp = conceptFootprint(a);
       if (!fp) return;
@@ -363,6 +371,9 @@ export default function CafePlanner({ match, kit, onKit, placed, onPlaced, area,
 
       <div className="mt-4 flex flex-wrap items-center gap-2 text-sm">
         <button type="button" onClick={() => void loadKit()} className="rounded-full bg-foreground px-4 py-1.5 text-background" data-testid="planner-load-kit">Load cafe reference kit</button>
+        {(Object.entries(CAFE_KIT_VARIANTS)).map(([key, v]) => (
+          <button key={key} type="button" onClick={() => void loadKit(key as KitVariant)} className="rounded-full border border-foreground/25 px-3 py-1.5" data-testid={`planner-load-kit-${key}`} title={v.note}>{v.label}</button>
+        ))}
         <button type="button" onClick={undo} disabled={!history.length} className="rounded-full border border-foreground/25 px-3 py-1.5 disabled:opacity-40" data-testid="planner-undo">Undo</button>
         <button type="button" onClick={() => commit([])} disabled={!placed.length} className="rounded-full border border-foreground/25 px-3 py-1.5 disabled:opacity-40">Clear</button>
         {scan && phase === "shown" && <button type="button" onClick={clearSpace} className="rounded-full border border-match px-3 py-1.5 text-match" data-testid="planner-clear-space">Clear the space</button>}

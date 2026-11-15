@@ -1,12 +1,141 @@
 {
   "note": "DEMO layouts. The areas are ESTIMATED assumed floor areas (the scans have no measured area on file) and the piece counts are illustrative, not measured fit. Prices come from data/financial/catalog.json; most are estimated demo prices.",
   "base": [
-    "espresso_machine_2group", "coffee_grinder_on_demand", "drip_brewer_station", "bakery_display_case_48",
-    "bakery_work_table_72", "convection_oven_full", "bake_rack_speed_rack", "fridge_reachin_2door", "sink_hand_17"
+    "espresso_machine_2group",
+    "coffee_grinder_on_demand",
+    "drip_brewer_station",
+    "bakery_display_case_48",
+    "bakery_work_table_72",
+    "convection_oven_full",
+    "bake_rack_speed_rack",
+    "fridge_reachin_2door",
+    "sink_hand_17"
   ],
   "scans": {
-    "w2JcUVybv9c": { "sqft": 900, "table_2top_30": 4, "table_4top_30x48": 2, "chair_dining": 16 },
-    "xVKH13z5MJ8": { "sqft": 1100, "table_2top_30": 5, "table_4top_30x48": 3, "chair_dining": 22 },
-    "JAnuRsaVo9M": { "sqft": 1300, "table_2top_30": 6, "table_4top_30x48": 4, "chair_dining": 28 }
+    "w2JcUVybv9c": {
+      "sqft": 900,
+      "table_2top_30": 4,
+      "table_4top_30x48": 2,
+      "chair_dining": 16
+    },
+    "xVKH13z5MJ8": {
+      "sqft": 1100,
+      "table_2top_30": 5,
+      "table_4top_30x48": 3,
+      "chair_dining": 22
+    },
+    "JAnuRsaVo9M": {
+      "sqft": 1300,
+      "table_2top_30": 6,
+      "table_4top_30x48": 4,
+      "chair_dining": 28
+    }
+  },
+  "variants": {
+    "grab_and_go": {
+      "label": "Grab-and-go cafe",
+      "note": "DEMO variant: counter-service cafe built around a cold wall, rapid-cook oven and a short bar; few seats (stools, high-tops, one window ledge). Areas are the same ESTIMATED demo areas.",
+      "base": [
+        "espresso_machine_2group",
+        "espresso_machine_superautomatic",
+        "coffee_grinder_on_demand",
+        "brewer_batch_thermal_3gal",
+        "merchandiser_open_air_48",
+        "merchandiser_glass_door_1door",
+        "display_pastry_refrigerated_countertop_36",
+        "oven_rapid_cook_countertop",
+        "toaster_conveyor",
+        "sandwich_prep_fridge_48",
+        "fridge_undercounter_27",
+        "ice_machine_undercounter_30",
+        "sink_hand_17",
+        "sink_two_comp_60",
+        "counter_service_ada_48",
+        "counter_service_72",
+        "pos_stand_counter",
+        "condiment_bar_48",
+        "trash_recycle_station_3stream",
+        "fridge_reachin_1door"
+      ],
+      "scans": {
+        "w2JcUVybv9c": {
+          "sqft": 900,
+          "table_hightop_round_36": 2,
+          "stool_bar_backed_30": 4,
+          "table_2top_round_30": 2,
+          "chair_bistro_bentwood": 4,
+          "table_window_bar_96": 1,
+          "stool_cafe_round_24": 4
+        },
+        "xVKH13z5MJ8": {
+          "sqft": 1100,
+          "table_hightop_round_36": 3,
+          "stool_bar_backed_30": 6,
+          "table_2top_round_30": 2,
+          "chair_bistro_bentwood": 4,
+          "table_window_bar_96": 1,
+          "stool_cafe_round_24": 4
+        },
+        "JAnuRsaVo9M": {
+          "sqft": 1300,
+          "table_hightop_round_36": 4,
+          "stool_bar_backed_30": 8,
+          "table_2top_round_30": 3,
+          "chair_bistro_bentwood": 6,
+          "table_window_bar_96": 1,
+          "stool_cafe_round_24": 4
+        }
+      }
+    },
+    "full_service_patio": {
+      "label": "Full-service cafe with patio",
+      "note": "DEMO variant: full-service cafe with a dish room, banquette and table seating plus a patio bay. The patio pieces sit inside the same ESTIMATED rectangle (the planner has no outdoor zone), so read the patio as part of the assumed area.",
+      "base": [
+        "counter_service_72",
+        "sink_hand_17",
+        "sink_three_comp_84",
+        "espresso_machine_3group",
+        "coffee_grinder_on_demand",
+        "brewer_batch_thermal_3gal",
+        "display_pastry_refrigerated_60",
+        "oven_convection_half_countertop",
+        "sandwich_prep_fridge_48",
+        "fridge_undercounter_27",
+        "dish_machine_undercounter_24",
+        "sink_mop_floor_24",
+        "shelving_wire_48x18",
+        "pos_stand_counter",
+        "condiment_bar_48",
+        "trash_recycle_station_3stream",
+        "table_ada_accessible_36x36",
+        "ice_machine_undercounter_30"
+      ],
+      "scans": {
+        "w2JcUVybv9c": {
+          "sqft": 900,
+          "patio_set_bistro_2": 1,
+          "planter_rect_36": 1,
+          "table_4top_36sq": 1,
+          "table_2top_round_30": 2,
+          "chair_bistro_bentwood": 8
+        },
+        "xVKH13z5MJ8": {
+          "sqft": 1100,
+          "patio_set_4top_36": 1,
+          "patio_umbrella_9ft_base": 1,
+          "table_4top_36sq": 2,
+          "table_2top_round_30": 3,
+          "chair_bistro_bentwood": 12
+        },
+        "JAnuRsaVo9M": {
+          "sqft": 1300,
+          "patio_set_4top_36": 1,
+          "patio_umbrella_9ft_base": 1,
+          "table_4top_36sq": 2,
+          "table_2top_round_30": 3,
+          "chair_bistro_bentwood": 12
+        }
+      }
+    }
   }
 }

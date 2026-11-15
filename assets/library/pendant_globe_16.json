@@ -1,0 +1,145 @@
+{
+  "assetId": "pendant_globe_16",
+  "name": "Pendant light, 16 in globe",
+  "category": "other",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 0.4064,
+    "d": 0.4064,
+    "h": 0.4064
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.4064,
+      0.2032
+    ],
+    [
+      0.3995,
+      0.2558
+    ],
+    [
+      0.3792,
+      0.3048
+    ],
+    [
+      0.3469,
+      0.3469
+    ],
+    [
+      0.3048,
+      0.3792
+    ],
+    [
+      0.2558,
+      0.3995
+    ],
+    [
+      0.2032,
+      0.4064
+    ],
+    [
+      0.1506,
+      0.3995
+    ],
+    [
+      0.1016,
+      0.3792
+    ],
+    [
+      0.0595,
+      0.3469
+    ],
+    [
+      0.0272,
+      0.3048
+    ],
+    [
+      0.0069,
+      0.2558
+    ],
+    [
+      0.0,
+      0.2032
+    ],
+    [
+      0.0069,
+      0.1506
+    ],
+    [
+      0.0272,
+      0.1016
+    ],
+    [
+      0.0595,
+      0.0595
+    ],
+    [
+      0.1016,
+      0.0272
+    ],
+    [
+      0.1506,
+      0.0069
+    ],
+    [
+      0.2032,
+      0.0
+    ],
+    [
+      0.2558,
+      0.0069
+    ],
+    [
+      0.3048,
+      0.0272
+    ],
+    [
+      0.3469,
+      0.0595
+    ],
+    [
+      0.3792,
+      0.1016
+    ],
+    [
+      0.3995,
+      0.1506
+    ],
+    [
+      0.4064,
+      0.2032
+    ]
+  ],
+  "clearance": {
+    "front": 0.0,
+    "sides": 0.0,
+    "back": 0.0
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.0 m, sides 0.0 m, back 0.0 m. Front 0.91 m = ADA 36 in minimum clear width of an accessible route (2010 ADA Standards 403.5.1).",
+  "model": {
+    "uri": "assets/library/models/pendant_globe_16.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:decor",
+    "decor",
+    "overhead"
+  ],
+  "priceRef": "pendant_globe_16",
+  "provenance": {
+    "origin": "globe pendant class (0.41 m diameter, 0.41 m drop); hung overhead",
+    "retrievedAt": null,
+    "notes": "Hung above a table or counter; occupies no floor area when ceiling-mounted. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

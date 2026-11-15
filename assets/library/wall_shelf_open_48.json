@@ -1,0 +1,64 @@
+{
+  "assetId": "wall_shelf_open_48",
+  "name": "Wall shelf, open 48 in",
+  "category": "storage",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 1.2192,
+    "d": 0.254,
+    "h": 0.0508
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      1.2192,
+      0.0
+    ],
+    [
+      1.2192,
+      0.254
+    ],
+    [
+      0.0,
+      0.254
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.5,
+    "sides": 0.0,
+    "back": 0.0
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.5 m, sides 0.0 m, back 0.0 m. Front 0.91 m = ADA 36 in minimum clear width of an accessible route (2010 ADA Standards 403.5.1).",
+  "model": {
+    "uri": "assets/library/models/wall_shelf_open_48.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:decor",
+    "decor"
+  ],
+  "priceRef": "wall_shelf_open_48",
+  "provenance": {
+    "origin": "wall shelf class (1.22 x 0.25 x 0.05 m)",
+    "retrievedAt": null,
+    "notes": "Retail or plant display; projecting more than 4 in between 27 and 80 in above floor is a protruding object (ADA 307.2). Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

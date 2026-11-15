@@ -1,0 +1,66 @@
+{
+  "assetId": "display_pastry_refrigerated_60",
+  "name": "Refrigerated pastry case, 60 in",
+  "category": "freezer_display",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 1.524,
+    "d": 0.8509,
+    "h": 1.3462
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      1.524,
+      0.0
+    ],
+    [
+      1.524,
+      0.8509
+    ],
+    [
+      0.0,
+      0.8509
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 1.0,
+    "sides": 0.1,
+    "back": 0.1
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 1.0 m operator working space at a staffed station (stated assumption, about 30 to 42 in), sides 0.1 m, back 0.1 m for cleaning access. Health-code equipment spacing is a stated assumption; confirm with the local authority.",
+  "model": {
+    "uri": "assets/library/models/display_pastry_refrigerated_60.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:display",
+    "bakery",
+    "cold",
+    "front_of_house"
+  ],
+  "priceRef": "display_pastry_refrigerated_60",
+  "provenance": {
+    "origin": "60 in floor refrigerated bakery/deli case class (Federal SGR60SC / Hussmann class, about 1.52 x 0.85 x 1.35 m); not read from a spec sheet",
+    "retrievedAt": null,
+    "notes": "Floor-standing curved-glass cake and pastry case; longer than the existing 48 in case. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

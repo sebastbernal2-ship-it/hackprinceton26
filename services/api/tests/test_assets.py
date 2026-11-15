@@ -27,11 +27,15 @@ def base(**kw):
 
 def test_seed_library_validates_and_is_sparse():
     files = sorted(LIB.glob("*.json"))
-    assert 14 <= len(files) <= 80
+    assert 14 <= len(files) <= 200
     for f in files:
         a = Asset.model_validate_json(f.read_text())
         assert a.clearanceBasis.startswith("ASSUMPTION") and a.dimsStatus in ("measured", "catalog", "estimated")
-        assert polygon_area(a.footprint) == pytest.approx(a.dims.w * a.dims.d, rel=1e-3)
+        full, area = a.dims.w * a.dims.d, polygon_area(a.footprint)
+        if len(a.footprint) == 5:  # a rectangle fills its dims; L-shapes and rounded footprints fill 50 to 100 percent of the box
+            assert area == pytest.approx(full, rel=1e-3)
+        else:
+            assert 0.5 * full <= area <= full * (1 + 1e-3)
 
 
 @pytest.mark.parametrize("patch,msg", [

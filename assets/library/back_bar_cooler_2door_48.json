@@ -1,0 +1,65 @@
+{
+  "assetId": "back_bar_cooler_2door_48",
+  "name": "Back-bar cooler, 2 door 48 in",
+  "category": "fridge",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 1.2192,
+    "d": 0.6096,
+    "h": 0.889
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      1.2192,
+      0.0
+    ],
+    [
+      1.2192,
+      0.6096
+    ],
+    [
+      0.0,
+      0.6096
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.9,
+    "sides": 0.0,
+    "back": 0.1
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.9 m operator working space at a staffed station (stated assumption, about 30 to 42 in), sides 0.0 m, back 0.1 m for cleaning access. Health-code equipment spacing is a stated assumption; confirm with the local authority.",
+  "model": {
+    "uri": "assets/library/models/back_bar_cooler_2door_48.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:bar",
+    "cold",
+    "front_of_house"
+  ],
+  "priceRef": "back_bar_cooler_2door_48",
+  "provenance": {
+    "origin": "back-bar 2-door cooler class (Beverage-Air BB48HC / True TBB-24-48, 48 W x 24 D x 35 H in); not read from a spec sheet",
+    "retrievedAt": null,
+    "notes": "Milk, juice and bottled drinks behind the counter; often fitted with a flat top. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

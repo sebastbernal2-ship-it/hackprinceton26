@@ -1,0 +1,64 @@
+{
+  "assetId": "stool_bar_backed_30",
+  "name": "Bar stool, backed 30 in",
+  "category": "seating",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 0.4318,
+    "d": 0.4699,
+    "h": 1.016
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      0.4318,
+      0.0
+    ],
+    [
+      0.4318,
+      0.4699
+    ],
+    [
+      0.0,
+      0.4699
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.45,
+    "sides": 0.05,
+    "back": 0.05
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.45 m guest chair pull-out (about 0.45 m for a chair, 0.6 m at a table), sides 0.05 m, back 0.05 m. Keep one 0.91 m (36 in, ADA 403.5.1) accessible route between groups.",
+  "model": {
+    "uri": "assets/library/models/stool_bar_backed_30.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:seating",
+    "dining"
+  ],
+  "priceRef": "stool_bar_backed_30",
+  "provenance": {
+    "origin": "bar stool class (0.43 x 0.47 x 1.02 m; 30 in seat for 42 in tables)",
+    "retrievedAt": null,
+    "notes": "Backed stool for high-top tables; existing bar stool is backless. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

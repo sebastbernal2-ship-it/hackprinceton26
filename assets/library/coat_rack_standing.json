@@ -1,0 +1,144 @@
+{
+  "assetId": "coat_rack_standing",
+  "name": "Coat rack, standing",
+  "category": "other",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 0.4572,
+    "d": 0.4572,
+    "h": 1.778
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.4572,
+      0.2286
+    ],
+    [
+      0.4494,
+      0.2878
+    ],
+    [
+      0.4266,
+      0.3429
+    ],
+    [
+      0.3902,
+      0.3902
+    ],
+    [
+      0.3429,
+      0.4266
+    ],
+    [
+      0.2878,
+      0.4494
+    ],
+    [
+      0.2286,
+      0.4572
+    ],
+    [
+      0.1694,
+      0.4494
+    ],
+    [
+      0.1143,
+      0.4266
+    ],
+    [
+      0.067,
+      0.3902
+    ],
+    [
+      0.0306,
+      0.3429
+    ],
+    [
+      0.0078,
+      0.2878
+    ],
+    [
+      0.0,
+      0.2286
+    ],
+    [
+      0.0078,
+      0.1694
+    ],
+    [
+      0.0306,
+      0.1143
+    ],
+    [
+      0.067,
+      0.067
+    ],
+    [
+      0.1143,
+      0.0306
+    ],
+    [
+      0.1694,
+      0.0078
+    ],
+    [
+      0.2286,
+      0.0
+    ],
+    [
+      0.2878,
+      0.0078
+    ],
+    [
+      0.3429,
+      0.0306
+    ],
+    [
+      0.3902,
+      0.067
+    ],
+    [
+      0.4266,
+      0.1143
+    ],
+    [
+      0.4494,
+      0.1694
+    ],
+    [
+      0.4572,
+      0.2286
+    ]
+  ],
+  "clearance": {
+    "front": 0.6,
+    "sides": 0.1,
+    "back": 0.1
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.6 m, sides 0.1 m, back 0.1 m. Front 0.91 m = ADA 36 in minimum clear width of an accessible route (2010 ADA Standards 403.5.1).",
+  "model": {
+    "uri": "assets/library/models/coat_rack_standing.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:decor",
+    "decor"
+  ],
+  "priceRef": "coat_rack_standing",
+  "provenance": {
+    "origin": "freestanding coat tree class (0.46 m base, 1.78 m high)",
+    "retrievedAt": null,
+    "notes": "Entry coat storage. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

@@ -1,0 +1,65 @@
+{
+  "assetId": "ada_baby_changing_station",
+  "name": "Baby changing station, wall mount",
+  "category": "other",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 0.889,
+    "d": 0.5588,
+    "h": 0.2032
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      0.889,
+      0.0
+    ],
+    [
+      0.889,
+      0.5588
+    ],
+    [
+      0.0,
+      0.5588
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.91,
+    "sides": 0.0,
+    "back": 0.0
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.91 m, sides 0.0 m, back 0.0 m. Front 0.91 m = ADA 36 in minimum clear width of an accessible route (2010 ADA Standards 403.5.1).",
+  "model": {
+    "uri": "assets/library/models/ada_baby_changing_station.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:decor",
+    "ada",
+    "restroom"
+  ],
+  "priceRef": "ada_baby_changing_station",
+  "provenance": {
+    "origin": "horizontal wall changing table class (Koala KB200-01, 35 x 22 in open, about 0.89 x 0.56 m); not read from a spec sheet",
+    "retrievedAt": null,
+    "notes": "Wall-mounted in the restroom; the open footprint needs the 0.91 m clear floor space (ADA 305). Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

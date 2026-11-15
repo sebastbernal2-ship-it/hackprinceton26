@@ -1,0 +1,64 @@
+{
+  "assetId": "planter_rect_36",
+  "name": "Planter, rectangular 36 in",
+  "category": "other",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 0.9144,
+    "d": 0.3048,
+    "h": 0.508
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      0.9144,
+      0.0
+    ],
+    [
+      0.9144,
+      0.3048
+    ],
+    [
+      0.0,
+      0.3048
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.91,
+    "sides": 0.0,
+    "back": 0.0
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.91 m, sides 0.0 m, back 0.0 m. Front 0.91 m = ADA 36 in minimum clear width of an accessible route (2010 ADA Standards 403.5.1).",
+  "model": {
+    "uri": "assets/library/models/planter_rect_36.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:decor",
+    "decor"
+  ],
+  "priceRef": "planter_rect_36",
+  "provenance": {
+    "origin": "rectangular floor planter class (0.91 x 0.30 x 0.51 m)",
+    "retrievedAt": null,
+    "notes": "Divides zones; keep the 0.91 m aisle (ADA 403.5.1) clear. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}

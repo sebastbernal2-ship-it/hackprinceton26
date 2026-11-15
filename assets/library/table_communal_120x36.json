@@ -1,0 +1,64 @@
+{
+  "assetId": "table_communal_120x36",
+  "name": "Communal table, 120 x 36 in",
+  "category": "table",
+  "source": "library",
+  "parentAssetId": null,
+  "variantKind": "base",
+  "dims": {
+    "w": 3.048,
+    "d": 0.9144,
+    "h": 0.762
+  },
+  "dimsStatus": "estimated",
+  "dimRanges": null,
+  "allowedSizes": null,
+  "footprint": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      3.048,
+      0.0
+    ],
+    [
+      3.048,
+      0.9144
+    ],
+    [
+      0.0,
+      0.9144
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "clearance": {
+    "front": 0.6,
+    "sides": 0.1,
+    "back": 0.1
+  },
+  "clearanceBasis": "ASSUMPTION (not a code determination): front 0.6 m guest chair pull-out (about 0.45 m for a chair, 0.6 m at a table), sides 0.1 m, back 0.1 m. Keep one 0.91 m (36 in, ADA 403.5.1) accessible route between groups.",
+  "model": {
+    "uri": "assets/library/models/table_communal_120x36.glb",
+    "format": "glb"
+  },
+  "imageRefs": [],
+  "profileId": null,
+  "tags": [
+    "zone:seating",
+    "dining"
+  ],
+  "priceRef": "table_communal_120x36",
+  "provenance": {
+    "origin": "communal cafe table class (3.05 x 0.91 x 0.76 m); existing communal table is 96 in",
+    "retrievedAt": null,
+    "notes": "Longer communal table; add stools or benches both sides. Dimensions are a class estimate, not a measurement; replace with a spec sheet or tape measure before purchase.",
+    "confidence": null,
+    "box_2d": null
+  },
+  "style": null,
+  "status": "draft"
+}
