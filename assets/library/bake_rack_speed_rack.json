@@ -51,7 +51,7 @@
     "kitchen",
     "bakery"
   ],
-  "priceRef": null,
+  "priceRef": "bake_rack_speed_rack",
   "provenance": {
     "origin": "standard published/typical dimensions for this equipment class (not read from a specific spec sheet)",
     "retrievedAt": null,

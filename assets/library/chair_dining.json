@@ -50,7 +50,7 @@
   "tags": [
     "dining"
   ],
-  "priceRef": null,
+  "priceRef": "chair_dining",
   "provenance": {
     "origin": "standard published/typical dimensions",
     "retrievedAt": null,

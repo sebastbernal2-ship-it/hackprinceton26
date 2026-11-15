@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
 import { packAssets, frontZone } from "../lib/asset-layout";
 import { bbox, listAssets, orderAssets, priceFor, type Asset, type AssetCategory } from "../lib/assets";
+import { buildCafeKit, cafeKitArea, CAFE_KIT_NOTE, dedupeAssets } from "../lib/cafe-demo";
 import { conceptFootprint } from "../lib/concept-layout";
 import type { CostLineItem } from "../lib/costs";
 import type { FloorLayout } from "../lib/floor-layout";
@@ -27,7 +28,6 @@ type Trace =
 
 
 const KIND: Partial<Record<Asset["category"], TourKind>> = { seating: "chair", table: "table", prep_table: "table" };
-const CAFE_ASSET_IDS = ["espresso_machine_2group", "coffee_grinder_on_demand", "drip_brewer_station", "bakery_display_case_48", "convection_oven_full", "bake_rack_speed_rack", "bakery_work_table_72"];
 
 function cafeRoom(item: Asset, rooms: FloorLayout["rooms"]): string {
   const active = rooms.filter((room) => !room.absorbed);
@@ -62,7 +62,7 @@ export default function LayoutPanel({ match, lines = [], items, onItems: setItem
   useEffect(() => {
     let live = true;
     listAssets({ profileId, category })
-      .then((assets) => live && setCatalog({ status: "ok", assets: orderAssets(assets, profileId), error: "" }))
+      .then((assets) => live && setCatalog({ status: "ok", assets: orderAssets([...dedupeAssets(assets).values()], profileId), error: "" }))
       .catch((e: unknown) => live && setCatalog({ status: "error", assets: [], error: e instanceof Error ? e.message : "failed" }));
     return () => { live = false; };
   }, [profileId, category, reload]);
@@ -92,18 +92,13 @@ export default function LayoutPanel({ match, lines = [], items, onItems: setItem
   async function loadCafeKit() {
     try {
       const assets = await listAssets();
-      const byId = new Map(assets.map((asset) => [asset.assetId, asset]));
-      const kit = CAFE_ASSET_IDS.flatMap((id) => {
-        const asset = byId.get(id);
-        return asset ? [asset] : [];
-      });
+      const { kit, missing } = buildCafeKit(match.tourId, assets);
       setItems(kit);
+      if (!Number(area)) onArea?.(cafeKitArea(match.tourId));
       setCategory("");
       setProfileDraft("coffee_bakery");
       setProfileId("coffee_bakery");
-      if (kit.length !== CAFE_ASSET_IDS.length) {
-        setTrace({ status: "failed", message: `Cafe reference kit is incomplete: found ${kit.length} of ${CAFE_ASSET_IDS.length} catalog assets.` });
-      }
+      if (missing.length) setTrace({ status: "failed", message: `Cafe reference kit is incomplete: missing ${missing.join(", ")}.` });
     } catch (error) {
       setTrace({ status: "failed", message: error instanceof Error ? error.message : "Could not load the cafe reference kit." });
     }
@@ -150,6 +145,7 @@ export default function LayoutPanel({ match, lines = [], items, onItems: setItem
         </form>
         <button type="button" onClick={() => setUploading(true)} className="rounded-full bg-foreground px-4 py-1.5 text-sm text-background">Add equipment from photos</button>
         <button type="button" onClick={() => void loadCafeKit()} className="rounded-full border border-foreground/25 px-4 py-1.5 text-sm">Load cafe reference kit</button>
+        {match.demo && <span className="text-xs text-foreground/60" data-testid="kit-note">{CAFE_KIT_NOTE}</span>}
         {profileId && <span className="text-xs text-foreground/60">Profile assets are listed first.</span>}
       </div>
       <p className="mt-2 text-xs text-foreground/55">Upload a photo of a piece of equipment to create a draft catalog entry; review its suggested details before saving.</p>

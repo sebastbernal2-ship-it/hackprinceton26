@@ -50,3 +50,39 @@ export const CAFE_MATCHES: Match[] = CAFES.map((c, i) => ({
   },
   factors: [],
 }));
+
+// Café reference kit (DEMO). Illustrative layouts per scan; areas are ESTIMATED, never measured.
+import kitSpec from "./cafe-kit.json";
+import type { Asset } from "./assets";
+
+export const CAFE_KIT_NOTE = "Reference kit: illustrative placements on an ESTIMATED demo floor area, not measured fit. Prices are catalog list prices or estimated demo prices.";
+
+/** Estimated demo floor area (sq ft) for a scan, as a string for the area field; "" for a scan without a kit. */
+export function cafeKitArea(tourId: string | undefined): string {
+  const s = tourId ? (kitSpec.scans as Record<string, { sqft: number }>)[tourId] : undefined;
+  return s ? String(s.sqft) : "";
+}
+
+/** Ordered catalog ids for a scan's kit (repeats = quantity). Unknown scans get the equipment without dining. */
+export function cafeKitIds(tourId: string | undefined): string[] {
+  const s = tourId ? (kitSpec.scans as Record<string, Record<string, number>>)[tourId] : undefined;
+  const dining = s ? Object.entries(s).filter(([k]) => k !== "sqft").flatMap(([id, n]) => Array<string>(n).fill(id)) : [];
+  return [...kitSpec.base, ...dining];
+}
+
+/** One asset per id: the catalog list can hold a profile draft and the library copy of the same id, so prefer a confirmed copy, else the first. */
+export function dedupeAssets(assets: Asset[]): Map<string, Asset> {
+  const byId = new Map<string, Asset>();
+  for (const a of assets) {
+    const have = byId.get(a.assetId);
+    if (!have || (have.status !== "confirmed" && a.status === "confirmed")) byId.set(a.assetId, a);
+  }
+  return byId;
+}
+
+export function buildCafeKit(tourId: string | undefined, assets: Asset[]): { kit: Asset[]; missing: string[] } {
+  const byId = dedupeAssets(assets);
+  const ids = cafeKitIds(tourId);
+  const missing = [...new Set(ids.filter((id) => !byId.has(id)))];
+  return { kit: ids.flatMap((id) => (byId.has(id) ? [byId.get(id)!] : [])), missing };
+}

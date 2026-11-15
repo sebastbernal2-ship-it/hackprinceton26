@@ -52,7 +52,7 @@
     "bakery",
     "coffee"
   ],
-  "priceRef": null,
+  "priceRef": "bakery_display_case_48",
   "provenance": {
     "origin": "standard published/typical dimensions for this equipment class (not read from a specific spec sheet)",
     "retrievedAt": null,

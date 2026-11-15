@@ -1,0 +1,12 @@
+{
+  "note": "DEMO layouts. The areas are ESTIMATED assumed floor areas (the scans have no measured area on file) and the piece counts are illustrative, not measured fit. Prices come from data/financial/catalog.json; most are estimated demo prices.",
+  "base": [
+    "espresso_machine_2group", "coffee_grinder_on_demand", "drip_brewer_station", "bakery_display_case_48",
+    "bakery_work_table_72", "convection_oven_full", "bake_rack_speed_rack", "fridge_reachin_2door", "sink_hand_17"
+  ],
+  "scans": {
+    "w2JcUVybv9c": { "sqft": 900, "table_2top_30": 4, "table_4top_30x48": 2, "chair_dining": 16 },
+    "xVKH13z5MJ8": { "sqft": 1100, "table_2top_30": 5, "table_4top_30x48": 3, "chair_dining": 22 },
+    "JAnuRsaVo9M": { "sqft": 1300, "table_2top_30": 6, "table_4top_30x48": 4, "chair_dining": 28 }
+  }
+}

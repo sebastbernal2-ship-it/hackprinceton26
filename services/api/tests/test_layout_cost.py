@@ -5,7 +5,7 @@ from app.main import app
 
 client = TestClient(app)
 KIT = [{"assetId": "espresso_machine_2group", "quantity": 1}, {"assetId": "coffee_grinder_on_demand", "quantity": 1},
-       {"assetId": "bakery_display_case_48", "quantity": 1}]
+       {"assetId": "tortilla_warmer_press", "quantity": 1}]
 
 
 def post(**kw):
@@ -16,7 +16,7 @@ def test_priced_pieces_use_catalog_prices_and_unpriced_are_listed_not_zero():
     d = post(items=KIT).json()
     assert [l["assetId"] for l in d["lines"]] == ["espresso_machine_2group", "coffee_grinder_on_demand"]
     assert d["lines"][0]["low"] == d["lines"][0]["high"] == 3549.0  # observed list price x 1
-    assert [u["assetId"] for u in d["unpriced"]] == ["bakery_display_case_48"]
+    assert [u["assetId"] for u in d["unpriced"]] == ["tortilla_warmer_press"]
     assert d["equipment"]["low"] == 3549.0 + 599.0
     assert d["totalStatus"].startswith("partial")
 

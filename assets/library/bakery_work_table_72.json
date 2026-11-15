@@ -51,7 +51,7 @@
     "kitchen",
     "bakery"
   ],
-  "priceRef": null,
+  "priceRef": "bakery_work_table_72",
   "provenance": {
     "origin": "standard published/typical dimensions for this equipment class (not read from a specific spec sheet)",
     "retrievedAt": null,
