@@ -59,7 +59,7 @@ export async function refreshMatches(brief: Exchange[], opts: { limit?: number; 
       return;
     }
     // Scripted Sarah scene only: the first candidates open a cafe scan whose walk is editable (furniture can be placed).
-    const shown = opts.scene === "sarah" ? matches.map((m, i) => (i < CAFE_SCAN_IDS.length ? { ...m, tourId: CAFE_SCAN_IDS[i] } : m)) : matches;
+    const shown = opts.scene === "sarah" ? matches.map((m, i) => ({ ...m, tourId: CAFE_SCAN_IDS[i % CAFE_SCAN_IDS.length] })) : matches;
     save({ status: "ready", matches: shown, dataAvailable, demo: false, ...(opts.scene ? { scene: opts.scene } : {}) });
   } catch (error) {
     inflight -= 1;
