@@ -99,11 +99,13 @@ type LayoutProps = {
   /** The existing components, keyed by panel id (see PANELS in lib/discipline.ts). Missing ids are skipped. */
   panels: Record<string, ReactNode>;
   /** What Quantify knows beyond the match: budget tone, payback, seats, equipment count. */
+  /** Opens the Act checklist, the final step, which is its own screen and not part of any discipline. */
+  onAct?: () => void;
   extra?: Partial<Pick<Signals, "budgetTone" | "paybackMonths" | "hasRent" | "hasAllIn" | "seats" | "equipmentCount">>;
 };
 
 /** Left rail on wide screens, tabs on narrow ones. Only the active discipline is mounted, so inactive panels fetch nothing. */
-export function DisciplineLayout({ page, match, panels, extra = {} }: LayoutProps) {
+export function DisciplineLayout({ page, match, panels, onAct, extra = {} }: LayoutProps) {
   const [active, setActive] = useState<DisciplineId>("financial");
   const kit = useStructureKit(match);
   const concept = useMemo(() => conceptFromBrief(readBrief()), []);
@@ -127,6 +129,12 @@ export function DisciplineLayout({ page, match, panels, extra = {} }: LayoutProp
             <span className="whitespace-nowrap md:whitespace-normal"><span className="tabular-nums text-foreground/40">{x.n}</span> {x.label}</span>
           </button>
         ))}
+        {onAct && (
+          <button type="button" onClick={onAct} data-testid="disc-act"
+            className="flex shrink-0 items-center gap-2.5 rounded-xl border border-foreground/30 px-3 py-2.5 text-left text-sm font-medium transition-colors hover:bg-foreground/[0.05] md:w-full">
+            <span className="whitespace-nowrap md:whitespace-normal"><span className="tabular-nums text-foreground/40">6</span> Act checklist →</span>
+          </button>
+        )}
       </nav>
       <div className="min-w-0" data-testid={`disc-panel-${active}`}>
         <header className="rounded-2xl bg-foreground/[0.04] px-5 py-4">

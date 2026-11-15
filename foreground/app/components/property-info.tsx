@@ -15,7 +15,8 @@ import type { PlacedPiece } from "../lib/planner";
 import { briefBudget } from "../lib/cost-side";
 import { readBrief } from "../lib/brief";
 import { resolveBudget } from "../lib/quantify-model";
-import Quantify, { SiteActChecklist } from "./quantify";
+import Quantify from "./quantify";
+import ActStep from "./act-step";
 import { DisciplineLayout, useViewMode, ViewSwitch } from "./discipline-view";
 import type { LayoutSummary } from "../lib/layout-summary";
 import type { Asset } from "../lib/assets";
@@ -66,6 +67,7 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
     return () => { live = false; };
   }, [match.demo, match.tourId]);
   const [quantify, setQuantify] = useState<{ layout: LayoutSummary | null } | null>(null);
+  const [act, setAct] = useState<{ layout: LayoutSummary | null } | null>(null);
   // Café demo path: the placed reference kit and the owner's assumed area are shared by the layout panel and Quantify.
   const [kit, setKit] = useState<Asset[]>([]);
   const [area, setArea] = useState("");
@@ -80,7 +82,7 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
   const lastLayout = useRef<LayoutSummary | null>(null);
   const scrollTo = (id: string) => window.setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" }) ?? document.querySelector(`[data-testid="${id}"]`)?.scrollIntoView({ behavior: "smooth" }), 500);
   // The seven workflow steps map to views of this property: 0 intake page, 1 shortlist, 2 overview, 3 layout, 4 quantify,
-  // 5 act checklist (inside quantify), 6 re-plan (deeper analysis).
+  // 5 act checklist (its own screen), 6 re-plan (deeper analysis).
   const [current, setCurrent] = useState(2);
   function goStep(step: number) {
     if (step < 0 || step > 6) return;
@@ -88,11 +90,11 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
     if (step === 0) { router.push("/"); return; }
     if (step === 1) { onBack(); return; }
     setPlanOpen(step === 3);
-    setQuantify(step === 4 || step === 5 ? { layout: lastLayout.current } : null);
+    setQuantify(step === 4 ? { layout: lastLayout.current } : null);
+    setAct(step === 5 ? { layout: lastLayout.current } : null);
     if (step === 2) setTab("overview");
     if (step === 6 && !match.demo) { setTab("business"); scrollTo("replan-panel"); }
     if (step === 6 && match.demo) setTab("overview");
-    if (step === 5) scrollTo("act-title");
   }
   const [tabState, setTab] = useState<"overview" | "planner" | "layout" | "inspection" | "structural" | "business">("overview");
   const [viewMode] = useViewMode();
@@ -105,7 +107,7 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
-      if (planOpen || quantify) return;
+      if (planOpen || quantify || act) return;
       if (askOpen) {
         setAskOpen(false);
         return;
@@ -114,7 +116,7 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [onBack, askOpen, planOpen, quantify]);
+  }, [onBack, askOpen, planOpen, quantify, act]);
 
   function step(delta: number) {
     setIndex((current) => (current + delta + photos.length) % photos.length);
@@ -286,12 +288,11 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
           </>
         )}
 
-        {byDiscipline && !quantify && (
-          <DisciplineLayout page="property" match={match} extra={{ equipmentCount: kit.length, seats: seatTotal(kit) || null }} panels={{
+        {byDiscipline && !quantify && !act && (
+          <DisciplineLayout page="property" match={match} onAct={() => goStep(5)} extra={{ equipmentCount: kit.length, seats: seatTotal(kit) || null }} panels={{
             "cost-side": <div className="mt-6"><CostSide match={match} kit={kit} area={area} budgetText={budgetText} onBudgetText={setBudgetText} /></div>,
             "forecast-row": real && <ForecastRow listingId={match.listingId} />,
             inspection: real && <InspectionPanel listingId={match.listingId} />,
-            "site-act": real && <SiteActChecklist match={match} />,
             building: match.costarPropertyId && <CostarBuilding propertyId={match.costarPropertyId} city={match.city} />,
             growth: !real && <GrowthSim />,
             structure: real && <StructurePanel listingId={match.listingId} />,
@@ -330,6 +331,13 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
         <PlanVision
           tourId={match.tourId} title={match.address} detail={match.detail} onClose={() => setPlanOpen(false)}
           step={current} onStep={goStep} onContinue={(layout) => { lastLayout.current = layout; setCurrent(4); setPlanOpen(false); setQuantify({ layout }); }}
+        />
+      )}
+      {act && (
+        <ActStep
+          match={match} layout={act.layout} kit={kit} placed={placed} area={area} budgetText={budgetText}
+          step={current} onStep={goStep} onBackToQuantify={() => { setCurrent(4); setAct(null); setQuantify({ layout: lastLayout.current }); }}
+          onClose={() => setAct(null)}
         />
       )}
       {quantify && (

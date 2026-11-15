@@ -12,7 +12,7 @@ describe("grouping", () => {
   });
   it("returns only available panels of the page, in order", () => {
     expect(panelsFor("quantify", "financial", ["q-running", "q-inputs", "cost-side"])).toEqual(["q-inputs", "q-running"]);
-    expect(panelsFor("property", "legal", ["inspection", "legal-permits", "q-checklist"])).toEqual(["legal-permits", "inspection"]);
+    expect(panelsFor("property", "legal", ["inspection", "legal-permits", "q-structure"])).toEqual(["legal-permits", "inspection"]);
     expect(panelsFor("property", "market", [])).toEqual([]);
   });
   it("parses the stored mode with a safe default", () => {
