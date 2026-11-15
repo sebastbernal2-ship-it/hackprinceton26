@@ -8,7 +8,7 @@ import PlanVision from "./plan-vision";
 import Quantify from "./quantify";
 import type { LayoutSummary } from "../lib/layout-summary";
 import Stepper from "./stepper";
-import { heroPhoto, rentLabel, type Match } from "../lib/matches";
+import { heroPhoto, rentLabel, type FactorCard, type Match } from "../lib/matches";
 import EvidenceReadiness from "./evidence-readiness";
 import FactorCards from "./factor-cards";
 import Projections from "./projections";
@@ -39,6 +39,16 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
   const [index, setIndex] = useState(0);
   const [askOpen, setAskOpen] = useState(false);
   const [planOpen, setPlanOpen] = useState(false);
+  // Demo scans are not candidates, so their evidence cards come from data/build_demo_factor_cards.py via the API.
+  const [demoFactors, setDemoFactors] = useState<FactorCard[] | null>(null);
+  useEffect(() => {
+    if (!match.demo || !match.tourId) return;
+    let live = true;
+    fetch(`/api/demo/${encodeURIComponent(match.tourId)}/factors`)
+      .then((r) => (r.ok ? r.json() : []))
+      .then((cards: FactorCard[]) => { if (live) setDemoFactors(cards); }, () => {});
+    return () => { live = false; };
+  }, [match.demo, match.tourId]);
   const [quantify, setQuantify] = useState<{ layout: LayoutSummary | null } | null>(null);
   const hero = photos[index % photos.length];
   const thumbs = photos.filter((_, photoIndex) => photoIndex !== index % photos.length).slice(0, 3);
@@ -171,7 +181,7 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
 
         {match.costarPropertyId && <CostarBuilding propertyId={match.costarPropertyId} city={match.city} />}
 
-        <FactorCards factors={match.factors ?? []} demo={match.demo} />
+        <FactorCards factors={demoFactors ?? match.factors ?? []} demo={match.demo && !demoFactors?.length} />
 
         {!match.demo && <TriagePanel listingId={match.listingId} />}
         {!match.demo && <InspectionPanel listingId={match.listingId} />}

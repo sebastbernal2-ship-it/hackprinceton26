@@ -161,6 +161,30 @@
       "default": null,
       "title": "Rentpersquarefootyear"
     },
+    "spaceSource": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Spacesource"
+    },
+    "spaceSquareFeet": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Spacesquarefeet"
+    },
     "squareFeet": {
       "anyOf": [
         {

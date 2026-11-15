@@ -7,7 +7,6 @@
           "type": "string"
         },
         "evidence": {
-          "additionalProperties": true,
           "default": {},
           "title": "Evidence",
           "type": "object"
@@ -235,6 +234,18 @@
           "title": "Blurb",
           "type": "string"
         },
+        "buildout": {
+          "anyOf": [
+            {
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Buildout"
+        },
         "city": {
           "title": "City",
           "type": "string"
@@ -287,6 +298,18 @@
           "title": "Photo",
           "type": "string"
         },
+        "rent": {
+          "anyOf": [
+            {
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rent"
+        },
         "rentPerSquareFootYear": {
           "anyOf": [
             {
@@ -298,6 +321,30 @@
           ],
           "default": null,
           "title": "Rentpersquarefootyear"
+        },
+        "spaceSource": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Spacesource"
+        },
+        "spaceSquareFeet": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Spacesquarefeet"
         },
         "squareFeet": {
           "anyOf": [

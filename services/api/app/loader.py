@@ -12,6 +12,16 @@ FACTORS = "factor-cards.csv"
 PROPERTY_MODELS = "commercial-properties.csv"
 
 
+def _scan_areas() -> dict:
+    """Saved scan floor areas from modeling/scan_area.py (local, gitignored). Missing file = no scan areas."""
+    import json
+    p = Path(os.environ.get("SCAN_AREAS_PATH", "data/derived/scan_areas.json"))
+    try:
+        return json.loads(p.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+
+
 def data_dir() -> Path:
     return Path(os.environ.get("COSTAR_NORMALIZED_DIR", "data/normalized/costar"))
 
@@ -92,6 +102,13 @@ def _match(c: dict, cards: list[FactorCard], models: Optional[list[str]] = None)
     if models:
         _fact("Matterport (CoStar-listed, property level)", ", ".join(models), loc)
     city = ", ".join(x for x in (c.get("city", ""), c.get("state", "")) if x)
+    # Space you would lease: the listing's available space; else the floor area measured from this site's scan.
+    space, space_src = _int(c.get("active_listed_min_available_sqft", "")), "listing"
+    if not space:
+        scan = _scan_areas().get(tour) or {}
+        space, space_src = (scan.get("squareFeet"), "scan") if scan.get("squareFeet") else (None, None)
+        if space:
+            _fact(f"Scanned floor area ({scan.get('status')}, Matterport {tour})", f"{space:,} sq ft", prop)
     return Match(
         listingId=listing,
         address=c.get("address", ""),
@@ -100,6 +117,8 @@ def _match(c: dict, cards: list[FactorCard], models: Optional[list[str]] = None)
         blurb=c.get("candidate_basis", ""),
         photo="",
         squareFeet=sqft,
+        spaceSquareFeet=space,
+        spaceSource=space_src,
         rentPerSquareFootYear=None,
         tourId=tour,
         evidenceReadiness=evidence_readiness(cards),

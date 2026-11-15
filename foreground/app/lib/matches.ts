@@ -34,6 +34,10 @@ export type Match = {
   /** Listing photo on CoStar's CDN. Serves browsers only; skip the Next image optimizer. */
   photo: string;
   squareFeet: number;
+  /** Listed available space in sq ft (not the building); null when not listed. */
+  spaceSquareFeet?: number | null;
+  /** "listing" (CoStar available space) or "scan" (floor area measured from the Matterport scan). */
+  spaceSource?: "listing" | "scan" | null;
   /** Asking rent in dollars per square foot per year, triple net. */
   rentPerSquareFootYear: number | null;
   /** Matterport model id for Open Tour. */
@@ -49,7 +53,55 @@ export type Match = {
   costarPropertyId?: number;
   /** Client-side only: true for NEXT_PUBLIC_DEMO_FALLBACK sample data. */
   demo?: boolean;
+  /** Site build-out estimate from /api/matches (deterministic, server-side). "unknown" carries no numbers. */
+  buildout?: Buildout | null;
+  /** Monthly rent estimate from /api/matches: best rate option x the same area as the build-out. */
+  rent?: RentEstimate | null;
 };
+
+export type RentEstimate = {
+  status: "observed" | "estimated" | "unknown";
+  low: number | null;
+  high: number | null;
+  rateLabel: string | null;
+  rateStatus: string | null;
+  basis?: string | null;
+  reason: string;
+};
+
+/** "~$1.9K/mo est." (or a range), "$1.9K/mo" when it is the listing's own asking rent, null when unknown. */
+export function rentEstimateLabel(r: RentEstimate | null | undefined): string | null {
+  if (!r || r.status === "unknown" || r.low === null || r.high === null) return null;
+  const f = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", notation: "compact", maximumFractionDigits: 1 });
+  const amount = Math.round(r.low) === Math.round(r.high) ? f.format(r.low) : `${f.format(r.low)}–${f.format(r.high)}`;
+  return r.status === "observed" ? `${amount}/mo rent` : `~${amount}/mo rent est.`;
+}
+
+export type Buildout = {
+  status: "estimated" | "unknown";
+  low: number | null;
+  high: number | null;
+  squareFeet: number | null;
+  /** Where the area came from: the listing's available space, the owner's brief, or an area entered by the owner. */
+  basis?: "listing" | "scan" | "brief" | "owner" | null;
+  reason: string;
+};
+
+/** Small label above the headline; says when the size came from the brief rather than the listing. */
+export function buildoutCaption(b: Buildout | null | undefined): string {
+  if (b?.status === "estimated" && b.basis === "brief" && b.squareFeet)
+    return `Est. build-out · your ${new Intl.NumberFormat("en-US").format(b.squareFeet)} sq ft`;
+  if (b?.status === "estimated" && b.basis === "scan") return "Est. build-out · scanned area";
+  return "Est. build-out";
+}
+
+const compact = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", notation: "compact", maximumFractionDigits: 1 });
+
+/** "$412K – $1.1M", or "Unknown" when the estimate has no numbers. Never $0. */
+export function buildoutLabel(b: Buildout | null | undefined): string {
+  if (!b || b.status !== "estimated" || b.low === null || b.high === null) return "Unknown";
+  return `${compact.format(b.low)} – ${compact.format(b.high)}`;
+}
 
 /** The listing photo, or the Matterport scan's preview image when the listing has none. */
 export function heroPhoto(match: Pick<Match, "photo" | "tourId">): string {

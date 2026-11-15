@@ -347,7 +347,6 @@
         "default": null
       },
       "profileChange": {
-        "additionalProperties": true,
         "title": "Profilechange",
         "type": "object"
       }
@@ -361,13 +360,11 @@
   "response": {
     "properties": {
       "change": {
-        "additionalProperties": true,
         "title": "Change",
         "type": "object"
       },
       "changed": {
         "items": {
-          "additionalProperties": true,
           "type": "object"
         },
         "title": "Changed",
@@ -403,7 +400,6 @@
         "type": "string"
       },
       "pOverBudget": {
-        "additionalProperties": true,
         "title": "Poverbudget",
         "type": "object"
       }

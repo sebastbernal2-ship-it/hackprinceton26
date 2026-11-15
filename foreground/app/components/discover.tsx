@@ -2,7 +2,7 @@
 
 import ListingPhoto from "./listing-photo";
 import { useState } from "react";
-import { heroPhoto, rentLabel, type Match } from "../lib/matches";
+import { buildoutCaption, buildoutLabel, heroPhoto, rentEstimateLabel, monthlyRent, rentLabel, type Match } from "../lib/matches";
 import { useMatches, type MatchesState } from "../lib/discover";
 import EvidenceReadiness from "./evidence-readiness";
 import Stepper from "./stepper";
@@ -56,10 +56,23 @@ export default function Discover() {
 
               <div className="mt-6 flex items-start justify-between gap-4">
                 <div className="min-w-0">
-                  <p className="text-[clamp(1.4rem,2.4vw,1.85rem)] font-medium tracking-tight tabular-nums">
-                    {rentLabel(match)}
+                  <p className="text-xs uppercase tracking-wide text-foreground/45">{buildoutCaption(match.buildout)}</p>
+                  <p
+                    className="mt-1 text-[clamp(1.4rem,2.4vw,1.85rem)] font-medium tracking-tight tabular-nums"
+                    title={match.buildout?.reason ?? "No build-out estimate for this site"}
+                  >
+                    {buildoutLabel(match.buildout)}
                   </p>
-                  <p className="mt-1 text-sm text-foreground/50">{match.city}</p>
+                  <p className="mt-1 text-sm text-foreground/50">
+                    {match.city}
+                    {rentEstimateLabel(match.rent) ? (
+                      <span title={match.rent?.reason}> · {rentEstimateLabel(match.rent)}</span>
+                    ) : monthlyRent(match) !== null ? (
+                      ` · ${rentLabel(match)}`
+                    ) : (
+                      " · rent unknown"
+                    )}
+                  </p>
                 </div>
                 <EvidenceReadiness match={match} />
               </div>
@@ -67,7 +80,8 @@ export default function Discover() {
               <p className="mt-4 text-[0.95rem] leading-relaxed text-foreground/55">{match.blurb}</p>
               <p className="mt-2 text-sm text-foreground/40">
                 {match.address}
-                {match.detail ? ` · ${match.detail}` : ""} · {match.squareFeet > 0 ? `${number.format(match.squareFeet)} sq ft` : "size unknown"}
+                {match.detail ? ` · ${match.detail}` : ""} · {match.spaceSquareFeet ? `${number.format(match.spaceSquareFeet)} sq ft ${match.spaceSource === "scan" ? "measured from scan" : "available"}` : "space size not listed"}
+                {match.squareFeet > 0 ? ` · ${number.format(match.squareFeet)} sq ft building` : ""}
               </p>
 
               <div className="mt-6 flex flex-wrap gap-2">

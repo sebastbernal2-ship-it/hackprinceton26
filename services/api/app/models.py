@@ -36,6 +36,10 @@ class Match(BaseModel):
     blurb: str
     photo: str
     squareFeet: Optional[int] = None
+    # Listed available space (sum of active lease spaces), not the building. None = not listed.
+    spaceSquareFeet: Optional[int] = None
+    # Where spaceSquareFeet came from: "listing" (CoStar available space) or "scan" (measured from the Matterport scan).
+    spaceSource: Optional[str] = None
     # None means the source has no asking rent. Missing is not zero.
     rentPerSquareFootYear: Optional[float] = None
     tourId: str
@@ -67,6 +71,10 @@ class ShortlistMatch(Match):
     constraintStatus: Literal["PASS", "UNKNOWN"]
     constraints: list[ConstraintVerdict]
     missingFields: list[str]
+    # Site build-out estimate {status, low, high, squareFeet, reason}; status "unknown" carries no numbers.
+    buildout: Optional[dict] = None
+    # Monthly rent estimate {status, low, high, rateLabel, rateStatus, basis, reason}; same area as the build-out.
+    rent: Optional[dict] = None
 
 
 class ParsedProfile(BaseModel):

@@ -15,7 +15,8 @@ from .horizons_routes import router as horizons_router
 from .loader import load_matches
 from .structure_routes import router as structure_router
 from .rent_routes import router as rent_router
-from .total_cost_routes import router as total_cost_router
+from .total_cost_routes import router as total_cost_router, site_buildout, site_rent
+from .demo_routes import router as demo_router
 from .models import (
     AssessRequest, ProjectionsResponse, ReplanRequest, ReplanResponse, ScenarioAssessment,
     Match, MatchesRequest, MatchesResponse, NextQuestionRequest, NextQuestionResponse,
@@ -37,6 +38,7 @@ app.include_router(concepts_router)
 app.include_router(structure_router)
 app.include_router(rent_router)
 app.include_router(total_cost_router)
+app.include_router(demo_router)
 app.include_router(horizons_router)
 
 
@@ -54,6 +56,15 @@ def matches(req: MatchesRequest):
     # The brief becomes a profile by keyword/number extraction; sites are tested, never scored.
     profile, why = pipeline.profile_from_brief(req.brief, pool)
     shown, counts, excluded, not_shown = pipeline.shortlist(pool, profile)
+    # Build-out is sized by the listed space; when a site lists none, by the size stated in the brief (labelled as such).
+    lo_a, hi_a = profile.min_area_sqft, profile.max_area_sqft
+    brief_sqft = (lo_a + hi_a) / 2 if lo_a and hi_a else (lo_a or hi_a)
+    for m in shown:
+        if m.spaceSquareFeet:
+            m.buildout = site_buildout(m.spaceSquareFeet, m.spaceSource or "listing")
+        else:
+            m.buildout = site_buildout(brief_sqft, basis="brief")
+        m.rent = site_rent(m, m.buildout.get("squareFeet"), m.buildout.get("basis"))
     note = ("Ordered by constraint status (PASS, then UNKNOWN by evidence readiness), not by fit. FAIL sites are excluded "
             "and counted. UNKNOWN means a needed fact is missing, not that the site fails.")
     return MatchesResponse(dataAvailable=True, matches=shown, profile=pipeline.to_parsed(profile, why), counts=counts,
