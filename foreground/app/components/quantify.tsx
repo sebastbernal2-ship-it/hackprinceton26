@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import type { LayoutSummary } from "../lib/layout-summary";
 import type { Asset } from "../lib/assets";
 import type { Match } from "../lib/matches";
+import { seatsOf } from "../lib/planner";
 import CafeQuantify from "./cafe-quantify";
 import CostPanel from "./cost-panel";
 import FinancePanel from "./finance/finance-panel";
@@ -24,7 +25,10 @@ const nice = (kind: string) => kind.charAt(0).toUpperCase() + kind.slice(1);
  * count feeds the 36-month scenario and can be overridden; it is an estimate from the segmentation's piece labels.
  */
 export default function Quantify({ match, layout, onBackToLayout, onClose, onStep, step, kit = [], onKit = () => {}, area = "", onArea = () => {} }: QuantifyProps) {
-  const [seatsInput, setSeatsInput] = useState<string>(layout && layout.seats > 0 ? String(layout.seats) : "");
+  const [seatsInput, setSeatsInput] = useState<string>(() => {
+    const planned = kit.reduce((n, a) => n + seatsOf(a), 0);
+    return layout && layout.seats > 0 ? String(layout.seats) : planned > 0 ? String(planned) : "";
+  });
   const seatsNum = Number(seatsInput);
   const seats = Number.isInteger(seatsNum) && seatsNum >= 1 && seatsNum <= 500 ? seatsNum : null;
   const [monthlyRent, setMonthlyRent] = useState<number | null>(null);
@@ -108,7 +112,7 @@ export default function Quantify({ match, layout, onBackToLayout, onClose, onSte
             <p className="max-w-md pb-2 text-xs text-foreground/50">
               {layout && layout.seats > 0
                 ? `Counted from your layout: chairs, stools and armchairs (${layout.seats}).${layout.sofasNotCounted ? ` ${layout.sofasNotCounted} sofa${layout.sofasNotCounted === 1 ? "" : "s"} not counted (seats per sofa unknown).` : ""} Change it if it is off.`
-                : "Enter the seats you plan for. It drives the scenario below."}
+                : kit.some((a) => seatsOf(a) > 0) ? `Prefilled from the ${kit.reduce((n, a) => n + seatsOf(a), 0)} seats (estimated) in your Planner. Change it if it is off.` : "Enter the seats you plan for. It drives the scenario below."}
             </p>
           </div>}
         </section>
@@ -129,6 +133,7 @@ export default function Quantify({ match, layout, onBackToLayout, onClose, onSte
           </>
         ) : (
           <>
+            {kit.length > 0 && <CafeQuantify kit={kit} onKit={onKit} area={area} onArea={onArea} linkedBuilding={Boolean(match.costarPropertyId)} />}
             <TotalCostPanel listingId={match.listingId} initialSquareFeet={match.squareFeet} onRent={onRent} />
             <CostPanel listingId={match.listingId} />
             {seats ? (

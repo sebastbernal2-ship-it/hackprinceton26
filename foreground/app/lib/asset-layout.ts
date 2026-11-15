@@ -4,7 +4,7 @@ import { bbox, type Asset } from "./assets";
 
 export type Placement = { key: string; asset: Asset; x: number; y: number; rot: Rot; poly: [number, number][]; box: { x0: number; y0: number; x1: number; y1: number } };
 export type Rot = 0 | 90 | 180 | 270;
-export type Issue = { kind: "overlap" | "blocked_front" | "narrow_aisle" | "outside_floor"; message: string };
+export type Issue = { kind: "overlap" | "blocked_front" | "narrow_aisle" | "outside_floor"; message: string; /** Placement keys the problem involves. */ keys: string[] };
 export type PackResult = { placed: Placement[]; unplaced: { asset: Asset; reason: string }[]; issues: Issue[] };
 
 export type Rect = { width: number; depth: number };
@@ -102,30 +102,36 @@ export function checkLayout(floor: Rect, placed: Placement[]): Issue[] {
   for (let i = 0; i < placed.length; i++) {
     const a = placed[i];
     if (a.box.x0 < -EPS || a.box.y0 < -EPS || a.box.x1 > floor.width + EPS || a.box.y1 > floor.depth + EPS) {
-      issues.push({ kind: "outside_floor", message: `${name(a)} extends past the assumed floor.` });
+      issues.push({ kind: "outside_floor", keys: [a.key], message: `${name(a)} extends past the assumed floor.` });
     }
     const zone = frontZone(a);
     const zb = bbox(zone);
     if (a.asset.clearance.front > 0 && (zb.x0 < -EPS || zb.y0 < -EPS || zb.x1 > floor.width + EPS || zb.y1 > floor.depth + EPS)) {
-      issues.push({ kind: "blocked_front", message: `${name(a)}: its ${fmt(a.asset.clearance.front)} m front clearance runs off the floor.` });
+      issues.push({ kind: "blocked_front", keys: [a.key], message: `${name(a)}: its ${fmt(a.asset.clearance.front)} m front clearance runs off the floor.` });
     }
     for (let j = 0; j < placed.length; j++) {
       if (j === i) continue;
       const b = placed[j];
-      if (j > i && area(a.poly, b.poly) > 1e-4) issues.push({ kind: "overlap", message: `${name(a)} overlaps ${name(b)}.` });
-      if (area(zone, b.poly) > 1e-4 && area(a.poly, b.poly) <= 1e-4) {
-        issues.push({ kind: "blocked_front", message: `${name(b)} blocks the ${fmt(a.asset.clearance.front)} m clearance in front of ${name(a)}.` });
+      if (j > i && area(a.poly, b.poly) > 1e-4) issues.push({ kind: "overlap", keys: [a.key, b.key], message: `${name(a)} overlaps ${name(b)}.` });
+      if (!seatAtTable(a, b) && area(zone, b.poly) > 1e-4 && area(a.poly, b.poly) <= 1e-4) {
+        issues.push({ kind: "blocked_front", keys: [a.key, b.key], message: `${name(b)} blocks the ${fmt(a.asset.clearance.front)} m clearance in front of ${name(a)}.` });
       }
       if (j > i) {
         const gap = sideGap(a, b);
         const need = Math.max(a.asset.clearance.sides, b.asset.clearance.sides);
-        if (gap !== null && gap >= -EPS && gap < need - EPS && area(a.poly, b.poly) <= 1e-4) {
-          issues.push({ kind: "narrow_aisle", message: `${fmt(gap)} m between ${name(a)} and ${name(b)}; the clearance assumption is ${fmt(need)} m.` });
+        if (!seatAtTable(a, b) && gap !== null && gap >= -EPS && gap < need - EPS && area(a.poly, b.poly) <= 1e-4) {
+          issues.push({ kind: "narrow_aisle", keys: [a.key, b.key], message: `${fmt(gap)} m between ${name(a)} and ${name(b)}; the clearance assumption is ${fmt(need)} m.` });
         }
       }
     }
   }
   return issues;
+}
+
+/** A chair or stool pulled up to a table is the intended pairing, not a blocked clearance. */
+function seatAtTable(a: Placement, b: Placement): boolean {
+  const [x, y] = [a.asset.category, b.asset.category];
+  return (x === "seating" && y === "table") || (x === "table" && y === "seating");
 }
 
 /** Gap between two boxes when they face each other across an axis (they share overlap on the other axis), else null. */
