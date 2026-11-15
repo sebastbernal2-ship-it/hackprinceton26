@@ -2,11 +2,12 @@
 
 import { Fragment, useState } from "react";
 import {
-  AssetApiError, axisRange, CATEGORIES, fmtDims, fmtM, makeVariant, patchAsset, priceFor, VARIANT_KINDS, VARIANT_LABEL,
+  AssetApiError, assetImageUrl, axisRange, CATEGORIES, fmtDims, groupOf, GROUP_LABEL, fmtM, makeVariant, patchAsset, priceFor, VARIANT_KINDS, VARIANT_LABEL,
   type Asset, type AssetCategory, type VariantKind,
 } from "../lib/assets";
 import { defaultControls, variantParams, type Controls } from "../lib/variant-params";
 import type { CostLineItem } from "../lib/costs";
+import AssetGenerator from "./asset-generator";
 import { AssetFacts, DimsBadge, FootprintSvg } from "./asset-bits";
 
 type Props = {
@@ -27,6 +28,7 @@ export default function AssetBrowser({ assets, profileId, status, error, categor
   const selected = assets.find((a) => a.assetId === selectedId) ?? null;
   return (
     <div className="mt-4">
+      <div className="mb-4 max-w-xl"><AssetGenerator onCreated={onSaved} /></div>
       <label className="text-sm">
         Category{" "}
         <select value={category} onChange={(e) => onCategory(e.target.value as AssetCategory | "")} className="rounded border border-foreground/20 bg-background px-2 py-1 text-sm">
@@ -45,22 +47,26 @@ export default function AssetBrowser({ assets, profileId, status, error, categor
       )}
       <ul className="mt-3 grid max-h-[40rem] grid-cols-2 gap-3 overflow-y-auto pr-1 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5" aria-label="Asset catalog">
         {assets.map((asset, i) => {
-          const mine = !!profileId && asset.profileId === profileId;
-          const firstLibrary = !mine && (i === 0 || (!!profileId && assets[i - 1].profileId === profileId));
+          const group = groupOf(asset, profileId);
+          const header = i === 0 || groupOf(assets[i - 1], profileId) !== group;
+          const img = assetImageUrl(asset);
           const price = priceFor(asset, lines);
           const open = selectedId === asset.assetId;
           return (
             <Fragment key={asset.assetId}>
-              {(i === 0 && mine) && <li className="col-span-full text-xs font-medium text-foreground/60">This profile&apos;s assets</li>}
-              {firstLibrary && <li className="col-span-full mt-2 text-xs font-medium text-foreground/60">Library</li>}
+              {header && <li className={`col-span-full text-xs font-medium text-foreground/60 ${i ? "mt-2" : ""}`}>{GROUP_LABEL[group].replace("'", "\u2019")}</li>}
               <li className={`flex min-w-0 flex-col rounded-xl border p-3 ${open ? "border-match" : "border-foreground/15"}`}>
-                <div className="flex h-28 items-center justify-center overflow-hidden"><FootprintSvg asset={asset} size={96} maxHeight={104} /></div>
+                <div className="flex h-28 items-center justify-center gap-2 overflow-hidden">
+                  {img && /* eslint-disable-next-line @next/next/no-img-element */ <img src={img} alt={`Illustration of ${asset.name}`} className="h-24 w-24 rounded border border-foreground/15 object-cover" />}
+                  <FootprintSvg asset={asset} size={img ? 56 : 96} maxHeight={104} />
+                </div>
                 <p className="mt-3 line-clamp-2 min-h-[2.5rem] text-sm font-medium leading-snug" title={asset.name}>{asset.name}</p>
                 <p className="mt-0.5 text-xs text-foreground/50">
                   {asset.category.replace("_", " ")}{asset.status === "draft" ? " · draft" : ""}{asset.variantKind && asset.variantKind !== "base" ? ` · ${VARIANT_LABEL[asset.variantKind]}` : ""}
                 </p>
                 <p className="mt-1 text-xs text-foreground/75">{fmtDims(asset.dims)} <DimsBadge status={asset.dimsStatus} /></p>
-                <p className="mt-1 text-xs">Price: <span className={price.kind === "none" ? "text-foreground/50" : "font-medium"}>{price.text}</span></p>
+                <p className="mt-1 text-xs">Price: <span className={price.kind === "none" ? "text-foreground/50" : "font-medium"}>
+                  {price.kind === "none" && asset.source === "generated" && asset.priceRef ? `Estimated demo price, priced as ${asset.priceRef.replace(/_/g, " ")}; see the Planner tray` : price.text}</span></p>
                 <details className="mt-1 text-xs text-foreground/60">
                   <summary className="cursor-pointer">Details</summary>
                   <AssetFacts asset={asset} />

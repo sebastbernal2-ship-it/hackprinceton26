@@ -10,6 +10,7 @@ from .models import Asset
 ROOT = Path(__file__).resolve().parent
 _SAFE = re.compile(r"^[A-Za-z0-9_.\-]+$")
 MODEL_EXTS = {".glb": "model/gltf-binary", ".obj": "text/plain"}
+IMAGE_EXTS = {".svg": "image/svg+xml", ".png": "image/png", ".webp": "image/webp", ".jpg": "image/jpeg"}
 
 
 class ModelBlob:
@@ -110,6 +111,24 @@ class FileStore:
         f = d / f"{self._check(a.assetId)}{ext}"
         f.write_bytes(data)
         return f.relative_to(self.library.parent.parent).as_posix()
+
+    def put_image(self, a: Asset, data: bytes, ext: str) -> str:
+        """Write an illustration beside the asset's models; returns the repo-relative uri (not a model: never opened as one)."""
+        if ext not in IMAGE_EXTS:
+            raise ValueError(f"unsupported image extension {ext!r}")
+        d = self.models_dir(a.profileId).parent / "images"
+        d.mkdir(parents=True, exist_ok=True)
+        f = d / f"{self._check(a.assetId)}{ext}"
+        f.write_bytes(data)
+        return f.relative_to(self.library.parent.parent).as_posix()
+
+    def open_image(self, a: Asset) -> ModelBlob | None:
+        root = self.library.parent.resolve()
+        for ref in a.imageRefs:
+            f = (root.parent / ref).resolve()
+            if f.is_relative_to(root) and f.suffix.lower() in IMAGE_EXTS and f.is_file():
+                return ModelBlob(_file_chunks(f), f.name, IMAGE_EXTS[f.suffix.lower()], f.stat().st_size)
+        return None
 
     def open_model(self, a: Asset) -> ModelBlob | None:
         """Resolve model.uri to a file strictly inside this store's root; None when absent or unsafe."""

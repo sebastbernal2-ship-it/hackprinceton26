@@ -1,8 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import AssetGenerator from "./asset-generator";
 import { checkLayout, frontZone, type Placement, type Rot } from "../lib/asset-layout";
-import { listAssets, type Asset } from "../lib/assets";
+import { assetImageUrl, GENERATED_PROFILE, listAssets, type Asset } from "../lib/assets";
 import { buildCafeKit, cafeKitArea, CAFE_KIT_NOTE, dedupeAssets } from "../lib/cafe-demo";
 import { conceptFootprint, SQFT_TO_M2 } from "../lib/concept-layout";
 import { fetchLayoutCost, freshResponse, layoutCostItems, scenarioKey, type LayoutCost } from "../lib/layout-cost";
@@ -23,6 +24,7 @@ const FILTERS = [
   { key: "cafe", label: "Cafe kit", test: (a: Asset) => CAFE_IDS.has(a.assetId) },
   { key: "dining", label: "Dining", test: (a: Asset) => a.category === "table" || a.category === "seating" },
   { key: "kitchen", label: "Kitchen", test: (a: Asset) => a.category !== "table" && a.category !== "seating" },
+  { key: "generated", label: "Generated", test: (a: Asset) => a.source === "generated" },
   { key: "all", label: "All", test: () => true },
 ] as const;
 type FilterKey = (typeof FILTERS)[number]["key"];
@@ -80,9 +82,10 @@ export default function CafePlanner({ match, kit, onKit, placed, onPlaced, area,
   useEffect(() => { historyRef.current = history; }, [history]);
 
   // Catalog and per-piece price bands (estimated demo prices from the cost service).
+  const [reloadCatalog, setReloadCatalog] = useState(0);
   useEffect(() => {
     let live = true;
-    listAssets()
+    listAssets({ profileId: GENERATED_PROFILE })
       .then(async (list) => {
         const assets = [...dedupeAssets(list).values()];
         if (!live) return;
@@ -93,7 +96,7 @@ export default function CafePlanner({ match, kit, onKit, placed, onPlaced, area,
       })
       .catch(() => live && setCatalog({ status: "error", assets: [] }));
     return () => { live = false; };
-  }, []);
+  }, [reloadCatalog]);
 
   // A demo scan has no listed area: start from the reference kit's estimated area so the floor exists.
   useEffect(() => {
@@ -355,6 +358,7 @@ export default function CafePlanner({ match, kit, onKit, placed, onPlaced, area,
                   className={`rounded-full px-2.5 py-1 text-xs ${filter === f.key ? "bg-foreground text-background" : "border border-foreground/20"}`}>{f.label}</button>
               ))}
             </div>
+            <div className="mt-2"><AssetGenerator compact onCreated={() => { setFilter("generated"); setReloadCatalog((n) => n + 1); }} /></div>
             <p className="mt-2 text-xs text-foreground/55">Drag onto the floor (R rotates while dragging), or click to drop in the first free spot.</p>
             {catalog.status === "loading" && <p className="mt-3 text-sm text-foreground/60">Loading catalog.</p>}
             {catalog.status === "error" && <p role="alert" className="mt-3 text-sm">The asset catalog is unreachable (the local API is not running).</p>}
@@ -501,6 +505,8 @@ function Stat({ label, value, id, warn }: { label: string; value: string; id: st
 }
 
 function Glyph({ asset }: { asset: Asset }) {
+  const img = assetImageUrl(asset);
+  if (img) return /* eslint-disable-next-line @next/next/no-img-element */ <img src={img} alt="" draggable={false} className="h-11 w-11 shrink-0 rounded border border-foreground/15 object-cover" />;
   const { w, d } = sizeFor(asset, 0);
   const k = 40 / Math.max(w, d, 0.01);
   return (

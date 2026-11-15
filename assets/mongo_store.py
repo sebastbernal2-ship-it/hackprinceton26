@@ -9,7 +9,7 @@ import re
 from typing import Iterator
 
 from .models import Asset
-from .store import MODEL_EXTS, ModelBlob, _SAFE
+from .store import IMAGE_EXTS, MODEL_EXTS, ModelBlob, _SAFE
 
 GRIDFS_URI = re.compile(r"^gridfs://([0-9a-f]{64})/([A-Za-z0-9_.\-]+)$")
 DEFAULT_DB = "catalog"
@@ -92,6 +92,20 @@ class MongoStore:
         if ext not in MODEL_EXTS:
             raise ValueError(f"unsupported model extension {ext!r}")
         return self.put_blob(data, f"{self._check(a.assetId)}{ext}")
+
+    def put_image(self, a: Asset, data: bytes, ext: str) -> str:
+        if ext not in IMAGE_EXTS:
+            raise ValueError(f"unsupported image extension {ext!r}")
+        return self.put_blob(data, f"{self._check(a.assetId)}{ext}")
+
+    def open_image(self, a: Asset) -> ModelBlob | None:
+        for ref in a.imageRefs:
+            m = GRIDFS_URI.match(ref)
+            ext = "." + m.group(2).rsplit(".", 1)[-1].lower() if m else ""
+            if m and ext in IMAGE_EXTS and self.fs.exists(m.group(1)):
+                f = self.fs.get(m.group(1))
+                return ModelBlob(_gridfs_chunks(f), m.group(2), IMAGE_EXTS[ext], f.length)
+        return None
 
     def open_model(self, a: Asset) -> ModelBlob | None:
         if not a.model or a.model.format == "box":

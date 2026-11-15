@@ -7,6 +7,7 @@ from fastapi.staticfiles import StaticFiles
 from . import inspection_routes, pipeline, projections, stubs
 from .agent_routes import router as agent_router
 from .assets_routes import router as assets_router
+from .assets_generate_routes import router as assets_generate_router
 from .aerial_routes import router as aerial_router
 from .assets_ingest_routes import router as assets_ingest_router
 from .costar_routes import router as costar_router
@@ -41,6 +42,7 @@ app.include_router(costs_router)
 app.include_router(finance_router)
 app.include_router(costar_router)
 app.include_router(assets_router)
+app.include_router(assets_generate_router)
 app.include_router(assets_ingest_router)
 app.include_router(triage_router)
 app.include_router(aerial_router)
