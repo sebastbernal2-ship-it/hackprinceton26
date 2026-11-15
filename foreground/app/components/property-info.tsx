@@ -6,7 +6,9 @@ import ListingPhoto from "./listing-photo";
 import InspectionPanel from "./inspection-panel";
 import CostarBuilding from "./costar-building";
 import PlanVision from "./plan-vision";
+import CafePlanner from "./cafe-planner";
 import LayoutPanel from "./layout-panel";
+import type { PlacedPiece } from "../lib/planner";
 import Quantify from "./quantify";
 import type { LayoutSummary } from "../lib/layout-summary";
 import type { Asset } from "../lib/assets";
@@ -58,6 +60,7 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
   // Café demo path: the placed reference kit and the owner's assumed area are shared by the layout panel and Quantify.
   const [kit, setKit] = useState<Asset[]>([]);
   const [area, setArea] = useState("");
+  const [placed, setPlaced] = useState<PlacedPiece[]>([]);
   const router = useRouter();
   const lastLayout = useRef<LayoutSummary | null>(null);
   const scrollTo = (id: string) => window.setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" }) ?? document.querySelector(`[data-testid="${id}"]`)?.scrollIntoView({ behavior: "smooth" }), 500);
@@ -76,7 +79,7 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
     if (step === 6 && match.demo) setTab("overview");
     if (step === 5) scrollTo("act-title");
   }
-  const [tab, setTab] = useState<"overview" | "layout" | "analysis">("overview");
+  const [tab, setTab] = useState<"overview" | "planner" | "layout" | "analysis">("overview");
   const hero = photos[index % photos.length];
   const thumbs = photos.filter((_, photoIndex) => photoIndex !== index % photos.length).slice(0, 3);
 
@@ -179,7 +182,7 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
         </div>
 
         <nav aria-label="Property sections" className="mt-8 flex gap-1 border-b border-foreground/10">
-          {([["overview", "Overview"], ["layout", "Layout & equipment"], ...(match.demo ? [] : [["analysis", "Deeper analysis"]])] as [typeof tab, string][]).map(([key, label]) => (
+          {([["overview", "Overview"], ["planner", "Planner"], ["layout", "Layout & equipment"], ...(match.demo ? [] : [["analysis", "Deeper analysis"]])] as [typeof tab, string][]).map(([key, label]) => (
             <button
               key={key}
               type="button"
@@ -231,6 +234,13 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
             {!match.demo && <DataStreams listingId={match.listingId} />}
             <FactorCards factors={demoFactors ?? match.factors ?? []} demo={match.demo && !demoFactors?.length} />
           </>
+        )}
+
+        {tab === "planner" && (
+          <CafePlanner
+            match={match} kit={kit} onKit={setKit} placed={placed} onPlaced={setPlaced} area={area} onArea={setArea}
+            onContinue={() => { setCurrent(4); setQuantify({ layout: lastLayout.current }); }}
+          />
         )}
 
         {tab === "layout" && <LayoutPanel match={match} items={kit} onItems={setKit} area={area} onArea={setArea} />}
