@@ -9,6 +9,7 @@ import os
 import re
 from pathlib import Path
 
+from . import concept_gate
 from .models import Fact, Match, SpaceFacts
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -17,8 +18,8 @@ CAFE_KIT = json.loads((ROOT / "foreground/app/lib/cafe-kit.json").read_text(enco
 CAFE_IDS = {s["listingId"] for s in CAFE_SCANS}
 ESTIMATE = "scan-estimate"  # Match.spaceSource for a cafe scan: an assumed demo area, not a measurement
 
-_CAFE_RE = re.compile(r"\b(caf[eé]s?|coffee|espresso|bakery|pastr(?:y|ies)|bistro)\b", re.I)
-_FOOD_RE = re.compile(r"\b(restaurants?|kitchen|dining|diner|eatery|bar|grill|food|yogurt|juice)\b", re.I)
+_CAFE_RE = re.compile(r"\b(caf[eé]s?|coffee(?:\s?shops?)?|espresso|bakery|bakeries|pastr(?:y|ies)|bistro|tea\s?(?:house|shop|room)|bagel|donut|doughnut)\b", re.I)
+_FOOD_RE = re.compile(r"\b(restaurants?|kitchen|dining|diner|eatery|bars?|pub|brewery|taproom|cocktail|grill|food|yogurt|juice|taquer[ií]a|tacos?|pizz(?:a|eria)|burgers?|sushi|ramen|noodles?|bbq|barbecue|steakhouse|deli|gelato|ice cream|cantina|brasserie|tavern|lounge|bodega|food hall|ghost kitchen)\b", re.I)
 _PRIOR_RE = re.compile(r"\b(already had food service|prior food|existing (?:hood|kitchen)|hood|grease)\b", re.I)
 
 
@@ -81,6 +82,10 @@ def pick(m: Match, results: dict, profile, concept: str | None, prior_food: bool
         if "not on file" not in m.address:
             pts += 3
             why.append("Street address on file")
+    if food and m.propertySubtype in concept_gate.FOOD_USE:
+        pts += 12
+    elif food and m.propertySubtype in concept_gate.STREET_RETAIL:
+        pts += 3
     spells = food_spells(m)
     if spells and food:
         pts += min(spells, 3) * (10 if prior_food or concept == "cafe" else 7)
@@ -116,13 +121,17 @@ def pick(m: Match, results: dict, profile, concept: str | None, prior_food: bool
     return pts, why, cafe_scan
 
 
-def order(kept: list[Match], results: dict, profile, concept: str | None, prior_food: bool, n_pass):
+def order(kept: list[Match], results: dict, profile, concept: str | None, prior_food: bool, n_pass, notes: dict | None = None):
     """Sorted (match, reasons, best) rows. For a food concept the best cafe-ready, non-failing scan goes first."""
     rows = []
     for m in kept:
         pts, why, cafe = pick(m, results[m.listingId].by_constraint(), profile, concept, prior_food)
+        why = (notes or {}).get(m.listingId, []) + why
+        res = results[m.listingId]
+        if res.status == "FAIL" and cafe:  # always offered for a cafe brief: say plainly what it does not meet
+            why.append("Does not meet: " + ", ".join(sorted(c for c, r in res.by_constraint().items() if r.status == "FAIL")) + " (the area is an estimate)")
         rows.append((m, pts, why, cafe))
-    rows.sort(key=lambda t: (results[t[0].listingId].status != "PASS", -t[1], -n_pass(t[0]), -t[0].evidenceReadiness, t[0].listingId))
+    rows.sort(key=lambda t: (results[t[0].listingId].status != "PASS" and not (concept == "cafe" and t[3]), -t[1], -n_pass(t[0]), -t[0].evidenceReadiness, t[0].listingId))
     if concept == "cafe":
         i = next((i for i, t in enumerate(rows) if t[3] and walk_ready(t[0].tourId)), next((i for i, t in enumerate(rows) if t[3]), None))
         if i:

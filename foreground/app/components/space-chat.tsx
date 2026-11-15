@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import type { Match } from "../lib/matches";
+import { isScanOnly, type Match } from "../lib/matches";
 import { answerFio, FIO_CHIPS, loadFioContext, type FioContext } from "../lib/fio";
 
 type Message = { role: "agent" | "user"; text: string };
@@ -19,7 +19,7 @@ export default function SpaceChat({ match, open, onOpenChange }: { match: Match;
   useEffect(() => {
     if (!open || ctx) return;
     let live = true;
-    loadFioContext(match.listingId).then((c) => live && setLoaded({ id: match.listingId, c }));
+    loadFioContext(match.listingId, "", isScanOnly(match)).then((c) => live && setLoaded({ id: match.listingId, c }));
     return () => {
       live = false;
     };
@@ -39,7 +39,7 @@ export default function SpaceChat({ match, open, onOpenChange }: { match: Match;
     setValue("");
     setMessages((current) => [...current, { role: "user", text: trimmed }]);
     setBusy(true);
-    const c = ctx ?? (await loadFioContext(match.listingId));
+    const c = ctx ?? (await loadFioContext(match.listingId, "", isScanOnly(match)));
     setBusy(false);
     setLoaded({ id: match.listingId, c });
     setMessages((current) => [...current, { role: "agent", text: answerFio(match, c, trimmed) }]);

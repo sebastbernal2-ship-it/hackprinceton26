@@ -29,6 +29,7 @@
   #offer b, #clearInfo b { font-size:14px; } #offer p, #clearInfo p { margin:6px 0 0; color:var(--dim); }
   #offer .row, #clearInfo .row { display:flex; gap:6px; margin-top:10px; flex-wrap:wrap; }
   #offer button, #clearInfo button { background:#2a2f37; color:var(--text); border:1px solid #3a3f48; border-radius:6px; padding:4px 12px; cursor:pointer; font:inherit; }
+  #panel button.on { border-color:var(--acc); color:var(--acc); }
   #offer button.go, #clearInfo button.go { background:var(--acc); color:#000; border-color:var(--acc); } #offer button:hover, #clearInfo button:hover { border-color:var(--acc); }
   #clearInfo ul { margin:8px 0 0; padding:0; list-style:none; display:flex; flex-wrap:wrap; gap:4px; } #clearInfo li { background:#0f1013; border-radius:10px; padding:1px 8px; }
   #clearInfo .sw { display:inline-block; width:11px; height:11px; border-radius:3px; vertical-align:-1px; margin-right:5px; border:1px solid #fff3; }
@@ -62,7 +63,7 @@
   <div class="dim" style="margin-top:4px">Furniture: aim at a piece · <kbd>E</kbd> or click pick up / place · wheel or <kbd>R</kbd> turn ·
     <kbd>X</kbd> remove · <kbd>Ctrl</kbd>+<kbd>Z</kbd> undo · <kbd>C</kbd> catalogue of new furniture</div>
 </div>
-<div id="panel"><span id="edits"></span> <button id="aiBtn">Ask Fio (Enter)</button><button id="catBtn">Catalogue (C)</button><button id="clearBtn" title="Remove the scanned furniture and patch the floor and walls (K)">Clear the space (K)</button><button id="restoreBtn" style="display:none">Restore scan objects</button><select id="floorSel" title="Floor: the scan as it is, or a clean flat floor"><option value="scan">Floor: scan</option><option value="match">Floor: match scan</option><option value="wood">Floor: light wood</option><option value="concrete">Floor: concrete</option><option value="tile">Floor: tile</option><option value="carpet">Floor: carpet</option><option value="plain">Floor: plain</option></select><button id="exportBtn">Export edits.json</button><button id="resetBtn">Reset all</button></div>
+<div id="panel"><span id="edits"></span> <button id="aiBtn">Ask Fio (Enter)</button><button id="catBtn">Catalogue (C)</button><button id="clearBtn" title="Remove the scanned furniture and patch the floor and walls (K)">Clear the space (K)</button><button id="shellBtn" title="Show the inferred room shell behind the scan: fills holes and black voids by inference (G)">Fill gaps (G)</button><button id="restoreBtn" style="display:none">Restore scan objects</button><select id="floorSel" title="Floor: the scan as it is, or a clean flat floor"><option value="scan">Floor: scan</option><option value="match">Floor: match scan</option><option value="wood">Floor: light wood</option><option value="concrete">Floor: concrete</option><option value="tile">Floor: tile</option><option value="carpet">Floor: carpet</option><option value="plain">Floor: plain</option></select><button id="exportBtn">Export edits.json</button><button id="resetBtn">Reset all</button></div>
 <div id="ai"><div id="aiLog"></div><div id="aiChips"></div><div class="row"><input id="aiInput" placeholder="Ask Fio, or tell it: clear the room, remove the sofa, add 4 two-tops..." autocomplete="off"><button id="aiSend">Send</button><button id="aiNew">New chat</button></div></div>
 <div id="cat"><div class="head"><b>Add furniture</b><span class="dim">Free CC0 models from Poly Haven · lit by the room's own photo</span><button id="catClose">✕</button></div>
   <div id="catTabs"></div><div id="catGrid"></div></div>
@@ -107,6 +108,12 @@ const IDX = new Uint32Array(buf, meta.offsets.index, meta.triangles * 3);
 // one vertex buffer; the house and every movable piece are separate meshes (index ranges) over it
 const posAttr = new THREE.BufferAttribute(P, 3), uvAttr = new THREE.BufferAttribute(UV, 2);
 const mats = meta.textures.map(() => new THREE.MeshBasicMaterial({ color: 0x777777, side: THREE.DoubleSide }));
+// The house gets its own copies of the materials: with the inferred shell on, near-black scan texels (where the camera never
+// looked) are cut out so the shell shows through. Furniture keeps the plain ones.
+const SHELL_DARK = 0.0035, PPM_S = 20, darkU = { value: 0 };
+const hookDark = sh => { sh.uniforms.uDark = darkU; sh.fragmentShader = 'uniform float uDark;\n' + sh.fragmentShader.replace('#include <map_fragment>',
+  '#include <map_fragment>\n  if (dot(diffuseColor.rgb, vec3(0.2126, 0.7152, 0.0722)) < uDark) discard;'); };
+const hmats = mats.map(m => { const h = m.clone(); h.onBeforeCompile = hookDark; h.customProgramCacheKey = () => 'dark'; return h; });
 const span = gs => [Math.min(...gs.map(g => g.start)), Math.max(...gs.map(g => g.start + g.count))];
 function subGeometry(gs) {
   const [lo, hi] = span(gs), g = new THREE.BufferGeometry();
@@ -119,7 +126,7 @@ function subGeometry(gs) {
   return g;
 }
 const HOUSE_END = meta.groups.length ? span(meta.groups)[1] : 0;    // index units; pieces follow the house
-const house = new THREE.Mesh(subGeometry(meta.groups), mats); scene.add(house);
+const house = new THREE.Mesh(subGeometry(meta.groups), hmats); scene.add(house);
 
 // texture level of detail: everything at half resolution, full resolution for the textures closest to you
 const groups = meta.textures.map((tex, i) => ({ tex, i, lo: [Infinity, Infinity, Infinity], hi: [-Infinity, -Infinity, -Infinity], low: null, full: null }));
@@ -144,7 +151,7 @@ function texture(bmp) {
   const t = new THREE.Texture(bmp); t.flipY = false; t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = aniso;
   t.generateMipmaps = true; t.minFilter = THREE.LinearMipmapLinearFilter; t.needsUpdate = true; return t;
 }
-function setMap(g, t) { const m = mats[g.i]; m.map = t; m.color.set(0xffffff); m.needsUpdate = true; }
+function setMap(g, t) { for (const m of [mats[g.i], hmats[g.i]]) { m.map = t; m.color.set(0xffffff); m.needsUpdate = true; } }
 let loaded = 0;
 const texJobs = groups.filter(g => g.tex);
 await Promise.all(Array.from({ length: 6 }, async () => {
@@ -608,7 +615,8 @@ function capture(cam, W, H) {                         // render the scene (no pi
   const hid = pieces.map(pc => pc.pivot.visible), hp = patchGroup.visible, ph = photo.visible, bg = scene.background;
   const cc = renderer.getClearColor(new THREE.Color()), ca = renderer.getClearAlpha();
   pieces.forEach(pc => { pc.pivot.visible = false; }); patchGroup.visible = false; photo.visible = false; scene.background = null;
-  renderer.setClearColor(0x000000, 0); renderer.setRenderTarget(rt); renderer.clear(); renderer.render(scene, cam);
+  const dk = darkU.value; darkU.value = SHELL_DARK; shell.visible = false;
+  renderer.setClearColor(0x000000, 0); renderer.setRenderTarget(rt); renderer.clear(); renderer.render(scene, cam); darkU.value = dk;
   const buf = new Uint8Array(W * H * 4); renderer.readRenderTargetPixels(rt, 0, 0, W, H, buf);
   renderer.setRenderTarget(null); renderer.setClearColor(cc, ca); rt.dispose();
   pieces.forEach((pc, i) => { pc.pivot.visible = hid[i]; }); patchGroup.visible = hp; photo.visible = ph; scene.background = bg;
@@ -729,6 +737,126 @@ function rebuildStatic() {
   STATIC = makeSoup(P2, I2, 0.5);
 }
 
+// ------------------------------------------------------------------ inferred room shell: no void, ever
+// The scan has holes of its own (a wall nobody photographed, a gap in the ceiling, black texture where the camera never
+// looked). Behind the real mesh we build a closed room from the scan's own footprint: floor and ceiling per 25 cm cell, a
+// wall wherever the footprint ends. Its colours are real scan pixels: the floor from a top-down view of the floor, the
+// ceiling from a view straight up, each wall from the FARTHEST surface seen along that direction; whatever those views
+// did not cover is filled by inpaint() (nearest colour, diffusion, borrowed grain). It renders behind the real mesh
+// (positive polygon offset, and the mesh stays on top), and near-black scan texels are cut out so the shell shows
+// through them. Every pixel it paints is an ESTIMATE; the result card says so.
+const shell = new THREE.Group(); shell.visible = false; shell.renderOrder = -1; scene.add(shell);
+let shellInfo = null, shellForce = null, shellBusy = null; const bgOrig = scene.background.clone();
+const shellWanted = () => shellForce ?? (!!wave || pieces.some(pc => pc.deleted && !pc.added));
+function shellCapture(cam, W, H, far) {
+  const rt = new THREE.WebGLRenderTarget(W, H); rt.texture.colorSpace = THREE.SRGBColorSpace;
+  const hid = pieces.map(pc => pc.pivot.visible), vis = [patchGroup.visible, photo.visible, shell.visible], bg = scene.background;
+  const cc = renderer.getClearColor(new THREE.Color()), ca = renderer.getClearAlpha(), prevDark = darkU.value;
+  pieces.forEach(pc => { pc.pivot.visible = false; }); patchGroup.visible = photo.visible = shell.visible = false; scene.background = null;
+  if (far) { far.forEach((m, i) => { if (!!m.map !== !!hmats[i].map) m.needsUpdate = true; m.map = hmats[i].map; m.color.copy(hmats[i].color); }); house.material = far; }
+  darkU.value = SHELL_DARK;
+  renderer.setClearColor(0x000000, 0); renderer.setRenderTarget(rt); renderer.clear(); renderer.render(scene, cam);
+  const buf = new Uint8Array(W * H * 4); renderer.readRenderTargetPixels(rt, 0, 0, W, H, buf);
+  renderer.setRenderTarget(null); renderer.setClearColor(cc, ca); rt.dispose();
+  house.material = hmats; darkU.value = prevDark;
+  pieces.forEach((pc, i) => { pc.pivot.visible = hid[i]; }); [patchGroup.visible, photo.visible, shell.visible] = vis; scene.background = bg;
+  return buf;
+}
+async function shellMap(name, cam, W, H, far) {
+  const buf = shellCapture(cam, W, H, far), r = inpaint(buf, W, H, () => true), px = new Uint8Array(W * H * 4);
+  let mean = [0, 0, 0];
+  for (let i = 0; i < W * H; i++) { const k = buf[i * 4 + 3] >= 200; for (let a = 0; a < 3; a++) { px[i * 4 + a] = k ? buf[i * 4 + a] : r.out[i * 4 + a]; mean[a] += px[i * 4 + a] / (W * H); } px[i * 4 + 3] = 255; }
+  let data = px;
+  if (window.HP_SHELL_INPAINT) {                       // optional model hook (never required): (name, w, h, rgba, knownMask) -> rgba | null
+    try { const known = new Uint8Array(W * H); for (let i = 0; i < W * H; i++) known[i] = buf[i * 4 + 3] >= 200 ? 1 : 0;
+      const o = await window.HP_SHELL_INPAINT(name, W, H, px, known); if (o && o.length === px.length) data = o; } catch (e) { console.warn('shell inpaint hook failed, using the local fill', e); } }
+  const tex = new THREE.DataTexture(data, W, H, THREE.RGBAFormat, THREE.UnsignedByteType);
+  tex.colorSpace = THREE.SRGBColorSpace; tex.magFilter = tex.minFilter = THREE.LinearFilter; tex.generateMipmaps = false; tex.needsUpdate = true;
+  return { tex, mean: mean.map(Math.round), cam, knownFrac: r.knownFrac, W, H };
+}
+async function buildShell() {
+  if (shellInfo) return shellInfo;
+  if (shellBusy) return shellBusy;
+  return shellBusy = (async () => {
+  const bb = meta.bbox, M = 0.5, X0 = bb[0][0] - M, Y0 = bb[0][1] - M, Z0 = bb[0][2], X1 = bb[1][0] + M, Y1 = bb[1][1] + M, Z1 = bb[1][2];
+  const CELL = Math.max(0.25, Math.max(X1 - X0, Y1 - Y0) / 400), NX = Math.ceil((X1 - X0) / CELL), NY = Math.ceil((Y1 - Y0) / CELL), NC = NX * NY;
+  const lo = new Float32Array(NC).fill(1e9), hi = new Float32Array(NC).fill(-1e9), cnt = new Uint32Array(NC);
+  const put = (x, y, z) => { const i = ((x - X0) / CELL | 0), j = ((y - Y0) / CELL | 0); if (i < 0 || j < 0 || i >= NX || j >= NY) return; const c = j * NX + i;
+    cnt[c]++; if (z < lo[c]) lo[c] = z; if (z > hi[c]) hi[c] = z; };
+  for (let t = 0; t < HOUSE_END; t += 3) {
+    const a = IDX[t] * 3, b = IDX[t + 1] * 3, c = IDX[t + 2] * 3;
+    const e = Math.max(Math.hypot(P[a] - P[b], P[a + 1] - P[b + 1]), Math.hypot(P[b] - P[c], P[b + 1] - P[c + 1]), Math.hypot(P[a] - P[c], P[a + 1] - P[c + 1]));
+    const n = Math.min(24, Math.ceil(e / CELL));
+    for (let i = 0; i <= n; i++) for (let j = 0; j <= n - i; j++) { const u = i / n, v = j / n, w = 1 - u - v;
+      put(P[a] * w + P[b] * u + P[c] * v, P[a + 1] * w + P[b + 1] * u + P[c + 1] * v, P[a + 2] * w + P[b + 2] * u + P[c + 2] * v); }
+  }
+  // footprint: occupied cells, grown by one cell (so the hull sits behind the scan), enclosed gaps closed
+  let occ = new Uint8Array(NC); for (let c = 0; c < NC; c++) occ[c] = cnt[c] > 0 ? 1 : 0;
+  const grow = src => { const o = Uint8Array.from(src); for (let j = 0; j < NY; j++) for (let i = 0; i < NX; i++) if (src[j * NX + i])
+    for (let dj = -1; dj <= 1; dj++) for (let di = -1; di <= 1; di++) { const ii = i + di, jj = j + dj; if (ii >= 0 && jj >= 0 && ii < NX && jj < NY) o[jj * NX + ii] = 1; } return o; };
+  occ = grow(occ);
+  const out = new Uint8Array(NC), q = []; for (let c = 0; c < NC; c++) { const i = c % NX, j = c / NX | 0; if (!occ[c] && (i === 0 || j === 0 || i === NX - 1 || j === NY - 1)) { out[c] = 1; q.push(c); } }
+  for (let h = 0; h < q.length; h++) { const c = q[h], i = c % NX, j = c / NX | 0;
+    for (const [di, dj] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const ii = i + di, jj = j + dj; if (ii < 0 || jj < 0 || ii >= NX || jj >= NY) continue; const d = jj * NX + ii; if (!occ[d] && !out[d]) { out[d] = 1; q.push(d); } } }
+  for (let c = 0; c < NC; c++) occ[c] = out[c] ? 0 : 1;
+  // heights: lowest / highest scan point within one cell, then spread to the cells the growth added
+  let flo = Float32Array.from(lo), fhi = Float32Array.from(hi), have = Uint8Array.from(cnt.map(v => v > 0 ? 1 : 0));
+  for (let pass = 0; pass < 60; pass++) { let todo = 0; const nl = Float32Array.from(flo), nh = Float32Array.from(fhi), nv = Uint8Array.from(have);
+    for (let j = 0; j < NY; j++) for (let i = 0; i < NX; i++) { const c = j * NX + i; if (!occ[c] || have[c]) continue; todo++; let l = 1e9, h = -1e9;
+      for (let dj = -1; dj <= 1; dj++) for (let di = -1; di <= 1; di++) { const ii = i + di, jj = j + dj; if (ii < 0 || jj < 0 || ii >= NX || jj >= NY) continue; const d = jj * NX + ii; if (have[d]) { l = Math.min(l, flo[d]); h = Math.max(h, fhi[d]); } }
+      if (h > -1e8) { nl[c] = l; nh[c] = h; nv[c] = 1; } }
+    flo = nl; fhi = nh; have = nv; if (!todo) break; }
+  const FZ = new Float32Array(NC), CZ = new Float32Array(NC);
+  for (let j = 0; j < NY; j++) for (let i = 0; i < NX; i++) { const c = j * NX + i; if (!occ[c]) continue; let l = 1e9, h = -1e9;
+    for (let dj = -1; dj <= 1; dj++) for (let di = -1; di <= 1; di++) { const ii = i + di, jj = j + dj; if (ii < 0 || jj < 0 || ii >= NX || jj >= NY) continue; const d = jj * NX + ii; if (have[d] && occ[d]) { l = Math.min(l, flo[d]); h = Math.max(h, fhi[d]); } }
+    FZ[c] = (l > 1e8 ? Z0 : l) - 0.03; CZ[c] = (h < -1e8 ? Z1 : h) + 0.03; }
+  // colour maps from the real scan (see the header)
+  const floors = pieces.filter(pc => pc.on_floor).map(pc => pc.floor_z).sort((a, b) => a - b), fz0 = floors.length ? floors[floors.length >> 1] : Z0 + 0.05;
+  const cx = (X0 + X1) / 2, cy = (Y0 + Y1) / 2, SX = X1 - X0, SY = Y1 - Y0, SZ = Z1 - Z0 + 0.2, zc = (Z0 + Z1) / 2;
+  const dim = (a, b) => { const k = Math.min(1, 1100 / (Math.max(a, b) * PPM_S)); return [clamp(Math.round(a * PPM_S * k), 8, 1100), clamp(Math.round(b * PPM_S * k), 8, 1100)]; };
+  const ortho = (hw, hh, near, far, pos, look, up) => { const c = new THREE.OrthographicCamera(-hw, hw, hh, -hh, near, far); c.up.set(...up); c.position.set(...pos); c.lookAt(...look); c.updateMatrixWorld(); c.updateProjectionMatrix(); return c; };
+  const farMats = hmats.map(m => { const f = m.clone(); f.onBeforeCompile = sh => { hookDark(sh); sh.fragmentShader = sh.fragmentShader.replace('#include <dithering_fragment>', '#include <dithering_fragment>\n  gl_FragDepth = 1.0 - gl_FragCoord.z;'); }; f.customProgramCacheKey = () => 'far'; return f; });
+  const maps = {}; let [W, H] = dim(SX, SY);
+  status('Inferring the room shell: floor…');
+  maps.floor = await shellMap('floor', ortho(SX / 2, SY / 2, 0.001, 0.4, [cx, cy, fz0 + 0.12], [cx, cy, fz0], [0, 1, 0]), W, H);
+  status('Inferring the room shell: ceiling…'); await nextFrame();
+  maps.ceil = await shellMap('ceiling', ortho(SX / 2, SY / 2, 0.001, Z1 - fz0 + 1, [cx, cy, fz0 + 1.8], [cx, cy, fz0 + 2.8], [0, 1, 0]), W, H);
+  const faces = [['e', [1, 0]], ['w', [-1, 0]], ['n', [0, 1]], ['s', [0, -1]]];
+  for (const [k, [dx, dy]] of faces) { status(`Inferring the room shell: ${k === 'e' ? 'east' : k === 'w' ? 'west' : k === 'n' ? 'north' : 'south'} wall…`); await nextFrame();
+    const along = dx ? SY : SX, depth = dx ? SX : SY; [W, H] = dim(along, SZ);
+    maps[k] = await shellMap(k + ' wall', ortho(along / 2, SZ / 2, 0.01, depth + 1, [cx - dx * (SX / 2 + 0.5 - 0.0), cy - dy * (SY / 2 + 0.5), zc], [cx + 100 * dx, cy + 100 * dy, zc], [0, 0, 1]), W, H, farMats); }
+  farMats.forEach(m => m.dispose());
+  // the hull: one mesh per map, UVs from the capture camera that made the map
+  const geoms = {}; for (const k of ['floor', 'ceil', 'e', 'w', 'n', 's']) geoms[k] = { p: [], uv: [], i: [] };
+  const vq = (k, quad) => { const g = geoms[k], cam = maps[k].cam, base = g.p.length / 3, v = new THREE.Vector3();
+    for (const [x, y, z] of quad) { g.p.push(x, y, z); v.set(x, y, z).project(cam); g.uv.push(v.x * 0.5 + 0.5, v.y * 0.5 + 0.5); }
+    g.i.push(base, base + 1, base + 2, base, base + 2, base + 3); };
+  const at = (i, j) => (i < 0 || j < 0 || i >= NX || j >= NY) ? -1 : (occ[j * NX + i] ? j * NX + i : -1);
+  for (let j = 0; j < NY; j++) for (let i = 0; i < NX; i++) { const c = j * NX + i; if (!occ[c]) continue;
+    const x = X0 + i * CELL, y = Y0 + j * CELL, f = FZ[c], t = CZ[c];
+    vq('floor', [[x, y, f], [x + CELL, y, f], [x + CELL, y + CELL, f], [x, y + CELL, f]]); vq('ceil', [[x, y, t], [x + CELL, y, t], [x + CELL, y + CELL, t], [x, y + CELL, t]]);
+    for (const [k, di, dj, ex, ey, ax, ay] of [['e', 1, 0, x + CELL, y, 0, CELL], ['w', -1, 0, x, y, 0, CELL], ['n', 0, 1, x, y + CELL, CELL, 0], ['s', 0, -1, x, y, CELL, 0]]) {
+      const d = at(i + di, j + dj), lo2 = d < 0 ? f : Math.min(f, FZ[d]), hi2 = d < 0 ? t : Math.max(t, CZ[d]);
+      if (d >= 0) { const f2 = FZ[d], t2 = CZ[d];       // between two cells: close only the steps (so the hull has no cracks)
+        if (!(f < f2 - 1e-4 || t > t2 + 1e-4)) continue;
+        if (f < f2 - 1e-4) vq(k, [[ex, ey, f], [ex + ax, ey + ay, f], [ex + ax, ey + ay, f2], [ex, ey, f2]]);
+        if (t > t2 + 1e-4) vq(k, [[ex, ey, t2], [ex + ax, ey + ay, t2], [ex + ax, ey + ay, t], [ex, ey, t]]); }
+      else vq(k, [[ex, ey, lo2], [ex + ax, ey + ay, lo2], [ex + ax, ey + ay, hi2], [ex, ey, hi2]]); } }
+  let tris = 0;
+  for (const k of Object.keys(geoms)) { const g = geoms[k]; if (!g.i.length) continue; tris += g.i.length / 3;
+    const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.Float32BufferAttribute(g.p, 3)); geo.setAttribute('uv', new THREE.Float32BufferAttribute(g.uv, 2)); geo.setIndex(g.i);
+    const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: maps[k].tex, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: 3, polygonOffsetUnits: 6 }));
+    m.frustumCulled = false; m.renderOrder = -1; m.raycast = () => {}; shell.add(m); }
+  const wallMean = [0, 1, 2].map(a => Math.round(['e', 'w', 'n', 's'].reduce((s, k) => s + maps[k].mean[a], 0) / 4));
+  shellInfo = { tris, cell: CELL, wall: wallMean, floor: maps.floor.mean, ceil: maps.ceil.mean, bg: new THREE.Color(`rgb(${wallMean.join(',')})`).multiplyScalar(0.8),
+    known: Object.fromEntries(Object.entries(maps).map(([k, m]) => [k, +m.knownFrac.toFixed(2)])) };
+  shellBusy = null; return shellInfo; })();
+}
+function updateShell() {
+  const want = !!shellInfo && shellWanted();
+  if (shell.visible !== want) { shell.visible = want; darkU.value = want ? SHELL_DARK : 0; scene.background = want ? shellInfo.bg : bgOrig; $('shellBtn').classList.toggle('on', want); }
+}
+async function setShell(on) { shellForce = on; if (on) { await buildShell(); } updateShell(); return !!shellInfo; }
 // Reset floor (modeling/floor_reset.js): one flat floor plane with a simple texture instead of the scan floor
 const FR = FloorReset.create({ THREE, scene, house, P, UV, IDX, CP, CI, HOUSE_END, houseLo: meta.groups.length ? span(meta.groups)[0] : 0, posAttr, groups, meta, pieces, floorPatches: () => pieces.filter(pc => pc.patch && pc.patch.info.floor).map(pc => pc.patch.meshes[0]), aniso,
   hintZ: () => feet.z, rebuild: () => { staticDirty = false; rebuildStatic(); } });
@@ -749,6 +877,7 @@ async function clearSpace() {
   if (carried) cancelCarry();
   leavePhoto(true);
   list.forEach(pc => { pc.outline.visible = false; }); setTarget(null);
+  shellForce = null; await buildShell();                                   // the inferred room shell first: patches are then read from the scan with its dark voids cut out
   // 1) analyse: infer the floor / wall under each object (chunked so the page stays alive)
   const prev = new Map(list.map(pc => [pc, poseOf(pc)])); let tick = performance.now();
   for (let i = 0; i < list.length; i++) {
@@ -779,6 +908,7 @@ function startShrink(pc, dir) { pc.anim = dir === 'in' ? 'in' : 'out'; anims.pus
   else { pc.deleted = false; pc.pivot.visible = true; syncPatches(pc); } }
 let clearClock = performance.now();
 function updateClear(frameDt) {
+  updateShell();
   const now = performance.now(), dt = Math.min(0.25, (now - clearClock) / 1000); clearClock = now;   // real time: the sweep takes the same few seconds on a slow GPU
   if (staticDirty && !wave && !anims.length) rebuildStatic();
   if (wave) {
@@ -808,6 +938,7 @@ function restoreScan() {
 }
 function closeInfo() { $('clearInfo').classList.remove('open'); }
 function closeOffer() { $('offer').classList.remove('open'); }
+const sw1 = c => `<span class="sw" style="background:rgb(${c.join(',')})"></span>`;
 function showClearInfo() {
   const L = lastClear; if (!L) return;
   const kinds = Object.entries(L.kinds).sort((a, b) => b[1] - a[1]).map(([k, n]) => `<li>${n} × ${k}</li>`).join('');
@@ -816,6 +947,7 @@ function showClearInfo() {
     <ul>${kinds}</ul>
     <p>Where they stood the scan has holes. I filled ${L.floor} patch${L.floor === 1 ? '' : 'es'} of floor${L.wall ? ` and ${L.wall} of wall` : ''} by inference: colour and grain sampled from the surrounding floor and walls ${sw}.
     This is an estimate of what is under and behind them, not a measurement${L.weak ? ` (${L.weak} had no visible surface nearby and use a neutral grey)` : ''}. Object names are the segmentation's guesses from shape.</p>
+    ${shellInfo ? `<p><b>Inferred, not scanned:</b> the scan also has holes of its own (unphotographed walls, gaps in the ceiling, black texture). Behind it I built a closed room shell from the scan's footprint: the floor ${sw1(shellInfo.floor)}, walls ${sw1(shellInfo.wall)} and ceiling ${sw1(shellInfo.ceil)} are sampled from real scan pixels and continued where nothing was seen, so no black void shows from anywhere you stand. Everything it paints is an estimate. Toggle it with <kbd>G</kbd>.</p>` : ''}
     <div class="row"><button class="go" id="ciCat">Place catalogue pieces (C)</button><button id="ciUndo">Undo (Ctrl+Z)</button><button id="ciRestore">Restore scan objects</button><button id="ciClose">Close</button></div>`;
   $('clearInfo').classList.add('open');
   $('ciCat').onclick = () => { closeInfo(); toggleCatalog(true); }; $('ciUndo').onclick = () => { undo(); closeInfo(); };
@@ -830,6 +962,7 @@ function maybeOffer() {
     <div class="row"><button class="go" id="ofGo">Clear the space</button><button id="ofNo">Keep the scan as it is</button></div>`;
   $('offer').classList.add('open'); $('ofGo').onclick = () => clearSpace(); $('ofNo').onclick = closeOffer;
 }
+$('shellBtn').onclick = async () => { const on = !shell.visible; flash(on ? 'Filling gaps by inference…' : 'Gap fill off: the raw scan'); await setShell(on); };
 $('clearBtn').onclick = () => clearSpace(); $('restoreBtn').onclick = restoreScan;
 
 // edits last for this visit only (not saved); export as edits.json in the studio's format
@@ -1027,6 +1160,7 @@ addEventListener('keydown', e => {
   else if (e.code === 'Escape') { if ($('cat').classList.contains('open')) toggleCatalog(false); else cancelCarry(); }
   else if (e.code === 'KeyC' && !e.ctrlKey) toggleCatalog();
   else if (e.code === 'KeyK' && !e.ctrlKey) clearSpace();
+  else if (e.code === 'KeyG' && !e.ctrlKey) $('shellBtn').click();
 });
 addEventListener('wheel', e => { if (carried) { wheel += Math.sign(e.deltaY); e.preventDefault(); } }, { passive: false });
 $('exportBtn').onclick = exportEdits;
@@ -1662,7 +1796,7 @@ function frame() {
 }
 status(`Ready · ${spots.length} scan spots`);
 setTimeout(maybeOffer, 2500);   // first entry: offer to clear the space
-window.walk = { feet, eye, spots, groups, renderer, pieces, interact, spawn, catalog, toggleCatalog, envMat, relight: pc => { pc.envSpot = null; lightItem(pc); }, removePiece, undo, clearSpace, restoreScan, FR, setFloor, get lastClear() { return lastClear; }, get clearing() { return !!wave || anims.length > 0; }, get STATIC_() { return STATIC; }, checkFit, fitDetails, sceneTools, get target() { return target; },
+window.walk = { feet, eye, spots, groundAt, meta, house, groups, renderer, pieces, interact, spawn, catalog, toggleCatalog, envMat, relight: pc => { pc.envSpot = null; lightItem(pc); }, removePiece, undo, clearSpace, restoreScan, FR, setFloor, setShell, get shell() { return shellInfo; }, get lastClear() { return lastClear; }, get clearing() { return !!wave || anims.length > 0; }, get STATIC_() { return STATIC; }, checkFit, fitDetails, sceneTools, get target() { return target; },
   get carried() { return carried; }, get fits() { return fits; }, get mode() { return mode; }, setView(y, p) { yaw = y; pitch = p; }, keys };   // for debugging
 frame();
 </script>

@@ -4,7 +4,7 @@ import { fetchMatches } from "./api";
 import { DEMO_FALLBACK } from "./demo-flag";
 import { rankMatches } from "./demo-matches";
 import type { Exchange } from "./next-question";
-import type { Match } from "./matches";
+import type { ConceptGate, Match } from "./matches";
 
 const KEY = "foreground.matches.v2";
 const CHANGE = "foreground-matches";
@@ -12,7 +12,7 @@ const CHANGE = "foreground-matches";
 export type MatchesState =
   | { status: "loading" }
   /** `dataAvailable: false` means the API has no candidate registry loaded; it is not "no matches". */
-  | { status: "ready"; matches: Match[]; dataAvailable: boolean; demo: boolean; notice?: string; scene?: "sarah" }
+  | { status: "ready"; matches: Match[]; dataAvailable: boolean; demo: boolean; notice?: string; scene?: "sarah"; conceptGate?: ConceptGate }
   | { status: "error"; message: string };
 
 function read(): string | null {
@@ -51,14 +51,14 @@ export function clearMatches() {
 export async function refreshMatches(brief: Exchange[], opts: { limit?: number; scene?: "sarah" } = {}): Promise<void> {
   inflight += 1;
   try {
-    const { matches, dataAvailable } = await fetchMatches(brief, opts.limit);
+    const { matches, dataAvailable, conceptGate } = await fetchMatches(brief, opts.limit);
     inflight -= 1;
     if (!dataAvailable && DEMO_FALLBACK) {
       save({ status: "ready", matches: rankMatches(brief), dataAvailable: false, demo: true });
       return;
     }
     // The API's space picker already ranks the cafe scans with an editable walk first for a cafe brief; tours are never reassigned here.
-    save({ status: "ready", matches, dataAvailable, demo: false, ...(opts.scene ? { scene: opts.scene } : {}) });
+    save({ status: "ready", matches, dataAvailable, demo: false, ...(conceptGate ? { conceptGate } : {}), ...(opts.scene ? { scene: opts.scene } : {}) });
   } catch (error) {
     inflight -= 1;
     if (DEMO_FALLBACK) {

@@ -43,6 +43,11 @@ class Match(BaseModel):
     # None means the source has no asking rent. Missing is not zero.
     rentPerSquareFootYear: Optional[float] = None
     tourId: str
+    # CoStar property type and decoded subtype (e.g. "GeneralRetail", "GeneralRetail_Storefront"); "" when not recorded.
+    propertyType: str = ""
+    propertySubtype: str = ""
+    # Listed available suite sizes [smallest, largest] in sq ft from CoStar's active lease spaces; None = no listing.
+    suiteRangeSqft: Optional[list[int]] = None
     # 0-100 evidence completeness (share of factors observed). Not a fit or quality score.
     evidenceReadiness: int
     facts: SpaceFacts
@@ -84,7 +89,7 @@ class Alignment(BaseModel):
 
 class ShortlistMatch(Match):
     """A Match plus its hard-constraint verdicts. FAIL sites are never returned. Not a fit score."""
-    constraintStatus: Literal["PASS", "UNKNOWN"]
+    constraintStatus: Literal["PASS", "UNKNOWN", "FAIL"]  # FAIL only for a café scan always offered on a cafe brief
     constraints: list[ConstraintVerdict]
     missingFields: list[str]
     alignment: Optional[Alignment] = None
@@ -118,6 +123,8 @@ class MatchesResponse(BaseModel):
     excludedCount: int = 0
     notShownCount: int = 0
     note: str = ""
+    # Concept gate for a food brief: how many sites were excluded as not able to host it, grouped by type, with reasons. None = no gate.
+    conceptGate: Optional[dict] = None
 
 
 class NextQuestionRequest(BaseModel):

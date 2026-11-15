@@ -15,7 +15,7 @@ import Quantify from "./quantify";
 import type { LayoutSummary } from "../lib/layout-summary";
 import type { Asset } from "../lib/assets";
 import Stepper from "./stepper";
-import { heroPhoto, rentLabel, type FactorCard, type Match } from "../lib/matches";
+import { heroPhoto, isScanOnly, rentLabel, type FactorCard, type Match } from "../lib/matches";
 import FactorCards from "./factor-cards";
 import Projections, { ForecastRow } from "./projections";
 import SpaceChat from "./space-chat";
@@ -63,6 +63,8 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
   // Café demo path: the placed reference kit and the owner's assumed area are shared by the layout panel and Quantify.
   const [kit, setKit] = useState<Asset[]>([]);
   const [area, setArea] = useState("");
+  // Budget typed by the owner (null = use the intake brief's), shared by the live cost panel and Quantify.
+  const [budgetText, setBudgetText] = useState<string | null>(null);
   const [placed, setPlaced] = useState<PlacedPiece[]>([]);
   const router = useRouter();
   const lastLayout = useRef<LayoutSummary | null>(null);
@@ -234,7 +236,7 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
           <>
             {match.costarPropertyId && <CostarBuilding propertyId={match.costarPropertyId} city={match.city} />}
             {!match.demo && <ForecastRow listingId={match.listingId} />}
-            {!match.demo && <DataStreams listingId={match.listingId} />}
+            {!match.demo && <DataStreams listingId={match.listingId} scanOnly={isScanOnly(match)} />}
             <FactorCards factors={demoFactors ?? match.factors ?? []} demo={match.demo && !demoFactors?.length} />
           </>
         )}
@@ -250,7 +252,7 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
               )}
               {tab === "layout" && <LayoutPanel match={match} items={kit} onItems={setKit} area={area} onArea={setArea} />}
             </div>
-            <div className="lg:sticky lg:top-4 lg:self-start lg:max-h-[calc(100dvh-2rem)] lg:overflow-y-auto"><CostSide match={match} kit={kit} area={area} /></div>
+            <div className="lg:sticky lg:top-4 lg:self-start lg:max-h-[calc(100dvh-2rem)] lg:overflow-y-auto"><CostSide match={match} kit={kit} area={area} budgetText={budgetText} onBudgetText={setBudgetText} /></div>
           </div>
         )}
 
@@ -291,7 +293,7 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
       )}
       {quantify && (
         <Quantify
-          match={match} layout={quantify.layout} kit={kit} onKit={setKit} area={area} onArea={setArea}
+          match={match} layout={quantify.layout} kit={kit} onKit={setKit} area={area} onArea={setArea} budgetText={budgetText} onBudgetText={setBudgetText}
           step={current} onStep={goStep} onBackToLayout={() => { setCurrent(3); setQuantify(null); setPlanOpen(true); }}
           onClose={() => setQuantify(null)}
         />

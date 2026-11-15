@@ -39,7 +39,14 @@ async function get(base: string, path: string): Promise<J | null> {
 }
 
 /** Fetch everything Fio can cite for one listing. A failed endpoint is null; the answerer says so instead of guessing. */
-export async function loadFioContext(listingId: number, base = ""): Promise<FioContext> {
+export async function loadFioContext(listingId: number, base = "", scanOnly = false): Promise<FioContext> {
+  // A scan with no CoStar record has no triage, lineage, structure or presence rows: skip those requests (they would only 404).
+  if (scanOnly) {
+    const none = null;
+    const id = encodeURIComponent(String(listingId));
+    const [total, horizons, projections] = await Promise.all([get(base, `/api/property/${id}/total-cost`), get(base, `/api/horizons/${id}`), get(base, `/api/property/${id}/projections`)]);
+    return { triage: none, lineage: none, structure: none, total, horizons, projections, presence: none };
+  }
   const id = encodeURIComponent(String(listingId));
   const [triage, lineage, structure, total, horizons, projections, presence] = await Promise.all([
     get(base, `/api/triage/property/${id}`),

@@ -104,7 +104,8 @@ def matches(req: MatchesRequest):
     text = " . ".join(e.answer for e in req.brief)
     if (concept := picker.detect_concept(text)):
         why["concept"] = concept
-    shown, counts, excluded, not_shown = pipeline.shortlist(pool, profile, req.limit, text)
+    gate: dict = {}
+    shown, counts, excluded, not_shown = pipeline.shortlist(pool, profile, req.limit, text, gate)
     # Build-out is sized by the listed space; when a site lists none, by the size stated in the brief (labelled as such).
     brief_sqft, brief_basis = brief_size(profile)
     for m in shown:
@@ -116,7 +117,7 @@ def matches(req: MatchesRequest):
     note = ("Ordered by constraint status, then the space picker (food-service concept, scan, area, seats, budget, city: stated demo heuristics, not a fit score). FAIL sites are excluded "
             "and counted. UNKNOWN means a needed fact is missing, not that the site fails.")
     return MatchesResponse(dataAvailable=True, matches=shown, profile=pipeline.to_parsed(profile, why), counts=counts,
-                           excludedCount=excluded, notShownCount=not_shown, note=note)
+                           excludedCount=excluded, notShownCount=not_shown, note=note, conceptGate=gate.get("summary"))
 
 
 @app.get("/api/property/{listing_id}", response_model=Match)

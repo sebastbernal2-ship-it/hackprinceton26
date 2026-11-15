@@ -3,7 +3,7 @@
 import ListingPhoto from "./listing-photo";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { buildoutCaption, buildoutLabel, heroPhoto, rentEstimateLabel, monthlyRent, rentLabel, type Match } from "../lib/matches";
+import { buildoutCaption, buildoutLabel, heroPhoto, rentEstimateLabel, monthlyRent, rentLabel, type ConceptGate, type Match } from "../lib/matches";
 import { useMatches, type MatchesState } from "../lib/discover";
 import { alignmentView, topAlignment } from "../lib/alignment";
 import CompatibilityPill from "./compatibility-pill";
@@ -47,6 +47,8 @@ export default function Discover() {
       {state.status === "ready" && state.dataAvailable && matches.length === 0 && (
         <Notice title="No spaces matched">The registry is loaded, but no candidate matched this brief.</Notice>
       )}
+
+      {state.status === "ready" && state.conceptGate && state.conceptGate.excluded > 0 && <GateNote gate={state.conceptGate} />}
 
       <ul className="mt-10 grid grid-cols-1 gap-x-10 gap-y-14 md:grid-cols-2">
         {matches.map((match, index) => (
@@ -137,17 +139,46 @@ export default function Discover() {
   );
 }
 
+/** Transparency for the concept gate: how many sites were left out as unable to host the concept, and why. */
+function GateNote({ gate }: { gate: ConceptGate }) {
+  const word = gate.concept === "cafe" ? "cafe" : "restaurant";
+  return (
+    <details className="mt-6 max-w-2xl rounded-xl border border-foreground/15 px-4 py-3 text-sm" data-testid="concept-gate">
+      <summary className="cursor-pointer font-medium">
+        {gate.excluded} of {gate.total} sites excluded as not {word}-capable
+      </summary>
+      <p className="mt-2 text-xs text-foreground/55">
+        Only spaces whose recorded use and suite size can host a {word} are shown. Use comes from the CoStar property type and subtype, size from the listed available suite (else the scanned
+        space), never the whole building. Planning rules, not a permit check.
+      </p>
+      <ul className="mt-2 space-y-2">
+        {gate.groups.map((g) => (
+          <li key={g.type}>
+            <details>
+              <summary className="cursor-pointer text-foreground/75">
+                {g.type} <span className="text-foreground/45">({g.count})</span>
+              </summary>
+              <ul className="mt-1 list-disc space-y-0.5 pl-5 text-xs text-foreground/55">
+                {g.sites.map((s) => (
+                  <li key={s.listingId}>
+                    {s.address}, {s.city.split(",")[0]}: {s.reason}
+                  </li>
+                ))}
+              </ul>
+            </details>
+          </li>
+        ))}
+      </ul>
+    </details>
+  );
+}
+
 function PickReasons({ match }: { match: Match }) {
   const pick = match.pick;
-  if (!pick || (pick.reasons.length === 0 && !pick.bestMatch)) return null;
+  if (!pick || pick.reasons.length === 0) return null;
   return (
     <div className="mt-3" data-testid="pick-reasons">
-      {pick.bestMatch && (
-        <p className="inline-block rounded-full bg-accent/15 px-3 py-1 text-xs font-medium uppercase tracking-wide text-accent" data-testid="best-match">
-          {pick.label ?? "Best match (demo pick)"}
-        </p>
-      )}
-      <ul className="mt-2 space-y-1 text-sm text-foreground/60">
+      <ul className="space-y-1 text-sm text-foreground/60">
         {pick.reasons.map((r) => (
           <li key={r}>· {r}</li>
         ))}

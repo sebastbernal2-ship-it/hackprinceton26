@@ -3,9 +3,12 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Asset } from "../lib/assets";
 import { readBrief } from "../lib/brief";
-import { fetchLayoutCost, freshResponse, layoutCostItems, scenarioKey, type LayoutCost } from "../lib/layout-cost";
+import { fetchLayoutCost, freshResponse, layoutCostItems, nameFor, scenarioKey, type LayoutCost } from "../lib/layout-cost";
 import type { Match } from "../lib/matches";
 import { fetchTotalCost, type TotalCost } from "../lib/total-cost";
+import { buildCostBreakdown } from "../lib/cost-categories";
+import CostCategories, { climateInput, useClimate } from "./cost-categories";
+import { resolveBudget } from "../lib/quantify-model";
 import { briefBudget, budgetStatus, CASES, outlook, seatTotal, xrayLines, xrayTotal, zeroCrossing, type Case, type Outlook, type Range } from "../lib/cost-side";
 
 const usd = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
@@ -17,11 +20,14 @@ const TONE = { under: "text-match", tight: "text-accent", over: "text-accent", u
  * Live cost panel docked beside the planner and the layout view. Everything is derived from the shared kit, so it moves as pieces
  * are placed or removed. Build-out and rent come from the cost services; the X-ray and the outlook are labelled estimates.
  */
-export default function CostSide({ match, kit, area }: { match: Match; kit: Asset[]; area: string }) {
+export default function CostSide({ match, kit, area, budgetText: sharedBudget, onBudgetText }: { match: Match; kit: Asset[]; area: string; budgetText?: string | null; onBudgetText?: (v: string) => void }) {
   const sqft = Number(area) > 0 ? Number(area) : null;
-  const [budgetText, setBudgetText] = useState<string | null>(null);
+  // The budget is shared with Quantify when the parent passes it, so one typed number drives both panels.
+  const [ownBudget, setOwnBudget] = useState<string | null>(null);
+  const budgetText = onBudgetText ? (sharedBudget ?? null) : ownBudget;
+  const setBudgetText = onBudgetText ?? setOwnBudget;
   const [fromBrief] = useState<number | null>(() => briefBudget(readBrief()));
-  const budget = budgetText !== null ? (Number(budgetText) > 0 ? Number(budgetText) : null) : fromBrief;
+  const budget = resolveBudget(budgetText, fromBrief);
 
   const items = useMemo(() => layoutCostItems(kit), [kit]);
   const key = scenarioKey(items, sqft, budget);
@@ -62,6 +68,9 @@ export default function CostSide({ match, kit, area }: { match: Match; kit: Asse
   const monthly = rentData?.monthly ?? null;
   const occupancy = monthly ? ((monthly.low + monthly.high) / 2) * 12 : null;
   const out = buildout && occupancy !== null ? outlook(seats, buildout.p50 + (hidden.low + hidden.high) / 2, occupancy) : null;
+
+  const { model: climateModel, reason: climateReason } = useClimate(pid);
+  const breakdown = buildCostBreakdown({ fromLayout: kit.length > 0, lc: data, nameFor: (id) => nameFor(kit, id), xray, tc: rentData, climate: climateInput(climateModel, climateReason, "Intermediate", 2050) });
 
   return (
     <aside className="space-y-4 text-sm" aria-label="Live cost" data-testid="cost-side">
@@ -110,6 +119,10 @@ export default function CostSide({ match, kit, area }: { match: Match; kit: Asse
         ) : <p className="text-foreground/55">{kit.length === 0 ? "Place a piece to price it." : "Pricing…"}</p>}
       </Card>
 
+      <Card title="Costs by category">
+        <CostCategories compact breakdown={breakdown} />
+      </Card>
+
       <Card title="Break-even and 3-year outlook">
         {!out ? (
           <p className="text-foreground/55">{!sqft ? "Needs a floor area." : !pid ? "No rent basis for this scan." : rentData === null && rent ? "Cannot say: rent service did not answer." : "Pricing…"}</p>
@@ -152,7 +165,7 @@ function Bar({ budget, buildout, hidden }: { budget: number | null; buildout: nu
 const DIAL_TONE = { comfortable: "#5f6d4e", stretch: "#b08d57", unlikely: "#d9512c", unknown: "#999" } as const;
 const WORD = { comfortable: "Comfortable", stretch: "A stretch", unlikely: "Unlikely on these seats", unknown: "Unknown" } as const;
 
-function Outlook({ out }: { out: Outlook }) {
+export function Outlook({ out }: { out: Outlook }) {
   const base = out.cases.base;
   const months = base.paybackMonths;
   return (

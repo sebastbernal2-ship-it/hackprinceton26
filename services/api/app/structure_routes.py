@@ -58,7 +58,7 @@ def structure_scenarios(listing_id: int):
     reg = screening.region(p.get("city"), p.get("state"))
     fetch = _load("climate_fetch.json")
     return {"listingId": listing_id, "region": reg, "table": scenarios.table(fetch, reg),
-            "exposure": scenarios.exposure(p, fetch, reg), "label": "scenario analysis, not a forecast"}
+            "exposure": scenarios.exposure(p, fetch, reg), "climate": scenarios.metrics(listing_id, p, fetch, reg), "label": "scenario analysis, not a forecast"}
 
 
 class ExpansionRequest(BaseModel):
