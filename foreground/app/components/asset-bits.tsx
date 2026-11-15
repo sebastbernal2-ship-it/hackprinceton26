@@ -35,7 +35,7 @@ export function AssetFacts({ asset }: { asset: Asset }) {
 }
 
 /** Footprint polygon with its front edge (local +y) and front clearance zone. */
-export function FootprintSvg({ asset, size = 120 }: { asset: Asset; size?: number }) {
+export function FootprintSvg({ asset, size = 120, maxHeight }: { asset: Asset; size?: number; maxHeight?: number }) {
   const b = bbox(asset.footprint);
   const c = asset.clearance.front;
   const w = b.x1 - b.x0;
@@ -48,7 +48,7 @@ export function FootprintSvg({ asset, size = 120 }: { asset: Asset; size?: numbe
     <svg
       viewBox={`0 0 ${vbW} ${vbH}`}
       width={size}
-      style={{ aspectRatio: `${vbW} / ${vbH}` }}
+      style={{ aspectRatio: `${vbW} / ${vbH}`, ...(maxHeight ? { maxHeight, maxWidth: "100%" } : {}) }}
       role="img"
       aria-label={`Footprint of ${asset.name}, ${fmtM(w)} by ${fmtM(d)}, ${asset.footprint.length} corners`}
       className="shrink-0 self-start rounded border border-foreground/15 bg-panel"

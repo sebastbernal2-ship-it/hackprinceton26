@@ -10,6 +10,14 @@
           "title": "Confirmed",
           "type": "array"
         },
+        "estimatedItems": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Estimateditems",
+          "type": "array"
+        },
         "fail": {
           "title": "Fail",
           "type": "integer"

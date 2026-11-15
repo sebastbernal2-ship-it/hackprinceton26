@@ -66,7 +66,7 @@ def test_replan_reports_changes_and_why():
     r2 = replan(BASE, {"min_seats": 20}, sites)  # new constraint, no seat facts: PASS -> UNKNOWN
     assert {c["site_id"]: c["to"] for c in r2["changed"]} == {"a": UNKNOWN, "b": UNKNOWN}
     assert r2["changed"][0]["because"][0]["from"] == NOT_APPLIED
-    assert r2["changed"][0]["because"][0]["missing_fields"] == ["seat_capacity"]
+    assert r2["changed"][0]["because"][0]["missing_fields"] == ["seat_capacity_low", "seat_capacity_high"]
     assert replan(BASE, {"cities": None}, sites)["changed"] == []  # c was already UNKNOWN on area
 
 

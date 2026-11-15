@@ -5,8 +5,8 @@ import { useState } from "react";
 import { buildoutCaption, buildoutLabel, heroPhoto, rentEstimateLabel, monthlyRent, rentLabel, type Match } from "../lib/matches";
 import { useMatches, type MatchesState } from "../lib/discover";
 import { alignmentView, topAlignment } from "../lib/alignment";
+import CompatibilityPill from "./compatibility-pill";
 import { SARAH_NOTICE } from "../lib/sarah-scene";
-import EvidenceReadiness from "./evidence-readiness";
 import Stepper from "./stepper";
 import PropertyInfo from "./property-info";
 import TourOverlay from "./tour-overlay";
@@ -82,7 +82,7 @@ export default function Discover() {
                     )}
                   </p>
                 </div>
-                <EvidenceReadiness match={match} />
+                <CompatibilityPill match={match} />
               </div>
 
               <AlignmentLine match={match} leader={leaders.includes(index)} />
@@ -152,11 +152,11 @@ function AlignmentLine({ match, leader }: { match: Match; leader: boolean }) {
         {view.line}
         {leader && <span className="ml-2 rounded-full bg-match px-2 py-0.5 text-xs font-medium text-background">Most confirmed</span>}
       </summary>
-      <p className="mt-2 text-xs text-foreground/55">Counts your stated requirements the evidence supports. It is not a prediction or a fit score.</p>
+      <p className="mt-2 text-xs text-foreground/55">Counts your stated requirements the data supports; estimates are marked. Seat capacity is estimated from floor area. It is not a prediction or a fit score.</p>
       {view.confirmed.length > 0 && (
         <>
-          <p className="mt-2 text-xs font-medium">Confirmed</p>
-          <ul className="list-disc pl-5 text-foreground/70">{view.confirmed.map((c) => <li key={c}>{c}</li>)}</ul>
+          <p className="mt-2 text-xs font-medium">Met</p>
+          <ul className="list-disc pl-5 text-foreground/70">{view.confirmed.map((c) => <li key={c}>{c}{view.estimatedItems?.includes(c) ? " (estimate)" : ""}</li>)}</ul>
         </>
       )}
       {view.unknownItems.length > 0 && (

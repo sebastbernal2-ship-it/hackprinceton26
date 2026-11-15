@@ -41,11 +41,11 @@ def test_matches_uses_profile_and_excludes_fail():
 
 
 def test_matches_pass_before_unknown_and_missing_fields():
-    r = client.post("/api/matches", json=brief("at least 2,000 sq ft with 50 seats")).json()
-    # 900001 area 2500 PASS but seats unknown -> UNKNOWN; 900002 area 1800 FAIL
+    r = client.post("/api/matches", json=brief("at least 2,000 sq ft with 100 seats")).json()
+    # 900001 area 2500 PASS but estimated capacity (83-116 seats) straddles 100 -> UNKNOWN; 900002 area 1800 FAIL
     assert [m["listingId"] for m in r["matches"]] == [900001] and r["excludedCount"] == 1
     m = r["matches"][0]
-    assert m["constraintStatus"] == "UNKNOWN" and m["missingFields"] == ["seat_capacity"]
+    assert m["constraintStatus"] == "UNKNOWN" and m["alignment"]["unknownItems"] == ["Seat capacity"]
     assert "fit" not in " ".join(k for k in m if "score" in k)
 
 
@@ -122,7 +122,7 @@ def test_replan_changes_status_and_p_over():
 
 
 def test_replan_unknown_p_and_bad_keys():
-    r = client.post("/api/replan", json={**brief("Springfield"), "profileChange": {"minSeats": 10}}).json()
+    r = client.post("/api/replan", json={**brief("Springfield"), "profileChange": {"minSeats": 100}}).json()
     assert r["pOverBudget"]["buildoutOnly"] == {"before": None, "after": None, "delta": None}
     assert [c["to"] for c in r["changed"]] == ["UNKNOWN"]
     assert client.post("/api/replan", json={"profileChange": {"bogus": 1}}).status_code == 422

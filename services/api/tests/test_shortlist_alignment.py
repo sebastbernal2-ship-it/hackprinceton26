@@ -65,3 +65,20 @@ def test_each_match_carries_an_alignment_summary_from_its_constraints(data):
     assert a["total"] == len(verdicts) and a["pass"] == verdicts.count("PASS") and a["unknown"] == verdicts.count("UNKNOWN")
     assert a["fail"] == 0 and len(a["confirmed"]) == a["pass"] and len(a["unknownItems"]) == a["unknown"]
     assert all(isinstance(x, str) and x for x in a["confirmed"] + a["unknownItems"])
+
+
+def test_seat_capacity_is_estimated_from_area_not_unknown():
+    from app import pipeline
+    from integration.constraint_filter import filter as cf
+    from types import SimpleNamespace
+    m = SimpleNamespace(listingId=1, city="Houston", spaceSquareFeet=1357, spaceSource="scan", tourId=None, factors=[])
+    m.city = "Houston, TX"
+    site = pipeline.site_facts(m, None)
+    lo, hi = site.get("seat_capacity_low"), site.get("seat_capacity_high")
+    assert (lo.status, hi.status) == ("estimated", "estimated") and (lo.value, hi.value) == (45, 63)
+    r = cf._seats(cf.Profile(min_seats=24, max_seats=40), site)
+    assert r.status == cf.PASS and "estimated" in r.reason
+    assert cf._seats(cf.Profile(min_seats=80), site).status == cf.FAIL
+    assert cf._seats(cf.Profile(min_seats=50), site).status == cf.UNKNOWN
+    no_area = pipeline.site_facts(SimpleNamespace(listingId=2, city="Houston, TX", spaceSquareFeet=None, tourId=None, factors=[]), None)
+    assert cf._seats(cf.Profile(min_seats=24), no_area).status == cf.UNKNOWN

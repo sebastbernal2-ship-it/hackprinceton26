@@ -56,6 +56,12 @@ def site_facts(m: Match, cost_bounds: tuple[float, float] | None) -> cf.SiteFact
         f["listed_space_area_sqft"] = cf.Fact(m.spaceSquareFeet, "observed", "matterport-scan-area" if scan else SRC, str(m.listingId), "", m.city,
                                               "floor area measured from the scan of this model; the scanned space may not be the suite for lease"
                                               if scan else "listed available space; suite identity and freshness unverified")
+        # Seats are never listed. ESTIMATE from area using the same stated planning assumptions as the layout and cost tools:
+        # low = total area per seat 30 sq ft (dining + kitchen + back of house); high = 70% dining share at 15 sq ft per seat.
+        why = f"estimated from {m.spaceSquareFeet:g} sq ft: {SQFT_PER_SEAT_TOTAL:g} sq ft per seat overall (low) to {DINING_SHARE:.0%} dining at {SQFT_PER_SEAT_DINING:g} sq ft per seat (high); planning assumptions, not a code or measured figure"
+        for key, seats in (("seat_capacity_low", m.spaceSquareFeet / SQFT_PER_SEAT_TOTAL),
+                           ("seat_capacity_high", m.spaceSquareFeet * DINING_SHARE / SQFT_PER_SEAT_DINING)):
+            f[key] = cf.Fact(int(seats), "estimated", "estimate://seats-from-area-v1", str(m.listingId), "", m.city, why)
     if m.tourId:
         f["accessible_model_count"] = cf.Fact(1, "observed", SRC, str(m.listingId), "", m.city, "model association only")
     mk = next((c for c in m.factors if c.factorId == "property_market" and c.status == "observed" and c.value), None)
@@ -75,13 +81,16 @@ def _verdicts(res: cf.SiteResult) -> list[ConstraintVerdict]:
                               missingFields=list(r.missing_fields), evidence=r.evidence) for r in res.results]
 
 
+SQFT_PER_SEAT_TOTAL, SQFT_PER_SEAT_DINING, DINING_SHARE = 30.0, 15.0, 0.7
 CONSTRAINT_LABELS = {"city": "City", "area": "Suite area", "seats": "Seat capacity", "budget": "Build-out budget",
                      "scan_model": "3D scan available", "active_listing": "Active listing", "restaurant_use": "Restaurant use permitted"}
 
 
 def alignment(res: cf.SiteResult) -> Alignment:
     label = lambda r: CONSTRAINT_LABELS.get(r.constraint, r.constraint.replace("_", " ").capitalize())  # noqa: E731
+    est = lambda r: any(v.get("status") != "observed" for v in r.evidence.values())  # noqa: E731
     return Alignment(total=len(res.results), pass_=sum(r.status == cf.PASS for r in res.results),
+                     estimatedItems=[label(r) for r in res.results if r.status == cf.PASS and est(r)],
                      unknown=sum(r.status == cf.UNKNOWN for r in res.results), fail=sum(r.status == cf.FAIL for r in res.results),
                      confirmed=[label(r) for r in res.results if r.status == cf.PASS],
                      unknownItems=[label(r) for r in res.results if r.status == cf.UNKNOWN])

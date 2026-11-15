@@ -20,7 +20,7 @@ export default function Profile() {
   const [profileId, setProfileId] = useState(DEFAULT_PROFILE);
   const [reload, setReload] = useState(0);
   return (
-    <div className="flex max-w-3xl flex-col gap-10">
+    <div className="mx-auto flex w-full max-w-5xl flex-col gap-10">
       <header className="animate-rise">
         <h1 className="text-[clamp(1.6rem,4vw,2.5rem)] font-medium leading-tight tracking-tight">Profile</h1>
         <label className="mt-3 block text-sm text-foreground/60">

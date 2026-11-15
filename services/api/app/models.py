@@ -77,6 +77,7 @@ class Alignment(BaseModel):
     fail: int
     confirmed: list[str]
     unknownItems: list[str]
+    estimatedItems: list[str] = []  # confirmed items that rest on an estimate rather than an observed fact
 
     model_config = {"populate_by_name": True}
 

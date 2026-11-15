@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { alignmentView, topAlignment } from "../alignment";
+import { alignmentView, compatibility, topAlignment } from "../alignment";
 import { isSarahPrompt, SARAH_BRIEF, SARAH_LIMIT, SARAH_NOTICE } from "../sarah-scene";
 
 const al = (pass: number, unknown: number, fail = 0) => ({ alignment: { pass, unknown, fail, total: pass + unknown + fail, confirmed: ["city"], unknownItems: ["seats"] } });
@@ -21,8 +21,12 @@ describe("Sarah scene", () => {
 
 describe("alignment", () => {
   it("words the line as requirements confirmed, never a score", () => {
-    expect(alignmentView(al(3, 2))?.line).toBe("Requirements confirmed by evidence: 3 of 5, 2 unknown");
-    expect(alignmentView(al(2, 1, 1))?.line).toBe("Requirements confirmed by evidence: 2 of 4, 1 unknown, 1 contradicted");
+    expect(alignmentView(al(3, 2))?.line).toBe("Requirements met: 3 of 5, 2 unknown");
+    expect(alignmentView(al(2, 1, 1))?.line).toBe("Requirements met: 2 of 4, 1 unknown, 1 contradicted");
+  });
+  it("says how many met requirements rest on estimates", () => {
+    const a = { alignment: { pass: 5, unknown: 0, fail: 0, total: 5, confirmed: [], unknownItems: [], estimatedItems: ["Seat capacity", "Build-out budget"] } };
+    expect(alignmentView(a)?.line).toBe("Requirements met: 5 of 5 (2 on estimates)");
   });
   it("is null when absent or malformed, so nothing is invented", () => {
     expect(alignmentView({})).toBeNull();
@@ -36,5 +40,15 @@ describe("alignment", () => {
     expect(topAlignment([al(0, 5), al(0, 5), {}])).toEqual([]);
     expect(topAlignment([{}, {}])).toEqual([]);
     expect(topAlignment([])).toEqual([]);
+  });
+});
+
+describe("compatibility", () => {
+  it("blends 70% requirements met with 30% evidence readiness", () => {
+    expect(compatibility({ ...al(5, 0), evidenceReadiness: 20 })).toBe(76);
+    expect(compatibility({ ...al(0, 5), evidenceReadiness: 100 })).toBe(30);
+  });
+  it("is null without alignment", () => {
+    expect(compatibility({ evidenceReadiness: 50 })).toBeNull();
   });
 });
