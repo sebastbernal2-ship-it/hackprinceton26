@@ -29,3 +29,6 @@ reports/
 
 # Model training outputs (local only)
 forecasting/artifacts/
+
+# Profile-specific assets and generated models (local only)
+assets/profiles/
