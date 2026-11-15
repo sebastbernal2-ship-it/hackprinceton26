@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Site walkthrough</title>
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div id="stage"></div>
+  <div id="crosshair" hidden></div>
+  <header id="bar">
+    <strong id="title">Site walkthrough</strong>
+    <span id="badge" hidden></span>
+    <span id="status"></span>
+    <button id="reality" type="button" hidden aria-pressed="true">Reality check: on</button>
+    <button id="vr" type="button" hidden>Enter VR</button>
+    <button id="listToggle" type="button">Findings</button>
+  </header>
+  <aside id="list" aria-label="Findings"></aside>
+  <section id="card" hidden aria-live="polite"></section>
+  <div id="legend" aria-label="Legend"></div>
+  <div id="hint">Click the view to look around. W A S D walk, Shift run, F fly. Click a pin to read it. Esc releases the mouse.</div>
+  <div id="loading"><div id="loadText">Loading scene...</div></div>
+  <noscript>This viewer needs JavaScript and WebGL.</noscript>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
