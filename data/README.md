@@ -8,7 +8,7 @@ The encrypted full kit is extracted locally under `data/raw/costar/full-kit/`. I
 
 - `python3 data/prepare_starter.py` normalizes starter CSVs while preserving original source fields and adding canonical city, source-derived site ID, source row, and version. Outputs are ignored; raw inputs remain unchanged.
 - `python3 data/build_site_candidates.py` joins commercial property records to starter Matterport IDs and creates a retail/mixed-use investigation shortlist.
-- `python3 data/enrich_site_candidates.py` adds direct-property listing/occupancy evidence and joins tenant industry classifications by source ID, without emitting tenant names. Food-services industry is coarse historical evidence, not proof of an Italian restaurant or active use.
+- `python3 data/enrich_site_candidates.py` adds direct-property listing/occupancy evidence and joins tenant industry classifications by source ID, without emitting tenant names. Food-services industry is coarse historical evidence, not proof of cafe suitability or active use.
 - `python3 data/check_matterport_models.py` performs bounded, resumable read-only model lookups. Results are local checkpoints.
 - `python3 data/check_publication_address_links.py` compares publication address components for linked Matterport models in the exploratory queue. Component overlap is heuristic, not confirmation.
 - `python3 data/build_operator_review.py` creates detailed listing-space/model-ID review records for candidates with historical food-service tenants. It includes bounded defurnished-view location/floor metadata and address diagnostics. All 32 distinct models linked to the current exploratory queue returned HTTP 200 for the defurnished-view metadata query; nine returned locations. All six models in the food-service-history subset returned location/floor metadata. Location IDs do not validate dimensions or suite identity.
@@ -19,7 +19,7 @@ The encrypted full kit is extracted locally under `data/raw/costar/full-kit/`. I
 - `python3 data/build_catalog.py` creates a standalone browser UI at `data/normalized/costar/catalog.html`. Open that local file in a browser to search/filter candidates and expand all 15 factor evidence cards. It is intentionally alphabetical rather than ranked because no validated ranking is currently available. Rebuild the cards first.
 - `python3 data/build_local_context.py` adds 1-mile CoStar commercial peer counts and Houston-only 0.5-mile HPD NIBRS incident counts. See [local context methodology](../docs/data/local-context-methodology.md); crime remains contextual and is not scored. Raw police data is kept ignored/local.
 
-The current working concept is an Italian restaurant with gelato; see [concept profile](../docs/data/restaurant-concept-profile.md). Property-level matching does not prove a suite matches the scan. No listing record or historic tenant record proves current availability or suitability; verify with the broker and qualified local professionals.
+The current working concept is an independent cafe; see [concept profile](../docs/data/restaurant-concept-profile.md). Menu, on-site baking, seating, and budget are unconfirmed; the coffee/bakery equipment profile is illustrative. Food-service history is broad context, not evidence that a property suits a cafe. Property-level matching does not prove a suite matches the scan. No listing record or historic tenant record proves current availability or suitability; verify with the broker and qualified local professionals.
 
 
 ## Tests

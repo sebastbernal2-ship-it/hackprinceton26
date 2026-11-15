@@ -3,7 +3,20 @@
 import { useRef, useState } from "react";
 import { emptyTrace, linkNumbers, modeBadge, reduceTrace, replayAgent, runAgent, type AgentEvent, type Trace } from "../../lib/agent";
 
-const DEFAULT_GOAL = "Italian restaurant with gelato in Houston, 40 seats, under 250k: find, verify and plan the best candidates";
+const DEFAULT_GOAL = "Independent cafe in Houston; menu, seating, budget, and on-site baking are unconfirmed: find candidate spaces, connect each claim to evidence, and revise the plan when an assumption changes";
+
+function replayContext(source?: string): string {
+  switch (source) {
+    case "local-recorded-run":
+      return "Source: a recorded run from local data. This is not live, and its goal may differ from the one entered here.";
+    case "recorded-run-sanitized":
+      return "Source: a sanitized recording of the earlier Italian restaurant with gelato scenario. It is not a result for the current café goal; property addresses and IDs are masked.";
+    case "SYNTHETIC-fixture":
+      return "Source: a synthetic fixture for the earlier Italian restaurant with gelato scenario. Its values are synthetic and it is not a result for the current café goal.";
+    default:
+      return "Source: saved trace; source details are unavailable. This is not a live run or a result for the current goal.";
+  }
+}
 
 function Line({ e }: { e: AgentEvent }) {
   const who = e.agent ? <span className="text-foreground/45">{e.agent} </span> : null;
@@ -71,13 +84,14 @@ export default function AgentPanel() {
           </span>
         )}
       </div>
-      {trace.mode && !badge.live && <p className="mt-1 text-sm font-medium text-accent" data-testid="mode-detail">{badge.detail}</p>}
+      {trace.mode && !badge.live && trace.mode !== "REPLAY" && <p className="mt-1 text-sm font-medium text-accent" data-testid="mode-detail">{badge.detail}</p>}
+      {trace.mode === "REPLAY" && <p className="mt-1 text-sm font-medium text-accent" data-testid="mode-detail">{replayContext(trace.replaySource)}</p>}
       <p className="mt-1 text-sm text-foreground/50">The agent plans, calls tools, and spawns one inspector per shortlisted site. Every number in the brief must appear in a tool result it cites; click a number to see that result.</p>
       <form className="mt-3 flex flex-col gap-2 sm:flex-row" onSubmit={(e) => { e.preventDefault(); void start("run"); }}>
         <label className="sr-only" htmlFor="agent-goal">Goal</label>
         <input id="agent-goal" value={goal} onChange={(e) => setGoal(e.target.value)} className="min-w-0 flex-1 rounded-lg border border-foreground/20 bg-background px-3 py-2 text-sm" />
         <button type="submit" disabled={busy || !goal.trim()} className="rounded-lg bg-foreground px-4 py-2 text-sm text-background disabled:opacity-40">Run agent</button>
-        <button type="button" disabled={busy} onClick={() => void start("replay")} className="rounded-lg border border-foreground/25 px-4 py-2 text-sm disabled:opacity-40">Replay recorded run</button>
+        <button type="button" disabled={busy} onClick={() => void start("replay")} className="rounded-lg border border-foreground/25 px-4 py-2 text-sm disabled:opacity-40">Replay saved run</button>
       </form>
       {err && <p role="alert" className="mt-3 rounded-lg border border-accent/40 p-3 text-sm" data-testid="agent-error">{err} Nothing was run. Try the replay.</p>}
       {busy && <p className="mt-2 text-xs text-foreground/50" aria-live="polite">Streaming trace.</p>}

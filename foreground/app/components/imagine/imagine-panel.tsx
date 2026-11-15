@@ -8,7 +8,7 @@ import { useReskin } from "../reskin/reskin-panel";
 import ReskinResultView from "../reskin/reskin-result";
 import WalkEmbed from "./walk-embed";
 
-const EXAMPLES = ["Turn this Italian restaurant into Indian", "Make it a Japanese izakaya", "Open the wall to the next suite"];
+const EXAMPLES = ["Make this cafe feel brighter and more open", "Turn it into a Japanese izakaya", "Open the wall to the next suite"];
 
 function describe(e: AgentEvent): string | null {
   if (e.type === "plan" && Array.isArray(e.items)) return `Plan: ${(e.items as string[]).join("; ")}`;
@@ -45,7 +45,7 @@ export default function ImaginePanel({ listingId }: { listingId: number }) {
     const c = new AbortController();
     ctl.current = c;
     setAgentBusy(true);
-    if (change.kind === "reskin" && change.toConcept) void reskin.run("italian", change.toConcept);
+    if (change.kind === "reskin" && change.toConcept) void reskin.run("coffee_bakery", change.toConcept);
     try {
       const m = await runAgent(`Imagine this change for listing ${listingId} and say what to verify: ${t}`, (e) => {
         const d = describe(e);
@@ -66,7 +66,7 @@ export default function ImaginePanel({ listingId }: { listingId: number }) {
       <p className="mt-1 text-sm text-foreground/50">Describe a change. A local router picks the analysis, the agent endpoint plans it, and everything that cannot be sourced says so.</p>
       <form className="mt-3 flex flex-wrap gap-2" onSubmit={(e) => { e.preventDefault(); if (text.trim().length >= 3) void go(text.trim()); }}>
         <input value={text} onChange={(e) => setText(e.target.value)} aria-label="Describe the change" maxLength={300}
-          placeholder="e.g. turn this Italian restaurant into Indian" className="min-w-0 flex-1 rounded-lg border border-foreground/15 bg-background px-3 py-2 text-sm" />
+          placeholder="e.g. make this cafe feel brighter and more open" className="min-w-0 flex-1 rounded-lg border border-foreground/15 bg-background px-3 py-2 text-sm" />
         <button type="submit" disabled={agentBusy || text.trim().length < 3} className="rounded-full bg-foreground px-5 py-2 text-sm font-medium text-background disabled:opacity-40">Imagine</button>
       </form>
       <div className="mt-2 flex flex-wrap gap-2">
@@ -78,7 +78,7 @@ export default function ImaginePanel({ listingId }: { listingId: number }) {
           <section aria-labelledby="img-route-h">
             <h3 id="img-route-h" className="text-sm font-medium">1. Plan</h3>
             <p className="mt-1 text-sm text-foreground/70">
-              {parsed.kind === "reskin" && <>Local router: concept swap Italian to <strong>{concepts.find((c) => c.id === parsed.toConcept)?.name ?? parsed.toConcept}</strong>. Running the reskin analysis below.</>}
+              {parsed.kind === "reskin" && <>Local router: concept swap cafe to <strong>{concepts.find((c) => c.id === parsed.toConcept)?.name ?? parsed.toConcept}</strong>. Running the reskin analysis below.</>}
               {parsed.kind === "wall" && <>Local router: this reads as opening a wall or adding space. Use the expansion simulation under Structure and climate; wall type must be confirmed by an engineer.</>}
               {parsed.kind === "other" && <>Local router: no analysis matches this text, so only the agent trace and the verify list apply. Nothing was costed.</>}
             </p>

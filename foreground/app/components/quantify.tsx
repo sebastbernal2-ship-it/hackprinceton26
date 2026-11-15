@@ -116,7 +116,7 @@ export default function Quantify({ match, layout, onBackToLayout, onClose }: Qua
           )
         ) : (
           <>
-            <TotalCostPanel listingId={match.listingId} onRent={onRent} />
+            <TotalCostPanel listingId={match.listingId} initialSquareFeet={match.squareFeet} onRent={onRent} />
             <CostPanel listingId={match.listingId} />
             {seats ? (
               <FinancePanel listingId={match.listingId} seats={seats} rentUnknownAssumption={monthlyRent ?? undefined} />

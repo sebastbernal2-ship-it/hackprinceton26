@@ -1,28 +1,26 @@
-# Working concept profile: Italian restaurant + gelato
+# Working concept profile: independent cafe
 
-This is a first-pass planning profile from the team's direction, not a validated operator brief. Do not assume a particular brand, menu, service model, or gelato-production method.
+This is a starting point for the demo, not a complete operator brief. The CoStar and Matterport inventory is general commercial-property evidence; it does not establish that a listing suits a cafe.
 
-## Known
+## Known for the demo
 
-- Restaurant cuisine: Italian.
-- Gelato is part of the offering.
-- Target is a commercial space in the Houston / Los Angeles CoStar-Matterport starter inventory.
+- Business type: independent cafe.
+- Initial search geography: Houston and Los Angeles, matching the current candidate inventory.
+- Site-selection, scan, property-history, and diligence evidence remain useful across food businesses, but historical food-service use is not proof of cafe use or suitability.
 
-## Important open decisions
+## Unconfirmed operator choices
 
-1. Gelato: scoop/service only with product sourced from a supplier, or made on-site? On-site production changes equipment, storage, electrical demand, and workflow.
-2. Service model: counter service, fast casual, table service, or hybrid?
-3. Menu: pizza/wood-fired oven, pasta, fryer, grill, bakery, or a narrower menu? This strongly affects hood/fire suppression, gas/electric, make-up air, and prep zones.
-4. Seats, takeout/delivery share, operating hours, budget, target space area, and preferred city/submarket?
-5. Existing operator/business requirements or reference kitchen layout available with permission?
+- Menu: coffee, tea, prepared food, baked goods, or a mix?
+- Preparation: buy finished goods, prepare or bake on site, or both? Keep this unknown until the owner answers; on-site production changes equipment, ventilation, utilities, and workflow.
+- Seating, target area, opening hours, takeout mix, rent/build-out budget, supplier needs, and non-negotiables.
+- The existing coffee/bakery profile is a reference only. Its espresso, pastry case, oven, and rack choices do not establish the cafe's menu or equipment needs. On-site baking is unconfirmed.
 
-## Site diligence prompts (not facts about listed properties)
+## Site diligence prompts (questions, not property findings)
 
-- Confirm legal restaurant/food-service use, certificate-of-occupancy path, zoning, and landlord restrictions with local authorities/professionals.
-- Verify existing hood type and dimensions, fire suppression inspection, exhaust route/roof rights, and make-up-air capacity; do not infer presence/functionality from a scan.
-- Verify grease interceptor capacity/maintenance, gas service, electrical service (voltage/phase/capacity), HVAC, water, drainage, hot water, and floor drains.
-- Verify food-prep, dishwash, cold storage, and delivery/receiving workflow against the actual measured suite.
-- For gelato, verify service-case/freezer power and heat rejection. If producing on site, additionally verify pasteurization/batch-freezing equipment needs, dedicated cold storage, sanitation workflow, and production-code requirements with the operator and local experts.
-- Confirm the CoStar listing is current and applies to the exact suite represented by the Matterport model. A building-level scan may not represent the marketed space.
+- Confirm current listing, exact suite, and whether the Matterport scan represents that suite.
+- Verify permitted food-service use, local health review, occupancy/egress, accessibility, and landlord approval with the relevant professionals.
+- Verify refrigeration, electrical service, heat rejection, handwashing and warewashing, water/drainage, and food workflow against the selected menu and actual equipment specs.
+- If the operator prepares food or bakes on site, identify the process first, then verify required equipment, storage, sanitation, utilities, ventilation, and local review.
+- Verify fire suppression, gas, and grease requirements only if required by the selected menu and equipment.
 
-Use these as questions for an operator, landlord, broker, and qualified local professionals. The prototype must not present them as verified property conditions or code determinations.
+Unknown is a valid answer. Do not turn these questions or the illustrative layout into claims about a listed space, a code determination, or a fit recommendation.

@@ -2,11 +2,11 @@
 
 ## Scope
 
-Build a reliable, end-to-end demonstration for one independent food-business owner evaluating a small set of scanned commercial spaces. Prioritize scanned restaurant-suitable properties in Houston or Los Angeles only after confirming actual data coverage and access. Do not imply a comprehensive listing catalog. Do not ask the owner to predict target revenue.
+Build a reliable, end-to-end demonstration for one independent cafe owner evaluating a small set of scanned commercial spaces. Prioritize scanned properties in Houston or Los Angeles only after confirming actual data coverage and access. Existing food-service history is context, not proof of cafe use or suitability. The menu, on-site baking, seating, and budget are still to be confirmed. Do not imply a comprehensive listing catalog. Do not ask the owner to predict target revenue.
 
 ## Target flow
 
-1. **Intake:** “What are you looking for?” Gather concept, city, budget, seats/capacity, and must-haves.
+1. **Intake:** “What are you looking for?” Gather service and production model, city, budget, seats/capacity, and must-haves. Unknown answers remain unknown.
 2. **Shortlist:** return a small explainable set of matching sites, showing evidence and missing information rather than an opaque score alone.
 3. **Inspect:** for one candidate, show available property/market context, Matterport interior, and Vexcel aerial context. Make each source identifiable.
 4. **Project:** visualize the business-specific kitchen/equipment arrangement in the candidate-space dimensions; show fit, circulation conflicts, and a before/after plan or view.

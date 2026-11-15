@@ -15,8 +15,10 @@ const TONE: Record<string, string> = {
  * square feet to lease (CoStar gives only the building size) and picks a rent rate; unknown parts stay out of the total.
  * onRent hands the monthly rent to the 36-month scenario.
  */
-export default function TotalCostPanel({ listingId, onRent }: { listingId: number; onRent?: (monthly: number | null) => void }) {
-  const [sqft, setSqft] = useState("");
+export default function TotalCostPanel({ listingId, initialSquareFeet, onRent }: { listingId: number; initialSquareFeet?: number; onRent?: (monthly: number | null) => void }) {
+  // For a candidate listing, use its stated area as an editable starting assumption. Demo scans
+  // linked only to a building record omit this value because building area is not the cafe's lease area.
+  const [sqft, setSqft] = useState(initialSquareFeet && initialSquareFeet > 0 ? String(Math.round(initialSquareFeet)) : "");
   const [source, setSource] = useState<string | null>(null);
   const [ownRate, setOwnRate] = useState("");
   const [months, setMonths] = useState(12);
@@ -47,10 +49,15 @@ export default function TotalCostPanel({ listingId, onRent }: { listingId: numbe
 
       <div className="mt-5 flex flex-wrap gap-4">
         <label className="text-sm">
-          <span className="block text-foreground/55">Square feet you would lease</span>
+          <span className="block text-foreground/55">Area to include in this scenario</span>
           <input type="number" min={1} inputMode="numeric" value={sqft} onChange={(e) => setSqft(e.target.value)}
-            placeholder={data?.buildingSquareFeet ? `building is ${Math.round(data.buildingSquareFeet).toLocaleString()}` : "e.g. 2500"}
+            placeholder={data?.buildingSquareFeet ? `building is ${Math.round(data.buildingSquareFeet).toLocaleString()} sq ft` : "e.g. 2500"}
             className="mt-1 w-56 rounded-lg border border-foreground/20 bg-background px-3 py-2 tabular-nums" />
+          <span className="mt-1 block max-w-sm text-xs text-foreground/45">
+            {initialSquareFeet && initialSquareFeet > 0
+              ? `Starts with the listing area (${Math.round(initialSquareFeet).toLocaleString()} sq ft), also used for the concept layout. This is an editable area assumption, not a confirmed lease area.`
+              : "Enter the cafe area you plan to lease. A linked building's total area is shown only as a reference; it is not assumed to be your lease area."}
+          </span>
         </label>
         <label className="text-sm">
           <span className="block text-foreground/55">Period</span>

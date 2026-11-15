@@ -1,4 +1,8 @@
+import os
+from pathlib import Path
+
 from fastapi import FastAPI, HTTPException
+from fastapi.staticfiles import StaticFiles
 
 from . import inspection_routes, pipeline, projections, stubs
 from .agent_routes import router as agent_router
@@ -24,6 +28,9 @@ from .models import (
 )
 
 app = FastAPI(title="Site evidence API")
+site_photo_dir = Path(os.environ.get("SITE_PHOTO_DIR", "data/derived/site-photos"))
+site_photo_dir.mkdir(parents=True, exist_ok=True)
+app.mount("/api/site-photos", StaticFiles(directory=site_photo_dir, check_dir=False), name="site-photos")
 app.include_router(inspection_routes.router)
 app.include_router(costs_router)
 app.include_router(finance_router)

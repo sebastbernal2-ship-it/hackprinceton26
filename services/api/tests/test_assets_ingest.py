@@ -9,9 +9,11 @@ ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT))
 
 from app import assets_ingest_routes as routes  # noqa: E402
+from app import assets_routes as catalog_routes  # noqa: E402
 from app.main import app  # noqa: E402
 from assets.ingest import from_scan, identify as ident  # noqa: E402
 from assets.ingest.__main__ import main as cli_main  # noqa: E402
+from assets.store import Store  # noqa: E402
 
 client = TestClient(app)
 JPG = b"\xff\xd8\xff\xe0fake"
@@ -113,14 +115,35 @@ def test_api_ingest_ok(api, tmp_path):
     assert r.status_code == 200
     j = r.json()
     assert j["mode"] == "live" and j["proposals"][0]["profileId"] == "chainA" and api.calls[0][0] == 1
-    stored = list((tmp_path / "up").rglob("*"))
-    assert [p for p in stored if p.is_file()] and all((tmp_path / "up") in p.parents for p in stored)
-    assert not any("evil" in p.name for p in stored)
+    # request images are temporary: nothing is left on disk and no proposal points at a dangling file
+    assert not [p for p in (tmp_path / "up").rglob("*") if p.is_file()]
+    assert all(pr["imageRefs"] == [] for pr in j["proposals"])
 
 
-def test_api_ingest_no_key_no_image_is_fixture(monkeypatch):
+def test_api_live_proposal_can_be_confirmed_and_loaded_from_profile(api, monkeypatch, tmp_path):
+    monkeypatch.setattr(catalog_routes, "STORE", Store(tmp_path / "assets"))
+    response = client.post(
+        "/api/assets/ingest",
+        files=[("image", ("machine.jpg", JPG, "image/jpeg"))],
+        data={"profileId": "cafe-demo"},
+    )
+    assert response.status_code == 200
+    body = response.json()
+    assert body["mode"] == "live" and body["proposals"]
+    proposal = body["proposals"][0]
+    saved = client.post("/api/assets", json={**proposal, "status": "confirmed"})
+    assert saved.status_code == 201, saved.text
+    assert saved.json()["status"] == "confirmed"
+    assert saved.json()["profileId"] == "cafe-demo"
+    listed = client.get("/api/assets?profileId=cafe-demo")
+    assert listed.status_code == 200
+    assert any(asset["assetId"] == proposal["assetId"] for asset in listed.json())
+
+
+def test_api_ingest_without_key_is_fixture_and_without_image_is_rejected(monkeypatch):
     monkeypatch.setattr(routes, "get_client", lambda: None)
-    j = client.post("/api/assets/ingest", data={"profileId": "p"}).json()
+    assert client.post("/api/assets/ingest", data={"profileId": "p"}).status_code == 422
+    j = client.post("/api/assets/ingest", files=[("image", ("a.jpg", JPG, "image/jpeg"))], data={"profileId": "p"}).json()
     assert j["mode"] == "fixture" and j["notice"].startswith("SAMPLE DATA")
 
 

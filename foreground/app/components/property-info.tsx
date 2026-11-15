@@ -5,6 +5,7 @@ import ListingPhoto from "./listing-photo";
 import InspectionPanel from "./inspection-panel";
 import CostarBuilding from "./costar-building";
 import PlanVision from "./plan-vision";
+import LayoutPanel from "./layout-panel";
 import Quantify from "./quantify";
 import type { LayoutSummary } from "../lib/layout-summary";
 import Stepper from "./stepper";
@@ -182,6 +183,8 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
         {match.costarPropertyId && <CostarBuilding propertyId={match.costarPropertyId} city={match.city} />}
 
         <FactorCards factors={demoFactors ?? match.factors ?? []} demo={match.demo && !demoFactors?.length} />
+
+        <LayoutPanel match={match} />
 
         {!match.demo && <TriagePanel listingId={match.listingId} />}
         {!match.demo && <InspectionPanel listingId={match.listingId} />}

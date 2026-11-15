@@ -90,13 +90,13 @@ export async function placeOnSurface(
   kind: TourKind,
   cameraPosition?: Vec3,
 ): Promise<SurfacePlacement | null> {
-  const hit = await sdk.Renderer.getWorldPositionData(screen);
+  const hit = (await sdk.Renderer.getWorldPositionData(screen)) as { position?: Vec3 | null };
   if (!hit.position) return null;
 
   const sample = 12;
   const [right, down] = await Promise.all([
-    sdk.Renderer.getWorldPositionData({ x: screen.x + sample, y: screen.y }),
-    sdk.Renderer.getWorldPositionData({ x: screen.x, y: screen.y + sample }),
+    sdk.Renderer.getWorldPositionData({ x: screen.x + sample, y: screen.y }) as Promise<{ position?: Vec3 | null }>,
+    sdk.Renderer.getWorldPositionData({ x: screen.x, y: screen.y + sample }) as Promise<{ position?: Vec3 | null }>,
   ]);
 
   let normal = UP;
@@ -149,7 +149,7 @@ export async function readPose(sdk: MpSdk) {
       subscription.cancel();
       resolve({ position: { x: 0, y: 1, z: 0 }, rotation: { x: 0, y: 0 }, mode: "mode.inside" });
     }, 400);
-    const subscription = sdk.Camera.pose.subscribe((pose) => {
+    const subscription = sdk.Camera.pose.subscribe((pose: { position: Vec3; rotation: { x: number; y: number }; mode: string }) => {
       clearTimeout(timer);
       subscription.cancel();
       resolve(pose);

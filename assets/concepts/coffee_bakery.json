@@ -1,6 +1,6 @@
 {
   "id": "coffee_bakery",
-  "name": "Coffee shop and bakery",
+  "name": "Cafe (coffee and bakery reference)",
   "equipment": [
     {
       "assetId": "espresso_machine_2group",
@@ -142,5 +142,5 @@
     }
   ],
   "seatsPerUnitNote": "qty.perSeats = one unit per N seats, ceil, at least min (default 1); a scaling ASSUMPTION, not a code figure",
-  "status": "draft concept profile: assumptions, not an engineering or code determination"
+  "status": "draft cafe reference profile: baking and equipment are unconfirmed assumptions, not an engineering or code determination"
 }

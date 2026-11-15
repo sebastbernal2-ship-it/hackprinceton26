@@ -47,6 +47,8 @@ export const VARIANT_LABEL: Record<VariantKind, string> = {
 export const DIMS_LABEL: Record<DimsStatus, string> = { measured: "measured", catalog: "catalog", estimated: "estimated" };
 
 export type IngestResponse = { proposals: Asset[]; mode: "live" | "fixture"; notice: string };
+export const MAX_ASSET_UPLOAD_IMAGES = 6;
+export const MAX_ASSET_UPLOAD_BYTES = 5 * 1024 * 1024;
 
 export class AssetApiError extends Error {
   constructor(message: string, readonly status: number | null) {
@@ -98,6 +100,18 @@ export function editDims(asset: Asset, axis: keyof Dims, value: number): Asset {
 }
 
 export function ingestImages(files: File[], opts: { profileId?: string | null; referenceScale?: string }): Promise<IngestResponse> {
+  if (files.length === 0) throw new AssetApiError("Choose at least one image.", 422);
+  if (files.length > MAX_ASSET_UPLOAD_IMAGES) {
+    throw new AssetApiError(`Choose no more than ${MAX_ASSET_UPLOAD_IMAGES} images.`, 422);
+  }
+  const allowed = new Set([".jpg", ".jpeg", ".png", ".webp"]);
+  for (const file of files) {
+    const ext = file.name.slice(file.name.lastIndexOf(".")).toLowerCase();
+    if (!allowed.has(ext)) throw new AssetApiError("Use JPEG, PNG, or WebP images.", 415);
+    if (file.size > MAX_ASSET_UPLOAD_BYTES) {
+      throw new AssetApiError(`${file.name} exceeds the 5 MiB per-image limit.`, 413);
+    }
+  }
   const form = new FormData();
   for (const file of files) form.append("image", file);
   if (opts.referenceScale) form.append("referenceScale", opts.referenceScale);

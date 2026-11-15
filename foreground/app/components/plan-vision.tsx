@@ -9,7 +9,7 @@ type PlanVisionProps = { tourId: string; title: string; detail?: string; onClose
 /**
  * Step 4, Project layout: Davd's first-person 3D model of the scan (modeling/walk.html, served at /walk3d/), where the
  * owner walks the space, moves or removes furniture and places catalogue pieces. Needs a local walk export
- * (assets_<id>/walk/, from modeling/walk_export.py); without one it says so instead of showing an empty room.
+ * (assets_<id>/walk/, from modeling/walk_export.py); without one it falls back to Matterport's read-only tour.
  */
 export default function PlanVision({ tourId, title, detail, onClose, onContinue }: PlanVisionProps) {
   const [ready, setReady] = useState<boolean | null>(tourId ? null : false);
@@ -78,15 +78,38 @@ export default function PlanVision({ tourId, title, detail, onClose, onContinue 
         {ready === true && (
           <iframe ref={frameRef} title={`3D model of ${title}`} src={`/walk3d/walk.html?model=${encodeURIComponent(tourId)}`} className="absolute inset-0 h-full w-full border-0" allow="fullscreen" />
         )}
-        {ready === false && (
+        {ready === false && tourId && (
+          <>
+            <iframe
+              title={`Matterport tour of ${title}`}
+              src={`https://my.matterport.com/show/?m=${encodeURIComponent(tourId)}&play=1&qs=1&dh=1&brand=0&title=0`}
+              className="absolute inset-0 h-full w-full border-0"
+              allow="fullscreen; xr-spatial-tracking"
+              allowFullScreen
+            />
+            <div className="absolute inset-x-0 bottom-0 flex flex-wrap items-center justify-between gap-3 bg-black/75 px-5 py-4 text-white backdrop-blur-sm">
+              <div>
+                <p className="text-sm font-medium">Read-only Matterport tour</p>
+                <p className="mt-1 text-xs text-white/65">The editable planning export is not available. You can still explore the scan; furniture edits and layout counts are unavailable.</p>
+              </div>
+              {onContinue && (
+                <button type="button" onClick={() => onContinue(null)} className="shrink-0 rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black">
+                  Continue without a layout
+                </button>
+              )}
+            </div>
+          </>
+        )}
+        {ready === false && !tourId && (
           <div className="absolute inset-0 flex items-center justify-center px-8 text-center text-white">
             <div className="max-w-md">
               <p className="text-lg font-medium">No 3D model for this space yet</p>
-              <p className="mt-3 text-sm text-white/60">
-                {tourId
-                  ? <>The scan has not been prepared for planning. Build it with <code>python modeling/walk_export.py --model {tourId}</code>.</>
-                  : "There is no Matterport scan on file for this space."}
-              </p>
+              <p className="mt-3 text-sm text-white/60">There is no Matterport scan on file for this space.</p>
+              {onContinue && (
+                <button type="button" onClick={() => onContinue(null)} className="mt-6 block w-full rounded-full border border-white/50 px-5 py-2.5 text-sm font-medium text-white">
+                  Continue to Quantify without a layout
+                </button>
+              )}
               <button type="button" onClick={onClose} className="mt-8 rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black">
                 Back to property
               </button>

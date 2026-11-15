@@ -1,26 +1,24 @@
 {
-  "concept": "Italian restaurant with gelato",
+  "concept": "Independent cafe",
   "version": 1,
   "scope": "Exploratory decision-support requirements; not a lease or code determination",
   "user_confirmed": {
-    "cuisine": "Italian",
-    "gelato_offering": true,
     "cities": ["Houston", "Los Angeles"],
     "vexcel_in_scope_now": false,
     "data_use_rights_confirmed_by_user": true
   },
   "provisional_assumptions_for_iteration_only": {
-    "service_style": {"value": "counter-service with optional seating", "status": "assumption"},
-    "gelato_production": {"value": "sourced; no on-site production", "status": "assumption"},
-    "target_suite_area_sqft": {"min": 1000, "max": 6000, "status": "exploratory filter only"},
-    "menu_equipment": ["refrigerated prep", "cookline TBD", "gelato display case", "refrigeration", "dishwashing"],
+    "service_style": {"value": null, "status": "unknown"},
+    "menu_and_preparation_model": {"value": null, "status": "unknown"},
+    "target_suite_area_sqft": {"min": null, "max": null, "status": "unknown; confirm with operator"},
+    "menu_equipment": ["coffee equipment TBD", "food preparation equipment TBD", "refrigeration TBD", "dishwashing TBD"],
     "required_seats": null,
     "budget": null
   },
   "risk_categories": [
-    "space_fit", "listing_freshness", "suite_scan_identity", "restaurant_use_and_zoning",
-    "hood_fire_suppression_exhaust", "grease_management", "utilities_and_plumbing",
-    "gelato_cold_chain", "accessibility_and_egress", "data_missingness"
+    "space_fit", "listing_freshness", "suite_scan_identity", "food_service_use_and_zoning",
+    "food_preparation_and_refrigeration", "utilities_and_plumbing", "food_safety_review",
+    "accessibility_and_egress", "data_missingness"
   ],
   "scoring_policy": {
     "method": "transparent rules-based evidence and diligence risk; no trained ML model yet",

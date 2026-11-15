@@ -46,7 +46,7 @@ def active_lease_spaces(listings, statuses, pid):
 
 
 def main():
-    enums = json.loads((KIT / "schemas/enums.json").read_text())
+    enums = json.loads((KIT / "schemas/enums.json").read_text(encoding="utf-8"))
     statuses = enums["ListingStatus"]
     listing_types = enums["ListingType"]
     industries = enums["IndustryType"]

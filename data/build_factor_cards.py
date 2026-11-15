@@ -62,7 +62,7 @@ def build_cards(factors,sites,evidence,operator,context,adapter_obs=None):
         # An observed source status does not establish current availability.
         stat=';'.join(x for x in ev.get('listing_statuses','').split(';') if x)
         add('property_market','observed' if stat else 'unknown',stat,'source status codes','CoStar local snapshot',pid,evidence_as_of(ev),'property / listing grain','snapshot','source status only; no broker confirmation','candidate has linked listing records' if stat else 'no linked listing record', 'Snapshot status only; no current availability claim.')
-        add('operator_preferences',reason='Operator has not answered the intake; Italian restaurant with gelato is the concept only.')
+        add('operator_preferences',reason='Independent cafe is the working concept; menu, service style, seating, budget, and on-site baking are unconfirmed.')
         add('spatial_interior','observed' if op.get('matterport_model_ids') else 'unknown',op.get('matterport_model_ids',''),'model IDs','Matterport local lookup',op.get('matterport_model_ids',''),evidence_as_of(op),'property association; suite identity unresolved','','property-level association; not suite match or dimension validation','model association record present' if op.get('matterport_model_ids') else 'no model evidence','User-selected tour does not verify marketed suite identity or dimensions.')
         crime=ctx.get('reported_incidents_0_5mi','')
         if not crime and add_adapter('crime_safety'):pass

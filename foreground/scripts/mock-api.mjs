@@ -295,6 +295,7 @@ function layerRoutes(req, res, url) {
 
 // ---- Reskin / agent / structure mocks (rt/reskin, rt/agent, rt/structure contracts). FAKE data for UI testing only. ----
 const CONCEPTS = [
+  { id: "coffee_bakery", name: "Cafe (coffee and bakery reference)", equipmentCount: 7, status: "assumption" },
   { id: "italian", name: "Italian restaurant", equipmentCount: 7, status: "assumption" },
   { id: "indian", name: "Indian restaurant", equipmentCount: 9, status: "assumption" },
   { id: "japanese", name: "Japanese izakaya", equipmentCount: 8, status: "assumption" },
@@ -304,18 +305,18 @@ const mkLine = (id, label, status, lo, ex, hi) => ({ itemId: `reskin:${id}`, lab
 const PAL = { wall: "#D99A1E", floor: "#7A3B2E", ceiling: "#4E1F26", accent: "#1F6F6B" };
 function reskinMock(to) {
   const t = CONCEPTS.find((c) => c.id === to)?.name ?? to;
-  const fromPal = { wall: { name: "warm plaster, terracotta", hex: "#C9805A" }, floor: { name: "terracotta/cement tile", hex: "#B5603A" }, ceiling: { name: "painted white with exposed timber", hex: "#F2EBDD" }, accent: { name: "olive green", hex: "#6B7A3A" } };
+  const fromPal = { wall: { name: "soft cream tile", hex: "#F3E7D3" }, floor: { name: "warm terrazzo", hex: "#D2C3A8" }, ceiling: { name: "bright white", hex: "#F8F6F0" }, accent: { name: "cherry red", hex: "#C83B48" } };
   const toPal = { wall: { name: "saffron paint (mock)", hex: PAL.wall }, floor: { name: "encaustic-look tile (mock)", hex: PAL.floor }, ceiling: { name: "deep maroon (mock)", hex: PAL.ceiling }, accent: { name: "teal accent (mock)", hex: PAL.accent } };
   return {
-    fromConcept: "italian", toConcept: to, seats: 40, seatsAssumed: true, syntheticSource: true,
+    fromConcept: "coffee_bakery", toConcept: to, seats: null, seatsAssumed: true, syntheticSource: true,
     layoutNote: "The listing's real layout is not known. A reference layout was generated from the fromConcept profile (assumptions) and then reskinned. MOCK.",
-    removed: [{ assetId: "mock-oven", name: "Pizza deck oven (mock)", dimsStatus: "estimated", x: 0.2, y: 0.2 }, { assetId: "mock-pasta", name: "Pasta cooker (mock)", dimsStatus: "estimated", x: 1.8, y: 0.2 }],
-    added: [{ assetId: "mock-tandoor", name: `${t} signature oven (mock)`, dimsStatus: "estimated", x: 0.2, y: 0.2, placement: "took the footprint vacated by removed equipment" }, { assetId: "mock-kadhai", name: "Two-burner range (mock)", dimsStatus: "catalog", x: 1.8, y: 0.2, placement: "free space" }],
+    removed: [{ assetId: "mock-espresso-machine", name: "Espresso machine (mock reference)", dimsStatus: "estimated", x: 0.2, y: 0.2 }, { assetId: "mock-pastry-case", name: "Pastry case (mock reference)", dimsStatus: "estimated", x: 1.8, y: 0.2 }],
+    added: [{ assetId: "mock-target-display", name: `${t} display (mock)`, dimsStatus: "estimated", x: 0.2, y: 0.2, placement: "took the footprint vacated by removed equipment" }, { assetId: "mock-target-counter", name: "Service counter (mock)", dimsStatus: "catalog", x: 1.8, y: 0.2, placement: "free space" }],
     unplaced: [], keptCount: 2,
     placements: [{ assetId: "mock-tandoor", x: 0.2, y: 0.2, rot: 0 }, { assetId: "mock-kadhai", x: 1.8, y: 0.2, rot: 0 }, { assetId: "mock-range", x: 4.0, y: 0.2, rot: 0 }, { assetId: "mock-prep", x: 1.0, y: 2.6, rot: 0 }, { assetId: "mock-table", x: 3.0, y: 3.2, rot: 90 }, { assetId: "unknown-size-item", x: 4.6, y: 3.0, rot: 0 }],
     adjacency: [{ a: "mock-tandoor", b: "mock-kadhai", maxGapM: 3.0, why: "mock", status: "assumption", basis: "analyst workflow assumption, not a code requirement", result: "satisfied", gapM: 0.49 }],
-    costDelta: { lines: [mkLine("add:oven", `Add: ${t} signature oven`, "unknown", null, null, null), mkLine("add:kadhai", "Add: two-burner range", "estimated", 900, 1299, 1700), mkLine("rm:oven", "Remove: pizza deck oven", "unknown", null, null, null), mkLine("paint", "Repaint and floor finish", "estimated", 3000, 5500, 9000)], totals: { low: 3900, expected: 6799, high: 10700 }, totalsStatus: "estimated (priced lines only)", excludedLineIds: ["reskin:add:oven", "reskin:rm:oven"] },
-    feasibility: [{ id: "load:ventilation", topic: "ventilation", status: "verify with inspector", from: "Pizza oven and pasta cooker exhaust.", to: "The new heat-heavy oven may need a different hood class: verify with inspector.", basis: "analyst assumption from typical equipment class (mock)", labelledAs: "assumption" }, { id: "load:gas", topic: "gas load", status: "verify with inspector", from: "", to: "Gas demand may change; confirm service size.", basis: "analyst assumption (mock)", labelledAs: "assumption" }],
+    costDelta: { lines: [mkLine("add:display", `Add: ${t} display (mock)`, "unknown", null, null, null), mkLine("add:counter", "Add: service counter (mock)", "unknown", null, null, null), mkLine("rm:display", "Remove: pastry case proxy (mock)", "unknown", null, null, null), mkLine("finish", "Change finishes (mock)", "estimated", 3000, 5500, 9000)], totals: { low: 3000, expected: 5500, high: 9000 }, totalsStatus: "estimated (mock priced lines only)", excludedLineIds: ["reskin:add:display", "reskin:add:counter", "reskin:rm:display"] },
+    feasibility: [{ id: "load:cold", topic: "cold storage", status: "verify with operator and inspector", from: "Display freezer and back-stock needs are unconfirmed.", to: "Confirm selected product, refrigeration loads, freezer capacity, and heat rejection.", basis: "operator intake is incomplete (mock)", labelledAs: "unknown" }, { id: "load:electrical", topic: "electrical", status: "verify with engineer", from: "", to: "Confirm panel capacity against selected equipment nameplates.", basis: "equipment specifications not selected (mock)", labelledAs: "unknown" }],
     materials: { from: fromPal, to: toPal, glbPalette: PAL, decor: ["carved screens", "brass lamps"], signage: "dual wordmark (assumption)", note: "Visual restyle spec (mock)." },
     notice: "MOCK. Scenario analysis, not a forecast or a quote. Unknown prices stay unknown and are excluded from totals (not zero).",
   };

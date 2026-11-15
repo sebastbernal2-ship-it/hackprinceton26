@@ -27,12 +27,22 @@ type Trace =
 
 
 const KIND: Partial<Record<Asset["category"], TourKind>> = { seating: "chair", table: "table", prep_table: "table" };
+const CAFE_ASSET_IDS = ["espresso_machine_2group", "coffee_grinder_on_demand", "drip_brewer_station", "bakery_display_case_48", "convection_oven_full", "bake_rack_speed_rack", "bakery_work_table_72"];
+
+function cafeRoom(item: Asset, rooms: FloorLayout["rooms"]): string {
+  const active = rooms.filter((room) => !room.absorbed);
+  const diningItem = item.category === "seating" || item.category === "table";
+  const chosen = diningItem
+    ? active.find((room) => room.kind === "dining")
+    : active.find((room) => room.kind === "kitchen") ?? active.find((room) => room.kind === "dining");
+  return chosen?.label ?? [...active].sort((a, b) => b.w * b.d - a.w * a.d)[0]?.label ?? "";
+}
 
 export default function LayoutPanel({ match, lines = [] }: { match: Match; lines?: CostLineItem[] }) {
   const [items, setItems] = useState<Asset[]>([]);
   const [trace, setTrace] = useState<Trace>({ status: "idle" });
-  const [profileDraft, setProfileDraft] = useState("");
-  const [profileId, setProfileId] = useState<string | null>(null);
+  const [profileDraft, setProfileDraft] = useState("cafe-demo");
+  const [profileId, setProfileId] = useState<string | null>("cafe-demo");
   const [category, setCategory] = useState<AssetCategory | "">("");
   const [catalog, setCatalog] = useState<{ status: "loading" | "ok" | "error"; assets: Asset[]; error: string }>({ status: "loading", assets: [], error: "" });
   const [reload, setReload] = useState(0);
@@ -67,10 +77,29 @@ export default function LayoutPanel({ match, lines = [] }: { match: Match; lines
     }
   }
 
+  async function loadCafeKit() {
+    try {
+      const assets = await listAssets();
+      const byId = new Map(assets.map((asset) => [asset.assetId, asset]));
+      const kit = CAFE_ASSET_IDS.flatMap((id) => {
+        const asset = byId.get(id);
+        return asset ? [asset] : [];
+      });
+      setItems(kit);
+      setCategory("");
+      setProfileDraft("coffee_bakery");
+      setProfileId("coffee_bakery");
+      if (kit.length !== CAFE_ASSET_IDS.length) {
+        setTrace({ status: "failed", message: `Cafe reference kit is incomplete: found ${kit.length} of ${CAFE_ASSET_IDS.length} catalog assets.` });
+      }
+    } catch (error) {
+      setTrace({ status: "failed", message: error instanceof Error ? error.message : "Could not load the cafe reference kit." });
+    }
+  }
+
   const traced = trace.status === "ok" ? trace.layout : null;
   const tracedPieces: StagedPiece[] = useMemo(() => {
     if (!traced) return [];
-    const room = [...traced.rooms].filter((r) => !r.absorbed).sort((a, b) => b.w * b.d - a.w * a.d)[0]?.label;
     return items.map((item, index) => {
       const b = bbox(item.footprint);
       return {
@@ -83,7 +112,7 @@ export default function LayoutPanel({ match, lines = [] }: { match: Match; lines
         screen: { x: 0, y: 0 },
         width: b.x1 - b.x0,
         depth: b.y1 - b.y0,
-        room,
+        room: cafeRoom(item, traced.rooms),
       };
     });
   }, [traced, items]);
@@ -96,9 +125,8 @@ export default function LayoutPanel({ match, lines = [] }: { match: Match; lines
       <p className="text-xs text-foreground/50">Step 4 · Project layout</p>
       <h2 id="layout-title" className="text-lg font-medium tracking-tight">Layout and equipment placement</h2>
       <p role="note" className="mt-2 rounded-lg border border-foreground/25 bg-foreground/5 px-3 py-2 text-sm font-medium">
-        Concept placement, not verified geometry. The floor below is a rectangle with the listed area; real walls, columns and
-        doors are unknown. Piece sizes carry their own status (measured, catalog or estimated) and clearances are assumptions.
-        Nothing here shows the pieces fit the real space.
+        The default floor is an assumed rectangle from listed area. Matterport tracing can show estimated room outlines when the scan
+        and server keys are available. Catalog pieces are illustrative; this view does not check fit, code, utilities, or workflow.
       </p>
 
       <div className="mt-4 flex flex-wrap items-center gap-3">
@@ -108,9 +136,11 @@ export default function LayoutPanel({ match, lines = [] }: { match: Match; lines
           </label>
           <button type="submit" className="rounded-full border border-foreground/25 px-3 py-1">Use</button>
         </form>
-        <button type="button" onClick={() => setUploading(true)} className="rounded-full bg-foreground px-4 py-1.5 text-sm text-background">Upload photos to add assets</button>
+        <button type="button" onClick={() => setUploading(true)} className="rounded-full bg-foreground px-4 py-1.5 text-sm text-background">Add equipment from photos</button>
+        <button type="button" onClick={() => void loadCafeKit()} className="rounded-full border border-foreground/25 px-4 py-1.5 text-sm">Load cafe reference kit</button>
         {profileId && <span className="text-xs text-foreground/60">Profile assets are listed first.</span>}
       </div>
+      <p className="mt-2 text-xs text-foreground/55">Upload a photo of a piece of equipment to create a draft catalog entry; review its suggested details before saving.</p>
       <AssetBrowser
         assets={catalog.assets} profileId={profileId} status={catalog.status} error={catalog.error}
         category={category} onCategory={setCategory} lines={lines}
@@ -151,7 +181,7 @@ export default function LayoutPanel({ match, lines = [] }: { match: Match; lines
               })}
             </svg>
             <figcaption className="mt-2 text-xs text-foreground/50">
-              Dashed outline: assumed {footprint.width.toFixed(1)} m x {footprint.depth.toFixed(1)} m rectangle ({Math.round(match.squareFeet).toLocaleString("en-US")} sq ft listed, 3:2 shape assumed). Faint dashed boxes: front clearance assumptions.
+              Assumed {footprint.width.toFixed(1)} m x {footprint.depth.toFixed(1)} rectangle ({Math.round(match.squareFeet).toLocaleString("en-US")} sq ft listed, 3:2 shape); catalog footprints and clearances are illustrative.
             </figcaption>
           </figure>
           <div className="text-sm">
@@ -194,10 +224,10 @@ export default function LayoutPanel({ match, lines = [] }: { match: Match; lines
           disabled={trace.status === "loading"}
           className="rounded-full border border-foreground/20 px-4 py-2 text-sm transition-opacity hover:opacity-70 disabled:opacity-50"
         >
-          {trace.status === "loading" ? "Tracing floorplan." : "Trace the Matterport floorplan in 3D"}
+          {trace.status === "loading" ? "Tracing floorplan." : "Trace Matterport rooms in 3D"}
         </button>
         <p className="mt-2 text-xs text-foreground/50">
-          Needs server keys for Matterport and Gemini. Room outlines are traced from the floorplan image by a vision model, so they are estimates, not survey measurements.
+          Needs Matterport and Gemini server keys. A vision model estimates room outlines from the floorplan image; placements are assigned by room type and are not fit-checked or survey measurements.
         </p>
         {trace.status === "notConfigured" && <p role="status" className="mt-2 text-sm">Not configured: {trace.message} Showing the concept placement only.</p>}
         {trace.status === "failed" && <p role="alert" className="mt-2 text-sm">Could not trace: {trace.message}</p>}

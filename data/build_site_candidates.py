@@ -66,7 +66,7 @@ def candidate_row(p, types, include, models_by_property, accessible):
 
 
 def main():
-    enums = json.loads((KIT / "schemas/enums.json").read_text())
+    enums = json.loads((KIT / "schemas/enums.json").read_text(encoding="utf-8"))
     types = enums["PropertyType"]
     names = {name.casefold(): name for name in types.values()}
     include = {names["generalretail"], names["mixeduse"]}
@@ -74,12 +74,12 @@ def main():
         models_by_property = models_by_property_from_rows(csv.DictReader(f))
     accessible = set()
     if ACCESS.exists():
-        with ACCESS.open() as f:
+        with ACCESS.open(encoding="utf-8") as f:
             accessible = accessible_models(f)
 
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     count = 0
-    with (KIT / "data/commercial-property.jsonl").open() as source, OUTPUT.open("w", newline="", encoding="utf-8") as dest:
+    with (KIT / "data/commercial-property.jsonl").open(encoding="utf-8") as source, OUTPUT.open("w", newline="", encoding="utf-8") as dest:
         writer = csv.DictWriter(dest, fieldnames=FIELDS)
         writer.writeheader()
         for line in source:

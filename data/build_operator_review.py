@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build detailed local review rows for Italian+gelato review candidates.
+"""Build detailed local review rows for the cafe review queue.
 
 Only emits direct source IDs, listing-space facts, Matterport linkage/state,
 and explicit verification caveats. Does not emit tenant or contact names.
@@ -26,7 +26,7 @@ def main():
             models.setdefault(r["PropertyId"], set()).add(mid)
     access = {}
     if ACCESS.exists():
-        for line in ACCESS.open():
+        for line in ACCESS.open(encoding="utf-8"):
             try: r = json.loads(line)
             except json.JSONDecodeError: continue
             if r.get("model_id") in {m for ms in models.values() for m in ms} and r.get("result"):
@@ -34,13 +34,13 @@ def main():
     publication_path = ROOT / "data/normalized/matterport/shortlist-address-checks.json"
     publication = {}
     if publication_path.exists():
-        publication = {r["model_id"]: r for r in json.loads(publication_path.read_text()).get("results", [])}
+        publication = {r["model_id"]: r for r in json.loads(publication_path.read_text(encoding="utf-8")).get("results", [])}
     spatial_path = ROOT / "data/normalized/matterport/operator-spatial-metadata.json"
     spatial = {}
     if spatial_path.exists():
-        spatial = {r["model_id"]: r for r in json.loads(spatial_path.read_text()).get("results", [])}
+        spatial = {r["model_id"]: r for r in json.loads(spatial_path.read_text(encoding="utf-8")).get("results", [])}
     listings = {pid: [] for pid in ids}
-    for line in (KIT / "data/commercial-listing-summary.jsonl").open():
+    for line in (KIT / "data/commercial-listing-summary.jsonl").open(encoding="utf-8"):
         l = json.loads(line)
         pid = str(l.get("propertyId", ""))
         if pid in ids:

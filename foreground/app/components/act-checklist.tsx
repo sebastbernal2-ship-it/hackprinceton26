@@ -10,9 +10,9 @@ export default function ActChecklist({ findings, factors, lines }: { findings: D
   const groups = [...new Set(items.map((i) => i.group))];
   return (
     <section className="mt-8 border-t border-foreground/10 pt-6" aria-labelledby="act-title">
-      <h2 id="act-title" className="text-lg font-medium tracking-tight">Act: questions and verification checklist</h2>
+      <h2 id="act-title" className="text-lg font-medium tracking-tight">Act: diligence checklist</h2>
       <p className="mt-1 text-sm text-foreground/50">
-        Built by fixed rules from the findings, unknown factors and unpriced costs above. No AI wrote these lines.
+        Turn findings, evidence gaps, and unpriced costs into follow-up steps. Check items off as you verify them; this list is generated from fixed rules.
       </p>
       {items.length === 0 && <p className="mt-3 text-sm text-foreground/60">Nothing to verify was generated. That does not mean the space is clean.</p>}
       {groups.map((group) => (

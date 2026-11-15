@@ -21,7 +21,7 @@ export default function StructurePanel({ listingId }: { listingId: number }) {
       <h2 id="structure-title" className="text-lg font-medium tracking-tight">Structure and climate</h2>
       <p className="mt-1 text-sm text-foreground/50">A screening lens on where to look first. It is not an engineering assessment, and the scenarios are not forecasts.</p>
       {!cur && <p className="mt-3 text-sm text-foreground/50">Loading.</p>}
-      {cur && !cur.s && !cur.c && <p className="mt-3 text-sm text-foreground/50" role="status">No structure data for this listing (the structure snapshot is unavailable). Screening is unknown, not low.</p>}
+      {cur && !cur.s && !cur.c && <p className="mt-3 text-sm text-foreground/50" role="status">Structure data is not built, does not include this listing, or is unavailable. Screening is unknown, not low.</p>}
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
         {cur?.s && <ScreeningCard data={cur.s} />}
         {cur?.c && <ScenarioSlider data={cur.c} />}

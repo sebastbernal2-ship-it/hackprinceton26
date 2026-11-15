@@ -61,6 +61,8 @@ class Provenance(BaseModel):
     origin: str
     retrievedAt: str | None = None
     notes: str = ""
+    confidence: float | None = Field(default=None, ge=0, le=1)
+    box_2d: list[float] | None = None
 
 
 Pt = tuple[float, float]

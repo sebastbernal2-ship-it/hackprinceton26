@@ -1,6 +1,8 @@
 // Types mirror contracts/projection-card.schema.json and scenario-assessment.schema.json.
 // The schemas cannot express the ordering/kind rules, so isDisplayable() re-checks them: a card that fails is hidden, never repaired.
 
+import type { Exchange } from "./next-question";
+
 export type ProjectionKind = "published" | "fitted" | "scenario";
 export type ProjectionStatus = "estimated" | "unknown";
 
@@ -39,6 +41,17 @@ export type ScenarioAssessment = {
 };
 
 export type ProjectionsResponse = { listingId: number; modelsAvailable: boolean; projections: ProjectionCard[]; note: string };
+export type ReplanReason = { constraint: string; from: string; to: string; reason: string; missing_fields: string[] };
+export type ReplanChange = { site_id: string; from: string; to: string; because: ReplanReason[] };
+export type ReplanResponse = {
+  dataAvailable: boolean;
+  change: { maxAreaSqft?: number };
+  changed: ReplanChange[];
+  countsBefore: Record<string, number>;
+  countsAfter: Record<string, number>;
+  pOverBudget: Record<string, unknown>;
+  note: string;
+};
 
 export const BANNER = "Scenario analysis, not a forecast";
 
@@ -100,3 +113,14 @@ export const fetchProjections = (listingId: number) => call<ProjectionsResponse>
 
 export const postAssess = (listingId: number | null, assumptions: AssumptionInput[]) =>
   call<ScenarioAssessment>("/assess", { method: "POST", body: JSON.stringify({ listingId, assumptions }) });
+
+export const postReplan = (listingId: number, maxAreaSqft: number, brief: Exchange[]) =>
+  call<ReplanResponse>("/replan", {
+    method: "POST",
+    body: JSON.stringify({
+      listingId,
+      brief,
+      assess: {},
+      profileChange: { maxAreaSqft },
+    }),
+  });

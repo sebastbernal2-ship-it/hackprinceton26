@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { AssetApiError, CATEGORIES, createAsset, editDims, ingestImages, type Asset, type AssetCategory, type IngestResponse } from "../lib/assets";
+import { AssetApiError, CATEGORIES, createAsset, editDims, ingestImages, MAX_ASSET_UPLOAD_BYTES, MAX_ASSET_UPLOAD_IMAGES, type Asset, type AssetCategory, type IngestResponse } from "../lib/assets";
 import { AssetFacts, DraftBadge, FootprintSvg } from "./asset-bits";
 
 type Props = { profileId: string | null; onClose: () => void; onConfirmed: (asset: Asset) => void };
@@ -55,7 +55,8 @@ export default function AssetUpload({ profileId, onClose, onConfirmed }: Props) 
         </div>
         <p className="mt-1 text-foreground/65">Photos are sent to the asset service, which proposes catalog entries. Proposals are drafts until you confirm them{profileId ? ", and confirmed ones are saved to this profile" : ". With no profile set they are saved to no profile"}.</p>
         <div className="mt-3 space-y-2">
-          <label className="block">Photos <input type="file" accept="image/*" multiple onChange={(e) => setFiles(Array.from(e.target.files ?? []))} className="ml-2" /></label>
+          <label className="block">Photos <input type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" multiple onChange={(e) => { setFiles(Array.from(e.target.files ?? [])); setResult(null); setDrafts([]); setError(""); }} className="ml-2" /></label>
+          <p className="text-xs text-foreground/55">JPEG, PNG, or WebP; up to {MAX_ASSET_UPLOAD_IMAGES} images, {Math.round(MAX_ASSET_UPLOAD_BYTES / (1024 * 1024))} MiB each. The server checks file content and size.</p>
           <label className="block">Reference scale (optional){" "}
             <input value={scale} onChange={(e) => setScale(e.target.value)} placeholder="e.g. the door is 0.9 m wide" className="w-72 max-w-full rounded border border-foreground/20 bg-background px-2 py-1" />
           </label>
@@ -67,6 +68,7 @@ export default function AssetUpload({ profileId, onClose, onConfirmed }: Props) 
             <p role="status" className={`rounded border px-3 py-2 ${result.mode === "fixture" ? "border-foreground/50 bg-foreground/5 font-medium" : "border-foreground/20"}`}>
               Mode: {result.mode}. {result.notice}
             </p>
+            {result.mode === "fixture" && <p className="mt-2 text-sm font-medium">These are sample placeholders, not results from your photos, and cannot be saved.</p>}
             {drafts.length === 0 && <p className="mt-3">The service proposed no assets.</p>}
             <ul className="mt-3 space-y-3">
               {drafts.map((d) => (
@@ -92,7 +94,7 @@ export default function AssetUpload({ profileId, onClose, onConfirmed }: Props) 
                       </div>
                       <AssetFacts asset={d} />
                       <p className="mt-1 text-xs text-foreground/55">{d.provenance.notes}</p>
-                      {!saved.includes(d.assetId) && <button type="button" onClick={() => confirm(d)} className="mt-2 rounded-full bg-foreground px-3 py-1 text-xs text-background">Confirm and save</button>}
+                      {!saved.includes(d.assetId) && result.mode === "live" && <button type="button" onClick={() => confirm(d)} className="mt-2 rounded-full bg-foreground px-3 py-1 text-xs text-background">Confirm and save</button>}
                     </div>
                   </div>
                 </li>

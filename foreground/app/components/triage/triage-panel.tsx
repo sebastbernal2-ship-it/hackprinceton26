@@ -59,7 +59,7 @@ function FieldRow({ f }: { f: TriageField }) {
 }
 
 function Aerial({ a }: { a: AerialResult | null }) {
-  if (!a) return <p className="mt-2 text-xs text-foreground/50">Aerial: no Vexcel analysis for this listing. Cannot say.</p>;
+  if (!a) return <p className="mt-2 text-xs text-foreground/50">Aerial analysis has not been built or is unavailable for this listing. Cannot say.</p>;
   const v = a.vehicles;
   return (
     <div className="mt-3 rounded-lg border border-foreground/10 p-3 text-xs text-foreground/70" data-testid="aerial-card">
