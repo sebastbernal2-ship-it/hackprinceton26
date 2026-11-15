@@ -18,6 +18,7 @@ import SpaceChat from "./space-chat";
 import TriagePanel from "./triage/triage-panel";
 import CompatibilityPill from "./compatibility-pill";
 import DataStreams from "./data-streams";
+import GrowthSim from "./structure/growth-sim";
 import StructurePanel from "./structure/structure-panel";
 
 const number = new Intl.NumberFormat("en-US");
@@ -190,6 +191,8 @@ export default function PropertyInfo({ match, onBack, onTour }: PropertyInfoProp
             </button>
           ))}
         </nav>
+
+        {tab === "overview" && <GrowthSim />}
 
         {tab === "overview" && (
         <div className="mt-6 grid gap-10 md:grid-cols-2">

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { loadStructure, type ScenarioResponse, type StructureResponse } from "../../lib/structure";
-import ExpansionSim from "./expansion-sim";
+import GrowthSim from "./growth-sim";
 import ScenarioSlider from "./scenario-slider";
 import ScreeningCard from "./screening-card";
 
@@ -25,7 +25,7 @@ export default function StructurePanel({ listingId }: { listingId: number }) {
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
         {cur?.s && <ScreeningCard data={cur.s} />}
         {cur?.c && <ScenarioSlider data={cur.c} />}
-        <div className="lg:col-span-2"><ExpansionSim listingId={listingId} /></div>
+        <div className="lg:col-span-2"><GrowthSim listingId={listingId} title="Expansion and growth timeline" /></div>
       </div>
     </section>
   );
