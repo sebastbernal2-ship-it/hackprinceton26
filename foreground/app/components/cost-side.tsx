@@ -3,9 +3,11 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Asset } from "../lib/assets";
 import { readBrief } from "../lib/brief";
-import { fetchLayoutCost, freshResponse, layoutCostItems, scenarioKey, type LayoutCost } from "../lib/layout-cost";
+import { fetchLayoutCost, freshResponse, layoutCostItems, nameFor, scenarioKey, type LayoutCost } from "../lib/layout-cost";
 import type { Match } from "../lib/matches";
 import { fetchTotalCost, type TotalCost } from "../lib/total-cost";
+import { buildCostBreakdown } from "../lib/cost-categories";
+import CostCategories, { climateInput, useClimate } from "./cost-categories";
 import { resolveBudget } from "../lib/quantify-model";
 import { briefBudget, budgetStatus, CASES, outlook, seatTotal, xrayLines, xrayTotal, zeroCrossing, type Case, type Outlook, type Range } from "../lib/cost-side";
 
@@ -67,6 +69,9 @@ export default function CostSide({ match, kit, area, budgetText: sharedBudget, o
   const occupancy = monthly ? ((monthly.low + monthly.high) / 2) * 12 : null;
   const out = buildout && occupancy !== null ? outlook(seats, buildout.p50 + (hidden.low + hidden.high) / 2, occupancy) : null;
 
+  const { model: climateModel, reason: climateReason } = useClimate(pid);
+  const breakdown = buildCostBreakdown({ fromLayout: kit.length > 0, lc: data, nameFor: (id) => nameFor(kit, id), xray, tc: rentData, climate: climateInput(climateModel, climateReason, "Intermediate", 2050) });
+
   return (
     <aside className="space-y-4 text-sm" aria-label="Live cost" data-testid="cost-side">
       <div className="flex items-baseline justify-between">
@@ -112,6 +117,10 @@ export default function CostSide({ match, kit, area, budgetText: sharedBudget, o
             </p>
           </>
         ) : <p className="text-foreground/55">{kit.length === 0 ? "Place a piece to price it." : "Pricing…"}</p>}
+      </Card>
+
+      <Card title="Costs by category">
+        <CostCategories compact breakdown={breakdown} />
       </Card>
 
       <Card title="Break-even and 3-year outlook">
