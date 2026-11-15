@@ -9,7 +9,7 @@ import { alignmentView, topAlignment } from "../lib/alignment";
 import CompatibilityPill from "./compatibility-pill";
 import Stepper from "./stepper";
 import PropertyInfo from "./property-info";
-import TourOverlay from "./tour-overlay";
+import TourEntry from "./tour-entry";
 import DemoSites from "./demo-sites";
 
 const number = new Intl.NumberFormat("en-US");
@@ -125,7 +125,7 @@ export default function Discover() {
       )}
 
       {tour && (
-        <TourOverlay
+        <TourEntry
           tourId={tour.tourId}
           title={tour.address}
           detail={tour.detail}

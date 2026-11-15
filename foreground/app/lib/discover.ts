@@ -3,6 +3,7 @@ import { readBrief } from "./brief";
 import { fetchMatches } from "./api";
 import { DEMO_FALLBACK } from "./demo-flag";
 import { rankMatches } from "./demo-matches";
+import { CAFE_SCAN_IDS } from "./cafe-demo";
 import type { Exchange } from "./next-question";
 import type { Match } from "./matches";
 
@@ -57,7 +58,9 @@ export async function refreshMatches(brief: Exchange[], opts: { limit?: number; 
       save({ status: "ready", matches: rankMatches(brief), dataAvailable: false, demo: true });
       return;
     }
-    save({ status: "ready", matches, dataAvailable, demo: false, ...(opts.scene ? { scene: opts.scene } : {}) });
+    // Scripted Sarah scene only: the first candidates open a cafe scan whose walk is editable (furniture can be placed).
+    const shown = opts.scene === "sarah" ? matches.map((m, i) => (i < CAFE_SCAN_IDS.length ? { ...m, tourId: CAFE_SCAN_IDS[i] } : m)) : matches;
+    save({ status: "ready", matches: shown, dataAvailable, demo: false, ...(opts.scene ? { scene: opts.scene } : {}) });
   } catch (error) {
     inflight -= 1;
     if (DEMO_FALLBACK) {
