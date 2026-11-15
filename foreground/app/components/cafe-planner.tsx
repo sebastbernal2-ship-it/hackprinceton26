@@ -7,6 +7,7 @@ import { buildCafeKit, cafeKitArea, CAFE_KIT_NOTE, dedupeAssets } from "../lib/c
 import { conceptFootprint, SQFT_TO_M2 } from "../lib/concept-layout";
 import { fetchLayoutCost, freshResponse, layoutCostItems, scenarioKey, type LayoutCost } from "../lib/layout-cost";
 import type { Match } from "../lib/matches";
+import PlannerFill from "./planner-fill";
 import {
   autoLayout, buildVisitors, DOOR_WIDTH, doorX, findSpot, isSeating, newId, reconcile, rotated, sameKit, seatsOf, sizeFor, snapPosition,
   toPlacements, visitorAt, type PlacedPiece, type Pt,
@@ -465,6 +466,8 @@ export default function CafePlanner({ match, kit, onKit, placed, onPlaced, area,
                 <span className="text-foreground/55">{placed.length ? "Click a piece to rotate or remove it. Ctrl+Z undoes." : "The floor is empty. Drag a piece in, or load the cafe reference kit."}</span>
               )}
             </div>
+
+            {floor && <PlannerFill floor={floor} placed={placed} assets={catalog.assets} onPlaced={commit} />}
 
             {issues.length > 0 && (
               <ul role="alert" className="mt-2 list-disc space-y-0.5 pl-5 text-xs text-foreground/75" data-testid="planner-issues">
