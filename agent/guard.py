@@ -64,9 +64,10 @@ def supported(num: float, dec: int, pool: set) -> bool:
     return any(abs(num - p) <= 1e-9 or round(p, dec) == num or (abs(num - p) <= tol and dec) for p in pool)
 
 
-def check_claim(claim: dict, results: dict) -> tuple[bool, str]:
+def check_claim(claim: dict, results: dict, goal: str = "") -> tuple[bool, str]:
     """A claim is {text, cites:[resultId]}. Ok only if it cites known results and every number in the text
-    appears in them (rounded to the stated decimals, or as k/m shorthand within 0.5%)."""
+    appears in them (rounded to the stated decimals, or as k/m shorthand within 0.5%).
+    Numbers the owner typed in the goal are their own input and are allowed without a citation."""
     cites = claim.get("cites") or []
     if not cites:
         return False, "no citation"
@@ -76,6 +77,8 @@ def check_claim(claim: dict, results: dict) -> tuple[bool, str]:
     pool: set = set()
     for c in cites:
         _flat_numbers(results[c], pool)
+    for c in ([goal] if goal else []):
+        _flat_numbers(c, pool)
     for v, dec, suf in numbers_in(str(claim.get("text", ""))):
         if suf in ("k", "m"):
             ok = any(p and abs(v - p) / abs(p) <= 0.005 for p in pool)

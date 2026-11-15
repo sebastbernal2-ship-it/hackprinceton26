@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { fetchScenarios, fetchStructure, type ScenarioResponse, type StructureResponse } from "../../lib/structure";
+import { loadStructure, type ScenarioResponse, type StructureResponse } from "../../lib/structure";
 import ExpansionSim from "./expansion-sim";
 import ScenarioSlider from "./scenario-slider";
 import ScreeningCard from "./screening-card";
@@ -12,7 +12,7 @@ export default function StructurePanel({ listingId }: { listingId: number }) {
   const [state, setState] = useState<Loaded | null>(null);
   useEffect(() => {
     let live = true;
-    Promise.all([fetchStructure(listingId).catch(() => null), fetchScenarios(listingId).catch(() => null)]).then(([s, c]) => live && setState({ id: listingId, s, c }));
+    loadStructure(listingId).then(({ s, c }) => live && setState({ id: listingId, s, c }));
     return () => { live = false; };
   }, [listingId]);
   const cur = state?.id === listingId ? state : null;

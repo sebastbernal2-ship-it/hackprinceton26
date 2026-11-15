@@ -44,6 +44,26 @@ export const fetchScenarios = (id: number) => call<ScenarioResponse>(`/structure
 export const postExpansion = (listingId: number, plan: Plan, baseRoomIds: string[]) =>
   call<ExpansionResponse>("/structure/expansion", { method: "POST", body: JSON.stringify({ listingId, plan, baseRoomIds }) });
 
+const bundles = new Map<number, Promise<{ s: StructureResponse | null; c: ScenarioResponse | null }>>();
+/**
+ * One structure fetch per listing, shared across remounts (React strict mode double-runs effects) and evicted if it failed. Scenarios are only
+ * requested when the structure snapshot answered, so a missing snapshot (503/404) costs one request, not four.
+ */
+export function loadStructure(id: number): Promise<{ s: StructureResponse | null; c: ScenarioResponse | null }> {
+  let p = bundles.get(id);
+  if (!p) {
+    p = fetchStructure(id).then(
+      async (s) => ({ s, c: await fetchScenarios(id).catch(() => null) }),
+      () => ({ s: null, c: null }),
+    );
+    bundles.set(id, p);
+    // Share only while the request is in flight or when it fully succeeded: a transient failure must not hide evidence
+    // for the rest of the session, so evict it and let the next mount retry.
+    p.then((r) => { if ((r.s === null || r.c === null) && bundles.get(id) === p) bundles.delete(id); });
+  }
+  return p;
+}
+
 export const HORIZONS = [2030, 2050, 2070] as const;
 
 /** Distinct scenario names in the table, e.g. "NOAA High". Order of first appearance. */

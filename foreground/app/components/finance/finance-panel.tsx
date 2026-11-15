@@ -59,17 +59,20 @@ function BreakEven({ sim }: { sim: Sim }) {
 export default function FinancePanel({ listingId, rentUnknownAssumption }: { listingId: number; rentUnknownAssumption?: number }) {
   const [state, setState] = useState<{ id: number; sim: Simulation | null; ledger: LedgerPage | null } | null>(null);
   const [table, setTable] = useState("deposits");
+  const [typedRent, setTypedRent] = useState("");
+  const [userRent, setUserRent] = useState<number | undefined>(undefined);
+  const rent = rentUnknownAssumption ?? userRent;
 
   useEffect(() => {
     let live = true;
     (async () => {
-      const sim = await simulate({ listingId, seats: 60, ...(rentUnknownAssumption ? { monthlyRentAssumption: rentUnknownAssumption } : {}) });
+      const sim = await simulate({ listingId, seats: 60, ...(rent ? { monthlyRentAssumption: rent } : {}) });
       const runId = sim && sim.status === "simulated" ? sim.runId : undefined;
       const ledger = runId ? await fetchLedger(runId, "deposits") : null;
       if (live) setState({ id: listingId, sim, ledger });
     })();
     return () => { live = false; };
-  }, [listingId, rentUnknownAssumption]);
+  }, [listingId, rent]);
 
   async function pick(t: string) {
     setTable(t);
@@ -91,6 +94,14 @@ export default function FinancePanel({ listingId, rentUnknownAssumption }: { lis
       {sim?.status === "blocked" && (
         <div className="mt-3 rounded-lg border border-foreground/15 p-3 text-sm" data-testid="finance-blocked">
           <b>Cannot say.</b> Required inputs are unknown: {sim.unknownInputs.join(", ")}. {sim.note}
+          {sim.unknownInputs.includes("rent_monthly") && (
+            <form className="mt-3 flex flex-wrap items-end gap-2" onSubmit={(e) => { e.preventDefault(); const n = Number(typedRent); if (Number.isFinite(n) && n > 0) setUserRent(n); }}>
+              <label className="text-xs text-foreground/55">Your monthly rent assumption (USD, not a listed price)
+                <input inputMode="numeric" value={typedRent} onChange={(e) => setTypedRent(e.target.value)} placeholder="e.g. 12000" aria-label="Monthly rent assumption" className="mt-1 block rounded-lg border border-foreground/20 bg-background px-3 py-1.5 text-sm text-foreground" />
+              </label>
+              <button type="submit" disabled={!(Number(typedRent) > 0)} className="rounded-full bg-foreground px-4 py-1.5 text-sm text-background disabled:opacity-40">Run with my assumption</button>
+            </form>
+          )}
         </div>
       )}
       {sim?.status === "simulated" && (

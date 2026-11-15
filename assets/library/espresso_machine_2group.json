@@ -52,7 +52,7 @@
     "coffee",
     "italian"
   ],
-  "priceRef": null,
+  "priceRef": "espresso_machine_2group",
   "provenance": {
     "origin": "standard published/typical dimensions for this equipment class (not read from a specific spec sheet)",
     "retrievedAt": null,

@@ -54,7 +54,7 @@
     "tandoor",
     "open_flame"
   ],
-  "priceRef": null,
+  "priceRef": "tandoor_32",
   "provenance": {
     "origin": "https://www.chefsupplies.ca/products/omcan-32-x-32-natural-gas-stainless-steel-square-tandoor-oven-49091",
     "retrievedAt": "2026-11-14",

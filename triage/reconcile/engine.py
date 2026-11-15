@@ -9,7 +9,7 @@ import re
 from statistics import median
 from typing import Any, Optional
 
-FIELDS = ["clear_height_ft", "floors", "area_sqft", "restroom_count", "kitchen_present", "use_hint",
+FIELDS = ["clear_height_ft", "floors", "area_sqft", "restroom_count", "kitchen_present",
           "parking_spaces", "rooftop_units", "loading_docks"]
 AERIAL_FIELDS = {"parking_spaces": "parkingSpaces", "rooftop_units": "rooftopUnits", "loading_docks": "loadingDocks"}
 STATUS_WEIGHT = {"conflicting": 100.0, "filled": 30.0, "unverified": 8.0, "confirmed": 0.0, "blank-unfillable": 12.0}
@@ -17,15 +17,6 @@ CONF_PENALTY = {"high": 0.0, "medium": 5.0, "low": 12.0, "none": 0.0}
 
 RESTROOM = re.compile(r"\b(bath(room)?s?|restrooms?|toilets?|wc|lavator(y|ies)|powder)\b", re.I)
 KITCHEN = re.compile(r"\b(kitchen(ette)?s?|galley|pantry)\b", re.I)
-USE_LABELS = {  # label regex -> use bucket
-    "residential": re.compile(r"\b(bed ?rooms?|living room|dining room|laundry)\b", re.I),
-    "office": re.compile(r"\b(offices?|conference|meeting|reception)\b", re.I),
-    "industrial": re.compile(r"\b(warehouse|workshop|garage|loading|dock|storage)\b", re.I),
-    "retail_food": re.compile(r"\b(salon|showroom|store|retail|sales|dining area|restaurant|bar)\b", re.I),
-}
-TYPE_BUCKET = {11: "residential", 15: "residential", 16: "residential", 5: "office", 2: "industrial", 7: "industrial", 6: "retail_food"}
-# CoStar PropertyType enum (kit schemas/enums.json): 2 Industrial, 5 Office, 6 GeneralRetail, 7 Flex, 11 Multifamily, 15/16 Residential/Homes.
-# Bucket mapping is an assumption (see docs); an unmapped type (hospitality, land, ...) yields a hint with no verdict.
 
 
 def _num(x: Any) -> Optional[float]:
@@ -216,29 +207,6 @@ def _label_count(name: str, s: Optional[dict], key: str, regex_note: str) -> dic
     return _row(name, "blank-unfillable", refs=refs, rule=rule, note="No matching room label; absence of a label is not evidence of absence.")
 
 
-def reconcile_use(c: dict, s: Optional[dict]) -> dict:
-    rule = "Bucket scan labels (office/residential/industrial/retail_food); compare with CoStar propertyType bucket. Hint only; low confidence."
-    if not s:
-        return _row("use_hint", "blank-unfillable", rule=rule)
-    counts: dict[str, int] = {}
-    for l in s["labels"]:
-        for b, rx in USE_LABELS.items():
-            if l and rx.search(l):
-                counts[b] = counts.get(b, 0) + 1
-    if not counts:
-        return _row("use_hint", "blank-unfillable", rule=rule, note="No use-bearing room labels.")
-    hint = max(counts, key=counts.get)
-    refs = [_ref("matterport", "rooms.classifications", str(counts))]
-    exp = TYPE_BUCKET.get(c["propertyType"])
-    if exp is None:
-        return _row("use_hint", "filled", scan=hint, value=hint, value_status="derived", scope="suite", confidence="low", refs=refs, rule=rule)
-    refs.append(_ref("costar", "propertyType", str(c["propertyType"])))
-    if exp == hint:
-        return _row("use_hint", "confirmed", costar=exp, scan=hint, value=hint, value_status="derived", scope="suite", confidence="low", refs=refs, rule=rule)
-    return _row("use_hint", "conflicting", costar=exp, scan=hint, scope="suite", confidence="low", refs=refs, rule=rule,
-                note="Scanned room labels suggest a different use bucket than CoStar's type; may be a suite of a mixed building.")
-
-
 def reconcile_aerial(field: str, costar_val: Optional[float], aerial: dict | None) -> dict:
     key = AERIAL_FIELDS[field]
     a = (aerial or {}).get(key)
@@ -277,7 +245,6 @@ def triage_property(pid: str, prop: dict, listings: list[dict] | None, scan_rec:
         reconcile_height(c, s), reconcile_floors(c, s), reconcile_area(c, s),
         _label_count("restroom_count", s, "bathrooms", "bath*/restroom/toilet/WC/lavatory"),
         _label_count("kitchen_present", s, "kitchens", "kitchen/kitchenette/galley/pantry"),
-        reconcile_use(c, s),
         reconcile_aerial("parking_spaces", c["parkingSpaces"], aerial),
         reconcile_aerial("rooftop_units", None, aerial),
         reconcile_aerial("loading_docks", c["loadingDocks"], aerial),
