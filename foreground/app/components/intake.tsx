@@ -5,7 +5,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { saveBrief } from "../lib/brief";
 import { CAFE_MATCHES, CAFE_NOTICE, isCafePrompt } from "../lib/cafe-demo";
 import { clearMatches, refreshMatches, seedMatches, showDemoMatches } from "../lib/discover";
-import { isSarahPrompt, SARAH_BRIEF, SARAH_LIMIT } from "../lib/sarah-scene";
+import { isSarahPrompt, SARAH_A1, SARAH_A2, SARAH_BRIEF, SARAH_LIMIT, SARAH_Q2 } from "../lib/sarah-scene";
 import { FIRST_QUESTION, MAX_QUESTIONS, nextQuestion, type Exchange } from "../lib/next-question";
 
 type Phase = "welcome" | "asking" | "thinking" | "leaving";
@@ -121,12 +121,22 @@ export default function Intake() {
     if (phase !== "asking" || !answer) return;
 
     if (history.length === 0 && isSarahPrompt(answer)) {
-      // Scripted demo scene: the canonical two-answer brief replaces the typed text and the follow-ups.
-      setHistory(SARAH_BRIEF);
+      // Scripted demo scene: the canonical first answer replaces the typed text, then the second question is asked.
+      setHistory([SARAH_BRIEF[0]]);
       clearInput();
-      saveBrief(SARAH_BRIEF);
+      setQuestion(SARAH_Q2);
+      setPhase("asking");
+      return;
+    }
+    if (history.length === 1 && history[0].answer === SARAH_A1) {
+      // Second answer of the scene: typing "Sarah" again fills in her canonical answer; anything else is used as typed.
+      const second = isSarahPrompt(answer) ? SARAH_A2 : answer;
+      const brief = [history[0], { question, answer: second }];
+      setHistory(brief);
+      clearInput();
+      saveBrief(brief);
       clearMatches();
-      void refreshMatches(SARAH_BRIEF, { limit: SARAH_LIMIT, scene: "sarah" });
+      void refreshMatches(brief, { limit: SARAH_LIMIT, scene: "sarah" });
       finished.current = true;
       setPhase("leaving");
       return;
